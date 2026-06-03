@@ -32,7 +32,7 @@ jobs:
       MIMO_TARGET_ARCH: arm64
       CSC_IDENTITY_AUTO_DISCOVERY: false # skip code signing
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -55,7 +55,7 @@ jobs:
       MIMO_TARGET_PLATFORM: win32
       MIMO_TARGET_ARCH: x64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: oven-sh/setup-bun@v2
         with:
