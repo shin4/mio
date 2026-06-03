@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test"
 import {
-  buildDictationContext,
   dictationInputLevel,
   dictationWaveBars,
   encodeWavDataUrl,
@@ -20,29 +19,6 @@ describe("prompt dictation helpers", () => {
     expect(bytes.readUInt16LE(22)).toBe(1)
     expect(bytes.readUInt32LE(24)).toBe(16_000)
     expect(bytes.readUInt16LE(34)).toBe(16)
-  })
-
-  test("builds bounded text-only context from draft, chips, and recent messages", () => {
-    const context = buildDictationContext({
-      draft: "继续修复缓存",
-      items: [
-        {
-          type: "file",
-          path: "packages/app/src/components/prompt-input.tsx",
-          selection: { startLine: 10, startChar: 0, endLine: 20, endChar: 0 },
-        },
-      ],
-      recentMessages: [
-        { role: "user", text: "把听写放在输入框里" },
-        { role: "assistant", text: "成功后只回填，不发送。" },
-        { role: "assistant", text: "x".repeat(2_000) },
-      ],
-    })
-
-    expect(context.draft).toBe("继续修复缓存")
-    expect(context.items).toEqual(["file: packages/app/src/components/prompt-input.tsx:10-20"])
-    expect(context.recentMessages).toHaveLength(3)
-    expect(context.recentMessages?.[2]?.text.length).toBeLessThan(900)
   })
 
   test("inserts transcript at the saved cursor with spacing", () => {
@@ -124,16 +100,16 @@ describe("prompt dictation helpers", () => {
     expect(source).toContain("prompt.dictation.unavailableWithCost")
   })
 
-  test("dictation tooltip translations mention mimo-v2.5 cost", async () => {
+  test("dictation tooltip translations mention mimo-v2.5-asr cost", async () => {
     const en = await Bun.file(new URL("../../i18n/en.ts", import.meta.url)).text()
     const zh = await Bun.file(new URL("../../i18n/zh.ts", import.meta.url)).text()
     const zht = await Bun.file(new URL("../../i18n/zht.ts", import.meta.url)).text()
 
-    expect(en).toContain("mimo-v2.5")
+    expect(en).toContain("Transcribing with mimo-v2.5-asr")
     expect(en).toContain("may increase usage cost")
-    expect(zh).toContain("mimo-v2.5")
+    expect(zh).toContain("正在通过 mimo-v2.5-asr 转写")
     expect(zh).toContain("可能增加使用成本")
-    expect(zht).toContain("mimo-v2.5")
+    expect(zht).toContain("正在透過 mimo-v2.5-asr 轉寫")
     expect(zht).toContain("可能增加使用成本")
   })
 

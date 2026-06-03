@@ -97,5 +97,24 @@ describe("getSessionContextMetrics", () => {
 
     expect(metrics.totalCost).toBe(0)
     expect(metrics.context).toBeUndefined()
+    expect(metrics.sessionUsage.total).toBe(0)
+  })
+
+  test("accumulates sessionUsage across all assistant messages", () => {
+    const messages = [
+      user("u1"),
+      assistant("a1", { input: 100, output: 20, reasoning: 5, read: 10, write: 0 }, 0.5),
+      user("u2"),
+      assistant("a2", { input: 300, output: 100, reasoning: 50, read: 25, write: 25 }, 1.25),
+    ]
+
+    const metrics = getSessionContextMetrics(messages, [])
+
+    expect(metrics.sessionUsage.input).toBe(400)
+    expect(metrics.sessionUsage.output).toBe(120)
+    expect(metrics.sessionUsage.reasoning).toBe(55)
+    expect(metrics.sessionUsage.cacheRead).toBe(35)
+    expect(metrics.sessionUsage.cacheWrite).toBe(25)
+    expect(metrics.sessionUsage.total).toBe(635)
   })
 })

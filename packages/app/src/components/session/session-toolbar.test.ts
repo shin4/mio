@@ -486,3 +486,81 @@ describe("SessionToolbar layout", () => {
     expect(source).toContain("<SessionToolbar sessionID={id()} centered={centered()} />")
   })
 })
+
+describe("computeThroughput", () => {
+  const compute = async () => {
+    const toolbar = await import("./session-toolbar")
+    const fn = (
+      toolbar as unknown as {
+        computeThroughput?: (input: {
+          message: { time: { created: number; completed?: number } }
+          parts: ReadonlyArray<{
+            type: string
+            time?: { start?: number; end?: number }
+            state?: { status: string; time?: { start: number; end?: number } }
+          }>
+          output: number
+          reasoning: number
+        }) => { tps?: number; ttftMs?: number; genMs?: number; generated: number } | undefined
+      }
+    ).computeThroughput
+
+    expect(fn).toBeDefined()
+    return fn!
+  }
+
+  test("returns undefined before the turn completes", async () => {
+    const fn = await compute()
+    expect(fn({ message: { time: { created: 1000 } }, parts: [], output: 0, reasoning: 0 })).toBeUndefined()
+  })
+
+  test("excludes tool-execution time from the generation window", async () => {
+    const fn = await compute()
+    const result = fn({
+      message: { time: { created: 1000, completed: 11000 } },
+      parts: [
+        { type: "text", time: { start: 2000 } },
+        { type: "tool", state: { status: "completed", time: { start: 3000, end: 9000 } } },
+      ],
+      output: 600,
+      reasoning: 0,
+    })
+
+    // whole span 9000ms − 6000ms tool = 3000ms; 600 tokens → 200 tok/s
+    expect(result?.genMs).toBe(3000)
+    expect(Math.round(result?.tps ?? 0)).toBe(200)
+  })
+
+  test("sums text/reasoning windows and counts reasoning tokens", async () => {
+    const fn = await compute()
+    const result = fn({
+      message: { time: { created: 1000, completed: 8000 } },
+      parts: [
+        { type: "reasoning", time: { start: 1500, end: 2000 } },
+        { type: "text", time: { start: 2000, end: 5000 } },
+        { type: "tool", state: { status: "completed", time: { start: 5000, end: 8000 } } },
+      ],
+      output: 300,
+      reasoning: 50,
+    })
+
+    // gen windows 500ms + 3000ms = 3500ms (tool ignored); 350 tokens → 100 tok/s
+    expect(result?.genMs).toBe(3500)
+    expect(result?.generated).toBe(350)
+    expect(result?.ttftMs).toBe(500)
+    expect(Math.round(result?.tps ?? 0)).toBe(100)
+  })
+
+  test("falls back to the whole span when no segment ends or tools exist", async () => {
+    const fn = await compute()
+    const result = fn({
+      message: { time: { created: 1000, completed: 6000 } },
+      parts: [{ type: "text", time: { start: 2000 } }],
+      output: 400,
+      reasoning: 0,
+    })
+
+    expect(result?.genMs).toBe(4000)
+    expect(Math.round(result?.tps ?? 0)).toBe(100)
+  })
+})

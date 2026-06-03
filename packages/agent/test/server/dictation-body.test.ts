@@ -1,9 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import {
-  buildDictationBody,
-  DICTATION_MODEL,
-  DICTATION_SYSTEM_PROMPT,
-} from "@/server/routes/instance/httpapi/handlers/dictation-body"
+import { buildDictationBody, DICTATION_MODEL } from "@/server/routes/instance/httpapi/handlers/dictation-body"
 import type { DictationRequest } from "@/server/routes/instance/httpapi/groups/dictation"
 
 const ok = (r: ReturnType<typeof buildDictationBody>) => {
@@ -11,98 +7,81 @@ const ok = (r: ReturnType<typeof buildDictationBody>) => {
   return r
 }
 
-type Msg = {
-  role: "system" | "user"
-  content: string | Array<{ type: string; text?: string; input_audio?: { data?: string } }>
-}
+type Content = { type: string; input_audio?: { data?: string } }
+type Msg = { role: string; content: Content[] }
 
-const messages = (r: ReturnType<typeof buildDictationBody>) => (ok(r).body as { messages: Msg[] }).messages
 const requestBody = (r: ReturnType<typeof buildDictationBody>) =>
   ok(r).body as {
     model: string
     messages: Msg[]
-    temperature: number
-    max_tokens: number
+    asr_options: { language: string }
     stream: false
-    thinking?: { type: string }
-    reasoning_effort?: unknown
+    temperature?: unknown
+    max_tokens?: unknown
+    thinking?: unknown
   }
 
 describe("buildDictationBody", () => {
   const sampleRate = 16_000
   const wav = wavDataUrl(speechLike(2.1, sampleRate), sampleRate)
 
-  test("keeps the system prompt stable and puts dynamic context in user content", () => {
-    const body = buildDictationBody({
-      audio: { dataUrl: wav, mime: "audio/wav", durationSeconds: 8 },
-      context: {
-        draft: "fix cache metrics",
-        items: ["file: packages/app/src/components/prompt-input.tsx"],
-        recentMessages: [{ role: "assistant", text: "We were discussing cached token accounting." }],
-      },
-    } as DictationRequest)
-
-    const msgs = messages(body)
-    expect(msgs[0]).toEqual({ role: "system", content: DICTATION_SYSTEM_PROMPT })
-    expect(msgs[0].content).not.toContain("fix cache metrics")
-    expect(JSON.stringify(msgs[1])).toContain("fix cache metrics")
-    expect((ok(body).body as { model: string }).model).toBe(DICTATION_MODEL)
-  })
-
-  test("disables MiMo thinking for short-form dictation requests", () => {
+  test("targets the dedicated ASR model", () => {
     const body = requestBody(buildDictationBody({ audio: { dataUrl: wav, mime: "audio/wav" } } as DictationRequest))
-
-    expect(body.model).toBe(DICTATION_MODEL)
-    expect(body.thinking).toEqual({ type: "disabled" })
-    expect("reasoning_effort" in body).toBe(false)
-    expect(body.temperature).toBe(0)
-    expect(body.max_tokens).toBe(1024)
-    expect(body.stream).toBe(false)
+    expect(DICTATION_MODEL).toBe("mimo-v2.5-asr")
+    expect(body.model).toBe("mimo-v2.5-asr")
   })
 
-  test("keeps dictation prompt focused on actual spoken transcription", () => {
-    const body = requestBody(
-      buildDictationBody({
-        audio: { dataUrl: wav, mime: "audio/wav" },
-        context: {
-          draft: "继续修复",
-          items: ["file: packages/agent/src/server/routes/instance/httpapi/handlers/dictation-body.ts"],
-          recentMessages: [{ role: "user", text: "不要把上下文当成要回答的问题。" }],
-        },
-      } as DictationRequest),
-    )
-    const user = body.messages[1]
-    if (!Array.isArray(user.content)) throw new Error("expected user content parts")
-    const text = user.content.find((part) => part.type === "text")?.text ?? ""
-
-    expect(DICTATION_SYSTEM_PROMPT).toContain("only the words that were actually spoken")
-    expect(DICTATION_SYSTEM_PROMPT).toContain("Do not answer")
-    expect(DICTATION_SYSTEM_PROMPT).toContain("Do not infer missing speech from context")
-    expect(DICTATION_SYSTEM_PROMPT).toContain("Output only the final transcript text")
-    expect(text).toContain("Context hints")
-    expect(text).toContain("Current draft hint: 继续修复")
-    expect(text).toContain("Explicit context hints:")
-    expect(text).toContain("Recent text hints:")
-    expect(text).not.toContain("Task: transcribe the following audio clip into text.")
-  })
-
-  test("sends wav data URL as MiMo input_audio", () => {
-    const user = messages(buildDictationBody({ audio: { dataUrl: wav, mime: "audio/wav" } } as DictationRequest))[1]
+  test("sends a single user message containing only the wav input_audio", () => {
+    const body = requestBody(buildDictationBody({ audio: { dataUrl: wav, mime: "audio/wav" } } as DictationRequest))
+    expect(body.messages).toHaveLength(1)
+    const user = body.messages[0]
     expect(user.role).toBe("user")
-    expect(user.content).toContainEqual({ type: "input_audio", input_audio: { data: wav } })
+    expect(user.content).toEqual([{ type: "input_audio", input_audio: { data: wav } }])
+  })
+
+  test("omits chat-style params and is non-streaming", () => {
+    const body = requestBody(buildDictationBody({ audio: { dataUrl: wav, mime: "audio/wav" } } as DictationRequest))
+    expect(body.stream).toBe(false)
+    expect("temperature" in body).toBe(false)
+    expect("max_tokens" in body).toBe(false)
+    expect("thinking" in body).toBe(false)
+  })
+
+  test("defaults asr language to auto and passes through an explicit language", () => {
+    const auto = requestBody(buildDictationBody({ audio: { dataUrl: wav, mime: "audio/wav" } } as DictationRequest))
+    expect(auto.asr_options).toEqual({ language: "auto" })
+
+    const zh = requestBody(
+      buildDictationBody({ audio: { dataUrl: wav, mime: "audio/wav" }, language: "zh" } as DictationRequest),
+    )
+    expect(zh.asr_options).toEqual({ language: "zh" })
+
+    const en = requestBody(
+      buildDictationBody({ audio: { dataUrl: wav, mime: "audio/wav" }, language: "en" } as DictationRequest),
+    )
+    expect(en.asr_options).toEqual({ language: "en" })
   })
 
   test("rejects empty, non-wav, too-long, and oversized audio", () => {
     expect(buildDictationBody({ audio: { dataUrl: "", mime: "audio/wav" } } as DictationRequest).ok).toBe(false)
-    expect(buildDictationBody({ audio: { dataUrl: "data:audio/webm;base64,AAAA", mime: "audio/webm" } } as DictationRequest).ok).toBe(false)
+    expect(
+      buildDictationBody({ audio: { dataUrl: "data:audio/webm;base64,AAAA", mime: "audio/webm" } } as DictationRequest)
+        .ok,
+    ).toBe(false)
     expect(
       buildDictationBody({ audio: { dataUrl: wav, mime: "audio/wav", durationSeconds: 61 } } as DictationRequest).ok,
     ).toBe(false)
     expect(
-      buildDictationBody({
-        audio: { dataUrl: `data:audio/wav;base64,${"A".repeat(67_000_000)}`, mime: "audio/wav" },
-      } as DictationRequest).ok,
+      buildDictationBody({ audio: { dataUrl: wav, mime: "audio/wav", durationSeconds: 0 } } as DictationRequest).ok,
     ).toBe(false)
+    expect(
+      buildDictationBody({ audio: { dataUrl: wav, mime: "audio/wav", durationSeconds: -1 } } as DictationRequest).ok,
+    ).toBe(false)
+    const oversized = buildDictationBody({
+      audio: { dataUrl: `data:audio/wav;base64,${"A".repeat(11_000_000)}`, mime: "audio/wav" },
+    } as DictationRequest)
+    expect(oversized.ok).toBe(false)
+    expect(oversized.ok ? "" : oversized.message).toContain("10MB")
   })
 
   test("rejects short and silent wav audio before calling MiMo", () => {

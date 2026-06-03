@@ -75,7 +75,6 @@ import { PromptImageAttachments } from "./prompt-input/image-attachments"
 import { PromptDragOverlay } from "./prompt-input/drag-overlay"
 import { promptPlaceholder } from "./prompt-input/placeholder"
 import {
-  buildDictationContext,
   DICTATION_MAX_SECONDS,
   dictationInputLevel,
   dictationWaveBars,
@@ -90,7 +89,7 @@ import {
   modelEffectKey,
   shouldTriggerMimoProComposerEffect,
 } from "./prompt-input/mimo-pro-composer-effect"
-import { DictationError, transcribeDictation } from "@/utils/dictation"
+import { asrLanguageFromLocale, DictationError, transcribeDictation } from "@/utils/dictation"
 import { ImagePreview } from "@opencode-ai/ui/image-preview"
 import { useQueries } from "@tanstack/solid-query"
 import { useQueryOptions } from "@/context/server-sync"
@@ -405,30 +404,6 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     return language.t("prompt.dictation.startWithCost")
   }
 
-  const dictationRecentMessages = () => {
-    const id = params.id
-    if (!id) return []
-    return (sync.data.message[id] ?? [])
-      .slice(-8)
-      .flatMap((message): Array<{ role: "user" | "assistant"; text: string }> => {
-        if (message.role !== "user" && message.role !== "assistant") return []
-        const text = (sync.data.part[message.id] ?? [])
-          .flatMap((part) => (part.type === "text" && !part.synthetic && !part.ignored ? [part.text] : []))
-          .join("\n")
-          .trim()
-        if (!text) return []
-        return [{ role: message.role, text }]
-      })
-      .slice(-4)
-  }
-
-  const dictationContext = () =>
-    buildDictationContext({
-      draft: promptText(prompt.current()),
-      items: prompt.context.items(),
-      recentMessages: dictationRecentMessages(),
-    })
-
   const showDictationError = (description: Parameters<typeof language.t>[0]) => {
     showToast({
       title: language.t("prompt.toast.dictationFailed.title"),
@@ -601,7 +576,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       http,
       directory: sdk.directory,
       audio: { dataUrl: encodeWavDataUrl(samples, capture.sampleRate), mime: "audio/wav", durationSeconds },
-      context: dictationContext(),
+      language: asrLanguageFromLocale(language.locale()),
     })
       .then((result) => insertDictationText(result.text))
       .catch((error) => {
@@ -2002,7 +1977,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                       tabIndex={store.mode === "normal" ? undefined : -1}
                       icon={stopping() ? "stop" : store.mode === "shell" ? "arrow-undo-down" : "arrow-up"}
                       variant="primary"
-                      class="size-7 rounded-md p-[6px] text-white shadow-[var(--v2-elevation-button-contrast)] disabled:opacity-50"
+                      class="ml-1 size-7 rounded-md p-[6px] text-white shadow-[var(--v2-elevation-button-contrast)] disabled:opacity-50"
                       style={{
                         "background-image":
                           "linear-gradient(180deg,var(--v2-alpha-light-20) 0%,var(--v2-alpha-light-0) 100%),linear-gradient(90deg,var(--mimo-accent) 0%,var(--mimo-accent) 100%)",

@@ -685,7 +685,7 @@ export class Dictation extends HeyApiClient {
   /**
    * Transcribe dictation
    *
-   * Transcribe a short WAV audio clip with MiMo v2.5 and lightweight composer context.
+   * Transcribe a short WAV audio clip with the MiMo v2.5 ASR model.
    */
   public transcribe<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -696,14 +696,7 @@ export class Dictation extends HeyApiClient {
         mime: string
         durationSeconds?: number
       }
-      context?: {
-        draft?: string
-        items?: Array<string>
-        recentMessages?: Array<{
-          role: "user" | "assistant"
-          text: string
-        }>
-      }
+      language?: "auto" | "zh" | "en"
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -715,7 +708,7 @@ export class Dictation extends HeyApiClient {
             { in: "query", key: "directory" },
             { in: "query", key: "workspace" },
             { in: "body", key: "audio" },
-            { in: "body", key: "context" },
+            { in: "body", key: "language" },
           ],
         },
       ],

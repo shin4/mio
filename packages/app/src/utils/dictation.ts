@@ -1,4 +1,5 @@
 import type { ServerConnection } from "@/context/server"
+import type { Locale } from "@/context/language"
 import { authTokenFromCredentials } from "@/utils/auth"
 
 export type DictationAudio = {
@@ -7,10 +8,14 @@ export type DictationAudio = {
   durationSeconds?: number
 }
 
-export type DictationContext = {
-  draft?: string
-  items?: string[]
-  recentMessages?: Array<{ role: "user" | "assistant"; text: string }>
+export type DictationLanguage = "auto" | "zh" | "en"
+
+// MiMo ASR (mimo-v2.5-asr) accepts auto/zh/en. Map the UI locale onto it; Traditional Chinese
+// (zht) folds into "zh", and any other UI language falls back to automatic detection.
+export function asrLanguageFromLocale(locale: Locale): DictationLanguage {
+  if (locale === "zh" || locale === "zht") return "zh"
+  if (locale === "en") return "en"
+  return "auto"
 }
 
 export type DictationUsage = {
@@ -43,7 +48,7 @@ export async function transcribeDictation(input: {
   http: ServerConnection.HttpBase
   directory: string
   audio: DictationAudio
-  context?: DictationContext
+  language?: DictationLanguage
   fetch?: Fetcher
 }): Promise<TranscribeDictationResult> {
   const base = input.http.url.replace(/\/+$/, "")
@@ -59,7 +64,7 @@ export async function transcribeDictation(input: {
     headers,
     body: JSON.stringify({
       audio: input.audio,
-      ...(input.context ? { context: input.context } : {}),
+      ...(input.language ? { language: input.language } : {}),
     }),
   })
 
@@ -87,6 +92,6 @@ export async function transcribeDictation(input: {
   }
 
   const json = (await response.json()) as TranscribeDictationResult
-  if (!json?.text?.trim()) throw new DictationError("Dictation returned no text")
+  if (!json?.text?.trim()) throw new DictationError("Dictation returned no text", "no_speech")
   return { text: json.text, usage: json.usage }
 }

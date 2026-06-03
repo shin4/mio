@@ -29,14 +29,39 @@ type Context = {
   usage: number | null
 }
 
+type SessionUsage = {
+  input: number
+  output: number
+  reasoning: number
+  cacheRead: number
+  cacheWrite: number
+  total: number
+}
+
 type Metrics = {
   totalCost: number
+  sessionUsage: SessionUsage
   context: Context | undefined
 }
 
 const tokenTotal = (msg: AssistantMessage) => {
   return msg.tokens.input + msg.tokens.output + msg.tokens.reasoning + msg.tokens.cache.read + msg.tokens.cache.write
 }
+
+const sumSessionUsage = (messages: Message[]): SessionUsage =>
+  messages.reduce<SessionUsage>(
+    (acc, msg) => {
+      if (msg.role !== "assistant") return acc
+      acc.input += msg.tokens.input
+      acc.output += msg.tokens.output
+      acc.reasoning += msg.tokens.reasoning
+      acc.cacheRead += msg.tokens.cache.read
+      acc.cacheWrite += msg.tokens.cache.write
+      acc.total += tokenTotal(msg)
+      return acc
+    },
+    { input: 0, output: 0, reasoning: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+  )
 
 const lastAssistantWithTokens = (messages: Message[]) => {
   for (let i = messages.length - 1; i >= 0; i--) {
@@ -49,8 +74,9 @@ const lastAssistantWithTokens = (messages: Message[]) => {
 
 const build = (messages: Message[] = [], providers: Provider[] = []): Metrics => {
   const totalCost = messages.reduce((sum, msg) => sum + (msg.role === "assistant" ? msg.cost : 0), 0)
+  const sessionUsage = sumSessionUsage(messages)
   const message = lastAssistantWithTokens(messages)
-  if (!message) return { totalCost, context: undefined }
+  if (!message) return { totalCost, sessionUsage, context: undefined }
 
   const provider = providers.find((item) => item.id === message.providerID)
   const model = provider?.models[message.modelID]
@@ -59,6 +85,7 @@ const build = (messages: Message[] = [], providers: Provider[] = []): Metrics =>
 
   return {
     totalCost,
+    sessionUsage,
     context: {
       message,
       provider,

@@ -29,6 +29,61 @@ const fmt = (n: number) =>
 const fmtMs = (ms: number) => (ms < 1000 ? `${Math.round(ms)}ms` : `${(ms / 1000).toFixed(2)}s`)
 const fmtDur = (ms: number) => (ms < 1000 ? `${Math.round(ms)}ms` : `${(ms / 1000).toFixed(1)}s`)
 
+// Latest-turn generation speed from synced timestamps.
+// - numerator: model-generated tokens = output + reasoning
+// - denominator (genMs): prefer the summed text/reasoning generation windows
+//   (excludes tool execution + idle/inter-step gaps); fall back to the whole
+//   span minus tool-execution time; finally to the whole span.
+// - ttftMs: first text/reasoning token start − message created.
+// Returns undefined until the turn has completed.
+export function computeThroughput(input: {
+  message: { time: { created: number; completed?: number } }
+  parts: ReadonlyArray<{
+    type: string
+    // `created` is accepted (but unused) so RetryPart's `time: { created }` stays assignable.
+    time?: { start?: number; end?: number; created?: number }
+    state?: { status: string; time?: { start: number; end?: number } }
+  }>
+  output: number
+  reasoning: number
+}): { tps?: number; ttftMs?: number; genMs?: number; generated: number } | undefined {
+  const completed = input.message.time.completed
+  if (typeof completed !== "number") return undefined
+  const created = input.message.time.created
+
+  let firstTokenAt: number | undefined
+  let segmentMs = 0
+  let segments = 0
+  let toolMs = 0
+  for (const part of input.parts) {
+    if (part.type === "text" || part.type === "reasoning") {
+      const start = part.time?.start
+      if (typeof start !== "number") continue
+      if (firstTokenAt === undefined || start < firstTokenAt) firstTokenAt = start
+      const end = part.time?.end
+      if (typeof end === "number" && end > start) {
+        segmentMs += end - start
+        segments += 1
+      }
+      continue
+    }
+    if (part.type === "tool") {
+      const status = part.state?.status
+      const time = status === "completed" || status === "error" ? part.state?.time : undefined
+      if (time && typeof time.end === "number" && time.end > time.start) toolMs += time.end - time.start
+    }
+  }
+
+  const ttftMs = firstTokenAt !== undefined && firstTokenAt >= created ? firstTokenAt - created : undefined
+  const genStart = firstTokenAt ?? created
+  const whole = completed > genStart ? completed - genStart : undefined
+  const genMs = segments > 0 ? segmentMs : whole !== undefined ? Math.max(1, whole - toolMs) : undefined
+
+  const generated = input.output + input.reasoning
+  const tps = genMs && generated > 0 ? (generated / genMs) * 1000 : undefined
+  return { tps, ttftMs, genMs, generated }
+}
+
 type CacheModelRef = {
   providerID?: string
   id?: string
@@ -259,33 +314,18 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
 
   const metrics = createMemo(() => getSessionContextMetrics(messages(), [...providers.all().values()]))
 
-  // Latest-turn generation speed, derived from already-synced timestamps. The
-  // metrics' "context" message is the last assistant turn that reported tokens
-  // (so it's completed). TTFT = first text/reasoning part start − message
-  // created; throughput = output tokens ÷ generation span (first token →
-  // completed). undefined until a turn completes.
+  // Latest-turn generation speed. The metrics' "context" message is the last
+  // assistant turn that reported tokens (so it's completed). See computeThroughput
+  // for how tool-execution/idle time is excluded and tokens counted.
   const throughput = createMemo(() => {
     const ctx = metrics().context
     if (!ctx) return undefined
-    const msg = ctx.message
-    const completed = msg.time.completed
-    if (typeof completed !== "number") return undefined
-    const created = msg.time.created
-    let firstTokenAt: number | undefined
-    for (const part of sync.data.part[msg.id] ?? []) {
-      // text/reasoning parts carry time.start (first-token); RetryPart's time
-      // has only `created`, so narrow on `start`.
-      const time = "time" in part ? part.time : undefined
-      const start = time && "start" in time ? time.start : undefined
-      if (typeof start !== "number") continue
-      if (firstTokenAt === undefined || start < firstTokenAt) firstTokenAt = start
-    }
-    const ttftMs = firstTokenAt !== undefined && firstTokenAt >= created ? firstTokenAt - created : undefined
-    const genStart = firstTokenAt ?? created
-    const genMs = completed > genStart ? completed - genStart : undefined
-    const output = ctx.output
-    const tps = genMs && output > 0 ? (output / genMs) * 1000 : undefined
-    return { tps, ttftMs, output, genMs }
+    return computeThroughput({
+      message: ctx.message,
+      parts: sync.data.part[ctx.message.id] ?? [],
+      output: ctx.output,
+      reasoning: ctx.reasoning,
+    })
   })
 
   const ttftLabel = () => {
@@ -362,7 +402,7 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
           "md:max-w-200 md:mx-auto 2xl:max-w-[1000px]": props.centered,
         }}
       >
-        <div class="flex h-9 w-full min-w-0 items-center justify-between gap-3 rounded-full border border-v2-border-border-muted bg-v2-background-bg-base px-3 text-11-regular text-v2-text-text-muted shadow-[var(--v2-elevation-floating)]">
+        <div class="flex h-9 w-full min-w-0 items-center justify-between gap-3 rounded-xl border border-v2-border-border-muted bg-v2-background-bg-base px-3 text-11-regular text-v2-text-text-muted shadow-[var(--v2-elevation-floating)]">
           <Tooltip
             value={
               <div class="flex min-w-64 max-w-80 flex-col gap-1.5 tabular-nums">
@@ -536,6 +576,37 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
             placement="top"
             value={
               <div class="flex flex-col gap-0.5 tabular-nums">
+                <div>{t("session.toolbar.usage.tip")}</div>
+                <div class="opacity-80">
+                  {t("session.toolbar.usage.input")}: {fmt(metrics().sessionUsage.input)}
+                </div>
+                <div class="opacity-80">
+                  {t("session.toolbar.usage.output")}: {fmt(metrics().sessionUsage.output)}
+                </div>
+                <div class="opacity-80">
+                  {t("session.toolbar.usage.reasoning")}: {fmt(metrics().sessionUsage.reasoning)}
+                </div>
+                <div class="opacity-80">
+                  {t("session.toolbar.usage.cache")}:{" "}
+                  {fmt(metrics().sessionUsage.cacheRead + metrics().sessionUsage.cacheWrite)}
+                </div>
+              </div>
+            }
+          >
+            <span class="flex items-center gap-1.5 tabular-nums">
+              <span class="opacity-70">{t("session.toolbar.usage.label")}</span>
+              <Show when={metrics().sessionUsage.total > 0} fallback={<span>—</span>}>
+                <span class="text-v2-text-text-base">{fmt(metrics().sessionUsage.total)}</span>
+              </Show>
+            </span>
+          </Tooltip>
+
+          <span class="h-4 w-px shrink-0 bg-v2-border-border-muted" />
+
+          <Tooltip
+            placement="top"
+            value={
+              <div class="flex flex-col gap-0.5 tabular-nums">
                 <div>
                   {t("session.toolbar.ttft.label")}: {ttftLabel()}
                 </div>
@@ -543,7 +614,7 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
                 <Show when={throughput()}>
                   {(tp) => (
                     <div class="opacity-80">
-                      {tp().output} tokens · {tp().genMs !== undefined ? fmtDur(tp().genMs!) : "—"}
+                      {tp().generated} tokens · {tp().genMs !== undefined ? fmtDur(tp().genMs!) : "—"}
                     </div>
                   )}
                 </Show>

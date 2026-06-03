@@ -14,22 +14,12 @@ export const DictationAudio = Schema.Struct({
 })
 export type DictationAudio = Schema.Schema.Type<typeof DictationAudio>
 
-export const DictationContextMessage = Schema.Struct({
-  role: Schema.Literals(["user", "assistant"]),
-  text: Schema.String,
-})
-export type DictationContextMessage = Schema.Schema.Type<typeof DictationContextMessage>
-
-export const DictationContext = Schema.Struct({
-  draft: Schema.optional(Schema.String),
-  items: Schema.optional(Schema.Array(Schema.String)),
-  recentMessages: Schema.optional(Schema.Array(DictationContextMessage)),
-})
-export type DictationContext = Schema.Schema.Type<typeof DictationContext>
+export const DictationLanguage = Schema.Literals(["auto", "zh", "en"])
+export type DictationLanguage = Schema.Schema.Type<typeof DictationLanguage>
 
 export const DictationRequest = Schema.Struct({
   audio: DictationAudio,
-  context: Schema.optional(DictationContext),
+  language: Schema.optional(DictationLanguage),
 })
 export type DictationRequest = Schema.Schema.Type<typeof DictationRequest>
 
@@ -77,14 +67,14 @@ export const DictationApi = HttpApi.make("dictation")
           OpenApi.annotations({
             identifier: "dictation.transcribe",
             summary: "Transcribe dictation",
-            description: "Transcribe a short WAV audio clip with MiMo v2.5 and lightweight composer context.",
+            description: "Transcribe a short WAV audio clip with the MiMo v2.5 ASR model.",
           }),
         ),
       )
       .annotateMerge(
         OpenApi.annotations({
           title: "dictation",
-          description: "MiMo v2.5 short-form dictation routes.",
+          description: "MiMo v2.5 ASR short-form dictation routes.",
         }),
       )
       .middleware(InstanceContextMiddleware)

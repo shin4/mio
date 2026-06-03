@@ -66,7 +66,12 @@ export const dictationHandlers = HttpApiBuilder.group(InstanceHttpApi, "dictatio
 
       const text = transcribedText(json)
       if (!text) {
-        return yield* new DictationApiError({ name: "UpstreamError", data: { message: "MiMo dictation returned no text" } })
+        // The ASR call succeeded but produced no transcript — treat it as "no speech detected"
+        // so the client surfaces the same clear prompt as the pre-send no_speech rejection.
+        return yield* new DictationApiError({
+          name: "BadRequest",
+          data: { message: "dictation no_speech: model returned no transcript" },
+        })
       }
 
       return {

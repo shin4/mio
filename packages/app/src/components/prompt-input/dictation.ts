@@ -1,24 +1,10 @@
-import type { ContextItem, Prompt } from "@/context/prompt"
+import type { Prompt } from "@/context/prompt"
 
 export const DICTATION_MAX_SECONDS = 60
-const RECENT_MESSAGE_LIMIT = 4
-const CONTEXT_TEXT_LIMIT = 800
 const DICTATION_WAVE_SHAPE = [
   0.16, 0.2, 0.14, 0.24, 0.18, 0.34, 0.28, 0.52, 0.4, 0.76, 0.48, 1, 0.46, 0.7, 0.36, 0.5, 0.3,
   0.42, 0.22, 0.28, 0.18,
 ]
-
-export type DictationContextInput = {
-  draft: string
-  items: ContextItem[]
-  recentMessages: Array<{ role: "user" | "assistant"; text: string }>
-}
-
-export type DictationContextPayload = {
-  draft?: string
-  items?: string[]
-  recentMessages?: Array<{ role: "user" | "assistant"; text: string }>
-}
 
 export function encodeWavDataUrl(samples: Float32Array, sampleRate: number) {
   const bytes = new Uint8Array(44 + samples.length * 2)
@@ -80,21 +66,6 @@ export function dictationWaveBars(level: number) {
   return DICTATION_WAVE_SHAPE.map((height) => Math.round(3 + height * value * 15))
 }
 
-export function buildDictationContext(input: DictationContextInput): DictationContextPayload {
-  const draft = truncate(input.draft.trim())
-  const items = input.items.map(contextItemLabel).filter((item) => item.length > 0)
-  const recentMessages = input.recentMessages
-    .slice(-RECENT_MESSAGE_LIMIT)
-    .map((message) => ({ role: message.role, text: truncate(message.text.trim()) }))
-    .filter((message) => message.text.length > 0)
-
-  return {
-    ...(draft ? { draft } : {}),
-    ...(items.length > 0 ? { items } : {}),
-    ...(recentMessages.length > 0 ? { recentMessages } : {}),
-  }
-}
-
 export function insertTranscript(value: string, transcript: string, cursor: number) {
   const content = transcript.trim().replace(/[ \t]+/g, " ")
   if (!content) return { text: value, cursor }
@@ -116,18 +87,6 @@ export function readableDictationSeconds(seconds: number) {
 
 export function promptText(prompt: Prompt) {
   return prompt.map((part) => ("content" in part ? part.content : "")).join("")
-}
-
-function contextItemLabel(item: ContextItem) {
-  if (item.type !== "file") return ""
-  const start = item.selection?.startLine
-  const end = item.selection?.endLine
-  return `file: ${item.path}${start !== undefined && end !== undefined ? `:${start}-${end}` : ""}`
-}
-
-function truncate(value: string) {
-  if (value.length <= CONTEXT_TEXT_LIMIT) return value
-  return value.slice(0, CONTEXT_TEXT_LIMIT).trimEnd()
 }
 
 function clamp(value: number) {
