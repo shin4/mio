@@ -73,12 +73,9 @@ jobs:
             eb: "--mac --arm64"
             triple: aarch64-apple-darwin
             yml: latest-mac.yml
-          - os: macos-13 # Intel
-            platform: darwin
-            arch: x64
-            eb: "--mac --x64"
-            triple: x86_64-apple-darwin
-            yml: latest-mac.yml
+          # Intel mac (macos-13) intentionally omitted for now: GitHub's Intel
+          # runners were unavailable/queued indefinitely, blocking the finalize
+          # job. Re-add when runner availability is confirmed.
           - os: windows-latest
             platform: win32
             arch: x64

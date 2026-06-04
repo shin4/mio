@@ -95,7 +95,10 @@ const getBase = (): Configuration => ({
   linux: {
     icon: `resources/icons`,
     category: "Development",
-    target: ["AppImage", "deb", "rpm"],
+    // AppImage only: it's the format electron-updater consumes (latest-linux*.yml),
+    // and it avoids the fpm deb/rpm requirement for an author email / maintainer.
+    // Re-add "deb"/"rpm" once a maintainer email is set (author.email or linux.maintainer).
+    target: ["AppImage"],
   },
 })
 
