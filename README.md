@@ -26,13 +26,14 @@ runtime — built on the OpenCode harness and adapted to be MiMo-first.
 ## Highlights
 
 - **MiMo-native** — request shaping, model selection, and context packaging tuned for MiMo, not a generic provider skin.
-- **Multimodal** — native image, PDF, and video understanding, plus audio dictation and speech synthesis (TTS).
+- **Multimodal** — native image, PDF, and video understanding, plus voice dictation (ASR) and speech generation (TTS), powered by the full MiMo model lineup.
 - **Cost-aware** — stable prefix-cache inputs for high cache-hit rates, visible token & cost accounting, and selection of the cheapest capable model for each task.
 - **Desktop apps** — Windows & macOS, built on Electron. **No TUI planned.**
 
 ## Download
 
-Prebuilt Windows and macOS apps are coming soon. For now, build from source:
+Grab the latest Windows and macOS builds from the
+[Releases](https://github.com/shin4/mimo-code/releases/latest) page — or build from source:
 
 ```bash
 bun install
