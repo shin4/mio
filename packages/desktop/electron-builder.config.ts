@@ -61,7 +61,12 @@ const getBase = (): Configuration => ({
     extendInfo: {
       NSMicrophoneUsageDescription: "MiMo Code uses the microphone only when you start dictation.",
     },
-    notarize: appleTeamId ? { teamId: appleTeamId } : false,
+    // electron-builder 26 schema requires mac.notarize to be a boolean. When
+    // true, notarization reads APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD /
+    // APPLE_TEAM_ID from the env. Gate on macSign since notarizing requires a
+    // signed app, so a team id without a cert degrades to an unsigned build
+    // instead of failing.
+    notarize: macSign && Boolean(appleTeamId),
     target: ["dmg", "zip"],
   },
   dmg: {
