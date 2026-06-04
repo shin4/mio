@@ -8,7 +8,7 @@ import { Process } from "@/util/process"
 
 const log = Log.create({ service: "config" })
 
-const MANAGED_PLIST_DOMAIN = "com.xiaomi.mimo.managed"
+const MANAGED_PLIST_DOMAIN = "io.github.shin4.mimo.managed"
 
 // Keys injected by macOS/MDM into the managed plist that are not MiMo-Code config
 const PLIST_META = new Set([

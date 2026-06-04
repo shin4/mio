@@ -3,7 +3,7 @@ import { resolveChannel } from "./utils"
 const arg = process.argv[2]
 const channel = arg === "dev" || arg === "beta" || arg === "prod" ? arg : resolveChannel()
 
-const appId = channel === "prod" ? "com.xiaomi.mimo.desktop" : `com.xiaomi.mimo.desktop.${channel}`
+const appId = channel === "prod" ? "io.github.shin4.mimo.desktop" : `io.github.shin4.mimo.desktop.${channel}`
 const productName = channel === "prod" ? "MiMo-Code" : `MiMo-Code ${channel.charAt(0).toUpperCase() + channel.slice(1)}`
 const summary = `MiMo-exclusive desktop AI coding agent${channel !== "prod" ? ` (${channel})` : ""}`
 
@@ -17,7 +17,7 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
   <name>${productName}</name>
   <summary>${summary}</summary>
 
-  <developer id="com.xiaomi.mimo">
+  <developer id="io.github.shin4">
     <name>MiMo-Code</name>
   </developer>
 

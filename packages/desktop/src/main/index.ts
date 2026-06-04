@@ -47,9 +47,9 @@ const APP_NAMES: Record<string, string> = {
   prod: "MiMo Desktop",
 }
 const APP_IDS: Record<string, string> = {
-  dev: "com.xiaomi.mimo.desktop.dev",
-  beta: "com.xiaomi.mimo.desktop.beta",
-  prod: "com.xiaomi.mimo.desktop",
+  dev: "io.github.shin4.mimo.desktop.dev",
+  beta: "io.github.shin4.mimo.desktop.beta",
+  prod: "io.github.shin4.mimo.desktop",
 }
 const TEST_ONBOARDING = process.env.MIMO_TEST_ONBOARDING === "1"
 const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports"
@@ -121,7 +121,7 @@ const main = Effect.gen(function* () {
 
   process.env.MIMO_DISABLE_EMBEDDED_WEB_UI = "true"
 
-  const appId = app.isPackaged ? APP_IDS[CHANNEL] : "com.xiaomi.mimo.desktop.dev"
+  const appId = app.isPackaged ? APP_IDS[CHANNEL] : "io.github.shin4.mimo.desktop.dev"
   const onboardingTestRoot = ((): string | undefined => {
     if (!TEST_ONBOARDING) return
 

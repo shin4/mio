@@ -109,7 +109,7 @@ function getConfig() {
     case "dev": {
       return {
         ...base,
-        appId: "com.xiaomi.mimo.desktop.dev",
+        appId: "io.github.shin4.mimo.desktop.dev",
         productName: "MiMo Code Desktop Dev",
         rpm: { packageName: "mimo-desktop-dev" },
       }
@@ -117,7 +117,7 @@ function getConfig() {
     case "beta": {
       return {
         ...base,
-        appId: "com.xiaomi.mimo.desktop.beta",
+        appId: "io.github.shin4.mimo.desktop.beta",
         productName: "MiMo Code Desktop Beta",
         protocols: { name: "MiMo Code Desktop Beta", schemes: ["mimo"] },
         rpm: { packageName: "mimo-desktop-beta" },
@@ -126,7 +126,7 @@ function getConfig() {
     case "prod": {
       return {
         ...base,
-        appId: "com.xiaomi.mimo.desktop",
+        appId: "io.github.shin4.mimo.desktop",
         productName: "MiMo Code Desktop",
         protocols: { name: "MiMo Code Desktop", schemes: ["mimo"] },
         rpm: { packageName: "mimo-desktop" },
