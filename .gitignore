@@ -42,4 +42,5 @@ tsconfig.tsbuildinfo
 /AGENTS.md
 /specs/
 /.zed/
+/docs/superpowers/
 .mimo/agents/
