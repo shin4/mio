@@ -11,7 +11,9 @@ English | [简体中文](./README.zh-CN.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-ff6900.svg)](./LICENSE)
 ![Desktop: Windows · macOS](https://img.shields.io/badge/desktop-Windows%20%C2%B7%20macOS-121317.svg)
 
-<img src="docs/assets/screenshot.png" alt="MiMo-Code desktop app" width="760" />
+<img src="docs/assets/welcome.png" alt="MiMo-Code — Welcome screen" width="760" />
+
+<img src="docs/assets/read-aloud.png" alt="MiMo-Code — Read-aloud settings" width="760" />
 
 </div>
 

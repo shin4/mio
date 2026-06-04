@@ -11,7 +11,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-ff6900.svg)](./LICENSE)
 ![Desktop: Windows · macOS](https://img.shields.io/badge/desktop-Windows%20%C2%B7%20macOS-121317.svg)
 
-<img src="docs/assets/screenshot.png" alt="MiMo-Code 桌面应用" width="760" />
+<img src="docs/assets/welcome.zh-CN.png" alt="MiMo-Code 欢迎界面" width="760" />
+
+<img src="docs/assets/read-aloud.zh-CN.png" alt="MiMo-Code 朗读设置" width="760" />
 
 </div>
 
