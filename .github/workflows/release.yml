@@ -141,7 +141,7 @@ jobs:
           bunx electron-builder ${{ matrix.eb }} --config electron-builder.config.ts --publish always
 
       - name: Upload update metadata
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           # finalize-latest-yml.ts reads these subdir names verbatim.
           name: latest-yml-${{ matrix.triple }}
@@ -159,7 +159,7 @@ jobs:
           bun-version: 1.3.14
 
       - name: Download per-arch update metadata
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           # No `name` → every latest-yml-<triple> artifact lands in its own subdir.
           path: latest-yml
