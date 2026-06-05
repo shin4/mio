@@ -6,11 +6,77 @@
 <title>MiMo-Code — A native desktop coding agent for MiMo</title>
 <meta name="description" content="MiMo-Code is a native desktop coding agent for the MiMo model family — coding, reasoning, multimodal understanding, dictation, and speech, as first-class runtime capabilities." />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 18'%3E%3Cg fill='%23ff6900'%3E%3Crect width='16' height='3'/%3E%3Crect x='19' width='3' height='3'/%3E%3Crect y='3' width='4' height='15'/%3E%3Crect x='7' y='3' width='2' height='5'/%3E%3Crect x='12' y='3' width='4' height='15'/%3E%3Crect x='19' y='5' width='3' height='13'/%3E%3C/g%3E%3C/svg%3E" />
-<meta property="og:title" content="MiMo-Code" />
-<meta property="og:description" content="A native desktop coding agent for the MiMo model family." />
+<link rel="canonical" href="https://shin4.github.io/mimo-code/" />
+<meta name="author" content="MiMo-Code maintainers" />
+<meta name="theme-color" content="#ff6900" />
+<meta property="og:title" content="MiMo-Code — A native desktop coding agent for MiMo" />
+<meta property="og:description" content="A free, open-source native desktop coding agent for the MiMo model family — coding, reasoning, multimodal understanding, dictation, and speech, on Windows and macOS." />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="./assets/icon.png" />
+<meta property="og:url" content="https://shin4.github.io/mimo-code/" />
+<meta property="og:site_name" content="MiMo-Code" />
+<meta property="og:image" content="https://shin4.github.io/mimo-code/assets/icon.png" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="zh_CN" />
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="MiMo-Code — A native desktop coding agent for MiMo" />
+<meta name="twitter:description" content="A free, open-source native desktop coding agent for the MiMo model family — multimodal coding, voice dictation, and speech on Windows and macOS." />
+<meta name="twitter:image" content="https://shin4.github.io/mimo-code/assets/icon.png" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "MiMo-Code",
+      "description": "MiMo-Code is a free, open-source native desktop coding agent for the MiMo model family, available for Windows and macOS. It makes MiMo models first-class participants in the agent runtime — coding, reasoning, multimodal understanding, voice dictation (ASR), and speech generation (TTS).",
+      "url": "https://shin4.github.io/mimo-code/",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Windows, macOS",
+      "downloadUrl": "https://github.com/shin4/mimo-code/releases/latest",
+      "softwareHelp": "https://github.com/shin4/mimo-code",
+      "license": "https://opensource.org/licenses/MIT",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Organization", "name": "MiMo-Code maintainers", "url": "https://github.com/shin4/mimo-code" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is MiMo-Code?",
+          "acceptedAnswer": { "@type": "Answer", "text": "MiMo-Code is a free, open-source native desktop coding agent for the MiMo model family, available for Windows and macOS. It makes MiMo models first-class participants in the agent runtime — coding, reasoning, multimodal understanding, voice dictation, and speech — rather than a generic OpenAI-compatible provider skin." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which MiMo models and capabilities does it support?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It supports text coding and reasoning, native multimodal understanding of images, PDFs, and video, voice dictation (ASR), and speech generation (TTS), powered by the full MiMo model lineup." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which platforms does MiMo-Code run on?",
+          "acceptedAnswer": { "@type": "Answer", "text": "MiMo-Code ships as Electron desktop apps for Windows and macOS. Linux is buildable from source, and there is no terminal (TUI) version planned." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is MiMo-Code an official Xiaomi product?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. MiMo-Code is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client." }
+        },
+        {
+          "@type": "Question",
+          "name": "How is MiMo-Code different from a generic OpenAI-compatible client?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Unlike a generic provider skin, MiMo-Code tunes request shaping, model selection, and context packaging specifically for MiMo. It adds native multimodal and voice capabilities, stable prefix caching for high cache-hit rates, and visible token and cost accounting that routes each task to the cheapest capable model." }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does MiMo-Code cost, and how do I get started?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The MiMo-Code app is free and MIT-licensed; you pay only for MiMo API usage. Download the latest Windows or macOS build from the GitHub Releases page, then add a MiMo API key from platform.xiaomimimo.com — pay-as-you-go (sk-) or a token plan (tp-) — in the app." }
+        }
+      ]
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -207,6 +273,20 @@
     .words .w{color:inherit}
     .caret{display:none}
   }
+
+  /* ---------- faq ---------- */
+  .faq{padding:96px 0 8px}
+  .faq .container{max-width:820px}
+  .faq h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;margin:0 0 26px;font-weight:700}
+  .faq details{border-top:1px solid var(--line);padding:18px 0}
+  .faq details:last-child{border-bottom:1px solid var(--line)}
+  .faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;
+    gap:18px;font-size:17px;font-weight:600;color:var(--ink)}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";color:var(--brand);font-weight:600;font-size:22px;line-height:1;
+    flex:0 0 auto;transition:transform .25s var(--ease)}
+  .faq details[open] summary::after{transform:rotate(45deg)}
+  .faq .ans{color:var(--muted);font-size:15.5px;line-height:1.65;margin:12px 0 2px;max-width:70ch}
 </style>
 </head>
 <body>
@@ -232,6 +312,7 @@
     <div class="nav-links">
       <a href="#features" data-i18n="nav.features">Features</a>
       <a href="#capabilities" data-i18n="nav.capabilities">Capabilities</a>
+      <a href="#faq" data-i18n="nav.faq">FAQ</a>
       <a href="https://github.com/shin4/mimo-code">GitHub</a>
     </div>
     <div class="nav-cta">
@@ -358,6 +439,37 @@
         <h2 class="big reveal" data-i18n-html="closing.title">Built for the<br>agent-first era.</h2>
         <p class="words reveal" data-d="1" data-i18n-html="closing.desc">MiMo-Code keeps project state isolated, so it runs beside upstream OpenCode without mixing local configuration. Project config lives in <span class="mono">mimo.json</span>, and project-local agents, commands, and plans live under <span class="mono">.mimo/</span>.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <h2 class="reveal" data-i18n="faq.title">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="faq.q1">What is MiMo-Code?</summary>
+        <p class="ans" data-i18n="faq.a1">MiMo-Code is a free, open-source native desktop coding agent for the MiMo model family, available for Windows and macOS. It makes MiMo models first-class participants in the agent runtime — coding, reasoning, multimodal understanding, voice dictation, and speech — rather than a generic OpenAI-compatible provider skin.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q2">Which MiMo models and capabilities does it support?</summary>
+        <p class="ans" data-i18n="faq.a2">It supports text coding and reasoning, native multimodal understanding of images, PDFs, and video, voice dictation (ASR), and speech generation (TTS), powered by the full MiMo model lineup.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q3">Which platforms does MiMo-Code run on?</summary>
+        <p class="ans" data-i18n="faq.a3">MiMo-Code ships as Electron desktop apps for Windows and macOS. Linux is buildable from source, and there is no terminal (TUI) version planned.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q4">Is MiMo-Code an official Xiaomi product?</summary>
+        <p class="ans" data-i18n="faq.a4">No. MiMo-Code is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q5">How is it different from a generic OpenAI-compatible client?</summary>
+        <p class="ans" data-i18n="faq.a5">Unlike a generic provider skin, MiMo-Code tunes request shaping, model selection, and context packaging specifically for MiMo. It adds native multimodal and voice capabilities, stable prefix caching for high cache-hit rates, and visible token and cost accounting that routes each task to the cheapest capable model.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.q6">How much does it cost, and how do I get started?</summary>
+        <p class="ans" data-i18n="faq.a6">The MiMo-Code app is free and MIT-licensed; you pay only for MiMo API usage. Download the latest Windows or macOS build from the Releases page, then add a MiMo API key from platform.xiaomimimo.com — pay-as-you-go (sk-) or a token plan (tp-) — in the app.</p>
+      </details>
     </div>
   </section>
 
@@ -488,7 +600,7 @@
     en: {
       'meta.title':'MiMo-Code — A native desktop coding agent for MiMo',
       'meta.desc':'MiMo-Code is a native desktop coding agent for the MiMo model family — coding, reasoning, multimodal understanding, dictation, and speech, as first-class runtime capabilities.',
-      'nav.features':'Features','nav.capabilities':'Capabilities','nav.star':'Star on GitHub',
+      'nav.features':'Features','nav.capabilities':'Capabilities','nav.faq':'FAQ','nav.star':'Star on GitHub',
       'hero.title':'A native desktop coding agent for MiMo',
       'hero.sub':'Built to make the MiMo model family first-class participants in the agent runtime — coding, reasoning, multimodal understanding, dictation, and speech, not a generic provider skin.',
       'hero.explore':'Explore features',
@@ -506,6 +618,19 @@
       'closing.title':'Built for the<br>agent-first era.',
       'closing.desc':'MiMo-Code keeps project state isolated, so it runs beside upstream OpenCode without mixing local configuration. Project config lives in <span class="mono">mimo.json</span>, and project-local agents, commands, and plans live under <span class="mono">.mimo/</span>.',
       'cta.title':'Get MiMo-Code.','cta.viewGithub':'View on GitHub','cta.report':'Report an issue',
+      'faq.title':'Frequently asked questions',
+      'faq.q1':'What is MiMo-Code?',
+      'faq.a1':'MiMo-Code is a free, open-source native desktop coding agent for the MiMo model family, available for Windows and macOS. It makes MiMo models first-class participants in the agent runtime — coding, reasoning, multimodal understanding, voice dictation, and speech — rather than a generic OpenAI-compatible provider skin.',
+      'faq.q2':'Which MiMo models and capabilities does it support?',
+      'faq.a2':'It supports text coding and reasoning, native multimodal understanding of images, PDFs, and video, voice dictation (ASR), and speech generation (TTS), powered by the full MiMo model lineup.',
+      'faq.q3':'Which platforms does MiMo-Code run on?',
+      'faq.a3':'MiMo-Code ships as Electron desktop apps for Windows and macOS. Linux is buildable from source, and there is no terminal (TUI) version planned.',
+      'faq.q4':'Is MiMo-Code an official Xiaomi product?',
+      'faq.a4':'No. MiMo-Code is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client.',
+      'faq.q5':'How is it different from a generic OpenAI-compatible client?',
+      'faq.a5':'Unlike a generic provider skin, MiMo-Code tunes request shaping, model selection, and context packaging specifically for MiMo. It adds native multimodal and voice capabilities, stable prefix caching for high cache-hit rates, and visible token and cost accounting that routes each task to the cheapest capable model.',
+      'faq.q6':'How much does it cost, and how do I get started?',
+      'faq.a6':'The MiMo-Code app is free and MIT-licensed; you pay only for MiMo API usage. Download the latest Windows or macOS build from the Releases page, then add a MiMo API key from platform.xiaomimimo.com — pay-as-you-go (sk-) or a token plan (tp-) — in the app.',
       'footer.issues':'Issues','footer.license':'License (MIT)',
       'footer.disclaimer':'<strong>Disclaimer:</strong> MiMo-Code is an independent, community-maintained project. It is not an official Xiaomi product and is not affiliated with, sponsored by, or endorsed by Xiaomi Inc. It connects to the MiMo model platform purely as a third-party client. Portions are derived from opencode (MIT).',
       'footer.copyright':'© 2026 MiMo-Code maintainers · MIT License'
@@ -513,7 +638,7 @@
     zh: {
       'meta.title':'MiMo-Code — 为 MiMo 打造的原生桌面代码智能体',
       'meta.desc':'MiMo-Code 是为 MiMo 模型家族打造的原生桌面代码智能体——将编程、推理、多模态理解、听写与语音合成作为一等运行时能力。',
-      'nav.features':'特性','nav.capabilities':'能力','nav.star':'在 GitHub 点 Star',
+      'nav.features':'特性','nav.capabilities':'能力','nav.faq':'常见问题','nav.star':'在 GitHub 点 Star',
       'hero.title':'为 MiMo 打造的原生桌面代码智能体',
       'hero.sub':'让 MiMo 模型家族成为智能体运行时中的一等公民——编程、推理、多模态理解、听写与语音合成，而非通用提供商的套壳。',
       'hero.explore':'查看特性',
@@ -531,6 +656,19 @@
       'closing.title':'为智能体优先的<br>时代而生。',
       'closing.desc':'MiMo-Code 让项目状态保持隔离，因此能与上游 OpenCode 并存而不混用本地配置。项目配置位于 <span class="mono">mimo.json</span>，项目级的智能体、命令与计划位于 <span class="mono">.mimo/</span>。',
       'cta.title':'获取 MiMo-Code。','cta.viewGithub':'在 GitHub 查看','cta.report':'反馈问题',
+      'faq.title':'常见问题',
+      'faq.q1':'什么是 MiMo-Code？',
+      'faq.a1':'MiMo-Code 是一款面向 MiMo 模型家族的免费开源原生桌面代码智能体，支持 Windows 与 macOS。它让 MiMo 模型成为智能体运行时中的一等公民——编程、推理、多模态理解、语音听写与语音合成——而不是通用 OpenAI 兼容提供商的套壳。',
+      'faq.q2':'它支持哪些 MiMo 模型与能力？',
+      'faq.a2':'它支持文本编程与推理、对图像 / PDF / 视频的原生多模态理解、语音听写（ASR）以及语音生成（TTS），由 MiMo 全系列模型驱动。',
+      'faq.q3':'MiMo-Code 能在哪些平台运行？',
+      'faq.a3':'MiMo-Code 以 Electron 桌面应用形式提供 Windows 与 macOS 版本。Linux 可从源码构建，且不计划提供终端界面（TUI）。',
+      'faq.q4':'MiMo-Code 是小米官方产品吗？',
+      'faq.a4':'不是。MiMo-Code 是一个独立的、由社区维护的项目，与小米公司（Xiaomi Inc.）无附属、赞助或背书关系，仅作为第三方客户端连接 MiMo 模型平台。',
+      'faq.q5':'它与通用 OpenAI 兼容客户端有什么不同？',
+      'faq.a5':'不同于通用的提供商套壳，MiMo-Code 专门针对 MiMo 调优请求构造、模型选择与上下文打包。它带来原生的多模态与语音能力、用于提升缓存命中率的稳定前缀缓存，以及把每个任务路由到最便宜可用模型的可见 token 与成本核算。',
+      'faq.q6':'它的费用如何？如何开始使用？',
+      'faq.a6':'MiMo-Code 应用本身免费且采用 MIT 许可证，你只需为 MiMo API 用量付费。前往 Releases 页面下载最新的 Windows 或 macOS 安装包，然后在应用中填入来自 platform.xiaomimimo.com 的 API Key——按量付费（sk-）或订阅套餐（tp-）。',
       'footer.issues':'问题反馈','footer.license':'许可证 (MIT)',
       'footer.disclaimer':'<strong>声明：</strong>MiMo-Code 是一个独立的、由社区维护的项目。它不是小米官方产品，与小米公司（Xiaomi Inc.）无附属、赞助或背书关系。它仅作为第三方客户端连接 MiMo 模型平台。部分代码衍生自 opencode（MIT）。',
       'footer.copyright':'© 2026 MiMo-Code 维护者 · MIT 许可证'

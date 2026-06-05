@@ -1,0 +1,26 @@
+# MiMo-Code
+
+> MiMo-Code is a free, open-source native desktop coding agent for the MiMo model family, available for Windows and macOS. It makes MiMo models first-class participants in the agent runtime — coding, reasoning, multimodal understanding (image, PDF, video), voice dictation (ASR), and speech generation (TTS) — rather than a generic OpenAI-compatible provider skin.
+> MiMo-Code 是一款面向 MiMo 模型家族的免费开源原生桌面代码智能体，支持 Windows 与 macOS，将编程、推理、多模态理解、语音听写与语音合成作为一等运行时能力。
+
+Key facts:
+- Category: native desktop coding agent (AI pair programmer) for the MiMo model family.
+- Platforms: Windows and macOS (Electron). Linux is buildable from source; no terminal/TUI version is planned.
+- Capabilities: coding, reasoning, multimodal understanding of images/PDFs/video, voice dictation (ASR), and speech generation (TTS).
+- Differentiators: MiMo-tuned request shaping and model selection, stable prefix caching for high cache-hit rates, and visible token/cost accounting that routes each task to the cheapest capable model.
+- Cost: the app is free and MIT-licensed; you pay only for MiMo API usage via platform.xiaomimimo.com (pay-as-you-go `sk-` keys or token plans `tp-` keys).
+- Built on the OpenCode harness (OpenCode Desktop V2 route), adapted to be MiMo-first.
+- Independent, community-maintained project. Not an official Xiaomi product and not affiliated with Xiaomi Inc.
+
+## Docs
+- [README (English)](https://github.com/shin4/mimo-code/blob/main/README.md): Overview, highlights, comparison, install, and FAQ.
+- [README (简体中文)](https://github.com/shin4/mimo-code/blob/main/README.zh-CN.md): 中文版概览、特性、对比、安装与常见问题。
+- [Landing page](https://shin4.github.io/mimo-code/): Product overview, features, FAQ, and download.
+
+## Download
+- [Releases](https://github.com/shin4/mimo-code/releases/latest): Latest signed Windows and macOS installers.
+
+## Reference
+- [MiMo platform](https://platform.xiaomimimo.com): Get a MiMo API key (pay-as-you-go `sk-` or token plan `tp-`).
+- [License (MIT)](https://github.com/shin4/mimo-code/blob/main/LICENSE)
+- [Third-party notices](https://github.com/shin4/mimo-code/blob/main/NOTICE.md): Attribution for code derived from opencode.
