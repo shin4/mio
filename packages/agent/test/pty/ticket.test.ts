@@ -47,10 +47,10 @@ describe("PTY websocket tickets", () => {
     Effect.gen(function* () {
       const tickets = yield* PtyTicket.Service
       const ptyID = PtyID.ascending()
-      const workspaceID = WorkspaceID.ascending()
+      const workspaceID = WorkspaceID.make("ws_test_pty_a")
       const issued = yield* tickets.issue({ ptyID, workspaceID })
 
-      expect(yield* tickets.consume({ ptyID, workspaceID: WorkspaceID.ascending(), ticket: issued.ticket })).toBe(false)
+      expect(yield* tickets.consume({ ptyID, workspaceID: WorkspaceID.make("ws_test_pty_b"), ticket: issued.ticket })).toBe(false)
       expect(yield* tickets.consume({ ptyID, workspaceID, ticket: issued.ticket })).toBe(true)
     }),
   )

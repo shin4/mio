@@ -201,7 +201,7 @@ describe("Project.fromDirectory", () => {
       const { project: rootProject } = yield* projects.fromDirectory(tmp)
       const remoteID = remoteProjectID("github.com/acme/app")
       const sessionID = crypto.randomUUID() as SessionID
-      const workspaceID = WorkspaceID.ascending()
+      const workspaceID = WorkspaceID.make("ws_test_project")
 
       yield* Effect.sync(() => {
         Database.use((db) => {
@@ -229,8 +229,8 @@ describe("Project.fromDirectory", () => {
             .values({
               id: workspaceID,
               type: "local",
-              name: "test",
               project_id: rootProject.id,
+              time_used: Date.now(),
             })
             .run()
         })

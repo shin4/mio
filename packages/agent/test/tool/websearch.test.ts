@@ -14,17 +14,17 @@ describe("websearch provider", () => {
   })
 
   test("supports an operational override", () => {
-    const original = process.env.OPENCODE_WEBSEARCH_PROVIDER
+    const original = process.env.MIMO_WEBSEARCH_PROVIDER
 
     try {
-      process.env.OPENCODE_WEBSEARCH_PROVIDER = "parallel"
+      process.env.MIMO_WEBSEARCH_PROVIDER = "parallel"
       expect(selectWebSearchProvider(SESSION_ID)).toBe("parallel")
 
-      process.env.OPENCODE_WEBSEARCH_PROVIDER = "exa"
+      process.env.MIMO_WEBSEARCH_PROVIDER = "exa"
       expect(selectWebSearchProvider(SESSION_ID)).toBe("exa")
     } finally {
-      if (original === undefined) delete process.env.OPENCODE_WEBSEARCH_PROVIDER
-      else process.env.OPENCODE_WEBSEARCH_PROVIDER = original
+      if (original === undefined) delete process.env.MIMO_WEBSEARCH_PROVIDER
+      else process.env.MIMO_WEBSEARCH_PROVIDER = original
     }
   })
 
@@ -36,8 +36,11 @@ describe("websearch provider", () => {
     expect(selectWebSearchProvider(SESSION_ID, { exa: false, parallel: true })).toBe("parallel")
   })
 
-  test("is only enabled for opencode or explicit websearch provider flags", () => {
-    expect(webSearchEnabled(ProviderID.opencode, { exa: false, parallel: false })).toBe(true)
+  test("is only enabled by explicit websearch provider flags", () => {
+    // mimo-desktop no longer routes through the opencode provider, so the
+    // provider id no longer auto-enables web search — only the exa/parallel
+    // feature flags gate it.
+    expect(webSearchEnabled(ProviderID.opencode, { exa: false, parallel: false })).toBe(false)
     expect(webSearchEnabled(ProviderID.openai, { exa: false, parallel: false })).toBe(false)
     expect(webSearchEnabled(ProviderID.openai, { exa: true, parallel: false })).toBe(true)
     expect(webSearchEnabled(ProviderID.openai, { exa: false, parallel: true })).toBe(true)

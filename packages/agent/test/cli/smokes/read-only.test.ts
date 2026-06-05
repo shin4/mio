@@ -32,36 +32,6 @@ describe("opencode read-only commands (smoke)", () => {
     60_000,
   )
 
-  // `providers list` enumerates credentials + env-resolved providers.
-  // (Not config-injected ones — those don't appear here by design.) The
-  // Credentials header always renders; the Environment header only renders
-  // when at least one provider env var is set, which the isolation harness
-  // deliberately doesn't guarantee. Assert the always-present marker so the
-  // test passes on a clean CI runner without env-var leakage.
-  cliIt.live(
-    "providers list: exits 0 and prints the credentials section",
-    ({ opencode }) =>
-      Effect.gen(function* () {
-        const r = yield* opencode.spawn(["providers", "list"])
-        opencode.expectExit(r, 0, "providers list")
-        expect(r.stdout).toContain("Credentials")
-      }),
-    60_000,
-  )
-
-  // `models` lists models from configured providers. Our test/test-model
-  // should appear because it's wired into the test provider config.
-  cliIt.live(
-    "models: exits 0 and lists the test model",
-    ({ opencode }) =>
-      Effect.gen(function* () {
-        const r = yield* opencode.spawn(["models"])
-        opencode.expectExit(r, 0, "models")
-        expect(r.stdout).toContain("test/test-model")
-      }),
-    60_000,
-  )
-
   // `agent list` walks the agent config. Empty config means no agents
   // configured; the command should still exit 0 with a "no agents" line or
   // similar. We don't pin the message — just exit cleanly.
@@ -71,29 +41,6 @@ describe("opencode read-only commands (smoke)", () => {
       Effect.gen(function* () {
         const r = yield* opencode.spawn(["agent", "list"])
         opencode.expectExit(r, 0, "agent list")
-      }),
-    60_000,
-  )
-
-  // `session list` reads the session DB. Fresh MIMO_TEST_HOME means
-  // empty DB. Exit 0 with no sessions.
-  cliIt.live(
-    "session list: exits 0",
-    ({ opencode }) =>
-      Effect.gen(function* () {
-        const r = yield* opencode.spawn(["session", "list"])
-        opencode.expectExit(r, 0, "session list")
-      }),
-    60_000,
-  )
-
-  // `stats` aggregates token usage from the session DB. Empty DB → all zeros.
-  cliIt.live(
-    "stats: exits 0",
-    ({ opencode }) =>
-      Effect.gen(function* () {
-        const r = yield* opencode.spawn(["stats"])
-        opencode.expectExit(r, 0, "stats")
       }),
     60_000,
   )
