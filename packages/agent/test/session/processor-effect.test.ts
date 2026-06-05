@@ -54,11 +54,11 @@ const MIMO_AUTH_CONTENT = JSON.stringify({
 })
 beforeEach(() => {
   process.env.MIMO_BASE_URL = "http://localhost:1/v1"
-  process.env.OPENCODE_AUTH_CONTENT = MIMO_AUTH_CONTENT
+  process.env.MIMO_AUTH_CONTENT = MIMO_AUTH_CONTENT
 })
 afterEach(() => {
   delete process.env.MIMO_BASE_URL
-  delete process.env.OPENCODE_AUTH_CONTENT
+  delete process.env.MIMO_AUTH_CONTENT
 })
 
 const cfg = {

@@ -84,11 +84,11 @@ const MIMO_AUTH_CONTENT = JSON.stringify({
 })
 beforeEach(() => {
   process.env.MIMO_BASE_URL = DEAD_LLM_URL
-  process.env.OPENCODE_AUTH_CONTENT = MIMO_AUTH_CONTENT
+  process.env.MIMO_AUTH_CONTENT = MIMO_AUTH_CONTENT
 })
 afterEach(() => {
   delete process.env.MIMO_BASE_URL
-  delete process.env.OPENCODE_AUTH_CONTENT
+  delete process.env.MIMO_AUTH_CONTENT
 })
 
 function withSh<A, E, R>(fx: () => Effect.Effect<A, E, R>) {
