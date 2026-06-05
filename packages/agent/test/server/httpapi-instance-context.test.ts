@@ -184,7 +184,12 @@ describe("HttpApi instance context middleware", () => {
     }),
   )
 
-  it.live("provides selected workspace id on control-plane routes", () =>
+  // Multi-workspace routing is an experimental, being-removed feature: Workspace.Service
+  // is now a no-op stub ("mimo-desktop is single-machine ... Round 2 will remove this
+  // entirely"), so Workspace.Service.create / WorkspaceID.ascending are gone. The
+  // following tests exercise that removed routing and are skipped until the workspace
+  // migration resolves. The two basic instance-context tests above still run.
+  it.live.skip("provides selected workspace id on control-plane routes", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped({ git: true })
       const project = yield* Project.use.fromDirectory(dir)
@@ -209,7 +214,7 @@ describe("HttpApi instance context middleware", () => {
     }),
   )
 
-  it.live("uses workspace routing output instead of raw directory hints", () =>
+  it.live.skip("uses workspace routing output instead of raw directory hints", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped({ git: true })
       const project = yield* Project.use.fromDirectory(dir)
@@ -234,7 +239,7 @@ describe("HttpApi instance context middleware", () => {
     }),
   )
 
-  it.live("uses configured workspace id instead of routing to the requested workspace", () =>
+  it.live.skip("uses configured workspace id instead of routing to the requested workspace", () =>
     Effect.gen(function* () {
       const fixedWorkspaceID = WorkspaceID.ascending()
       yield* withFixedWorkspaceID(fixedWorkspaceID)
@@ -262,7 +267,7 @@ describe("HttpApi instance context middleware", () => {
     }),
   )
 
-  it.live("falls through to local instead of MissingWorkspace when configured workspace id is set", () =>
+  it.live.skip("falls through to local instead of MissingWorkspace when configured workspace id is set", () =>
     Effect.gen(function* () {
       const fixedWorkspaceID = WorkspaceID.ascending()
       yield* withFixedWorkspaceID(fixedWorkspaceID)
@@ -290,7 +295,7 @@ describe("HttpApi instance context middleware", () => {
     }),
   )
 
-  it.live("keeps configured workspace id on control-plane routes without remote routing", () =>
+  it.live.skip("keeps configured workspace id on control-plane routes without remote routing", () =>
     Effect.gen(function* () {
       const fixedWorkspaceID = WorkspaceID.ascending()
       yield* withFixedWorkspaceID(fixedWorkspaceID)
@@ -322,7 +327,7 @@ describe("HttpApi instance context middleware", () => {
     }),
   )
 
-  it.live("preserves selected workspace id on instance disposal events", () =>
+  it.live.skip("preserves selected workspace id on instance disposal events", () =>
     Effect.gen(function* () {
       const dir = yield* tmpdirScoped({ git: true })
       const project = yield* Project.use.fromDirectory(dir)
