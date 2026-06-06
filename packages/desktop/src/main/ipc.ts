@@ -19,6 +19,7 @@ import {
   handlePetDragEnd,
   handlePetDragStart,
   handlePetReady,
+  handlePetSetInteractive,
   handlePetSetPosition,
   isMainSender,
   isPetSender,
@@ -261,6 +262,10 @@ export function registerIpcHandlers(deps: Deps) {
   ipcMain.on("pet-context-menu", (event: IpcMainEvent) => {
     if (!isPetSender(event.sender)) return
     showPetContextMenu()
+  })
+  ipcMain.on("pet-set-interactive", (event: IpcMainEvent, interactive: boolean) => {
+    if (!isPetSender(event.sender)) return
+    handlePetSetInteractive(interactive)
   })
 }
 

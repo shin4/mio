@@ -28,6 +28,30 @@ render(() => {
   let moved = false
   let dragging = false
 
+  // Click-through everywhere except the cat body + bubble. The window starts
+  // ignoring the mouse (forwarding only mousemove); we hit-test each move and
+  // flip interactivity so the empty transparent regions pass clicks straight to
+  // the desktop. `interactive` mirrors the window's current state to avoid
+  // redundant IPC.
+  let interactive = false
+  const setInteractive = (next: boolean) => {
+    if (next === interactive) return
+    interactive = next
+    window.api.petSetInteractive(next)
+  }
+  const hitTest = (clientX: number, clientY: number) => {
+    const el = document.elementFromPoint(clientX, clientY)
+    return Boolean(el && (el.closest(".pet-cat") || el.closest(".pet-bubble")))
+  }
+  const onMouseMove = (e: MouseEvent) => {
+    if (dragging) return
+    setInteractive(hitTest(e.clientX, e.clientY))
+  }
+  const onMouseLeave = () => {
+    if (dragging) return
+    setInteractive(false)
+  }
+
   const onPointerDown = (e: PointerEvent) => {
     if (e.button !== 0) return
     dragging = true
@@ -58,11 +82,11 @@ render(() => {
     if (!dragging) return
     dragging = false
     petEl.releasePointerCapture?.(e.pointerId)
-    if (moved) {
-      window.api.petDragEnd()
-      return
-    }
-    window.api.petActivate()
+    if (moved) window.api.petDragEnd()
+    else window.api.petActivate()
+    // Re-evaluate at the release point: stay interactive if still over the pet,
+    // otherwise return to click-through.
+    setInteractive(hitTest(e.clientX, e.clientY))
   }
 
   const onContextMenu = (e: MouseEvent) => {
@@ -73,7 +97,15 @@ render(() => {
   onMount(() => {
     const unsubscribe = window.api.onPetState((next) => setState(next))
     window.api.petReady()
-    onCleanup(unsubscribe)
+    // Forwarded mousemove drives the click-through hit-test even while the
+    // window is ignoring the mouse.
+    window.addEventListener("mousemove", onMouseMove)
+    document.addEventListener("mouseleave", onMouseLeave)
+    onCleanup(() => {
+      unsubscribe()
+      window.removeEventListener("mousemove", onMouseMove)
+      document.removeEventListener("mouseleave", onMouseLeave)
+    })
   })
 
   return (

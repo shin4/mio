@@ -102,6 +102,7 @@ export type ElectronAPI = {
   petSetPosition: (x: number, y: number) => void
   petDragEnd: () => void
   petContextMenu: () => void
+  petSetInteractive: (interactive: boolean) => void
   loadingWindowComplete: () => void
   runUpdater: (alertOnFail: boolean) => Promise<void>
   checkUpdate: () => Promise<{ updateAvailable: boolean; version?: string }>

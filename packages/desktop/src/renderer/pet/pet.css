@@ -50,7 +50,9 @@ body {
   color: #f6f1ea;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
   opacity: 0;
-  pointer-events: none;
+  /* The bubble is part of the interactive surface (the renderer hit-tests it),
+     so it must be a hit target. */
+  pointer-events: auto;
   transition:
     opacity 160ms ease,
     transform 160ms ease;
@@ -124,6 +126,18 @@ body {
   cursor: pointer;
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.22));
   transition: transform 120ms ease;
+  /* Only the painted cat pixels are a hit target — the transparent corners of
+     the SVG box fall through to the desktop. The root box is disabled and the
+     leaf shapes re-enabled (visiblePainted), so elementFromPoint resolves to a
+     shape only over actual cat pixels. */
+  pointer-events: none;
+}
+
+.pet-cat path,
+.pet-cat ellipse,
+.pet-cat circle,
+.pet-cat rect {
+  pointer-events: auto;
 }
 .pet:active .pet-cat {
   transform: scale(0.96);

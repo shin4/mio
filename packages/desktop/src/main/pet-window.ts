@@ -102,6 +102,12 @@ export function createPetWindow() {
   win.setAlwaysOnTop(true, "screen-saver")
   if (process.platform === "darwin") win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
 
+  // Start fully click-through: only the cat body + bubble should intercept the
+  // mouse, the rest of the transparent window must pass clicks to the desktop.
+  // `forward: true` still delivers mousemove to the renderer so it can hit-test
+  // and toggle interactivity (see handlePetSetInteractive).
+  win.setIgnoreMouseEvents(true, { forward: true })
+
   // Same permission filtering + crash/unresponsive diagnostics the main and
   // loading windows get.
   allowRendererPermissions(win)
@@ -179,6 +185,14 @@ export function handlePetSetPosition(x: number, y: number) {
   if (!petWindow || petWindow.isDestroyed()) return
   const clamped = clampToVisibleBounds(x, y)
   petWindow.setPosition(clamped.x, clamped.y)
+}
+
+// Toggle whether the pet window intercepts the mouse. The renderer drives this
+// from its hit-test: true while the cursor is over the cat/bubble, false (click
+// through to the desktop) everywhere else.
+export function handlePetSetInteractive(interactive: boolean) {
+  if (!petWindow || petWindow.isDestroyed()) return
+  petWindow.setIgnoreMouseEvents(!interactive, { forward: true })
 }
 
 export function handlePetDragEnd() {

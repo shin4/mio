@@ -105,6 +105,7 @@ const api: ElectronAPI = {
   petSetPosition: (x: number, y: number) => ipcRenderer.send("pet-set-position", x, y),
   petDragEnd: () => ipcRenderer.send("pet-drag-end"),
   petContextMenu: () => ipcRenderer.send("pet-context-menu"),
+  petSetInteractive: (interactive: boolean) => ipcRenderer.send("pet-set-interactive", interactive),
 }
 
 contextBridge.exposeInMainWorld("api", api)
