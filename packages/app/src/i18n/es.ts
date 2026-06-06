@@ -940,4 +940,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "Error al crear icono de proyecto persistente",
   "error.childStore.storeCreateFailed": "Error al crear almacén",
   "terminal.connectionLost.abnormalClose": "WebSocket cerrado anormalmente: {{code}}",
+  "settings.general.row.pet.title": "Mascota de escritorio",
+  "settings.general.row.pet.description": "Muestra un gato naranja sobre el escritorio que refleja la sesión actual y salta a ella al hacer clic",
 }

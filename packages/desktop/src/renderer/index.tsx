@@ -293,6 +293,11 @@ const createPlatform = (): Platform => {
         type: "image/png",
       })
     },
+
+    setPetEnabled: (enabled: boolean) => window.api.setPetEnabled(enabled),
+    updatePet: (state) => window.api.updatePet(state),
+    onPetNavigate: (cb) => window.api.onPetNavigate(cb),
+    onPetEnabledChanged: (cb) => window.api.onPetEnabledChanged(cb),
   }
 }
 

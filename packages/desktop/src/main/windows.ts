@@ -8,6 +8,7 @@ import { fileURLToPath, pathToFileURL } from "node:url"
 import type { TitlebarTheme } from "../preload/types"
 import { PINCH_ZOOM_ENABLED_KEY } from "./constants"
 import { exportDebugLogs, write as writeLog } from "./logging"
+import { isPetWindowOpen } from "./pet-window"
 import { getStore } from "./store"
 import { createUnresponsiveSampler } from "./unresponsive"
 
@@ -185,7 +186,11 @@ export function createMainWindow() {
   })
 
   win.on("close", (event) => {
-    if (quitting || process.platform !== "darwin") return
+    if (quitting) return
+    // On macOS closing the window always hides it (app stays in the dock). On
+    // other platforms closing normally quits — but while the desktop pet is up
+    // we hide instead, so the main renderer stays alive to feed the pet.
+    if (process.platform !== "darwin" && !isPetWindowOpen()) return
     event.preventDefault()
     // Hiding a window that is in native fullscreen leaves an empty fullscreen
     // Space behind, so leave fullscreen first and hide once the transition ends.
@@ -275,7 +280,7 @@ export function registerRendererProtocol() {
   })
 }
 
-function loadWindow(win: BrowserWindow, html: string) {
+export function loadWindow(win: BrowserWindow, html: string) {
   const devUrl = process.env.ELECTRON_RENDERER_URL
   if (devUrl) {
     const url = new URL(html, devUrl)
@@ -286,7 +291,7 @@ function loadWindow(win: BrowserWindow, html: string) {
   void win.loadURL(`${rendererProtocol}://${rendererHost}/${html}`)
 }
 
-function wireWindowRecovery(win: BrowserWindow, name: string) {
+export function wireWindowRecovery(win: BrowserWindow, name: string) {
   let showing = false
   const sampler = createUnresponsiveSampler(win, name)
 
@@ -407,7 +412,7 @@ function addDocumentPolicy(response: Response, file: string) {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers })
 }
 
-function allowRendererPermissions(win: BrowserWindow) {
+export function allowRendererPermissions(win: BrowserWindow) {
   win.webContents.session.setPermissionRequestHandler((webContents, permission, callback, details) => {
     callback(
       isAllowedRendererPermission(permission, details) &&

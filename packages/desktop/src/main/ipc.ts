@@ -6,6 +6,7 @@ import type { DesktopMenuAction } from "@opencode-ai/app/desktop-menu"
 import type {
   InitStep,
   FatalRendererError,
+  PetState,
   ServerReadyData,
   SqliteMigrationProgress,
   TitlebarTheme,
@@ -13,6 +14,18 @@ import type {
   WslConfig,
 } from "../preload/types"
 import { runDesktopMenuAction } from "./desktop-menu-actions"
+import {
+  handlePetActivate,
+  handlePetDragEnd,
+  handlePetDragStart,
+  handlePetReady,
+  handlePetSetPosition,
+  isMainSender,
+  isPetSender,
+  setPetEnabled,
+  showPetContextMenu,
+  updatePetState,
+} from "./pet-window"
 import { getStore } from "./store"
 import { getPinchZoomEnabled, setPinchZoomEnabled, setTitlebar, updateTitlebar } from "./windows"
 
@@ -213,6 +226,41 @@ export function registerIpcHandlers(deps: Deps) {
   })
   ipcMain.handle("run-desktop-menu-action", (event: IpcMainInvokeEvent, action: DesktopMenuAction) => {
     runDesktopMenuAction(BrowserWindow.fromWebContents(event.sender), action)
+  })
+
+  // Relay/toggle come from the main window; pet-driven actions from the pet
+  // window. Reject any other sender — the preload is shared by every window.
+  ipcMain.on("pet-update", (event: IpcMainEvent, state: PetState) => {
+    if (!isMainSender(event.sender)) return
+    updatePetState(state)
+  })
+  ipcMain.handle("pet-set-enabled", (event: IpcMainInvokeEvent, enabled: boolean) => {
+    if (!isMainSender(event.sender)) return
+    setPetEnabled(enabled)
+  })
+  ipcMain.on("pet-ready", (event: IpcMainEvent) => {
+    if (!isPetSender(event.sender)) return
+    handlePetReady()
+  })
+  ipcMain.on("pet-activate", (event: IpcMainEvent) => {
+    if (!isPetSender(event.sender)) return
+    handlePetActivate()
+  })
+  ipcMain.handle("pet-drag-start", (event: IpcMainInvokeEvent) => {
+    if (!isPetSender(event.sender)) return { x: 0, y: 0 }
+    return handlePetDragStart()
+  })
+  ipcMain.on("pet-set-position", (event: IpcMainEvent, x: number, y: number) => {
+    if (!isPetSender(event.sender)) return
+    handlePetSetPosition(x, y)
+  })
+  ipcMain.on("pet-drag-end", (event: IpcMainEvent) => {
+    if (!isPetSender(event.sender)) return
+    handlePetDragEnd()
+  })
+  ipcMain.on("pet-context-menu", (event: IpcMainEvent) => {
+    if (!isPetSender(event.sender)) return
+    showPetContextMenu()
   })
 }
 

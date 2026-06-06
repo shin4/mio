@@ -846,4 +846,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "영구 프로젝트 아이콘 생성 실패",
   "error.childStore.storeCreateFailed": "저장소 생성 실패",
   "terminal.connectionLost.abnormalClose": "WebSocket이 비정상적으로 닫힘: {{code}}",
+  "settings.general.row.pet.title": "데스크톱 펫",
+  "settings.general.row.pet.description": "바탕화면 위에 노란 고양이를 띄워 현재 세션을 보여주고 클릭하면 이동합니다",
 }

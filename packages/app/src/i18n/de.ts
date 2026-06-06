@@ -869,4 +869,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "Dauerhaftes Projekticon konnte nicht erstellt werden",
   "error.childStore.storeCreateFailed": "Speicher konnte nicht erstellt werden",
   "terminal.connectionLost.abnormalClose": "WebSocket abnormal geschlossen: {{code}}",
+  "settings.general.row.pet.title": "Desktop-Begleiter",
+  "settings.general.row.pet.description": "Zeigt eine orange Katze über dem Desktop, die die aktuelle Sitzung anzeigt und beim Klick dorthin springt",
 } satisfies Partial<Record<Keys, string>>

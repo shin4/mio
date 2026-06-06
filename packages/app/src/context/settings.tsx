@@ -33,6 +33,7 @@ export interface Settings {
     editToolPartsExpanded: boolean
     showSessionProgressBar: boolean
     showCustomAgents: boolean
+    showPet: boolean
   }
   updates: {
     startup: boolean
@@ -153,6 +154,7 @@ export const defaultSettings: Settings = {
     editToolPartsExpanded: false,
     showSessionProgressBar: true,
     showCustomAgents: true,
+    showPet: false,
   },
   updates: {
     startup: true,
@@ -292,6 +294,10 @@ export const { use: useSettings, provider: SettingsProvider } = createSimpleCont
         showCustomAgents: withFallback(() => store.general?.showCustomAgents, defaultSettings.general.showCustomAgents),
         setShowCustomAgents(value: boolean) {
           setStore("general", "showCustomAgents", value)
+        },
+        showPet: withFallback(() => store.general?.showPet, defaultSettings.general.showPet),
+        setShowPet(value: boolean) {
+          setStore("general", "showPet", value)
         },
       },
       updates: {

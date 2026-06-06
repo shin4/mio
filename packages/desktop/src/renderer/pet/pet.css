@@ -1,0 +1,244 @@
+/* Desktop pet window — transparent, frameless. Everything is self-contained
+   here so the pet entry stays light (no app/Tailwind dependency). */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "MiSans", system-ui, sans-serif;
+}
+
+#pet-root {
+  width: 100%;
+  height: 100%;
+}
+
+.pet {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  /* the pet itself is the only hit target; main process makes it click-through
+     elsewhere is out of scope for the MVP */
+}
+
+/* ---- speech bubble ---- */
+.pet-bubble {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  width: 200px;
+  max-width: calc(100% - 12px);
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(28, 26, 24, 0.92);
+  color: #f6f1ea;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.pet-bubble[data-visible="true"] {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.pet-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid rgba(28, 26, 24, 0.92);
+}
+
+.pet-bubble__status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pet-bubble__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+  background: #8a8079;
+}
+.pet-bubble__status[data-status="busy"] .pet-bubble__dot {
+  background: #58c27d;
+  animation: pet-pulse 1.1s ease-in-out infinite;
+}
+.pet-bubble__status[data-status="retry"] .pet-bubble__dot {
+  background: #f4b740;
+  animation: pet-pulse 0.8s ease-in-out infinite;
+}
+
+.pet-bubble__title {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #f6f1ea;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pet-bubble__activity {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: #b8aea4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---- cat ---- */
+.pet-cat {
+  width: 132px;
+  height: 132px;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.22));
+  transition: transform 120ms ease;
+}
+.pet:active .pet-cat {
+  transform: scale(0.96);
+}
+
+.pet-cat__tail {
+  transform-origin: 92px 80px;
+  animation: pet-tail 3.4s ease-in-out infinite;
+}
+.pet-cat[data-status="busy"] .pet-cat__tail {
+  animation-duration: 1.1s;
+}
+
+.pet-cat__head {
+  transform-origin: 60px 70px;
+  animation: pet-bob 4s ease-in-out infinite;
+}
+.pet-cat[data-status="busy"] .pet-cat__head {
+  animation-duration: 1.6s;
+}
+
+.pet-cat__eye {
+  transform-origin: center;
+  animation: pet-blink 5s ease-in-out infinite;
+}
+
+.pet-cat__ears {
+  transform-origin: 60px 30px;
+}
+.pet-cat[data-status="retry"] .pet-cat__ears {
+  animation: pet-perk 0.6s ease-in-out infinite alternate;
+}
+
+/* status overlays */
+.pet-cat__think,
+.pet-cat__alert {
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+.pet-cat[data-status="busy"] .pet-cat__think {
+  opacity: 1;
+}
+.pet-cat[data-status="busy"] .pet-cat__dot {
+  animation: pet-pulse 1.1s ease-in-out infinite;
+}
+.pet-cat__dot:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.pet-cat__dot:nth-child(3) {
+  animation-delay: 0.36s;
+}
+.pet-cat[data-status="retry"] .pet-cat__alert {
+  opacity: 1;
+  animation: pet-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes pet-tail {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes pet-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.5px);
+  }
+}
+
+@keyframes pet-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes pet-perk {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes pet-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.82);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pet-cat__tail,
+  .pet-cat__head,
+  .pet-cat__eye,
+  .pet-cat__ears,
+  .pet-cat__dot,
+  .pet-cat__alert {
+    animation: none !important;
+  }
+}

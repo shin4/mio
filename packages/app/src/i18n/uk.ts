@@ -966,4 +966,6 @@ export const dict = {
   "workspace.reset.archived.one": "1 сесію буде заархівовано.",
   "workspace.reset.archived.many": "{{count}} сесій буде заархівовано.",
   "workspace.reset.note": "Це скине робочу область, щоб вона відповідала гілці за замовчуванням.",
+  "settings.general.row.pet.title": "Улюбленець на робочому столі",
+  "settings.general.row.pet.description": "Показує рудого кота поверх робочого столу з поточною сесією та відкриває її по кліку",
 }

@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron"
-import type { ElectronAPI, InitStep, SqliteMigrationProgress } from "./types"
+import type { ElectronAPI, InitStep, PetState, SqliteMigrationProgress } from "./types"
 
 const api: ElectronAPI = {
   killSidecar: () => ipcRenderer.invoke("kill-sidecar"),
@@ -81,6 +81,30 @@ const api: ElectronAPI = {
   setBackgroundColor: (color: string) => ipcRenderer.invoke("set-background-color", color),
   exportDebugLogs: () => ipcRenderer.invoke("export-debug-logs"),
   recordFatalRendererError: (error) => ipcRenderer.invoke("record-fatal-renderer-error", error),
+
+  updatePet: (state: PetState) => ipcRenderer.send("pet-update", state),
+  setPetEnabled: (enabled) => ipcRenderer.invoke("pet-set-enabled", enabled),
+  onPetNavigate: (cb) => {
+    const handler = (_: unknown, href: string) => cb(href)
+    ipcRenderer.on("pet-navigate", handler)
+    return () => ipcRenderer.removeListener("pet-navigate", handler)
+  },
+  onPetEnabledChanged: (cb) => {
+    const handler = (_: unknown, enabled: boolean) => cb(enabled)
+    ipcRenderer.on("pet-enabled-changed", handler)
+    return () => ipcRenderer.removeListener("pet-enabled-changed", handler)
+  },
+  petReady: () => ipcRenderer.send("pet-ready"),
+  onPetState: (cb) => {
+    const handler = (_: unknown, state: PetState) => cb(state)
+    ipcRenderer.on("pet-state", handler)
+    return () => ipcRenderer.removeListener("pet-state", handler)
+  },
+  petActivate: () => ipcRenderer.send("pet-activate"),
+  petDragStart: () => ipcRenderer.invoke("pet-drag-start"),
+  petSetPosition: (x: number, y: number) => ipcRenderer.send("pet-set-position", x, y),
+  petDragEnd: () => ipcRenderer.send("pet-drag-end"),
+  petContextMenu: () => ipcRenderer.send("pet-context-menu"),
 }
 
 contextBridge.exposeInMainWorld("api", api)

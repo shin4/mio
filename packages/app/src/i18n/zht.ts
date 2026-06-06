@@ -954,4 +954,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "建立持續性專案圖示失敗",
   "error.childStore.storeCreateFailed": "建立儲存區失敗",
   "terminal.connectionLost.abnormalClose": "WebSocket 異常關閉：{{code}}",
+  "settings.general.row.pet.title": "桌面寵物",
+  "settings.general.row.pet.description": "在桌面最上層懸浮一隻大橘貓，即時顯示目前工作階段，點擊即可跳轉",
 } satisfies Partial<Record<Keys, string>>

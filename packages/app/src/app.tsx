@@ -49,6 +49,7 @@ import { ErrorPage } from "./pages/error"
 import { useCheckServerHealth } from "./utils/server-health"
 import { ServersProvider } from "./context/servers"
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate"
+import { PetBridge, PetHost } from "@/components/pet-bridge"
 
 const HomeRoute = lazy(() => import("@/pages/home"))
 const Session = lazy(() => import("@/pages/session"))
@@ -114,6 +115,7 @@ function AppShellProviders(props: ParentProps) {
   return (
     <SettingsProvider>
       <BodyDesignClass />
+      <PetHost />
       <PermissionProvider>
         <LayoutProvider>
           <NotificationProvider>
@@ -136,7 +138,10 @@ function SessionProviders(props: ParentProps) {
     <TerminalProvider>
       <FileProvider>
         <PromptProvider>
-          <CommentsProvider>{props.children}</CommentsProvider>
+          <CommentsProvider>
+            <PetBridge />
+            {props.children}
+          </CommentsProvider>
         </PromptProvider>
       </FileProvider>
     </TerminalProvider>

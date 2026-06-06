@@ -1,4 +1,7 @@
 import type { DesktopMenuAction } from "@opencode-ai/app/desktop-menu"
+import type { PetState } from "@opencode-ai/app/pet"
+
+export type { PetState }
 
 export type InitStep = { phase: "server_waiting" } | { phase: "sqlite_waiting" } | { phase: "done" }
 
@@ -85,6 +88,20 @@ export type ElectronAPI = {
   onZoomFactorChanged: (cb: (factor: number) => void) => () => void
   setTitlebar: (theme: TitlebarTheme) => Promise<void>
   runDesktopMenuAction: (action: DesktopMenuAction) => Promise<void>
+
+  // Desktop pet (大橘猫). The main renderer pushes session state to the pet
+  // window via updatePet; the pet window (loaded from pet.html) drives the rest.
+  updatePet: (state: PetState) => void
+  setPetEnabled: (enabled: boolean) => Promise<void>
+  onPetNavigate: (cb: (href: string) => void) => () => void
+  onPetEnabledChanged: (cb: (enabled: boolean) => void) => () => void
+  petReady: () => void
+  onPetState: (cb: (state: PetState) => void) => () => void
+  petActivate: () => void
+  petDragStart: () => Promise<{ x: number; y: number }>
+  petSetPosition: (x: number, y: number) => void
+  petDragEnd: () => void
+  petContextMenu: () => void
   loadingWindowComplete: () => void
   runUpdater: (alertOnFail: boolean) => Promise<void>
   checkUpdate: () => Promise<{ updateAvailable: boolean; version?: string }>

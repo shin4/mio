@@ -2,6 +2,7 @@ import { createSimpleContext } from "@opencode-ai/ui/context"
 import type { AsyncStorage, SyncStorage } from "@solid-primitives/storage"
 import type { Accessor } from "solid-js"
 import type { DesktopMenuAction } from "../desktop-menu"
+import type { PetState } from "../pet"
 import { ServerConnection } from "./server"
 
 type PickerPaths = string | string[] | null
@@ -113,6 +114,18 @@ export type Platform = {
 
   /** Record a fatal renderer error in platform logs (desktop only) */
   recordFatalRendererError?(error: FatalRendererErrorLog): Promise<void>
+
+  /** Show or hide the desktop pet window (desktop only) */
+  setPetEnabled?(enabled: boolean): Promise<void> | void
+
+  /** Relay the current session state to the desktop pet window (desktop only) */
+  updatePet?(state: PetState): void
+
+  /** Subscribe to pet click→jump navigation requests (desktop only) */
+  onPetNavigate?(cb: (href: string) => void): () => void
+
+  /** Subscribe to pet-enabled changes driven from the pet's own menu (desktop only) */
+  onPetEnabledChanged?(cb: (enabled: boolean) => void): () => void
 }
 
 export type DisplayBackend = "auto" | "wayland"
