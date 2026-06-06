@@ -1,5 +1,6 @@
 interface ImportMetaEnv {
   readonly MIMO_CHANNEL: string
+  readonly MIMO_VERSION: string
 }
 
 interface ImportMeta {

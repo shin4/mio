@@ -2,6 +2,7 @@ import { sentryVitePlugin } from "@sentry/vite-plugin"
 import { defineConfig } from "electron-vite"
 import appPlugin from "@opencode-ai/app/vite"
 import * as fs from "node:fs/promises"
+import { readFileSync } from "node:fs"
 
 const MIMO_SERVER_DIST = "../agent/dist/node"
 
@@ -11,6 +12,14 @@ const channel = (() => {
   if (process.env.MIMO_CHANNEL === "latest") return "prod"
   return "dev"
 })()
+
+// Displayed app version. MIMO_VERSION (set by CI's set-version.ts in releases, or
+// exported manually in dev) takes precedence; otherwise fall back to the version
+// in package.json. This lets `MIMO_VERSION=1.2.3 bun run dev:desktop` show 1.2.3
+// without ever writing to package.json. Injected into both the main and renderer
+// bundles as `import.meta.env.MIMO_VERSION`.
+const pkgVersion: string = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")).version
+const version = (process.env.MIMO_VERSION ?? pkgVersion).replace(/^v/, "")
 
 const targetPlatform = process.env.MIMO_TARGET_PLATFORM ?? process.platform
 const targetArch = process.env.MIMO_TARGET_ARCH ?? process.arch
@@ -37,6 +46,7 @@ export default defineConfig({
   main: {
     define: {
       "import.meta.env.MIMO_CHANNEL": JSON.stringify(channel),
+      "import.meta.env.MIMO_VERSION": JSON.stringify(version),
     },
     build: {
       rollupOptions: {
@@ -94,6 +104,9 @@ export default defineConfig({
     },
   },
   renderer: {
+    define: {
+      "import.meta.env.MIMO_VERSION": JSON.stringify(version),
+    },
     plugins: [appPlugin, sentry],
     publicDir: "../../../app/public",
     root: "src/renderer",

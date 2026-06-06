@@ -155,7 +155,8 @@ const main = Effect.gen(function* () {
   }
 
   logger.log("app starting", {
-    version: app.getVersion(),
+    version: import.meta.env.MIMO_VERSION,
+    electronAppVersion: app.getVersion(),
     packaged: app.isPackaged,
     onboardingTest: Boolean(onboardingTestRoot),
   })
