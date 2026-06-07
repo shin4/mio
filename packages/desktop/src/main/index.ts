@@ -37,6 +37,7 @@ import {
   setDockIcon,
 } from "./windows"
 import { migrate } from "./migrate"
+import { configurePet } from "./pet-window"
 import { checkUpdate, checkForUpdates, installUpdate, setupAutoUpdater } from "./updater"
 import { Deferred, Effect, Fiber } from "effect"
 import { DEFAULT_AUTH_USERNAME } from "./auth"
@@ -154,7 +155,8 @@ const main = Effect.gen(function* () {
   }
 
   logger.log("app starting", {
-    version: app.getVersion(),
+    version: import.meta.env.MIMO_VERSION,
+    electronAppVersion: app.getVersion(),
     packaged: app.isPackaged,
     onboardingTest: Boolean(onboardingTestRoot),
   })
@@ -391,6 +393,13 @@ const main = Effect.gen(function* () {
   if (overlay) yield* Deferred.await(loadingComplete)
 
   mainWindow = createMainWindow()
+  configurePet({
+    getMainWindow: () => mainWindow,
+    quit: () => {
+      setQuitting(true)
+      app.quit()
+    },
+  })
   if (mainWindow) {
     createMenu({
       trigger: (id) => {

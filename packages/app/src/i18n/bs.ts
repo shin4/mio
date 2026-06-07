@@ -933,4 +933,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "Nije uspjelo kreiranje trajne ikone projekta",
   "error.childStore.storeCreateFailed": "Nije uspjelo kreiranje skladišta",
   "terminal.connectionLost.abnormalClose": "WebSocket zatvoren nenormalno: {{code}}",
+  "settings.general.row.pet.title": "Desktop ljubimac",
+  "settings.general.row.pet.description": "Prikazuje narandžastog mačka na vrhu radne površine koji pokazuje trenutnu sesiju i otvara je na klik",
 }

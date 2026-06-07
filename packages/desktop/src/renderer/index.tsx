@@ -19,7 +19,6 @@ import type { AsyncStorage } from "@solid-primitives/storage"
 import { createMemoryHistory, MemoryRouter } from "@solidjs/router"
 import { createEffect, createMemo, createResource, onCleanup, onMount, Show } from "solid-js"
 import { render } from "solid-js/web"
-import pkg from "../../package.json"
 import { initI18n, t } from "./i18n"
 import { attachRoutePersistence, loadPersistedRoute } from "./route-persistence"
 import { resetZoom, setPinchZoomEnabled, webviewZoom, zoomIn, zoomOut } from "./webview-zoom"
@@ -35,7 +34,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     environment: import.meta.env.VITE_SENTRY_ENVIRONMENT ?? import.meta.env.MODE,
-    release: import.meta.env.VITE_SENTRY_RELEASE ?? `desktop@${pkg.version}`,
+    release: import.meta.env.VITE_SENTRY_RELEASE ?? `desktop@${import.meta.env.MIMO_VERSION}`,
     initialScope: {
       tags: {
         platform: "desktop",
@@ -147,7 +146,7 @@ const createPlatform = (): Platform => {
   return {
     platform: "desktop",
     os,
-    version: pkg.version,
+    version: import.meta.env.MIMO_VERSION,
 
     async openDirectoryPickerDialog(opts) {
       const defaultPath = await wslHome()
@@ -293,6 +292,11 @@ const createPlatform = (): Platform => {
         type: "image/png",
       })
     },
+
+    setPetEnabled: (enabled: boolean) => window.api.setPetEnabled(enabled),
+    updatePet: (state) => window.api.updatePet(state),
+    onPetNavigate: (cb) => window.api.onPetNavigate(cb),
+    onPetEnabledChanged: (cb) => window.api.onPetEnabledChanged(cb),
   }
 }
 
@@ -406,7 +410,7 @@ render(() => {
       void window.api.recordFatalRendererError({
         error: `startup resource pending: ${pending.join(", ")}`,
         url: window.location.href,
-        version: pkg.version,
+        version: import.meta.env.MIMO_VERSION,
         platform: "desktop",
         os: platform.os,
       })

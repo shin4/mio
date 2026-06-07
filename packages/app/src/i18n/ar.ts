@@ -844,4 +844,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "فشل إنشاء أيقونة المشروع الدائمة",
   "error.childStore.storeCreateFailed": "فشل إنشاء المخزن",
   "terminal.connectionLost.abnormalClose": "تم إغلاق WebSocket بشكل غير طبيعي: {{code}}",
+  "settings.general.row.pet.title": "حيوان أليف على سطح المكتب",
+  "settings.general.row.pet.description": "يطفو قط برتقالي فوق سطح المكتب يعرض الجلسة الحالية وينتقل إليها عند النقر",
 }

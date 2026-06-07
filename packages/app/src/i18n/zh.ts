@@ -791,6 +791,8 @@ export const dict = {
   "settings.general.row.showSessionProgressBar.description": "当智能体正在工作时，在会话顶部显示动画进度条",
   "settings.general.row.pinchZoom.title": "双指缩放",
   "settings.general.row.pinchZoom.description": "允许触控板双指和 Ctrl+滚轮手势进行缩放",
+  "settings.general.row.pet.title": "桌面宠物",
+  "settings.general.row.pet.description": "在桌面最上层悬浮一只大橘猫，实时展示当前会话，点击即可跳转",
   "settings.general.row.wayland.title": "使用原生 Wayland",
   "settings.general.row.wayland.description": "在 Wayland 上禁用 X11 回退。需要重启。",
   "settings.general.row.wayland.tooltip": "在混合刷新率显示器的 Linux 系统上，原生 Wayland 可能更稳定。",

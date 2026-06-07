@@ -942,4 +942,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "Kalıcı proje simgesi oluşturulamadı",
   "error.childStore.storeCreateFailed": "Depo oluşturulamadı",
   "terminal.connectionLost.abnormalClose": "WebSocket anormal şekilde kapandı: {{code}}",
+  "settings.general.row.pet.title": "Masaüstü dostu",
+  "settings.general.row.pet.description": "Masaüstünün en üstünde turuncu bir kedi gösterir; geçerli oturumu yansıtır ve tıklayınca açar",
 } satisfies Partial<Record<Keys, string>>

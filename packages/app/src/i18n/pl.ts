@@ -855,4 +855,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "Nie udało się utworzyć trwałej ikony projektu",
   "error.childStore.storeCreateFailed": "Nie udało się utworzyć magazynu",
   "terminal.connectionLost.abnormalClose": "WebSocket zamknięty nieprawidłowo: {{code}}",
+  "settings.general.row.pet.title": "Pupil na pulpicie",
+  "settings.general.row.pet.description": "Wyświetla rudego kota nad pulpitem, który pokazuje bieżącą sesję i otwiera ją po kliknięciu",
 }

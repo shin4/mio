@@ -923,4 +923,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "ไม่สามารถสร้างไอคอนโปรเจกต์ถาวร",
   "error.childStore.storeCreateFailed": "ไม่สามารถสร้างที่เก็บ",
   "terminal.connectionLost.abnormalClose": "WebSocket ปิดอย่างผิดปกติ: {{code}}",
+  "settings.general.row.pet.title": "สัตว์เลี้ยงบนเดสก์ท็อป",
+  "settings.general.row.pet.description": "แสดงแมวสีส้มไว้บนสุดของเดสก์ท็อป บอกเซสชันปัจจุบันและคลิกเพื่อเปิด",
 }

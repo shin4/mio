@@ -936,4 +936,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "Не удалось создать постоянный значок проекта",
   "error.childStore.storeCreateFailed": "Не удалось создать хранилище",
   "terminal.connectionLost.abnormalClose": "WebSocket закрыт аварийно: {{code}}",
+  "settings.general.row.pet.title": "Питомец на рабочем столе",
+  "settings.general.row.pet.description": "Показывает рыжего кота поверх рабочего стола с текущей сессией и переходит к ней по клику",
 }

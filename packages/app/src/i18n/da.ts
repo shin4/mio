@@ -927,4 +927,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "Kunne ikke oprette vedvarende projektikon",
   "error.childStore.storeCreateFailed": "Kunne ikke oprette lager",
   "terminal.connectionLost.abnormalClose": "WebSocket lukkede unormalt: {{code}}",
+  "settings.general.row.pet.title": "Skrivebordskæledyr",
+  "settings.general.row.pet.description": "Viser en orange kat øverst på skrivebordet, der viser den aktuelle session og åbner den ved klik",
 }

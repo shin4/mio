@@ -371,6 +371,17 @@ export const SettingsGeneral: Component = () => {
           </div>
         </SettingsRow>
 
+        <Show when={desktop()}>
+          <SettingsRow
+            title={language.t("settings.general.row.pet.title")}
+            description={language.t("settings.general.row.pet.description")}
+          >
+            <div data-action="settings-show-pet">
+              <Switch checked={settings.general.showPet()} onChange={(checked) => settings.general.setShowPet(checked)} />
+            </div>
+          </SettingsRow>
+        </Show>
+
       </SettingsList>
     </div>
   )

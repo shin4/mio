@@ -920,6 +920,9 @@ export const dict = {
     "Display the animated progress bar at the top of the session when the agent is working",
   "settings.general.row.pinchZoom.title": "Pinch to zoom",
   "settings.general.row.pinchZoom.description": "Allow trackpad pinch and Ctrl-scroll gestures to zoom",
+  "settings.general.row.pet.title": "Desktop pet",
+  "settings.general.row.pet.description":
+    "Float an orange cat on top of your desktop that shows the current session and jumps to it on click",
 
   "settings.general.row.wayland.title": "Use native Wayland",
   "settings.general.row.wayland.description": "Disable X11 fallback on Wayland. Requires restart.",

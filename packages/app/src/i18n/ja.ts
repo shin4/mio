@@ -851,4 +851,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "永続プロジェクトアイコンの作成に失敗しました",
   "error.childStore.storeCreateFailed": "ストアの作成に失敗しました",
   "terminal.connectionLost.abnormalClose": "WebSocket が異常終了しました: {{code}}",
+  "settings.general.row.pet.title": "デスクトップペット",
+  "settings.general.row.pet.description": "デスクトップ最前面に茶トラ猫を表示し、現在のセッションを示してクリックで開きます",
 }

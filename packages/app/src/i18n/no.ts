@@ -934,4 +934,6 @@ export const dict = {
   "error.childStore.persistedProjectIconCreateFailed": "Kunne ikke opprette vedvarende prosjektikon",
   "error.childStore.storeCreateFailed": "Kunne ikke opprette lager",
   "terminal.connectionLost.abnormalClose": "WebSocket lukket unormalt: {{code}}",
+  "settings.general.row.pet.title": "Skrivebordskjæledyr",
+  "settings.general.row.pet.description": "Viser en oransje katt øverst på skrivebordet som viser gjeldende økt og åpner den ved klikk",
 } satisfies Partial<Record<Keys, string>>
