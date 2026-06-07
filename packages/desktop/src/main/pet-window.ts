@@ -21,6 +21,15 @@ const PET_MARGIN = 24
 // frameless, taskbar-less, always-on-top window can never become unrecoverable.
 const PET_MIN_VISIBLE = 48
 
+// The region click-through (start ignoring the mouse, then let the renderer
+// hit-test forwarded mousemoves and re-enable interactivity over the cat/bubble)
+// depends on setIgnoreMouseEvents' `forward` option, which Electron implements
+// only on macOS and Windows. On Linux those moves are never delivered while the
+// window ignores the mouse, so the pet would be stuck click-through and could
+// never be clicked, dragged, or right-clicked — there we keep the whole window
+// interactive instead.
+const SUPPORTS_REGION_CLICK_THROUGH = process.platform === "darwin" || process.platform === "win32"
+
 type PetDeps = {
   getMainWindow: () => BrowserWindow | null
   quit: () => void
@@ -102,11 +111,12 @@ export function createPetWindow() {
   win.setAlwaysOnTop(true, "screen-saver")
   if (process.platform === "darwin") win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
 
-  // Start fully click-through: only the cat body + bubble should intercept the
-  // mouse, the rest of the transparent window must pass clicks to the desktop.
-  // `forward: true` still delivers mousemove to the renderer so it can hit-test
-  // and toggle interactivity (see handlePetSetInteractive).
-  win.setIgnoreMouseEvents(true, { forward: true })
+  // Start fully click-through where supported: only the cat body + bubble should
+  // intercept the mouse, the rest of the transparent window passes clicks to the
+  // desktop. `forward: true` still delivers mousemove to the renderer so it can
+  // hit-test and toggle interactivity (see handlePetSetInteractive). On Linux
+  // (no `forward`) we leave the window interactive so the pet stays clickable.
+  if (SUPPORTS_REGION_CLICK_THROUGH) win.setIgnoreMouseEvents(true, { forward: true })
 
   // Same permission filtering + crash/unresponsive diagnostics the main and
   // loading windows get.
@@ -146,9 +156,11 @@ export function isMainSender(sender: WebContents) {
 function closePetWindow() {
   if (petWindow && !petWindow.isDestroyed()) petWindow.close()
   petWindow = null
-  // Drop the cached state so a reopened pet starts clean instead of briefly
-  // flashing the previous session via handlePetReady.
-  lastPetState = null
+  // Keep lastPetState. The main renderer's PetBridge keeps it current (it relays
+  // on every change and resets to idle on unmount), so handlePetReady can resend
+  // the true current state when the pet is re-enabled. Clearing it stranded a
+  // reopened pet at PET_IDLE_STATE until the next status/token change, because
+  // the bridge's effect only fires on a *changed* PetState.
 }
 
 export function setPetEnabled(enabled: boolean) {
@@ -195,6 +207,11 @@ export function handlePetSetPosition(x: number, y: number) {
 // from its hit-test: true while the cursor is over the cat/bubble, false (click
 // through to the desktop) everywhere else.
 export function handlePetSetInteractive(interactive: boolean) {
+  // Only meaningful where the window starts click-through. On Linux it stays
+  // interactive, so ignore the renderer's hit-test toggles — flipping to ignore
+  // here would strand the pet, since no forwarded moves would arrive to flip it
+  // back.
+  if (!SUPPORTS_REGION_CLICK_THROUGH) return
   if (!petWindow || petWindow.isDestroyed()) return
   petWindow.setIgnoreMouseEvents(!interactive, { forward: true })
 }
