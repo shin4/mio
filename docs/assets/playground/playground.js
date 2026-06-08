@@ -147,6 +147,8 @@ function initPlayground() {
       charsPerTick: 6,
       onUpdate: (s) => {
         code.textContent = s;
+        // Keep the latest typed line in view within the bounded code pane.
+        codeArea.scrollTop = codeArea.scrollHeight;
       },
     });
 

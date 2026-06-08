@@ -467,9 +467,12 @@
     .pg-thumb{width:64px;height:46px;object-fit:cover;border-radius:8px;border:1px solid var(--line);
       background:#f6f6f7;cursor:pointer;transition:border-color .15s,box-shadow .15s}
     .pg-thumb.is-active{border-color:var(--brand);box-shadow:0 0 0 2px rgba(255,105,0,.25)}
-    .pg-shot{width:100%;border-radius:12px;border:1px solid var(--line);background:#fafafa;display:block}
+    .pg-shot{width:100%;max-height:300px;object-fit:contain;border-radius:12px;border:1px solid var(--line);background:#fafafa;display:block}
     .pg-demo-img2code .pg-col-output{background:var(--panel)}
-    .pg-codearea{margin:0;height:100%;overflow:auto;color:#e6e6e6;font-size:12.5px;line-height:1.7}
+    /* Bounded height so the long captured code scrolls inside the pane instead
+       of growing the whole section. height:100% is unreliable here (indefinite
+       grid containing block), so cap with max-height + overflow. */
+    .pg-codearea{margin:0;max-height:380px;overflow:auto;color:#e6e6e6;font-size:12.5px;line-height:1.7}
     .pg-code{white-space:pre-wrap;word-break:break-word}
     /* video */
     .pg-video{width:100%;border-radius:12px;background:#000;display:block}
