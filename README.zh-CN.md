@@ -25,6 +25,17 @@ MiMo-Code 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码
 当作通用的 OpenAI 兼容提供商，而是让它成为智能体运行时中的一等公民——构建于 OpenCode harness 之上，并以
 MiMo 为先。它把编程、推理、多模态理解（图像、PDF、视频）、语音听写（ASR）与语音生成（TTS）整合在同一个桌面应用中。
 
+## 🔊 听一段
+
+**[入口页](https://shin4.github.io/mimo-code/#capabilities)** 上的这段介绍语音，是 MiMo-Code 用自己内置的 TTS 生成的——产品在演示自己的多模态能力，而不是请人配音。**[▶ 去听 →](https://shin4.github.io/mimo-code/#capabilities)** · 英文音色 *Chloe*，中文音色 *冰糖*。
+
+<details>
+<summary>文稿</summary>
+
+> “你现在听到的这段声音，就是 MiMo-Code 自己生成的。它是一款面向 MiMo 模型家族的原生桌面编程助手——看得懂你的截图、PDF 和视频，能听你用语音说需求，也能把答案读给你听。免费、开源，支持 Windows 和 macOS。”
+
+</details>
+
 ## 亮点
 
 - **MiMo 原生** — 请求构造、模型选择与上下文打包都为 MiMo 调优，而非通用提供商的套壳。
