@@ -10,6 +10,9 @@ node_modules
 .opencode/
 *~
 playground
+# The landing-page interactive demo ships in the repo despite the broad `playground` rule above.
+!docs/assets/playground/
+!docs/assets/playground/**
 tmp
 dist
 ts-dist
@@ -44,3 +47,6 @@ tsconfig.tsbuildinfo
 /.zed/
 /docs/superpowers/
 .mimo/agents/
+
+# Superpowers brainstorming visual companion
+.superpowers/

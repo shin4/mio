@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-label="Code editor running cleanly">
+  <defs>
+    <style>
+      .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .kw { fill: #c792ea; }
+      .fn { fill: #82aaff; }
+      .str { fill: #c3e88d; }
+      .var { fill: #f07178; }
+      .txt { fill: #d6deeb; }
+      .com { fill: #5f7e97; }
+      .ln { fill: #4b5563; }
+    </style>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1117"/>
+      <stop offset="1" stop-color="#0a0d12"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="640" height="360" fill="url(#bg)"/>
+
+  <!-- title bar -->
+  <rect width="640" height="34" fill="#161b22"/>
+  <circle cx="18" cy="17" r="5" fill="#ff5f56"/>
+  <circle cx="36" cy="17" r="5" fill="#ffbd2e"/>
+  <circle cx="54" cy="17" r="5" fill="#27c93f"/>
+  <text x="320" y="21" class="mono txt" font-size="11" fill="#8b949e" text-anchor="middle">UserCard.tsx — mimo-code</text>
+
+  <!-- gutter -->
+  <rect x="0" y="34" width="40" height="326" fill="#0d1117"/>
+
+  <!-- code lines -->
+  <g class="mono" font-size="13">
+    <text x="26" y="68" class="ln" text-anchor="end">1</text>
+    <text x="50" y="68"><tspan class="kw">function</tspan><tspan class="fn"> UserCard</tspan><tspan class="txt">() {</tspan></text>
+
+    <text x="26" y="90" class="ln" text-anchor="end">2</text>
+    <text x="50" y="90"><tspan class="txt">  </tspan><tspan class="kw">const</tspan><tspan class="var"> user</tspan><tspan class="txt"> = </tspan><tspan class="fn">useUser</tspan><tspan class="txt">();</tspan></text>
+
+    <text x="26" y="112" class="ln" text-anchor="end">3</text>
+    <text x="50" y="112"><tspan class="txt">  </tspan><tspan class="kw">return</tspan><tspan class="txt"> (</tspan></text>
+
+    <text x="26" y="134" class="ln" text-anchor="end">4</text>
+    <text x="50" y="134"><tspan class="txt">    &lt;</tspan><tspan class="fn">h2</tspan><tspan class="txt">&gt;{</tspan><tspan class="var">user</tspan><tspan class="txt">.</tspan><tspan class="var">name</tspan><tspan class="txt">}&lt;/</tspan><tspan class="fn">h2</tspan><tspan class="txt">&gt;</tspan></text>
+
+    <text x="26" y="156" class="ln" text-anchor="end">5</text>
+    <text x="50" y="156"><tspan class="txt">  );</tspan></text>
+
+    <text x="26" y="178" class="ln" text-anchor="end">6</text>
+    <text x="50" y="178"><tspan class="txt">}</tspan></text>
+  </g>
+
+  <!-- terminal: running, no error yet -->
+  <rect x="40" y="252" width="600" height="84" fill="#10151c"/>
+  <text x="60" y="278" class="mono" font-size="12" fill="#5f7e97">$ npm run dev</text>
+  <text x="60" y="300" class="mono" font-size="12" fill="#c3e88d">  ✓ compiled successfully</text>
+  <text x="60" y="322" class="mono" font-size="12" fill="#8b949e">  rendering UserCard…</text>
+</svg>

@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "demos": [
+    {
+      "id": "img2code",
+      "kind": "image-to-code",
+      "tab": {
+        "en": "Screenshot → code",
+        "zh": "截图 → 代码"
+      },
+      "samples": [
+        {
+          "id": "price-card",
+          "input": {
+            "image": "assets/playground/img2code/price-card.svg",
+            "alt": {
+              "en": "Pricing card UI",
+              "zh": "价格卡片 UI"
+            }
+          },
+          "output": {
+            "lang": "tsx",
+            "code": "import React from 'react';\n\nconst PricingCard: React.FC = () => {\n  const styles = {\n    container: {\n      display: 'flex',\n      justifyContent: 'center',\n      alignItems: 'center',\n      minHeight: '100vh',\n      backgroundColor: '#EDF2F7',\n      fontFamily: 'system-ui, -apple-system, sans-serif',\n    },\n    card: {\n      backgroundColor: '#FFFFFF',\n      borderRadius: '20px',\n      padding: '40px',\n      width: '300px',\n      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',\n    },\n    subtitle: {\n      fontSize: '14px',\n      fontWeight: 'bold',\n      color: '#8291A5',\n      textTransform: 'uppercase' as const,\n      marginBottom: '8px',\n    },\n    priceContainer: {\n      display: 'flex',\n      alignItems: 'baseline',\n      marginBottom: '32px',\n    },\n    price: {\n      fontSize: '72px',\n      fontWeight: '900',\n      color: '#1E2333',\n      margin: 0,\n      lineHeight: '1',\n    },\n    period: {\n      fontSize: '16px',\n      color: '#8291A5',\n      marginLeft: '4px',\n    },\n    features: {\n      listStyle: 'none',\n      padding: 0,\n      margin: '0 0 32px 0',\n    },\n    featureItem: {\n      display: 'flex',\n      alignItems: 'center',\n      marginBottom: '16px',\n      fontSize: '15px',\n      color: '#4A5568',\n      fontWeight: '500',\n    },\n    dot: {\n      width: '8px',\n      height: '8px',\n      backgroundColor: '#FF5722',\n      borderRadius: '50%',\n      marginRight: '16px',\n    },\n    button: {\n      width: '100%',\n      padding: '16px',\n      backgroundColor: '#FF5722',\n      color: 'white',\n      border: 'none',\n      borderRadius: '12px',\n      fontSize: '16px',\n      fontWeight: 'bold',\n      cursor: 'pointer',\n    },\n  };\n\n  return (\n    <div style={styles.container}>\n      <div style={styles.card}>\n        <div style={styles.subtitle}>PRO</div>\n        <div style={styles.priceContainer}>\n          <h2 style={styles.price}>$29</h2>\n          <span style={styles.period}>/mo</span>\n        </div>\n        <ul style={styles.features}>\n          <li style={styles.featureItem}>\n            <span style={styles.dot}></span>\n            Unlimited projects\n          </li>\n          <li style={styles.featureItem}>\n            <span style={styles.dot}></span>\n            Priority support\n          </li>\n          <li style={styles.featureItem}>\n            <span style={styles.dot}></span>\n            Team collaboration\n          </li>\n        </ul>\n        <button style={styles.button}>Get started</button>\n      </div>\n    </div>\n  );\n};\n\nexport default PricingCard;"
+          },
+          "meta": {
+            "model": "mimo-v2.5",
+            "capturedAt": "2026-06-08"
+          }
+        },
+        {
+          "id": "login-form",
+          "input": {
+            "image": "assets/playground/img2code/login-form.svg",
+            "alt": {
+              "en": "Login form UI",
+              "zh": "登录表单 UI"
+            }
+          },
+          "output": {
+            "lang": "tsx",
+            "code": "import React, { useState } from 'react';\n\nconst Login = () => {\n  const [email, setEmail] = useState('');\n  const [password, setPassword] = useState('');\n\n  return (\n    <div className=\"min-h-screen bg-[#f8fafc] flex items-center justify-center font-sans antialiased\">\n      {/* Card Container */}\n      <div className=\"bg-white p-10 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] w-full max-w-sm\">\n        \n        {/* Header */}\n        <h2 className=\"text-3xl font-extrabold text-slate-800 mb-8\">\n          Sign in\n        </h2>\n\n        {/* Form */}\n        <form onSubmit={(e) => e.preventDefault()} className=\"space-y-6\">\n          \n          {/* Email Field */}\n          <div>\n            <label className=\"block text-sm font-bold text-slate-700 mb-2\">\n              Email\n            </label>\n            <input\n              type=\"email\"\n              value={email}\n              onChange={(e) => setEmail(e.target.value)}\n              placeholder=\"you@example.com\"\n              className=\"w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-800 focus:outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-colors placeholder-slate-400\"\n            />\n          </div>\n\n          {/* Password Field */}\n          <div>\n            <label className=\"block text-sm font-bold text-slate-700 mb-2\">\n              Password\n            </label>\n            <input\n              type=\"password\"\n              value={password}\n              onChange={(e) => setPassword(e.target.value)}\n              className=\"w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-800 focus:outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-colors placeholder-slate-400\"\n            />\n          </div>\n\n          {/* Sign In Button */}\n          <button\n            type=\"submit\"\n            className=\"w-full bg-[#ff6600] hover:bg-[#e65c00] text-white font-bold text-lg py-3.5 rounded-xl mt-8 transition-all duration-200 shadow-sm\"\n          >\n            Sign in\n          </button>\n        </form>\n\n        {/* Forgot Password Link */}\n        <div className=\"mt-6 text-center\">\n          <a\n            href=\"#\"\n            className=\"text-sm font-medium text-slate-400 hover:text-slate-600 hover:underline transition-colors\"\n          >\n            Forgot your password?\n          </a>\n        </div>\n\n      </div>\n    </div>\n  );\n};\n\nexport default Login;"
+          },
+          "meta": {
+            "model": "mimo-v2.5",
+            "capturedAt": "2026-06-08"
+          }
+        }
+      ]
+    },
+    {
+      "id": "video",
+      "kind": "video-understanding",
+      "tab": {
+        "en": "Video → understanding",
+        "zh": "看视频 → 读懂"
+      },
+      "samples": [
+        {
+          "id": "npe",
+          "input": {
+            "video": "assets/playground/video/npe.mp4",
+            "poster": "assets/playground/video/npe-poster.svg"
+          },
+          "question": {
+            "en": "What goes wrong in this clip?",
+            "zh": "这段里出了什么问题？"
+          },
+          "output": {
+            "en": "The code fails because the `useUser()` hook returns `undefined`, causing a `TypeError` when the component attempts to access the `name` property on the `user` object. This indicates that `useUser()` is likely asynchronous or not fetching data correctly, so `user` is not yet populated when the component renders.",
+            "zh": "视频中出现了 `TypeError` 错误，这是因为 `useUser()` 钩子返回了 `undefined`，导致代码无法读取 `undefined` 的 `name` 属性。这种情况通常是因为组件在数据尚未加载完成或钩子返回空值时就尝试渲染内容，没有处理“加载中”的状态。"
+          },
+          "highlights": [
+            {
+              "t": 12,
+              "label": {
+                "en": "null deref",
+                "zh": "空指针访问"
+              }
+            }
+          ],
+          "meta": {
+            "model": "mimo-v2.5",
+            "capturedAt": "2026-06-08"
+          }
+        }
+      ]
+    },
+    {
+      "id": "voice",
+      "kind": "asr-execute",
+      "tab": {
+        "en": "Speak → act",
+        "zh": "说话 → 执行"
+      },
+      "samples": [
+        {
+          "id": "make-async",
+          "input": {
+            "audio": {
+              "en": "assets/playground/voice/make-async-en.wav",
+              "zh": "assets/playground/voice/make-async-zh.wav"
+            }
+          },
+          "transcript": {
+            "en": "Make this function asynchronous and wait for the network request.",
+            "zh": "把这个函数改成异步的，并且等待网络请求返回。"
+          },
+          "action": {
+            "en": "Added async to the function declaration and await to the network request.",
+            "zh": "将函数声明为 `async`，并在发起网络请求前添加 `await`。"
+          },
+          "meta": {
+            "model": "mimo-v2.5-asr",
+            "capturedAt": "2026-06-08"
+          }
+        }
+      ]
+    }
+  ]
+}

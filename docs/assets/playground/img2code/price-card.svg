@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="240" viewBox="0 0 360 240" role="img" aria-label="Pricing card UI mock">
+  <defs>
+    <style>
+      .ui { font-family: -apple-system, "Segoe UI", "Inter", Roboto, system-ui, sans-serif; }
+      .muted { fill: #64748b; }
+      .ink { fill: #0f172a; }
+    </style>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <!-- page background -->
+  <rect width="360" height="240" fill="#f1f5f9"/>
+
+  <!-- card -->
+  <rect x="80" y="20" width="200" height="200" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#cardShadow)"/>
+
+  <!-- plan label -->
+  <text x="104" y="56" class="ui muted" font-size="12" font-weight="600" letter-spacing="0.5">PRO</text>
+
+  <!-- price -->
+  <text x="104" y="92" class="ui ink" font-size="36" font-weight="700">$29</text>
+  <text x="172" y="92" class="ui muted" font-size="14" font-weight="400">/mo</text>
+
+  <!-- feature rows -->
+  <g class="ui">
+    <circle cx="108" cy="118" r="3" fill="#ff6900"/>
+    <text x="120" y="122" class="muted" font-size="12">Unlimited projects</text>
+
+    <circle cx="108" cy="140" r="3" fill="#ff6900"/>
+    <text x="120" y="144" class="muted" font-size="12">Priority support</text>
+
+    <circle cx="108" cy="162" r="3" fill="#ff6900"/>
+    <text x="120" y="166" class="muted" font-size="12">Team collaboration</text>
+  </g>
+
+  <!-- primary button -->
+  <rect x="104" y="180" width="152" height="32" rx="8" fill="#ff6900"/>
+  <text x="180" y="201" class="ui" fill="#ffffff" font-size="13" font-weight="600" text-anchor="middle">Get started</text>
+</svg>
