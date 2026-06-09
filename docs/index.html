@@ -89,6 +89,7 @@
     --line:rgba(18,19,23,.08);
     --brand:#ff6900;
     --brand-press:#e85d00;
+    --ok:#1FAD66;
     --panel:#0b0b0f;
     /* the cinematic easing antigravity uses (easeInOutQuart / Quint) */
     --ease:cubic-bezier(.86,0,.07,1);
@@ -222,6 +223,32 @@
     animation:spin 14s linear infinite;opacity:.9}
   @keyframes spin{to{transform:rotate(360deg)}}
   .art .label{position:absolute;color:#fff;font-weight:500;font-size:22px;letter-spacing:-.01em;text-shadow:0 2px 30px rgba(124,92,255,.7)}
+  /* in-app status-bar capsule (cost-aware visual) */
+  .feature-cap .cap-head{max-width:62ch}
+  .art-cap{min-height:180px;margin-top:34px;background:radial-gradient(120% 120% at 50% 22%,#1a1822,#0b0b0f);padding:30px 26px;justify-content:flex-start;overflow-x:auto}
+  .art-cap::-webkit-scrollbar{display:none}
+  .feature-cap .statusbar{font-size:clamp(13px,1.6vw,17px)}
+  .statusbar{display:flex;align-items:center;white-space:nowrap;width:max-content;margin:auto;
+    background:#fff;border:1px solid rgba(18,19,23,.10);border-radius:9999px;padding:13px 22px;
+    box-shadow:0 26px 60px -26px rgba(0,0,0,.7);font-size:clamp(12px,1.35vw,15px);
+    color:var(--ink);font-weight:500;letter-spacing:-.005em}
+  .statusbar .sb-seg{display:inline-flex;align-items:center;gap:7px}
+  .statusbar .sb-mut{color:var(--muted)}
+  .statusbar b{font-weight:650;color:var(--ink)}
+  .statusbar .sb-ok{color:var(--ok)}
+  .statusbar .sb-sep{width:1px;height:18px;background:rgba(18,19,23,.12);margin:0 15px;flex:none}
+  .statusbar .sb-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
+  .statusbar .sb-dot.sb-sm{width:6px;height:6px}
+  .statusbar .sb-rate{font-size:1.3em;font-weight:700;letter-spacing:-.01em}
+  .statusbar .sb-ring{width:18px;height:18px;border-radius:50%;flex:none;
+    background:conic-gradient(var(--ok) 0 96.5%,rgba(18,19,23,.12) 96.5% 100%);
+    -webkit-mask:radial-gradient(circle,transparent 54%,#000 55%);mask:radial-gradient(circle,transparent 54%,#000 55%)}
+  @media (max-width:680px){
+    .art-cap{padding:22px 16px}
+    .feature-cap .statusbar{flex-wrap:wrap;justify-content:center;width:auto;max-width:100%;gap:11px 0;padding:15px 16px;font-size:14px}
+    .feature-cap .statusbar .sb-sep{display:none}
+    .feature-cap .statusbar .sb-seg{margin:0 11px}
+  }
 
   /* ---------- closing headline ---------- */
   .closing{padding:88px 0 28px}
@@ -521,19 +548,24 @@
     </div>
   </section>
 
-  <section class="feature">
+  <section class="feature feature-cap">
     <div class="container">
-      <div class="grid">
-        <div class="copy">
-          <div class="eyebrow reveal" data-i18n="feat3.eyebrow">Cost-aware by design</div>
-          <h2 class="feature-title reveal" data-d="1" data-i18n="feat3.title">The cheapest capable model, by default.</h2>
-          <p class="feature-desc words reveal" data-d="2" data-i18n="feat3.desc">Stable prefix-cache inputs, visible token and cost accounting, lightweight context by default, and model selection that matches each task to the cheapest capable MiMo model.</p>
-        </div>
-        <div class="visual reveal" data-d="1">
-          <div class="art">
-            <div class="ring" style="background:conic-gradient(from 90deg,#ff6900,#ffb072,#ff3d81,#ff6900)"></div>
-            <span class="label mono" style="font-size:18px">tokens · cost · cache</span>
-          </div>
+      <div class="cap-head">
+        <div class="eyebrow reveal" data-i18n="feat3.eyebrow">Cost-aware by design</div>
+        <h2 class="feature-title reveal" data-d="1" data-i18n="feat3.title">The cheapest capable model, by default.</h2>
+        <p class="feature-desc words reveal" data-d="2" data-i18n="feat3.desc">Stable prefix-cache inputs, visible token and cost accounting, lightweight context by default, and model selection that matches each task to the cheapest capable MiMo model.</p>
+      </div>
+      <div class="art art-cap reveal" data-d="2">
+        <div class="statusbar" role="img" aria-label="MiMo-Code in-app status bar — cache 98%, prefix stable, context 101.9K of 1.0M, usage 4.5M, 82 tokens per second">
+          <span class="sb-seg"><span class="sb-ring"></span><span class="sb-mut" data-i18n="cap.cache">Cache</span> <b>98%</b></span>
+          <span class="sb-sep"></span>
+          <span class="sb-seg"><span class="sb-dot"></span><span data-i18n="cap.prefix">Prefix stable</span></span>
+          <span class="sb-sep"></span>
+          <span class="sb-seg"><span class="sb-mut" data-i18n="cap.context">Context</span> <b class="sb-ok">101.9K</b><span class="sb-mut">&nbsp;/ 1.0M</span> <span class="sb-dot sb-sm"></span></span>
+          <span class="sb-sep"></span>
+          <span class="sb-seg"><span class="sb-mut" data-i18n="cap.usage">Usage</span> <b>4.5M</b></span>
+          <span class="sb-sep"></span>
+          <span class="sb-seg"><b class="sb-rate">82</b> <span class="sb-mut">tok/s</span></span>
         </div>
       </div>
     </div>
@@ -731,6 +763,7 @@
       'playground.note':'These are real, pre-captured MiMo responses replayed here — free uploads run in the desktop app.',
       'feat3.eyebrow':'Cost-aware by design','feat3.title':'The cheapest capable model, by default.',
       'feat3.desc':'Stable prefix-cache inputs, visible token and cost accounting, lightweight context by default, and model selection that matches each task to the cheapest capable MiMo model.',
+      'cap.cache':'Cache','cap.prefix':'Prefix stable','cap.context':'Context','cap.usage':'Usage',
       'closing.title':'Built for the<br>agent-first era.',
       'closing.desc':'MiMo-Code keeps project state isolated, so it runs beside upstream OpenCode without mixing local configuration. Project config lives in <span class="mono">mimo.json</span>, and project-local agents, commands, and plans live under <span class="mono">.mimo/</span>.',
       'cta.title':'Get MiMo-Code.','cta.viewGithub':'View on GitHub','cta.report':'Report an issue',
@@ -778,6 +811,7 @@
       'playground.note':'这些是预置示例的真实回放——自由上传请在桌面 app 里玩。',
       'feat3.eyebrow':'成本感知设计','feat3.title':'默认选用最具性价比的可用模型。',
       'feat3.desc':'稳定的前缀缓存输入、可见的 token 与成本核算、默认轻量的上下文，以及为每个任务匹配最便宜可用 MiMo 模型的选择策略。',
+      'cap.cache':'缓存','cap.prefix':'前缀稳定','cap.context':'上下文','cap.usage':'用量',
       'closing.title':'为智能体优先的<br>时代而生。',
       'closing.desc':'MiMo-Code 让项目状态保持隔离，因此能与上游 OpenCode 并存而不混用本地配置。项目配置位于 <span class="mono">mimo.json</span>，项目级的智能体、命令与计划位于 <span class="mono">.mimo/</span>。',
       'cta.title':'获取 MiMo-Code。','cta.viewGithub':'在 GitHub 查看','cta.report':'反馈问题',

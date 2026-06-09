@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="56" viewBox="0 0 760 56" role="img" aria-label="应用内状态栏：缓存 98%，前缀稳定，上下文 101.9K / 1.0M，用量 4.5M，82 tok/s">
+  <title>MiMo-Code 应用内状态栏</title>
+  <rect x="1" y="1" width="758" height="54" rx="27" fill="#ffffff" stroke="#E6E6E9" stroke-width="1"/>
+  <!-- cache ring (98%) -->
+  <circle cx="40" cy="28" r="9" fill="none" stroke="#E6E6E9" stroke-width="3.2"/>
+  <circle cx="40" cy="28" r="9" fill="none" stroke="#1FAD66" stroke-width="3.2" stroke-linecap="round"
+          stroke-dasharray="55.42 1.13" transform="rotate(-90 40 28)"/>
+  <text x="58" y="35" xml:space="preserve"
+        font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="18" font-weight="500">
+    <tspan fill="#6A6A71">缓存 </tspan><tspan fill="#121317" font-weight="700">98%</tspan><tspan fill="#D9D9DE">    │    </tspan><tspan fill="#1FAD66">• </tspan><tspan fill="#121317">前缀稳定</tspan><tspan fill="#D9D9DE">    │    </tspan><tspan fill="#6A6A71">上下文 </tspan><tspan fill="#1FAD66" font-weight="700">101.9K</tspan><tspan fill="#6A6A71"> / 1.0M </tspan><tspan fill="#1FAD66">•</tspan><tspan fill="#D9D9DE">    │    </tspan><tspan fill="#6A6A71">用量 </tspan><tspan fill="#121317" font-weight="700">4.5M</tspan><tspan fill="#D9D9DE">    │    </tspan><tspan fill="#121317" font-weight="700" font-size="21">82</tspan><tspan fill="#6A6A71"> tok/s</tspan>
+  </text>
+</svg>

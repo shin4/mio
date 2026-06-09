@@ -45,6 +45,14 @@ The intro voice on the **[landing page](https://shin4.github.io/mimo-code/#capab
 - **Cost-aware** — stable prefix-cache inputs for high cache-hit rates, visible token & cost accounting, and selection of the cheapest capable model for each task.
 - **Desktop apps** — Windows & macOS, built on Electron. **No TUI planned.**
 
+<div align="center">
+
+<img src="docs/assets/statusbar.svg" alt="MiMo-Code in-app status bar — cache hit rate, prefix stability, context window, spend, and throughput" width="780" />
+
+<sub>The in-app status bar keeps cost & context in view — cache hit rate, prefix stability, context window, spend, and throughput, all at a glance.</sub>
+
+</div>
+
 ## What you can do
 
 - **Code with full multimodal context** — drop in screenshots, PDFs, or video and let MiMo reason over them while it edits code.

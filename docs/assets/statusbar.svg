@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="56" viewBox="0 0 880 56" role="img" aria-label="In-app status bar: Cache 98%, Prefix stable, Context 101.9K of 1.0M, Usage 4.5M, 82 tokens per second">
+  <title>MiMo-Code in-app status bar</title>
+  <rect x="1" y="1" width="878" height="54" rx="27" fill="#ffffff" stroke="#E6E6E9" stroke-width="1"/>
+  <!-- cache ring (98%) -->
+  <circle cx="40" cy="28" r="9" fill="none" stroke="#E6E6E9" stroke-width="3.2"/>
+  <circle cx="40" cy="28" r="9" fill="none" stroke="#1FAD66" stroke-width="3.2" stroke-linecap="round"
+          stroke-dasharray="55.42 1.13" transform="rotate(-90 40 28)"/>
+  <text x="58" y="35" xml:space="preserve"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="18" font-weight="500">
+    <tspan fill="#6A6A71">Cache </tspan><tspan fill="#121317" font-weight="700">98%</tspan><tspan fill="#D9D9DE">    │    </tspan><tspan fill="#1FAD66">• </tspan><tspan fill="#121317">Prefix stable</tspan><tspan fill="#D9D9DE">    │    </tspan><tspan fill="#6A6A71">Context </tspan><tspan fill="#1FAD66" font-weight="700">101.9K</tspan><tspan fill="#6A6A71"> / 1.0M </tspan><tspan fill="#1FAD66">•</tspan><tspan fill="#D9D9DE">    │    </tspan><tspan fill="#6A6A71">Usage </tspan><tspan fill="#121317" font-weight="700">4.5M</tspan><tspan fill="#D9D9DE">    │    </tspan><tspan fill="#121317" font-weight="700" font-size="21">82</tspan><tspan fill="#6A6A71"> tok/s</tspan>
+  </text>
+</svg>
