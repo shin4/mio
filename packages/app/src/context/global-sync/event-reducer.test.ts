@@ -1,8 +1,9 @@
 import { describe, expect, test } from "bun:test"
 import type { Message, Part, PermissionRequest, Project, QuestionRequest, Session } from "@opencode-ai/sdk/v2/client"
-import { createStore } from "solid-js/store"
+import { createStore, produce } from "solid-js/store"
 import type { State } from "./types"
 import { applyDirectoryEvent, applyGlobalEvent, cleanupDroppedSessionCaches } from "./event-reducer"
+import { dropSessionCaches, sessionMessagesCached } from "./session-cache"
 
 const rootSession = (input: { id: string; parentID?: string; archived?: number }) =>
   ({
@@ -80,6 +81,7 @@ const baseState = (input: Partial<State> = {}) =>
     vcs: undefined,
     limit: 10,
     message: {},
+    message_meta: {},
     part: {},
     part_text_accum_delta: {},
     ...input,
@@ -303,6 +305,40 @@ describe("applyDirectoryEvent", () => {
     cleanupDroppedSessionCaches(store, setStore, store.session)
 
     expect(store.part.msg_1).toBeUndefined()
+  })
+
+  test("cache drops invalidate the message sync meta even after live events re-seed messages", () => {
+    const sessionID = "ses_1"
+    const [store, setStore] = createStore(
+      baseState({
+        session: [rootSession({ id: sessionID })],
+        message: { [sessionID]: [userMessage("msg_1", sessionID)] },
+        message_meta: { [sessionID]: { limit: 1, complete: false, cursor: "msg_1" } },
+      }),
+    )
+    expect(sessionMessagesCached(store, sessionID)).toBe(true)
+
+    // The layout prefetch LRU and the event-reducer trims both drop caches
+    // through dropSessionCaches.
+    setStore(
+      produce((draft) => {
+        dropSessionCaches(draft, [sessionID])
+      }),
+    )
+
+    // A later message.updated re-seeds the message list with a single message.
+    applyDirectoryEvent({
+      event: { type: "message.updated", properties: { info: userMessage("msg_2", sessionID) } },
+      store,
+      setStore,
+      push() {},
+      directory: "/tmp",
+      loadLsp() {},
+    })
+
+    expect(store.message[sessionID]?.map((x) => x.id)).toEqual(["msg_2"])
+    // session.sync() must treat the store as uncached and refetch.
+    expect(sessionMessagesCached(store, sessionID)).toBe(false)
   })
 
   test("upserts and removes messages while clearing orphaned parts", () => {

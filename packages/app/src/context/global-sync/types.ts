@@ -30,6 +30,16 @@ export type ProjectMeta = {
   }
 }
 
+// Pagination state for a session's message cache. Lives in the same store as
+// the messages so cache drops remove both atomically — if they could diverge,
+// session.sync() would treat an event-re-seeded partial list as fully loaded.
+export type MessageSyncMeta = {
+  limit?: number
+  cursor?: string
+  complete?: boolean
+  loading?: boolean
+}
+
 export type State = {
   status: "loading" | "partial" | "complete"
   agent: Agent[]
@@ -69,6 +79,9 @@ export type State = {
   limit: number
   message: {
     [sessionID: string]: Message[]
+  }
+  message_meta: {
+    [sessionID: string]: MessageSyncMeta
   }
   part: {
     [messageID: string]: Part[]

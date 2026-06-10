@@ -70,6 +70,7 @@ export function cleanupDroppedSessionCaches(
   const keep = new Set(next.map((item) => item.id))
   const stale = [
     ...Object.keys(store.message),
+    ...Object.keys(store.message_meta),
     ...Object.keys(store.session_diff),
     ...Object.keys(store.todo),
     ...Object.keys(store.permission),

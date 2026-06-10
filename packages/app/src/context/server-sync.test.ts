@@ -287,6 +287,7 @@ function baseState(): State {
     limit: 5,
     message: {},
     part: {},
+    message_meta: {},
     part_text_accum_delta: {},
   }
 }

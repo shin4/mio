@@ -8,7 +8,7 @@ import type {
   SnapshotFileDiff,
   Todo,
 } from "@opencode-ai/sdk/v2/client"
-import { dropSessionCaches, pickSessionCacheEvictions } from "./session-cache"
+import { dropSessionCaches, pickSessionCacheEvictions, sessionMessagesCached } from "./session-cache"
 
 const msg = (id: string, sessionID: string) =>
   ({
@@ -36,6 +36,7 @@ describe("app session cache", () => {
       session_diff: Record<string, SnapshotFileDiff[] | undefined>
       todo: Record<string, Todo[] | undefined>
       message: Record<string, Message[] | undefined>
+      message_meta: Record<string, { limit?: number; complete?: boolean } | undefined>
       part: Record<string, Part[] | undefined>
       permission: Record<string, PermissionRequest[] | undefined>
       question: Record<string, QuestionRequest[] | undefined>
@@ -45,6 +46,7 @@ describe("app session cache", () => {
       session_diff: { ses_1: [] },
       todo: { ses_1: [] as Todo[] },
       message: {},
+      message_meta: {},
       part: { msg_1: [part("prt_1", "ses_1", "msg_1")] },
       permission: { ses_1: [] as PermissionRequest[] },
       question: { ses_1: [] as QuestionRequest[] },
@@ -70,6 +72,7 @@ describe("app session cache", () => {
       session_diff: Record<string, SnapshotFileDiff[] | undefined>
       todo: Record<string, Todo[] | undefined>
       message: Record<string, Message[] | undefined>
+      message_meta: Record<string, { limit?: number; complete?: boolean } | undefined>
       part: Record<string, Part[] | undefined>
       permission: Record<string, PermissionRequest[] | undefined>
       question: Record<string, QuestionRequest[] | undefined>
@@ -79,6 +82,7 @@ describe("app session cache", () => {
       session_diff: {},
       todo: {},
       message: { ses_1: [m] },
+      message_meta: {},
       part: { [m.id]: [part("prt_1", "ses_1", m.id)] },
       permission: {},
       question: {},
@@ -89,6 +93,34 @@ describe("app session cache", () => {
 
     expect(store.message.ses_1).toBeUndefined()
     expect(store.part[m.id]).toBeUndefined()
+  })
+
+  test("dropSessionCaches clears the message sync meta together with the messages", () => {
+    const store = {
+      session_status: {},
+      session_diff: {},
+      todo: {},
+      message: { ses_1: [msg("msg_1", "ses_1")] },
+      message_meta: { ses_1: { limit: 1, complete: false } },
+      part: {},
+      permission: {},
+      question: {},
+      part_text_accum_delta: {},
+    }
+
+    dropSessionCaches(store, ["ses_1"])
+
+    expect(store.message.ses_1).toBeUndefined()
+    expect(store.message_meta.ses_1).toBeUndefined()
+  })
+
+  test("sessionMessagesCached requires messages and sync meta to agree", () => {
+    const message = { ses_1: [msg("msg_1", "ses_1")] }
+
+    expect(sessionMessagesCached({ message, message_meta: { ses_1: { limit: 1 } } }, "ses_1")).toBe(true)
+    expect(sessionMessagesCached({ message, message_meta: {} }, "ses_1")).toBe(false)
+    expect(sessionMessagesCached({ message, message_meta: { ses_1: { loading: false } } }, "ses_1")).toBe(false)
+    expect(sessionMessagesCached({ message: {}, message_meta: { ses_1: { limit: 1 } } }, "ses_1")).toBe(false)
   })
 
   test("pickSessionCacheEvictions preserves requested sessions", () => {

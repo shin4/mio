@@ -1,5 +1,5 @@
 import { batch, createMemo } from "solid-js"
-import { createStore, produce, reconcile } from "solid-js/store"
+import { produce, reconcile } from "solid-js/store"
 import { Binary } from "@opencode-ai/core/util/binary"
 import { retry } from "@opencode-ai/core/util/retry"
 import {
@@ -10,7 +10,12 @@ import {
 } from "./global-sync/session-prefetch"
 import { createServerSyncContext } from "./server-sync"
 import type { Message, Part } from "@opencode-ai/sdk/v2/client"
-import { SESSION_CACHE_LIMIT, dropSessionCaches, pickSessionCacheEvictions } from "./global-sync/session-cache"
+import {
+  SESSION_CACHE_LIMIT,
+  dropSessionCaches,
+  pickSessionCacheEvictions,
+  sessionMessagesCached,
+} from "./global-sync/session-cache"
 import { diffs as list, message as clean } from "@/utils/diffs"
 import { useServerSDK } from "./server-sdk"
 
@@ -192,12 +197,6 @@ export const createDirSyncContext = (directory: string, serverSync: ReturnType<t
   const optimistic = new Map<string, Map<string, OptimisticItem>>()
   const maxDirs = 30
   const seen = new Map<string, Set<string>>()
-  const [meta, setMeta] = createStore({
-    limit: {} as Record<string, number>,
-    cursor: {} as Record<string, string | undefined>,
-    complete: {} as Record<string, boolean>,
-    loading: {} as Record<string, boolean>,
-  })
 
   const getSession = (sessionID: string) => {
     const store = current()[0]
@@ -253,36 +252,20 @@ export const createDirSyncContext = (directory: string, serverSync: ReturnType<t
     return created
   }
 
-  const clearMeta = (directory: string, sessionIDs: string[]) => {
-    if (sessionIDs.length === 0) return
-    for (const sessionID of sessionIDs) {
-      clearOptimistic(directory, sessionID)
-    }
-    setMeta(
-      produce((draft) => {
-        for (const sessionID of sessionIDs) {
-          const key = keyFor(directory, sessionID)
-          delete draft.limit[key]
-          delete draft.cursor[key]
-          delete draft.complete[key]
-          delete draft.loading[key]
-        }
-      }),
-    )
-  }
-
   const evict = (directory: string, setStore: Setter, sessionIDs: string[]) => {
     if (sessionIDs.length === 0) return
     clearSessionPrefetch(directory, sessionIDs)
     for (const sessionID of sessionIDs) {
       serverSync.todo.set(sessionID, undefined)
+      clearOptimistic(directory, sessionID)
     }
+    // The pagination meta lives in the store next to the messages, so this
+    // drop clears both atomically (see sessionMessagesCached).
     setStore(
       produce((draft) => {
         dropSessionCaches(draft, sessionIDs)
       }),
     )
-    clearMeta(directory, sessionIDs)
   }
 
   const touch = (directory: string, setStore: Setter, sessionID: string) => {
@@ -321,10 +304,10 @@ export const createDirSyncContext = (directory: string, serverSync: ReturnType<t
     before?: string
     mode?: "replace" | "prepend"
   }) => {
-    const key = keyFor(input.directory, input.sessionID)
-    if (meta.loading[key]) return
+    const [store] = serverSync.child(input.directory, { bootstrap: false })
+    if (store.message_meta[input.sessionID]?.loading) return
 
-    setMeta("loading", key, true)
+    input.setStore("message_meta", input.sessionID, "loading", true)
     await fetchMessages(input)
       .then((page) => {
         if (!tracked(input.directory, input.sessionID)) return
@@ -332,7 +315,6 @@ export const createDirSyncContext = (directory: string, serverSync: ReturnType<t
         for (const messageID of next.confirmed) {
           clearOptimistic(input.directory, input.sessionID, messageID)
         }
-        const [store] = serverSync.child(input.directory, { bootstrap: false })
         const cached = input.mode === "prepend" ? (store.message[input.sessionID] ?? []) : []
         const message = input.mode === "prepend" ? merge(cached, next.session) : next.session
         batch(() => {
@@ -341,9 +323,11 @@ export const createDirSyncContext = (directory: string, serverSync: ReturnType<t
             const filtered = p.part.filter((x) => !SKIP_PARTS.has(x.type))
             if (filtered.length) input.setStore("part", p.id, filtered)
           }
-          setMeta("limit", key, message.length)
-          setMeta("cursor", key, next.cursor)
-          setMeta("complete", key, next.complete)
+          input.setStore("message_meta", input.sessionID, {
+            limit: message.length,
+            cursor: next.cursor,
+            complete: next.complete,
+          })
           setSessionPrefetch({
             directory: input.directory,
             sessionID: input.sessionID,
@@ -358,15 +342,10 @@ export const createDirSyncContext = (directory: string, serverSync: ReturnType<t
         throw error
       })
       .finally(() => {
-        setMeta(
-          produce((draft) => {
-            if (!tracked(input.directory, input.sessionID)) {
-              delete draft.loading[key]
-              return
-            }
-            draft.loading[key] = false
-          }),
-        )
+        // The meta entry can vanish mid-flight when the session is evicted —
+        // don't resurrect it just to clear the loading flag.
+        if (store.message_meta[input.sessionID] === undefined) return
+        input.setStore("message_meta", input.sessionID, "loading", false)
       })
   }
 
@@ -435,36 +414,32 @@ export const createDirSyncContext = (directory: string, serverSync: ReturnType<t
 
         touch(directory, setStore, sessionID)
 
-        const seeded = getSessionPrefetch(directory, sessionID)
-        if (seeded && store.message[sessionID] !== undefined && meta.limit[key] === undefined) {
-          batch(() => {
-            setMeta("limit", key, seeded.limit)
-            setMeta("cursor", key, seeded.cursor)
-            setMeta("complete", key, seeded.complete)
-            setMeta("loading", key, false)
+        const seedMeta = () => {
+          const seeded = getSessionPrefetch(directory, sessionID)
+          if (!seeded) return
+          if (store.message[sessionID] === undefined) return
+          if (store.message_meta[sessionID]?.limit !== undefined) return
+          setStore("message_meta", sessionID, {
+            limit: seeded.limit,
+            cursor: seeded.cursor,
+            complete: seeded.complete,
+            loading: false,
           })
         }
+        seedMeta()
 
         return runInflight(inflight, key, async () => {
           const pending = getSessionPrefetchPromise(directory, sessionID)
           if (pending) {
             await pending
-            const seeded = getSessionPrefetch(directory, sessionID)
-            if (seeded && store.message[sessionID] !== undefined && meta.limit[key] === undefined) {
-              batch(() => {
-                setMeta("limit", key, seeded.limit)
-                setMeta("cursor", key, seeded.cursor)
-                setMeta("complete", key, seeded.complete)
-                setMeta("loading", key, false)
-              })
-            }
+            seedMeta()
           }
 
           const hasSession = Binary.search(store.session, sessionID, (s) => s.id).found
-          const cached = store.message[sessionID] !== undefined && meta.limit[key] !== undefined
+          const cached = sessionMessagesCached(store, sessionID)
           if (cached && hasSession && !opts?.force) return
 
-          const limit = meta.limit[key] ?? initialMessagePageSize
+          const limit = store.message_meta[sessionID]?.limit ?? initialMessagePageSize
           const sessionReq =
             hasSession && !opts?.force
               ? Promise.resolve()
@@ -546,24 +521,23 @@ export const createDirSyncContext = (directory: string, serverSync: ReturnType<t
       history: {
         more(sessionID: string) {
           const store = current()[0]
-          const key = keyFor(directory, sessionID)
           if (store.message[sessionID] === undefined) return false
-          if (meta.limit[key] === undefined) return false
-          if (meta.complete[key]) return false
-          return !!meta.cursor[key]
+          const meta = store.message_meta[sessionID]
+          if (meta?.limit === undefined) return false
+          if (meta.complete) return false
+          return !!meta.cursor
         },
         loading(sessionID: string) {
-          const key = keyFor(directory, sessionID)
-          return meta.loading[key] ?? false
+          return current()[0].message_meta[sessionID]?.loading ?? false
         },
         async loadMore(sessionID: string, count?: number) {
-          const [, setStore] = serverSync.child(directory)
+          const [store, setStore] = serverSync.child(directory)
           touch(directory, setStore, sessionID)
-          const key = keyFor(directory, sessionID)
           const step = count ?? historyMessagePageSize
-          if (meta.loading[key]) return
-          if (meta.complete[key]) return
-          const before = meta.cursor[key]
+          const meta = store.message_meta[sessionID]
+          if (meta?.loading) return
+          if (meta?.complete) return
+          const before = meta?.cursor
           if (!before) return
 
           await loadMessages({
