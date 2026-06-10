@@ -153,9 +153,24 @@ export const layer = Layer.effect(
           if (init._tag === "Some") hooks.push(init.value)
         }
 
-        const plugins = flags.pure ? [] : (cfg.plugin_origins ?? [])
-        if (flags.pure && cfg.plugin_origins?.length) {
-          log.info("skipping external plugins in pure mode", { count: cfg.plugin_origins.length })
+        const configuredPlugins = cfg.plugin_origins ?? []
+        const plugins = flags.pure
+          ? []
+          : flags.trustProjectPlugins
+            ? configuredPlugins
+            : configuredPlugins.filter((origin) => origin.scope === "global")
+        if (flags.pure && configuredPlugins.length) {
+          log.info("skipping external plugins in pure mode", { count: configuredPlugins.length })
+        }
+        const skippedProjectPlugins = flags.pure
+          ? 0
+          : configuredPlugins.filter((origin) => origin.scope === "local").length -
+            plugins.filter((origin) => origin.scope === "local").length
+        if (skippedProjectPlugins > 0) {
+          log.warn("skipping project-local plugins until the project is trusted", {
+            count: skippedProjectPlugins,
+            hint: "Set MIMO_TRUST_PROJECT_PLUGINS=1 only for repositories you trust.",
+          })
         }
         if (plugins.length) yield* config.waitForDependencies()
 

@@ -47,7 +47,7 @@ function load(dir: string, flags?: Parameters<typeof RuntimeFlags.layer>[0]) {
       Effect.provide(
         Plugin.layer.pipe(
           Layer.provide(Bus.layer),
-          Layer.provide(RuntimeFlags.layer({ disableDefaultPlugins: true, ...flags })),
+          Layer.provide(RuntimeFlags.layer({ disableDefaultPlugins: true, trustProjectPlugins: true, ...flags })),
           Layer.provide(
             TestConfig.layer({
               get: () =>
@@ -66,6 +66,34 @@ function load(dir: string, flags?: Parameters<typeof RuntimeFlags.layer>[0]) {
 }
 
 describe("plugin.loader.shared", () => {
+  it.live("skips project-local plugins unless trusted", () =>
+    withTmp(
+      async (dir) => {
+        const file = path.join(dir, "plugin.ts")
+        const mark = path.join(dir, "called.txt")
+        await Bun.write(
+          file,
+          [
+            "export default async () => {",
+            `  await Bun.write(${JSON.stringify(mark)}, "called")`,
+            "  return {}",
+            "}",
+            "",
+          ].join("\n"),
+        )
+
+        await Bun.write(path.join(dir, "mimo.json"), JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2))
+
+        return { mark }
+      },
+      (tmp) =>
+        Effect.gen(function* () {
+          yield* load(tmp.path, { trustProjectPlugins: false })
+          expect(yield* Effect.promise(() => Bun.file(tmp.extra.mark).exists())).toBe(false)
+        }),
+    ),
+  )
+
   it.live("loads a file:// plugin function export", () =>
     withTmp(
       async (dir) => {
@@ -82,10 +110,7 @@ describe("plugin.loader.shared", () => {
           ].join("\n"),
         )
 
-        await Bun.write(
-          path.join(dir, "mimo.json"),
-          JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2),
-        )
+        await Bun.write(path.join(dir, "mimo.json"), JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2))
 
         return { mark }
       },
@@ -117,10 +142,7 @@ describe("plugin.loader.shared", () => {
           ].join("\n"),
         )
 
-        await Bun.write(
-          path.join(dir, "mimo.json"),
-          JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2),
-        )
+        await Bun.write(path.join(dir, "mimo.json"), JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2))
 
         return { mark }
       },
@@ -155,10 +177,7 @@ describe("plugin.loader.shared", () => {
           ].join("\n"),
         )
 
-        await Bun.write(
-          path.join(dir, "mimo.json"),
-          JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2),
-        )
+        await Bun.write(path.join(dir, "mimo.json"), JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2))
 
         return { mark }
       },
@@ -188,10 +207,7 @@ describe("plugin.loader.shared", () => {
           ].join("\n"),
         )
 
-        await Bun.write(
-          path.join(dir, "mimo.json"),
-          JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2),
-        )
+        await Bun.write(path.join(dir, "mimo.json"), JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2))
 
         return { mark }
       },
@@ -230,10 +246,7 @@ describe("plugin.loader.shared", () => {
           ].join("\n"),
         )
 
-        await Bun.write(
-          path.join(dir, "mimo.json"),
-          JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2),
-        )
+        await Bun.write(path.join(dir, "mimo.json"), JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2))
 
         return { mark }
       },
@@ -791,10 +804,7 @@ describe("plugin.loader.shared", () => {
           ].join("\n"),
         )
 
-        await Bun.write(
-          path.join(dir, "mimo.json"),
-          JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2),
-        )
+        await Bun.write(path.join(dir, "mimo.json"), JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2))
 
         return { mark }
       },
@@ -916,10 +926,7 @@ export default {
           ].join("\n"),
         )
 
-        await Bun.write(
-          path.join(dir, "mimo.json"),
-          JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2),
-        )
+        await Bun.write(path.join(dir, "mimo.json"), JSON.stringify({ plugin: [pathToFileURL(file).href] }, null, 2))
 
         return { mark }
       },

@@ -32,7 +32,7 @@ const it = testEffect(
     Plugin.layer.pipe(
       Layer.provide(Bus.layer),
       Layer.provide(configLayer),
-      Layer.provide(RuntimeFlags.layer({ disableDefaultPlugins: true })),
+      Layer.provide(RuntimeFlags.layer({ disableDefaultPlugins: true, trustProjectPlugins: true })),
     ),
     CrossSpawnSpawner.defaultLayer,
   ),
