@@ -596,7 +596,8 @@ export const dict = {
   "session.tab.session": "会话",
   "session.tab.review": "审查",
   "session.toolbar.cache.label": "缓存",
-  "session.toolbar.cache.tip": "本会话当前模型的前缀缓存命中率:缓存输入 token ÷ 总输入 token。越高说明 MiMo 越多复用不可变前缀(系统提示 + 工具)。",
+  "session.toolbar.cache.tip":
+    "本会话累计的前缀缓存命中率:缓存输入 token ÷ 总输入 token(来自 agent 的会话级计数器,与已加载的消息窗口无关)。越高说明 MiMo 越多复用不可变前缀(系统提示 + 工具)。",
   "session.toolbar.cache.currentModel": "当前模型",
   "session.toolbar.cache.displayModel": "胶囊显示",
   "session.toolbar.cache.allModels": "全模型总览",
@@ -605,7 +606,8 @@ export const dict = {
   "session.toolbar.cache.tokens": "{{read}} / {{total}} token",
   "session.toolbar.drift.stable": "前缀稳定",
   "session.toolbar.drift.count": "前缀漂移 ×{{count}}",
-  "session.toolbar.drift.tip": "本会话期间不可变前缀(系统提示 + 工具)中途改变、导致 MiMo 前缀缓存被重置的次数(实时统计)。",
+  "session.toolbar.drift.tip":
+    "本会话期间不可变前缀(系统提示 + 工具)中途改变、导致 MiMo 前缀缓存被重置的次数。计入会话持久化,刷新或切换会话后不会丢失。",
   "session.toolbar.context.label": "上下文",
   "session.toolbar.context.tip": "最近一轮使用的上下文 token 数与模型上下文上限之比。",
   "session.toolbar.ttft.label": "首字延迟",

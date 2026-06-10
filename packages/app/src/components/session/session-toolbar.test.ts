@@ -401,6 +401,67 @@ describe("SessionToolbar cache hit rate color", () => {
   })
 })
 
+describe("SessionToolbar authoritative cache totals", () => {
+  const totals = async () => {
+    const toolbar = await import("./session-toolbar")
+    const mod = toolbar as unknown as {
+      combineCacheTotals?: (
+        info: { hit: number; miss: number; drift: number } | undefined,
+        live: { hit?: number; miss?: number; drift?: number } | undefined,
+      ) => { hit: number; miss: number; drift: number } | undefined
+      cacheStatsFromTotals?: (
+        totals: { hit: number; miss: number; drift: number } | undefined,
+      ) => { read: number; miss: number; hitRate: number } | undefined
+    }
+    expect(mod.combineCacheTotals).toBeDefined()
+    expect(mod.cacheStatsFromTotals).toBeDefined()
+    return mod as Required<typeof mod>
+  }
+
+  test("combines session-row counters with the freshest live snapshot", async () => {
+    const { combineCacheTotals } = await totals()
+
+    expect(combineCacheTotals({ hit: 100, miss: 100, drift: 1 }, { hit: 300, miss: 100 })).toEqual({
+      hit: 300,
+      miss: 100,
+      drift: 1,
+    })
+    expect(combineCacheTotals({ hit: 400, miss: 200, drift: 2 }, { hit: 300, miss: 100, drift: 1 })).toEqual({
+      hit: 400,
+      miss: 200,
+      drift: 2,
+    })
+    expect(combineCacheTotals(undefined, { drift: 3 })).toEqual({ hit: 0, miss: 0, drift: 3 })
+    expect(combineCacheTotals(undefined, undefined)).toBeUndefined()
+  })
+
+  test("derives hit rate from lifetime totals and yields nothing for empty counters", async () => {
+    const { cacheStatsFromTotals } = await totals()
+
+    expect(cacheStatsFromTotals({ hit: 80, miss: 20, drift: 0 })).toEqual({ read: 80, miss: 20, hitRate: 0.8 })
+    expect(cacheStatsFromTotals({ hit: 0, miss: 0, drift: 2 })).toBeUndefined()
+    expect(cacheStatsFromTotals(undefined)).toBeUndefined()
+  })
+
+  test("headline prefers session-lifetime totals over the loaded message window", async () => {
+    const source = await Bun.file(new URL("./session-toolbar.tsx", import.meta.url)).text()
+
+    expect(source).toContain("sessionInfo()?.cache")
+    expect(source).toContain("combineCacheTotals(")
+    expect(source).toContain("cacheStatsFromTotals(")
+    expect(source).toContain("(totalsStats() ?? cacheStats())?.hitRate")
+  })
+
+  test("drift indicator uses the session-lifetime drift count", async () => {
+    const source = await Bun.file(new URL("./session-toolbar.tsx", import.meta.url)).text()
+
+    expect(source).toContain("driftCount()")
+    expect(source).toContain("detail.properties?.driftCount")
+    expect(source).toContain("totalReadTokens")
+    expect(source).toContain("totalMissTokens")
+  })
+})
+
 describe("SessionToolbar context usage color", () => {
   test("uses requested context usage thresholds", async () => {
     const toolbar = await import("./session-toolbar")

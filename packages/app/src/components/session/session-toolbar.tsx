@@ -2,11 +2,16 @@
  * Session status toolbar — surfaces MiMo prefix-cache health as a first-class
  * session capability. Three indicators along the bottom of the session page:
  *
- *  - PREFIX  : current-model prefix-cache hit rate (cached input tokens / total
- *              input tokens) — derived from synced messages and live cache events.
+ *  - PREFIX  : session-lifetime prefix-cache hit rate (cached input tokens /
+ *              total input tokens). Sourced from the agent's session-row
+ *              counters (session.cache + live event snapshots) so the value is
+ *              independent of how much message history happens to be loaded;
+ *              falls back to summing the loaded message window for sessions
+ *              that predate the counters.
  *  - DRIFT   : how many times the immutable prefix (system prompt + tools)
- *              changed mid-session and reset the cache — counted live from
- *              `session.cache.prefix.drift` bus events for this session.
+ *              changed mid-session and reset the cache — the session-lifetime
+ *              count persisted on the session row, updated live from
+ *              `session.cache.prefix.drift` bus events.
  *  - CONTEXT : context-window tokens used in the latest turn vs the model limit.
  *  - SPEED   : latest-turn output throughput (tok/s); TTFT lives in its tooltip.
  *              Both are derived from already-synced timestamps — the MiMo API
@@ -150,6 +155,39 @@ function cacheStatsFromTokens(read: number, miss: number): CacheStats | undefine
   const total = read + miss
   if (total <= 0) return undefined
   return { read, miss, hitRate: read / total }
+}
+
+export type SessionCacheTotals = {
+  hit: number
+  miss: number
+  drift: number
+}
+
+// Merge the session-row counters with the latest live event snapshot. Both
+// sources are monotonic running totals for the same session, so whichever has
+// seen more tokens (or more drifts) is the fresher sample.
+export function combineCacheTotals(
+  info: SessionCacheTotals | undefined,
+  live: Partial<SessionCacheTotals> | undefined,
+): SessionCacheTotals | undefined {
+  if (!info && !live) return undefined
+  const infoHit = safeToken(info?.hit)
+  const infoMiss = safeToken(info?.miss)
+  const liveHit = safeToken(live?.hit)
+  const liveMiss = safeToken(live?.miss)
+  const useLive = liveHit + liveMiss > infoHit + infoMiss
+  return {
+    hit: useLive ? liveHit : infoHit,
+    miss: useLive ? liveMiss : infoMiss,
+    drift: Math.max(safeToken(info?.drift), safeToken(live?.drift)),
+  }
+}
+
+// Empty counters mean the session predates the agent-side totals — return
+// undefined so the caller can fall back to the loaded message window.
+export function cacheStatsFromTotals(totals: SessionCacheTotals | undefined): CacheStats | undefined {
+  if (!totals) return undefined
+  return cacheStatsFromTokens(totals.hit, totals.miss)
 }
 
 function addCacheStats(
@@ -310,7 +348,15 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
     if (!overview.display || overview.display.modelKey === overview.current?.modelKey) return undefined
     return overview.display
   }
-  const hitRate = () => cacheStats()?.hitRate
+
+  // Authoritative session-lifetime counters: the session row (synced via
+  // session.updated) combined with the freshest live event snapshot. The
+  // window-derived stats above remain as fallback and per-model breakdown.
+  const [liveTotals, setLiveTotals] = createSignal<Partial<SessionCacheTotals> | undefined>(undefined)
+  const cacheTotals = () => combineCacheTotals(sessionInfo()?.cache, liveTotals())
+  const totalsStats = () => cacheStatsFromTotals(cacheTotals())
+  const hitRate = () => (totalsStats() ?? cacheStats())?.hitRate
+  const driftCount = () => cacheTotals()?.drift ?? 0
 
   const metrics = createMemo(() => getSessionContextMetrics(messages(), [...providers.all().values()]))
 
@@ -333,15 +379,14 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
     return ms === undefined ? "—" : fmtMs(ms)
   }
 
-  // Live prefix-drift count for this session. Reset when the session changes;
-  // the bus event isn't in the generated SDK union, so cast at the boundary.
-  const [drift, setDrift] = createSignal(0)
+  // Live cache events for this session. Reset when the session changes; the
+  // cast at the boundary keeps the handler independent of the SDK event union.
   createEffect(
     on(
       () => props.sessionID,
       () => {
         setCacheEvents([])
-        setDrift(0)
+        setLiveTotals(undefined)
       },
     ),
   )
@@ -354,13 +399,29 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
           turnId?: string
           readTokens?: number
           missTokens?: number
+          totalReadTokens?: number
+          totalMissTokens?: number
+          driftCount?: number
         }
       }
       if (detail.type === "session.cache.prefix.drift" && detail.properties?.sessionID === props.sessionID) {
-        setDrift((value) => value + 1)
+        const count = detail.properties?.driftCount
+        setLiveTotals((prev) => ({
+          ...prev,
+          drift: typeof count === "number" ? Math.max(count, prev?.drift ?? 0) : (prev?.drift ?? 0) + 1,
+        }))
         return
       }
       if (detail.type === "session.cache.measured" && detail.properties?.sessionID === props.sessionID) {
+        const totalRead = detail.properties.totalReadTokens
+        const totalMiss = detail.properties.totalMissTokens
+        if (typeof totalRead === "number" && typeof totalMiss === "number") {
+          setLiveTotals((prev) =>
+            totalRead + totalMiss >= safeToken(prev?.hit) + safeToken(prev?.miss)
+              ? { ...prev, hit: totalRead, miss: totalMiss }
+              : prev,
+          )
+        }
         const turnId = detail.properties.turnId
         const turn = messages().find((message) => message.id === turnId)
         const model = turn?.role === "assistant" ? turn : sessionInfo()?.model
@@ -457,7 +518,7 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
                     </div>
                   )}
                 </Show>
-                <Show when={cacheOverview().total}>
+                <Show when={totalsStats() ?? cacheOverview().total}>
                   {(total) => (
                     <div class="flex items-start justify-between gap-4 border-t border-v2-border-border-muted pt-1">
                       <span>{t("session.toolbar.cache.allModels")}</span>
@@ -517,16 +578,18 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
           <span class="h-4 w-px shrink-0 bg-v2-border-border-muted" />
 
           <Tooltip value={t("session.toolbar.drift.tip")} placement="top">
-            <span class={`flex items-center gap-1.5 ${drift() > 0 ? "text-v2-text-text-accent" : ""}`}>
+            <span class={`flex items-center gap-1.5 ${driftCount() > 0 ? "text-v2-text-text-accent" : ""}`}>
               <span
                 class="size-1.5 shrink-0 rounded-full"
                 style={
-                  drift() > 0
+                  driftCount() > 0
                     ? { background: "var(--mimo-accent)" }
                     : { background: "var(--v2-green-600)", animation: "mimo-pulse 2.4s infinite" }
                 }
               />
-              {drift() > 0 ? t("session.toolbar.drift.count", { count: drift() }) : t("session.toolbar.drift.stable")}
+              {driftCount() > 0
+                ? t("session.toolbar.drift.count", { count: driftCount() })
+                : t("session.toolbar.drift.stable")}
             </span>
           </Tooltip>
 

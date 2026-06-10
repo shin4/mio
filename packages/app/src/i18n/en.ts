@@ -630,7 +630,7 @@ export const dict = {
   "session.tab.review": "Review",
   "session.toolbar.cache.label": "Cache",
   "session.toolbar.cache.tip":
-    "Current model's prefix-cache hit rate in this session: cached input tokens ÷ total input tokens. Higher means MiMo is reusing the immutable prefix (system prompt + tools).",
+    "Session-lifetime prefix-cache hit rate: cached input tokens ÷ total input tokens across every turn, from the agent's session counters. Higher means MiMo is reusing the immutable prefix (system prompt + tools).",
   "session.toolbar.cache.currentModel": "Current model",
   "session.toolbar.cache.displayModel": "Pill display",
   "session.toolbar.cache.allModels": "All models overview",
@@ -640,7 +640,7 @@ export const dict = {
   "session.toolbar.drift.stable": "Prefix stable",
   "session.toolbar.drift.count": "Prefix drift ×{{count}}",
   "session.toolbar.drift.tip":
-    "Times the immutable prefix (system prompt + tools) changed mid-session and reset MiMo's prefix cache. Counted live for this session.",
+    "Times the immutable prefix (system prompt + tools) changed mid-session and reset MiMo's prefix cache. Persisted on the session, so the count survives reloads and session switches.",
   "session.toolbar.context.label": "Context",
   "session.toolbar.context.tip": "Context-window tokens used in the latest turn vs the model's context limit.",
   "session.toolbar.ttft.label": "TTFT",
