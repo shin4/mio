@@ -352,8 +352,11 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
   // Authoritative session-lifetime counters: the session row (synced via
   // session.updated) combined with the freshest live event snapshot. The
   // window-derived stats above remain as fallback and per-model breakdown.
-  const [liveTotals, setLiveTotals] = createSignal<Partial<SessionCacheTotals> | undefined>(undefined)
-  const cacheTotals = () => combineCacheTotals(sessionInfo()?.cache, liveTotals())
+  // Snapshots are keyed by session and kept across switches: session.updated
+  // only fires on turn boundaries, so for a mid-turn session the row counters
+  // lag behind and the last event snapshot is the most current sample.
+  const [liveTotals, setLiveTotals] = createSignal<Record<string, Partial<SessionCacheTotals>>>({})
+  const cacheTotals = () => combineCacheTotals(sessionInfo()?.cache, liveTotals()[props.sessionID])
   const totalsStats = () => cacheStatsFromTotals(cacheTotals())
   const hitRate = () => (totalsStats() ?? cacheStats())?.hitRate
   const driftCount = () => cacheTotals()?.drift ?? 0
@@ -379,14 +382,13 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
     return ms === undefined ? "—" : fmtMs(ms)
   }
 
-  // Live cache events for this session. Reset when the session changes; the
-  // cast at the boundary keeps the handler independent of the SDK event union.
+  // Per-turn window events only apply to the open session — reset on switch.
+  // The cast at the boundary keeps the handler independent of the SDK union.
   createEffect(
     on(
       () => props.sessionID,
       () => {
         setCacheEvents([])
-        setLiveTotals(undefined)
       },
     ),
   )
@@ -404,25 +406,29 @@ export function SessionToolbar(props: { sessionID: string; centered?: boolean })
           driftCount?: number
         }
       }
-      if (detail.type === "session.cache.prefix.drift" && detail.properties?.sessionID === props.sessionID) {
+      const eventSessionID = detail.properties?.sessionID
+      if (detail.type === "session.cache.prefix.drift" && eventSessionID) {
         const count = detail.properties?.driftCount
-        setLiveTotals((prev) => ({
-          ...prev,
-          drift: typeof count === "number" ? Math.max(count, prev?.drift ?? 0) : (prev?.drift ?? 0) + 1,
-        }))
+        setLiveTotals((prev) => {
+          const current = prev[eventSessionID]
+          const drift =
+            typeof count === "number" ? Math.max(count, current?.drift ?? 0) : (current?.drift ?? 0) + 1
+          return { ...prev, [eventSessionID]: { ...current, drift } }
+        })
         return
       }
-      if (detail.type === "session.cache.measured" && detail.properties?.sessionID === props.sessionID) {
-        const totalRead = detail.properties.totalReadTokens
-        const totalMiss = detail.properties.totalMissTokens
+      if (detail.type === "session.cache.measured" && eventSessionID) {
+        const totalRead = detail.properties?.totalReadTokens
+        const totalMiss = detail.properties?.totalMissTokens
         if (typeof totalRead === "number" && typeof totalMiss === "number") {
-          setLiveTotals((prev) =>
-            totalRead + totalMiss >= safeToken(prev?.hit) + safeToken(prev?.miss)
-              ? { ...prev, hit: totalRead, miss: totalMiss }
-              : prev,
-          )
+          setLiveTotals((prev) => {
+            const current = prev[eventSessionID]
+            if (totalRead + totalMiss < safeToken(current?.hit) + safeToken(current?.miss)) return prev
+            return { ...prev, [eventSessionID]: { ...current, hit: totalRead, miss: totalMiss } }
+          })
         }
-        const turnId = detail.properties.turnId
+        if (eventSessionID !== props.sessionID) return
+        const turnId = detail.properties?.turnId
         const turn = messages().find((message) => message.id === turnId)
         const model = turn?.role === "assistant" ? turn : sessionInfo()?.model
         const modelKey = cacheModelKey(model)

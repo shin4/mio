@@ -460,6 +460,17 @@ describe("SessionToolbar authoritative cache totals", () => {
     expect(source).toContain("totalReadTokens")
     expect(source).toContain("totalMissTokens")
   })
+
+  test("keeps live totals per session so switching away and back does not lose them", async () => {
+    const source = await Bun.file(new URL("./session-toolbar.tsx", import.meta.url)).text()
+
+    // Snapshots are keyed by the event's own session, collected for every
+    // session (not just the open one), and never cleared on session switch —
+    // sessionInfo().cache can lag behind by a turn's worth of steps.
+    expect(source).toContain("Record<string, Partial<SessionCacheTotals>>")
+    expect(source).toContain("liveTotals()[props.sessionID]")
+    expect(source).not.toContain("setLiveTotals(undefined)")
+  })
 })
 
 describe("SessionToolbar context usage color", () => {
