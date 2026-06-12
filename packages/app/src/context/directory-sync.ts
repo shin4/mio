@@ -176,6 +176,14 @@ function setOptimisticRemove(setStore: (...args: unknown[]) => void, input: Opti
   })
 }
 
+export function setMessageMetaLoading(setStore: (...args: unknown[]) => void, sessionID: string, loading: boolean) {
+  // Solid's path setter does not create missing intermediate nodes — a cold
+  // session has no message_meta entry yet, so writing the "loading" leaf
+  // directly would throw. The object form merges into an existing entry and
+  // creates a missing one.
+  setStore("message_meta", sessionID, { loading })
+}
+
 export const createDirSyncContext = (directory: string, serverSync: ReturnType<typeof createServerSyncContext>) => {
   const serverSDK = useServerSDK()
   const client = serverSDK.createClient({ directory, throwOnError: true })
@@ -307,7 +315,7 @@ export const createDirSyncContext = (directory: string, serverSync: ReturnType<t
     const [store] = serverSync.child(input.directory, { bootstrap: false })
     if (store.message_meta[input.sessionID]?.loading) return
 
-    input.setStore("message_meta", input.sessionID, "loading", true)
+    setMessageMetaLoading(input.setStore as (...args: unknown[]) => void, input.sessionID, true)
     await fetchMessages(input)
       .then((page) => {
         if (!tracked(input.directory, input.sessionID)) return
@@ -345,7 +353,7 @@ export const createDirSyncContext = (directory: string, serverSync: ReturnType<t
         // The meta entry can vanish mid-flight when the session is evicted —
         // don't resurrect it just to clear the loading flag.
         if (store.message_meta[input.sessionID] === undefined) return
-        input.setStore("message_meta", input.sessionID, "loading", false)
+        setMessageMetaLoading(input.setStore as (...args: unknown[]) => void, input.sessionID, false)
       })
   }
 
