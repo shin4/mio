@@ -163,13 +163,16 @@
     width: 120%;
     aspect-ratio: 1 / 1;
     translate: -50% -50%;
+    /* The 0% and 100% stops must stay identical: the wrap point is invisible
+       only when head and tail meet on the same color, and the dim ambient ring
+       keeps the band lit everywhere so the bright arc never pops in or out. */
     background: conic-gradient(
       from 0deg,
-      transparent 0 58%,
-      var(--mimo-pro-fx-1) 70%,
-      var(--mimo-pro-fx-2) 81%,
-      var(--mimo-pro-fx-3) 88%,
-      transparent 95%
+      color-mix(in srgb, var(--mimo-pro-fx-2) 30%, transparent) 0%,
+      var(--mimo-pro-fx-1) 56%,
+      var(--mimo-pro-fx-2) 74%,
+      var(--mimo-pro-fx-3) 90%,
+      color-mix(in srgb, var(--mimo-pro-fx-2) 30%, transparent) 100%
     );
     animation: mimo-pro-ring-rotate 1100ms linear infinite;
     will-change: rotate;
