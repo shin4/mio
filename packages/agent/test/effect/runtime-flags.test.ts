@@ -24,6 +24,7 @@ describe("RuntimeFlags", () => {
           fromConfig({
             MIMO_PURE: "true",
             MIMO_DISABLE_DEFAULT_PLUGINS: "true",
+            MIMO_TRUST_PROJECT_PLUGINS: "true",
             MIMO_DISABLE_CHANNEL_DB: "true",
             MIMO_AUTO_SHARE: "true",
             MIMO_DISABLE_EMBEDDED_WEB_UI: "true",
@@ -43,6 +44,7 @@ describe("RuntimeFlags", () => {
       expect(flags.pure).toBe(true)
       expect(flags.autoShare).toBe(true)
       expect(flags.disableDefaultPlugins).toBe(true)
+      expect(flags.trustProjectPlugins).toBe(true)
       expect(flags.disableChannelDb).toBe(true)
       expect(flags.disableEmbeddedWebUi).toBe(true)
       expect(flags.disableExternalSkills).toBe(true)
@@ -82,17 +84,19 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("native LLM is on by default; the dedicated flag can disable it, the umbrella flag does not affect it", () =>
-    Effect.gen(function* () {
-      // mimo-desktop disables the AI SDK runtime, so native is the only working
-      // path and defaults on. The dedicated flag still force-disables it for
-      // debugging; the MIMO_EXPERIMENTAL umbrella has no effect on it.
-      const disabled = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_EXPERIMENTAL_NATIVE_LLM: "false" })))
-      const umbrella = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_EXPERIMENTAL: "true" })))
+  it.effect(
+    "native LLM is on by default; the dedicated flag can disable it, the umbrella flag does not affect it",
+    () =>
+      Effect.gen(function* () {
+        // mimo-desktop disables the AI SDK runtime, so native is the only working
+        // path and defaults on. The dedicated flag still force-disables it for
+        // debugging; the MIMO_EXPERIMENTAL umbrella has no effect on it.
+        const disabled = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_EXPERIMENTAL_NATIVE_LLM: "false" })))
+        const umbrella = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_EXPERIMENTAL: "true" })))
 
-      expect(disabled.experimentalNativeLlm).toBe(false)
-      expect(umbrella.experimentalNativeLlm).toBe(true)
-    }),
+        expect(disabled.experimentalNativeLlm).toBe(false)
+        expect(umbrella.experimentalNativeLlm).toBe(true)
+      }),
   )
 
   it.effect("enables WebSockets via dedicated flag only", () =>
@@ -114,6 +118,7 @@ describe("RuntimeFlags", () => {
       expect(flags.pure).toBe(false)
       expect(flags.autoShare).toBe(false)
       expect(flags.disableDefaultPlugins).toBe(true)
+      expect(flags.trustProjectPlugins).toBe(false)
       expect(flags.disableChannelDb).toBe(false)
       expect(flags.disableEmbeddedWebUi).toBe(false)
       expect(flags.disableExternalSkills).toBe(false)

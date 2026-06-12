@@ -17,6 +17,7 @@ export class Service extends ConfigService.Service<Service>()("@opencode/Runtime
   autoShare: bool("MIMO_AUTO_SHARE"),
   pure: bool("MIMO_PURE"),
   disableDefaultPlugins: bool("MIMO_DISABLE_DEFAULT_PLUGINS"),
+  trustProjectPlugins: bool("MIMO_TRUST_PROJECT_PLUGINS"),
   disableChannelDb: bool("MIMO_DISABLE_CHANNEL_DB"),
   disableEmbeddedWebUi: bool("MIMO_DISABLE_EMBEDDED_WEB_UI"),
   disableExternalSkills: bool("MIMO_DISABLE_EXTERNAL_SKILLS"),

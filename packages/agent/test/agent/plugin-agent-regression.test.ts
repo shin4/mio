@@ -35,7 +35,7 @@ const configLayer = Config.layer.pipe(
 const pluginLayer = Plugin.layer.pipe(
   Layer.provide(Bus.layer),
   Layer.provide(configLayer),
-  Layer.provide(RuntimeFlags.layer({ disableDefaultPlugins: true })),
+  Layer.provide(RuntimeFlags.layer({ disableDefaultPlugins: true, trustProjectPlugins: true })),
 )
 const agentLayer = Agent.layer.pipe(
   Layer.provide(configLayer),
@@ -43,7 +43,7 @@ const agentLayer = Agent.layer.pipe(
   Layer.provide(SkillTest.empty),
   Layer.provide(provider.layer),
   Layer.provide(pluginLayer),
-  Layer.provide(RuntimeFlags.layer({ disableDefaultPlugins: true })),
+  Layer.provide(RuntimeFlags.layer({ disableDefaultPlugins: true, trustProjectPlugins: true })),
 )
 
 const it = testEffect(Layer.mergeAll(agentLayer, pluginLayer))
