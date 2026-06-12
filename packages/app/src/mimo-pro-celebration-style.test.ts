@@ -51,6 +51,15 @@ describe("MiMo Pro celebration styles", () => {
     expect(rule(css, '[data-component="mimo-pro-celebration-overlay"]')).toContain("pointer-events: none")
   })
 
+  test("keeps the ring gradient seamless at the wrap point", () => {
+    const spin = rule(css, '[data-slot="mimo-pro-ring-spin"]')
+    const seam = "color-mix(in srgb, var(--mimo-pro-fx-2) 30%, transparent)"
+    expect(spin).toContain(`${seam} 0%`)
+    expect(spin).toContain(`${seam} 100%`)
+    expect(spin).not.toContain("transparent 0 ")
+    expect(spin).not.toContain("transparent 95%")
+  })
+
   test("keeps ring durations in css and provides the reduced-motion fallback", () => {
     expect(rule(css, '[data-slot="mimo-pro-ring"] {')).toContain("2600ms")
     expect(css).toContain('[data-variant="short"] [data-slot="mimo-pro-ring"]')
