@@ -57,6 +57,7 @@ import { syncSessionModel } from "@/pages/session/session-model-helpers"
 import { SessionSidePanel } from "@/pages/session/session-side-panel"
 import { TerminalPanel } from "@/pages/session/terminal-panel"
 import { SessionToolbar } from "@/components/session/session-toolbar"
+import { MimoProCelebrationOverlay } from "@/components/session/mimo-pro-celebration-overlay"
 import { useSessionCommands } from "@/pages/session/use-session-commands"
 import { useSessionHashScroll } from "@/pages/session/use-session-hash-scroll"
 import { Identifier } from "@/utils/id"
@@ -1802,6 +1803,7 @@ export default function Page() {
 
           <Show when={params.id}>{(id) => <SessionToolbar sessionID={id()} centered={centered()} />}</Show>
 
+          <MimoProCelebrationOverlay />
         </div>
 
         <SessionSidePanel

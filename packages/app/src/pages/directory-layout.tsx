@@ -9,6 +9,7 @@ import { useLanguage } from "@/context/language"
 import { useProviders } from "@/hooks/use-providers"
 import { useSettings } from "@/context/settings"
 import { LocalProvider } from "@/context/local"
+import { MimoProCelebrationProvider } from "@/context/mimo-pro-celebration"
 import { SDKProvider } from "@/context/sdk"
 import { useServer } from "@/context/server"
 import { useSync } from "@/context/sync"
@@ -117,7 +118,9 @@ function DirectoryDataProvider(props: ParentProps<{ directory: string }>) {
       onSessionHref={(sessionID: string) => `/${slug()}/session/${sessionID}`}
       onReadAloud={readAloud}
     >
-      <LocalProvider>{props.children}</LocalProvider>
+      <LocalProvider>
+        <MimoProCelebrationProvider>{props.children}</MimoProCelebrationProvider>
+      </LocalProvider>
     </DataProvider>
   )
 }

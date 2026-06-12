@@ -84,11 +84,7 @@ import {
   promptText,
   readableDictationSeconds,
 } from "./prompt-input/dictation"
-import {
-  MIMO_PRO_COMPOSER_EFFECT_MS,
-  modelEffectKey,
-  shouldTriggerMimoProComposerEffect,
-} from "./prompt-input/mimo-pro-composer-effect"
+import { useMimoProCelebration } from "@/context/mimo-pro-celebration"
 import { asrLanguageFromLocale, DictationError, transcribeDictation } from "@/utils/dictation"
 import { ImagePreview } from "@opencode-ai/ui/image-preview"
 import { useQueries } from "@tanstack/solid-query"
@@ -343,44 +339,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   const buttons = createMemo(() => motion(buttonsSpring()))
   const shell = createMemo(() => motion(1 - buttonsSpring()))
   const control = createMemo(() => ({ height: "28px", ...buttons() }))
-  const [mimoProEffect, setMimoProEffect] = createSignal(false)
-  let mimoProEffectFrame: number | undefined
-  let mimoProEffectTimer: number | undefined
-
-  const clearMimoProEffect = () => {
-    if (mimoProEffectFrame !== undefined) {
-      cancelAnimationFrame(mimoProEffectFrame)
-      mimoProEffectFrame = undefined
-    }
-    if (mimoProEffectTimer !== undefined) {
-      window.clearTimeout(mimoProEffectTimer)
-      mimoProEffectTimer = undefined
-    }
-    setMimoProEffect(false)
-  }
-
-  const playMimoProEffect = () => {
-    clearMimoProEffect()
-    mimoProEffectFrame = requestAnimationFrame(() => {
-      mimoProEffectFrame = undefined
-      setMimoProEffect(true)
-      mimoProEffectTimer = window.setTimeout(() => {
-        setMimoProEffect(false)
-        mimoProEffectTimer = undefined
-      }, MIMO_PRO_COMPOSER_EFFECT_MS)
-    })
-  }
-
-  createEffect(
-    on(
-      () => modelEffectKey(local.model.current()),
-      (current, previous) => {
-        if (shouldTriggerMimoProComposerEffect(previous, current)) playMimoProEffect()
-      },
-    ),
-  )
-
-  onCleanup(clearMimoProEffect)
+  const mimoPro = useMimoProCelebration()
   // MiMo TTS is usable only when the `mimo` provider is connected (has an API
   // key). Gate the auto-play toggle on it so it greys out when unconfigured.
   const ttsConfigured = createMemo(() => providers.connected().some((provider) => provider.id === "mimo"))
@@ -1767,7 +1726,23 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
         t={(key) => language.t(key as Parameters<typeof language.t>[0])}
       />
           <div class="flex flex-col gap-3">
-            <div data-component="mimo-pro-composer-effect" data-active={mimoProEffect() ? "true" : undefined}>
+            <div
+              data-component="mimo-pro-composer-effect"
+              data-variant={mimoPro.celebration()}
+              onAnimationEnd={(event) => {
+                if (event.animationName === "mimo-pro-ring-life") mimoPro.done()
+              }}
+            >
+              <Show when={mimoPro.celebration()}>
+                <div data-slot="mimo-pro-ring" aria-hidden="true">
+                  <div data-slot="mimo-pro-ring-spin" />
+                </div>
+              </Show>
+              <Show when={mimoPro.celebration() === "full"}>
+                <div data-slot="mimo-pro-glow" aria-hidden="true">
+                  <div data-slot="mimo-pro-ring-spin" />
+                </div>
+              </Show>
               <DockShellForm
                 data-component={newSession() ? "session-new-composer" : "session-composer"}
                 onSubmit={handleSubmit}
