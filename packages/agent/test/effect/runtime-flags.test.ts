@@ -22,20 +22,20 @@ describe("RuntimeFlags", () => {
       const flags = yield* readFlags.pipe(
         Effect.provide(
           fromConfig({
-            MIMO_PURE: "true",
-            MIMO_DISABLE_DEFAULT_PLUGINS: "true",
-            MIMO_DISABLE_CHANNEL_DB: "true",
-            MIMO_AUTO_SHARE: "true",
-            MIMO_DISABLE_EMBEDDED_WEB_UI: "true",
-            MIMO_DISABLE_EXTERNAL_SKILLS: "true",
-            MIMO_DISABLE_LSP_DOWNLOAD: "true",
-            MIMO_SKIP_MIGRATIONS: "true",
-            MIMO_EXPERIMENTAL: "true",
-            MIMO_ENABLE_EXA: "true",
-            MIMO_ENABLE_PARALLEL: "true",
-            MIMO_ENABLE_EXPERIMENTAL_MODELS: "true",
-            MIMO_ENABLE_QUESTION_TOOL: "true",
-            MIMO_CLIENT: "desktop",
+            MIO_PURE: "true",
+            MIO_DISABLE_DEFAULT_PLUGINS: "true",
+            MIO_DISABLE_CHANNEL_DB: "true",
+            MIO_AUTO_SHARE: "true",
+            MIO_DISABLE_EMBEDDED_WEB_UI: "true",
+            MIO_DISABLE_EXTERNAL_SKILLS: "true",
+            MIO_DISABLE_LSP_DOWNLOAD: "true",
+            MIO_SKIP_MIGRATIONS: "true",
+            MIO_EXPERIMENTAL: "true",
+            MIO_ENABLE_EXA: "true",
+            MIO_ENABLE_PARALLEL: "true",
+            MIO_ENABLE_EXPERIMENTAL_MODELS: "true",
+            MIO_ENABLE_QUESTION_TOOL: "true",
+            MIO_CLIENT: "desktop",
           }),
         ),
       )
@@ -68,12 +68,12 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("defaultLayer parses MIMO_EXPERIMENTAL_LSP_TY", () =>
+  it.effect("defaultLayer parses MIO_EXPERIMENTAL_LSP_TY", () =>
     Effect.gen(function* () {
       const flags = yield* readFlags.pipe(
         Effect.provide(
           fromConfig({
-            MIMO_EXPERIMENTAL_LSP_TY: "true",
+            MIO_EXPERIMENTAL_LSP_TY: "true",
           }),
         ),
       )
@@ -86,9 +86,9 @@ describe("RuntimeFlags", () => {
     Effect.gen(function* () {
       // mimo-desktop disables the AI SDK runtime, so native is the only working
       // path and defaults on. The dedicated flag still force-disables it for
-      // debugging; the MIMO_EXPERIMENTAL umbrella has no effect on it.
-      const disabled = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_EXPERIMENTAL_NATIVE_LLM: "false" })))
-      const umbrella = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_EXPERIMENTAL: "true" })))
+      // debugging; the MIO_EXPERIMENTAL umbrella has no effect on it.
+      const disabled = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_EXPERIMENTAL_NATIVE_LLM: "false" })))
+      const umbrella = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_EXPERIMENTAL: "true" })))
 
       expect(disabled.experimentalNativeLlm).toBe(false)
       expect(umbrella.experimentalNativeLlm).toBe(true)
@@ -97,8 +97,8 @@ describe("RuntimeFlags", () => {
 
   it.effect("enables WebSockets via dedicated flag only", () =>
     Effect.gen(function* () {
-      const explicit = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_EXPERIMENTAL_WEBSOCKETS: "true" })))
-      const umbrella = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_EXPERIMENTAL: "true" })))
+      const explicit = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_EXPERIMENTAL_WEBSOCKETS: "true" })))
+      const umbrella = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_EXPERIMENTAL: "true" })))
 
       expect(explicit.experimentalWebSockets).toBe(true)
       expect(umbrella.experimentalWebSockets).toBe(false)
@@ -147,9 +147,9 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("disableExternalSkills reads MIMO_DISABLE_EXTERNAL_SKILLS", () =>
+  it.effect("disableExternalSkills reads MIO_DISABLE_EXTERNAL_SKILLS", () =>
     Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_DISABLE_EXTERNAL_SKILLS: "true" })))
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_DISABLE_EXTERNAL_SKILLS: "true" })))
 
       expect(flags.disableExternalSkills).toBe(true)
     }),
@@ -163,9 +163,9 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("disableLspDownload reads MIMO_DISABLE_LSP_DOWNLOAD", () =>
+  it.effect("disableLspDownload reads MIO_DISABLE_LSP_DOWNLOAD", () =>
     Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_DISABLE_LSP_DOWNLOAD: "true" })))
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_DISABLE_LSP_DOWNLOAD: "true" })))
 
       expect(flags.disableLspDownload).toBe(true)
     }),
@@ -179,9 +179,9 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("skipMigrations reads MIMO_SKIP_MIGRATIONS", () =>
+  it.effect("skipMigrations reads MIO_SKIP_MIGRATIONS", () =>
     Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_SKIP_MIGRATIONS: "true" })))
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_SKIP_MIGRATIONS: "true" })))
 
       expect(flags.skipMigrations).toBe(true)
     }),
@@ -195,45 +195,45 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("disableClaudeCodePrompt reads MIMO_DISABLE_CLAUDE_CODE_PROMPT", () =>
+  it.effect("disableClaudeCodePrompt reads MIO_DISABLE_CLAUDE_CODE_PROMPT", () =>
     Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_DISABLE_CLAUDE_CODE_PROMPT: "true" })))
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_DISABLE_CLAUDE_CODE_PROMPT: "true" })))
 
       expect(flags.disableClaudeCodePrompt).toBe(true)
     }),
   )
 
-  it.effect("disableClaudeCodePrompt inherits MIMO_DISABLE_CLAUDE_CODE", () =>
+  it.effect("disableClaudeCodePrompt inherits MIO_DISABLE_CLAUDE_CODE", () =>
     Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_DISABLE_CLAUDE_CODE: "true" })))
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_DISABLE_CLAUDE_CODE: "true" })))
 
       expect(flags.disableClaudeCodePrompt).toBe(true)
     }),
   )
 
-  it.effect("experimentalIconDiscovery reads MIMO_EXPERIMENTAL_ICON_DISCOVERY", () =>
+  it.effect("experimentalIconDiscovery reads MIO_EXPERIMENTAL_ICON_DISCOVERY", () =>
     Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_EXPERIMENTAL_ICON_DISCOVERY: "true" })))
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_EXPERIMENTAL_ICON_DISCOVERY: "true" })))
 
       expect(flags.experimentalIconDiscovery).toBe(true)
     }),
   )
 
-  it.effect("experimentalIconDiscovery inherits MIMO_EXPERIMENTAL", () =>
+  it.effect("experimentalIconDiscovery inherits MIO_EXPERIMENTAL", () =>
     Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_EXPERIMENTAL: "true" })))
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_EXPERIMENTAL: "true" })))
 
       expect(flags.experimentalIconDiscovery).toBe(true)
     }),
   )
 
-  it.effect("specific experimental flags override MIMO_EXPERIMENTAL", () =>
+  it.effect("specific experimental flags override MIO_EXPERIMENTAL", () =>
     Effect.gen(function* () {
       const flags = yield* readFlags.pipe(
         Effect.provide(
           fromConfig({
-            MIMO_EXPERIMENTAL: "true",
-            MIMO_EXPERIMENTAL_ICON_DISCOVERY: "false",
+            MIO_EXPERIMENTAL: "true",
+            MIO_EXPERIMENTAL_ICON_DISCOVERY: "false",
           }),
         ),
       )
@@ -250,12 +250,12 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("experimentalOxfmt is enabled by MIMO_EXPERIMENTAL_OXFMT", () =>
+  it.effect("experimentalOxfmt is enabled by MIO_EXPERIMENTAL_OXFMT", () =>
     Effect.gen(function* () {
       const flags = yield* readFlags.pipe(
         Effect.provide(
           fromConfig({
-            MIMO_EXPERIMENTAL_OXFMT: "true",
+            MIO_EXPERIMENTAL_OXFMT: "true",
           }),
         ),
       )
@@ -264,12 +264,12 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("experimentalOxfmt inherits MIMO_EXPERIMENTAL", () =>
+  it.effect("experimentalOxfmt inherits MIO_EXPERIMENTAL", () =>
     Effect.gen(function* () {
       const flags = yield* readFlags.pipe(
         Effect.provide(
           fromConfig({
-            MIMO_EXPERIMENTAL: "true",
+            MIO_EXPERIMENTAL: "true",
           }),
         ),
       )
@@ -282,19 +282,19 @@ describe("RuntimeFlags", () => {
     { name: "absent", config: {}, expected: undefined },
     {
       name: "valid positive integer",
-      config: { MIMO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "1234" },
+      config: { MIO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "1234" },
       expected: 1234,
     },
     {
       name: "invalid string",
-      config: { MIMO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "nope" },
+      config: { MIO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "nope" },
       expected: undefined,
     },
-    { name: "zero", config: { MIMO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "0" }, expected: undefined },
-    { name: "negative", config: { MIMO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "-1" }, expected: undefined },
+    { name: "zero", config: { MIO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "0" }, expected: undefined },
+    { name: "negative", config: { MIO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "-1" }, expected: undefined },
     {
       name: "non-integer",
-      config: { MIMO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "1.5" },
+      config: { MIO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "1.5" },
       expected: undefined,
     },
   ]) {
@@ -311,19 +311,19 @@ describe("RuntimeFlags", () => {
     { name: "absent", config: {}, expected: undefined },
     {
       name: "valid positive integer",
-      config: { MIMO_EXPERIMENTAL_OUTPUT_TOKEN_MAX: "1234" },
+      config: { MIO_EXPERIMENTAL_OUTPUT_TOKEN_MAX: "1234" },
       expected: 1234,
     },
     {
       name: "invalid string",
-      config: { MIMO_EXPERIMENTAL_OUTPUT_TOKEN_MAX: "nope" },
+      config: { MIO_EXPERIMENTAL_OUTPUT_TOKEN_MAX: "nope" },
       expected: undefined,
     },
-    { name: "zero", config: { MIMO_EXPERIMENTAL_OUTPUT_TOKEN_MAX: "0" }, expected: undefined },
-    { name: "negative", config: { MIMO_EXPERIMENTAL_OUTPUT_TOKEN_MAX: "-1" }, expected: undefined },
+    { name: "zero", config: { MIO_EXPERIMENTAL_OUTPUT_TOKEN_MAX: "0" }, expected: undefined },
+    { name: "negative", config: { MIO_EXPERIMENTAL_OUTPUT_TOKEN_MAX: "-1" }, expected: undefined },
     {
       name: "non-integer",
-      config: { MIMO_EXPERIMENTAL_OUTPUT_TOKEN_MAX: "1.5" },
+      config: { MIO_EXPERIMENTAL_OUTPUT_TOKEN_MAX: "1.5" },
       expected: undefined,
     },
   ]) {
@@ -343,15 +343,15 @@ describe("RuntimeFlags", () => {
         Effect.provide(
           ConfigProvider.layer(
             ConfigProvider.fromUnknown({
-              MIMO_PURE: "true",
-              MIMO_DISABLE_DEFAULT_PLUGINS: "true",
-              MIMO_DISABLE_EXTERNAL_SKILLS: "true",
-              MIMO_DISABLE_LSP_DOWNLOAD: "true",
-              MIMO_SKIP_MIGRATIONS: "true",
-              MIMO_EXPERIMENTAL: "true",
-              MIMO_ENABLE_EXA: "true",
-              MIMO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "1234",
-              MIMO_CLIENT: "desktop",
+              MIO_PURE: "true",
+              MIO_DISABLE_DEFAULT_PLUGINS: "true",
+              MIO_DISABLE_EXTERNAL_SKILLS: "true",
+              MIO_DISABLE_LSP_DOWNLOAD: "true",
+              MIO_SKIP_MIGRATIONS: "true",
+              MIO_EXPERIMENTAL: "true",
+              MIO_ENABLE_EXA: "true",
+              MIO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "1234",
+              MIO_CLIENT: "desktop",
             }),
           ),
         ),
@@ -383,17 +383,17 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("disableClaudeCodeSkills reads MIMO_DISABLE_CLAUDE_CODE_SKILLS", () =>
+  it.effect("disableClaudeCodeSkills reads MIO_DISABLE_CLAUDE_CODE_SKILLS", () =>
     Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_DISABLE_CLAUDE_CODE_SKILLS: "true" })))
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_DISABLE_CLAUDE_CODE_SKILLS: "true" })))
 
       expect(flags.disableClaudeCodeSkills).toBe(true)
     }),
   )
 
-  it.effect("disableClaudeCodeSkills inherits MIMO_DISABLE_CLAUDE_CODE", () =>
+  it.effect("disableClaudeCodeSkills inherits MIO_DISABLE_CLAUDE_CODE", () =>
     Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIMO_DISABLE_CLAUDE_CODE: "true" })))
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ MIO_DISABLE_CLAUDE_CODE: "true" })))
 
       expect(flags.disableClaudeCodeSkills).toBe(true)
     }),

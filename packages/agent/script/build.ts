@@ -10,8 +10,8 @@ const dir = path.resolve(__dirname, "..")
 
 process.chdir(dir)
 
-const channel = process.env.MIMO_CHANNEL ?? "dev"
-const version = process.env.MIMO_VERSION ?? "local"
+const channel = process.env.MIO_CHANNEL ?? "dev"
+const version = process.env.MIO_VERSION ?? "local"
 
 const migrationDirs = (
   await fs.promises.readdir(path.join(dir, "migration"), {
@@ -53,9 +53,9 @@ await Bun.build({
   sourcemap: "linked",
   external: ["jsonc-parser", "@lydell/node-pty", "opencode-web-ui.gen.ts"],
   define: {
-    MIMO_MIGRATIONS: JSON.stringify(migrations),
-    MIMO_CHANNEL: `'${channel}'`,
-    MIMO_VERSION: `'${version}'`,
+    MIO_MIGRATIONS: JSON.stringify(migrations),
+    MIO_CHANNEL: `'${channel}'`,
+    MIO_VERSION: `'${version}'`,
   },
 })
 

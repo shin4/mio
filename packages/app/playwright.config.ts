@@ -31,8 +31,8 @@ export default defineConfig({
     reuseExistingServer: reuse,
     timeout: 120_000,
     env: {
-      VITE_MIMO_SERVER_HOST: serverHost,
-      VITE_MIMO_SERVER_PORT: serverPort,
+      VITE_MIO_SERVER_HOST: serverHost,
+      VITE_MIO_SERVER_PORT: serverPort,
     },
   },
   use: {

@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea or improvement for MiMo-Code
+about: Suggest an idea or improvement for Mio
 title: "feat: "
 labels: enhancement
 ---
@@ -19,6 +19,6 @@ Other approaches you have thought about.
 
 ## Additional context
 
-Mockups, references, or related issues. Note: MiMo-Code is MiMo-first — new
+Mockups, references, or related issues. Note: Mio is MiMo-first — new
 providers or release infrastructure need a design discussion first (see
 CONTRIBUTING.md).

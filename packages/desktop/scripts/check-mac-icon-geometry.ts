@@ -31,7 +31,7 @@ const expectedDockRows = new Map([
   [58, { minX: 28, maxX: 227 }],
 ])
 
-const extractedDir = (await $`mktemp -d /tmp/mimo-icon-geometry.XXXXXX`.text()).trim()
+const extractedDir = (await $`mktemp -d /tmp/mio-icon-geometry.XXXXXX`.text()).trim()
 
 for (const channel of channels) {
   await $`iconutil -c iconset -o ${path.join(extractedDir, `${channel}.iconset`)} ${path.join(

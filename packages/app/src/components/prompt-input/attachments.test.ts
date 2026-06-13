@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test"
-import { MIMO_BASE64_MEDIA_LIMIT_BYTES } from "@opencode-ai/core/attachment-limits"
+import { MIO_BASE64_MEDIA_LIMIT_BYTES } from "@opencode-ai/core/attachment-limits"
 import { attachmentLimitError } from "./attachment-limit"
 import { attachmentMime, mediaCategory } from "./files"
 import { pasteMode } from "./paste"
@@ -122,7 +122,7 @@ describe("mediaCategory", () => {
 
 describe("attachmentLimitError", () => {
   test("accepts governed media at the Base64 boundary", () => {
-    const bytes = Math.floor((MIMO_BASE64_MEDIA_LIMIT_BYTES / 4) * 3)
+    const bytes = Math.floor((MIO_BASE64_MEDIA_LIMIT_BYTES / 4) * 3)
     expect(attachmentLimitError({ name: "boundary.png", size: bytes }, "image/png")).toBeUndefined()
   })
 

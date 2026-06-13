@@ -1,6 +1,6 @@
-# MiMo-Code Desktop
+# Mio Desktop
 
-Electron shell for the MiMo-Code app.
+Electron shell for the Mio app.
 
 ## Development
 

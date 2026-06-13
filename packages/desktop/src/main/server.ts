@@ -20,7 +20,7 @@ type SidecarMessage =
 
 export type SidecarListener = { stop: () => Promise<void> }
 
-const SIDECAR_SERVICE_NAME = "mimo server"
+const SIDECAR_SERVICE_NAME = "mio server"
 const SIDECAR_START_STALL_TIMEOUT = 60_000
 const SIDECAR_STOP_TIMEOUT = 6_000
 
@@ -60,9 +60,9 @@ export function preferAppEnv(userDataPath: string) {
   const shell = process.platform === "win32" ? null : getUserShell()
   Object.assign(process.env, {
     ...(shell ? loadShellEnv(shell) : null),
-    MIMO_EXPERIMENTAL_ICON_DISCOVERY: "true",
-    MIMO_EXPERIMENTAL_FILEWATCHER: "true",
-    MIMO_CLIENT: "desktop",
+    MIO_EXPERIMENTAL_ICON_DISCOVERY: "true",
+    MIO_EXPERIMENTAL_FILEWATCHER: "true",
+    MIO_CLIENT: "desktop",
     XDG_STATE_HOME: process.env.XDG_STATE_HOME ?? userDataPath,
   })
 }

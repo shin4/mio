@@ -64,8 +64,8 @@ export function FormatError(input: unknown): string | undefined {
     return [
       `Model not found: ${stringField(providerModelNotFound, "providerID")}/${stringField(providerModelNotFound, "modelID")}`,
       ...(suggestions.length ? ["Did you mean: " + suggestions.join(", ")] : []),
-      `Try: \`mimo models\` to list available models`,
-      `Or check your config (mimo.json) provider/model names`,
+      `Try: \`mio models\` to list available models`,
+      `Or check your config (mio.json) provider/model names`,
     ].join("\n")
   }
 

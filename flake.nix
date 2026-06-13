@@ -1,5 +1,5 @@
 {
-  description = "MiMo-Code development flake";
+  description = "Mio development flake";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";

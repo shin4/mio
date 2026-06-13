@@ -26,10 +26,10 @@ jobs:
   macos:
     runs-on: macos-14
     env:
-      MIMO_CHANNEL: prod
-      MIMO_VERSION: 0.0.0-ci
-      MIMO_TARGET_PLATFORM: darwin
-      MIMO_TARGET_ARCH: arm64
+      MIO_CHANNEL: prod
+      MIO_VERSION: 0.0.0-ci
+      MIO_TARGET_PLATFORM: darwin
+      MIO_TARGET_ARCH: arm64
       CSC_IDENTITY_AUTO_DISCOVERY: false # skip code signing
     steps:
       - uses: actions/checkout@v6
@@ -50,10 +50,10 @@ jobs:
   windows:
     runs-on: windows-latest
     env:
-      MIMO_CHANNEL: prod
-      MIMO_VERSION: 0.0.0-ci
-      MIMO_TARGET_PLATFORM: win32
-      MIMO_TARGET_ARCH: x64
+      MIO_CHANNEL: prod
+      MIO_VERSION: 0.0.0-ci
+      MIO_TARGET_PLATFORM: win32
+      MIO_TARGET_ARCH: x64
     steps:
       - uses: actions/checkout@v6
 

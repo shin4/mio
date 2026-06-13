@@ -47,18 +47,18 @@ const ref = {
 }
 
 // The single MiMo provider is repointed at the local TestLLMServer via env:
-// MIMO_BASE_URL is a live getter, OPENCODE_AUTH_CONTENT injects the saved key.
-// providerCfg(url) sets MIMO_BASE_URL to the live server for each test.
-const MIMO_AUTH_CONTENT = JSON.stringify({
+// MIO_BASE_URL is a live getter, OPENCODE_AUTH_CONTENT injects the saved key.
+// providerCfg(url) sets MIO_BASE_URL to the live server for each test.
+const MIO_AUTH_CONTENT = JSON.stringify({
   mimo: { type: "api", key: "test-key", metadata: { protocol: "openai", billing: "pay-as-you-go", region: "sgp", model: "mimo-v2.5" } },
 })
 beforeEach(() => {
-  process.env.MIMO_BASE_URL = "http://localhost:1/v1"
-  process.env.MIMO_AUTH_CONTENT = MIMO_AUTH_CONTENT
+  process.env.MIO_BASE_URL = "http://localhost:1/v1"
+  process.env.MIO_AUTH_CONTENT = MIO_AUTH_CONTENT
 })
 afterEach(() => {
-  delete process.env.MIMO_BASE_URL
-  delete process.env.MIMO_AUTH_CONTENT
+  delete process.env.MIO_BASE_URL
+  delete process.env.MIO_AUTH_CONTENT
 })
 
 const cfg = {
@@ -92,7 +92,7 @@ const cfg = {
 
 function providerCfg(url: string) {
   // Repoint the MiMo provider at the live test server for this test.
-  process.env.MIMO_BASE_URL = url
+  process.env.MIO_BASE_URL = url
   return {
     ...cfg,
     provider: {

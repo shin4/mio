@@ -100,8 +100,8 @@ async function stop() {
 
 function prepareSidecarEnv(password: string, userDataPath: string) {
   Object.assign(process.env, {
-    MIMO_SERVER_USERNAME: DEFAULT_AUTH_USERNAME,
-    MIMO_SERVER_PASSWORD: password,
+    MIO_SERVER_USERNAME: DEFAULT_AUTH_USERNAME,
+    MIO_SERVER_PASSWORD: password,
     XDG_STATE_HOME: process.env.XDG_STATE_HOME ?? userDataPath,
   })
 }

@@ -2,10 +2,10 @@ import { ModelV2 } from "./model"
 import { ProviderV2 } from "./provider"
 import { DateTime } from "effect"
 
-const MIMO_PROVIDER = ProviderV2.ID.make("mimo")
+const MIO_PROVIDER = ProviderV2.ID.make("mimo")
 
-const MIMO_MULTIMODAL_INPUT = ["text", "image/*", "audio/*", "video/*"]
-const MIMO_TEXT_INPUT = ["text"]
+const MIO_MULTIMODAL_INPUT = ["text", "image/*", "audio/*", "video/*"]
+const MIO_TEXT_INPUT = ["text"]
 
 function mimoModel(params: {
   id: string
@@ -27,7 +27,7 @@ function mimoModel(params: {
   return new ModelV2.Info({
     id: ModelV2.ID.make(params.id),
     apiID: ModelV2.ID.make(params.id),
-    providerID: MIMO_PROVIDER,
+    providerID: MIO_PROVIDER,
     family: ModelV2.Family.make("mimo"),
     name: params.name,
     endpoint: {
@@ -72,7 +72,7 @@ export const MODELS = {
     id: "mimo-v2.5",
     name: "MiMo V2.5",
     contextTokens: 1_048_576,
-    input: MIMO_MULTIMODAL_INPUT,
+    input: MIO_MULTIMODAL_INPUT,
     inputCostPerM: 2.0,
     outputCostPerM: 6.0,
     cacheReadCostPerM: 0.2,
@@ -83,7 +83,7 @@ export const MODELS = {
     id: "mimo-v2.5-pro",
     name: "MiMo V2.5 Pro",
     contextTokens: 1_048_576,
-    input: MIMO_TEXT_INPUT,
+    input: MIO_TEXT_INPUT,
     inputCostPerM: 4.0,
     outputCostPerM: 12.0,
     cacheReadCostPerM: 0.4,

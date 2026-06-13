@@ -7,7 +7,7 @@ import {
   base64PayloadBytes,
   formatBytesDecimal,
   isMimoGovernedMediaMime,
-  MIMO_BASE64_MEDIA_LIMIT_BYTES,
+  MIO_BASE64_MEDIA_LIMIT_BYTES,
   projectedBase64Bytes,
 } from "@opencode-ai/core/attachment-limits"
 import { SessionRevert } from "./revert"
@@ -102,7 +102,7 @@ function statSizeBytes(info: { readonly size?: number | bigint }) {
 function oversizedMediaText(input: { filename?: string; mime: string; encodedBytes: number }) {
   const filename = input.filename ?? "attachment"
   const size = formatBytesDecimal(input.encodedBytes)
-  const limit = formatBytesDecimal(MIMO_BASE64_MEDIA_LIMIT_BYTES)
+  const limit = formatBytesDecimal(MIO_BASE64_MEDIA_LIMIT_BYTES)
   return `Attachment ${filename} (${input.mime}) was omitted because its Base64-encoded size is ${size}, exceeding MiMo's ${limit} media limit. Inform the user that image, audio, and video attachments must be ${limit} or smaller after Base64 encoding.`
 }
 
@@ -888,7 +888,7 @@ export const layer = Layer.effect(
               }
               if (isMimoGovernedMediaMime(part.mime)) {
                 const encodedBytes = base64PayloadBytes(part.url)
-                if (encodedBytes !== undefined && encodedBytes > MIMO_BASE64_MEDIA_LIMIT_BYTES) {
+                if (encodedBytes !== undefined && encodedBytes > MIO_BASE64_MEDIA_LIMIT_BYTES) {
                   return [
                     {
                       messageID: info.id,
@@ -913,7 +913,7 @@ export const layer = Layer.effect(
               if (
                 encodedBytes !== undefined &&
                 isMimoGovernedMediaMime(mime) &&
-                encodedBytes > MIMO_BASE64_MEDIA_LIMIT_BYTES
+                encodedBytes > MIO_BASE64_MEDIA_LIMIT_BYTES
               ) {
                 return [
                   ...(referenceContext ? [{ ...referenceContext, messageID: info.id, sessionID: input.sessionID }] : []),

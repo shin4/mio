@@ -11,18 +11,18 @@ export const dict = {
   "desktop.updater.checkFailed.title": "Не вдалося перевірити оновлення",
   "desktop.updater.checkFailed.message": "Не вдалося перевірити наявність оновлень",
   "desktop.updater.none.title": "Немає доступних оновлень",
-  "desktop.updater.none.message": "Ви вже використовуєте найновішу версію MiMo Code Desktop",
+  "desktop.updater.none.message": "Ви вже використовуєте найновішу версію Mio Desktop",
   "desktop.updater.downloadFailed.title": "Помилка оновлення",
   "desktop.updater.downloadFailed.message": "Не вдалося завантажити оновлення",
   "desktop.updater.downloaded.title": "Оновлення завантажено",
   "desktop.updater.downloaded.prompt":
-    "Версію {{version}} MiMo Code Desktop завантажено. Бажаєте встановити її та перезапустити?",
+    "Версію {{version}} Mio Desktop завантажено. Бажаєте встановити її та перезапустити?",
   "desktop.updater.installFailed.title": "Помилка оновлення",
   "desktop.updater.installFailed.message": "Не вдалося встановити оновлення",
 
   "desktop.cli.installed.title": "CLI встановлено",
   "desktop.cli.installed.message":
-    "CLI встановлено до {{path}}\n\nПерезапустіть термінал, щоб використовувати команду 'mimo'.",
+    "CLI встановлено до {{path}}\n\nПерезапустіть термінал, щоб використовувати команду 'mio'.",
   "desktop.cli.failed.title": "Не вдалося встановити",
   "desktop.cli.failed.message": "Не вдалося встановити CLI: {{error}}",
 }

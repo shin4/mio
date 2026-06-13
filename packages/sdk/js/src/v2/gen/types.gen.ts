@@ -862,7 +862,7 @@ export type GlobalEvent = {
 export type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR"
 
 /**
- * Server configuration for MiMo-Code serve and web commands
+ * Server configuration for Mio serve and web commands
  */
 export type ServerConfig = {
   port?: number

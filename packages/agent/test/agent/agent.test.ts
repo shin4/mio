@@ -75,14 +75,14 @@ it.instance("build agent has correct default properties", () =>
   }),
 )
 
-it.instance("plan agent denies edits except .mimo/plans/*", () =>
+it.instance("plan agent denies edits except .mio/plans/*", () =>
   Effect.gen(function* () {
     const plan = yield* load((svc) => svc.get("plan"))
     expect(plan).toBeDefined()
     // Wildcard is denied
     expect(evalPerm(plan, "edit")).toBe("deny")
     // But specific path is allowed
-    expect(Permission.evaluate("edit", ".mimo/plans/foo.md", plan!.permission).action).toBe("allow")
+    expect(Permission.evaluate("edit", ".mio/plans/foo.md", plan!.permission).action).toBe("allow")
   }),
 )
 
@@ -594,7 +594,7 @@ it.instance(
   () =>
     Effect.gen(function* () {
       const test = yield* TestInstance
-      const skillDir = path.join(test.directory, ".mimo", "skill", "perm-skill")
+      const skillDir = path.join(test.directory, ".mio", "skill", "perm-skill")
       yield* Effect.promise(() =>
         Bun.write(
           path.join(skillDir, "SKILL.md"),
@@ -608,12 +608,12 @@ description: Permission skill.
         ),
       )
 
-      const home = process.env.MIMO_TEST_HOME
-      process.env.MIMO_TEST_HOME = test.directory
+      const home = process.env.MIO_TEST_HOME
+      process.env.MIO_TEST_HOME = test.directory
       yield* Effect.addFinalizer(() =>
         Effect.sync(() => {
-          if (home === undefined) delete process.env.MIMO_TEST_HOME
-          else process.env.MIMO_TEST_HOME = home
+          if (home === undefined) delete process.env.MIO_TEST_HOME
+          else process.env.MIO_TEST_HOME = home
         }),
       )
 

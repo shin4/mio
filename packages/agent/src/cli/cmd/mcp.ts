@@ -187,7 +187,7 @@ export const McpAuthCommand = effectCmd({
 
     if (servers.length === 0) {
       prompts.log.warn("No OAuth-capable MCP servers configured")
-      prompts.log.info("Remote MCP servers support OAuth by default. Add a remote server in mimo.json:")
+      prompts.log.info("Remote MCP servers support OAuth by default. Add a remote server in mio.json:")
       prompts.log.info(`
   "mcp": {
     "my-server": {
@@ -397,13 +397,13 @@ export const McpLogoutCommand = effectCmd({
 })
 
 async function resolveConfigPath(baseDir: string, global = false) {
-  // Check for existing config files (prefer .jsonc over .json, check .mimo/ subdirectory too)
-  const candidates = [path.join(baseDir, "mimo.json"), path.join(baseDir, "mimo.jsonc")]
+  // Check for existing config files (prefer .jsonc over .json, check .mio/ subdirectory too)
+  const candidates = [path.join(baseDir, "mio.json"), path.join(baseDir, "mio.jsonc")]
 
   if (!global) {
     candidates.push(
-      path.join(baseDir, AppInfo.projectConfigDir, "mimo.json"),
-      path.join(baseDir, AppInfo.projectConfigDir, "mimo.jsonc"),
+      path.join(baseDir, AppInfo.projectConfigDir, "mio.json"),
+      path.join(baseDir, AppInfo.projectConfigDir, "mio.jsonc"),
     )
   }
 
@@ -413,7 +413,7 @@ async function resolveConfigPath(baseDir: string, global = false) {
     }
   }
 
-  // Default to mimo.json if none exist
+  // Default to mio.json if none exist
   return candidates[0]
 }
 
@@ -685,7 +685,7 @@ export const McpDebugCommand = effectCmd({
             params: {
               protocolVersion: "2024-11-05",
               capabilities: {},
-              clientInfo: { name: "mimo-code-debug", version: InstallationVersion },
+              clientInfo: { name: "mio-debug", version: InstallationVersion },
             },
             id: 1,
           }),
@@ -728,7 +728,7 @@ export const McpDebugCommand = effectCmd({
 
           try {
             const client = new Client({
-              name: "mimo-code-debug",
+              name: "mio-debug",
               version: InstallationVersion,
             })
             await client.connect(transport)

@@ -16,7 +16,7 @@ const tmp = path.join(os.tmpdir(), app)
 
 const paths = {
   get home() {
-    return process.env.MIMO_TEST_HOME ?? os.homedir()
+    return process.env.MIO_TEST_HOME ?? os.homedir()
   },
   data,
   bin: path.join(cache, "bin"),
@@ -29,6 +29,37 @@ const paths = {
 }
 
 export const Path = paths
+
+// One-time migration for the MiMo-Code → Mio rename. The XDG roots moved from
+// <base>/mimo to <base>/mio; if a legacy root exists and the new one does not,
+// move it so existing sessions, auth, and config carry over on first launch.
+// Runs before the mkdir below so the rename targets don't exist yet.
+const LEGACY_APP = "mimo"
+// Existence-guarded, so it's a no-op once migrated (and if app ever equals the
+// legacy id, legacy === dir and the guards below skip).
+await Promise.all(
+  [data, cache, config, state].map(async (dir) => {
+    const legacy = path.join(path.dirname(dir), LEGACY_APP)
+    const [exists, legacyExists] = await Promise.all([
+      fs.access(dir).then(() => true, () => false),
+      fs.access(legacy).then(() => true, () => false),
+    ])
+    if (!exists && legacyExists) await fs.rename(legacy, dir).catch(() => {})
+  }),
+)
+// The default database file is named after the app id; rename the legacy
+// mimo.db (and its WAL/SHM siblings) inside the now-migrated data dir.
+await Promise.all(
+  ["", "-wal", "-shm"].map(async (suffix) => {
+    const from = path.join(data, `${LEGACY_APP}.db${suffix}`)
+    const to = path.join(data, `${app}.db${suffix}`)
+    const [toExists, fromExists] = await Promise.all([
+      fs.access(to).then(() => true, () => false),
+      fs.access(from).then(() => true, () => false),
+    ])
+    if (fromExists && !toExists) await fs.rename(from, to).catch(() => {})
+  }),
+)
 
 Flock.setGlobal({ state })
 
@@ -61,7 +92,7 @@ export function make(input: Partial<Interface> = {}): Interface {
     home: Path.home,
     data: Path.data,
     cache: Path.cache,
-    config: Flag.MIMO_CONFIG_DIR ?? Path.config,
+    config: Flag.MIO_CONFIG_DIR ?? Path.config,
     state: Path.state,
     tmp: Path.tmp,
     bin: Path.bin,

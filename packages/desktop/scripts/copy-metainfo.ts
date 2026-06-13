@@ -3,8 +3,8 @@ import { resolveChannel } from "./utils"
 const arg = process.argv[2]
 const channel = arg === "dev" || arg === "beta" || arg === "prod" ? arg : resolveChannel()
 
-const appId = channel === "prod" ? "io.github.shin4.mimo.desktop" : `io.github.shin4.mimo.desktop.${channel}`
-const productName = channel === "prod" ? "MiMo-Code" : `MiMo-Code ${channel.charAt(0).toUpperCase() + channel.slice(1)}`
+const appId = channel === "prod" ? "io.github.shin4.mio.desktop" : `io.github.shin4.mio.desktop.${channel}`
+const productName = channel === "prod" ? "Mio" : `Mio ${channel.charAt(0).toUpperCase() + channel.slice(1)}`
 const summary = `MiMo-exclusive desktop AI coding agent${channel !== "prod" ? ` (${channel})` : ""}`
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -18,12 +18,12 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
   <summary>${summary}</summary>
 
   <developer id="io.github.shin4">
-    <name>MiMo-Code</name>
+    <name>Mio</name>
   </developer>
 
   <description>
     <p>
-      MiMo-Code is a desktop coding agent powered by Xiaomi MiMo models.
+      Mio is a desktop coding agent powered by Xiaomi MiMo models.
     </p>
   </description>
 
@@ -31,9 +31,9 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 
   <content_rating type="oars-1.1" />
 
-  <url type="bugtracker">https://github.com/shin4/mimo-code/issues</url>
-  <url type="homepage">https://github.com/shin4/mimo-code</url>
-  <url type="vcs-browser">https://github.com/shin4/mimo-code</url>
+  <url type="bugtracker">https://github.com/shin4/mio/issues</url>
+  <url type="homepage">https://github.com/shin4/mio</url>
+  <url type="vcs-browser">https://github.com/shin4/mio</url>
 </component>
 `
 

@@ -96,7 +96,7 @@ export function createPetWindow() {
     fullscreenable: false,
     skipTaskbar: true,
     hasShadow: false,
-    title: "MiMo Pet",
+    title: "Mio Pet",
     backgroundColor: "#00000000",
     webPreferences: {
       preload: join(root, "../preload/index.js"),
@@ -243,7 +243,7 @@ export function showPetContextMenu() {
     },
     { type: "separator" },
     {
-      label: locale("退出 MiMo", "Quit MiMo"),
+      label: locale("退出 Mio", "Quit Mio"),
       click: () => deps?.quit(),
     },
   ])

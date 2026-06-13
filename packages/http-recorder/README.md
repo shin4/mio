@@ -1,4 +1,4 @@
-# MiMo-Code HTTP Recorder
+# Mio HTTP Recorder
 
 `@opencode-ai/http-recorder` is an internal compatibility-scoped package for
 recording and replaying HTTP and WebSocket traffic in Effect tests. It lets

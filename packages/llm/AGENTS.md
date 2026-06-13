@@ -24,8 +24,8 @@ This package is an Effect Schema-first LLM core. The Schema classes in `src/sche
 Primary in-repo integration point:
 
 - `packages/agent/src/session/llm.ts` is the session-owned orchestration layer that decides whether a request uses AI SDK or this package's native route runtime.
-- `packages/agent/src/session/llm/native-request.ts` is the lowering adapter from MiMo-Code's session/AI SDK-shaped data into this package's `LLMRequest` model.
-- `packages/agent/src/session/llm/native-runtime.ts` is the execution adapter that calls `LLMClient.stream(...)` and bridges MiMo-Code tools into this package's tool runtime.
+- `packages/agent/src/session/llm/native-request.ts` is the lowering adapter from Mio's session/AI SDK-shaped data into this package's `LLMRequest` model.
+- `packages/agent/src/session/llm/native-runtime.ts` is the execution adapter that calls `LLMClient.stream(...)` and bridges Mio tools into this package's tool runtime.
 - `packages/agent/src/session/llm/ai-sdk.ts` keeps the default AI SDK path compatible by converting AI SDK stream parts into this package's shared `LLMEvent`s.
 
 Keep this package independent of session concerns. Session auth, permissions, plugins, telemetry headers, and runtime selection belong in `packages/agent/src/session/llm.ts` and its local adapters.

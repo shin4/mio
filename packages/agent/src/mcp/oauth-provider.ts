@@ -46,8 +46,8 @@ export class McpOAuthProvider implements OAuthClientProvider {
   get clientMetadata(): OAuthClientMetadata {
     return {
       redirect_uris: [this.redirectUrl],
-      client_name: "MiMo-Code",
-      client_uri: "https://github.com/shin4/mimo-code",
+      client_name: "Mio",
+      client_uri: "https://github.com/shin4/mio",
       grant_types: ["authorization_code", "refresh_token"],
       response_types: ["code"],
       token_endpoint_auth_method: this.config.clientSecret ? "client_secret_post" : "none",

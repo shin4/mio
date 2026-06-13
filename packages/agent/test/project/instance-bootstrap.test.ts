@@ -45,9 +45,9 @@ const bootstrapFixture = Effect.gen(function* () {
   )
   yield* Effect.promise(() =>
     Bun.write(
-      path.join(dir, "mimo.json"),
+      path.join(dir, "mio.json"),
       JSON.stringify({
-        $schema: "https://platform.xiaomimimo.com/mimo-code/config.json",
+        $schema: "https://raw.githubusercontent.com/shin4/mio/main/schema/config.json",
         plugin: [pathToFileURL(pluginFile).href],
       }),
     ),

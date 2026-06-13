@@ -6,7 +6,7 @@ values directly.
 
 ## Conversation Summary
 
-Kit and Aidan want provider-specific LLM behavior to move out of MiMo-Code's AI
+Kit and Aidan want provider-specific LLM behavior to move out of Mio's AI
 SDK transform path and into `packages/llm` where possible. The goal is not a big
 generic transform layer; the goal is small composable route definitions backed by
 recorded golden tests.
@@ -454,7 +454,7 @@ If a Cloudflare product gains a full lazy env default, it can expose a direct
 selector too. Until then, omitting `CloudflareAIGateway.model(...)` makes missing
 account/gateway configuration unrepresentable.
 
-MiMo-Code's dynamic runtime should construct executable models at its app
+Mio's dynamic runtime should construct executable models at its app
 boundary instead of exposing a giant unstructured public model constructor or a
 generic dynamic resolver:
 

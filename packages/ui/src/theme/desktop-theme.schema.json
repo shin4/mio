@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "../desktop-theme.schema.json",
-  "title": "MiMo Code Desktop Theme",
-  "description": "A theme definition for the MiMo Code desktop application",
+  "title": "Mio Desktop Theme",
+  "description": "A theme definition for the Mio desktop application",
   "type": "object",
   "required": ["name", "id", "light", "dark"],
   "properties": {

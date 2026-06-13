@@ -144,7 +144,7 @@ describe("Permission.disabled for task tool", () => {
 // Integration tests that load permissions from real config files
 describe("permission.task with real config files", () => {
   it.instance(
-    "loads task permissions from mimo.json config",
+    "loads task permissions from mio.json config",
     () =>
       Effect.gen(function* () {
         const config = yield* load

@@ -88,7 +88,7 @@ jobs:
       - run: bun install --frozen-lockfile
 
       - name: Run unit tests (excluding agent)
-        run: bun turbo test:ci --filter='!mimo-agent'
+        run: bun turbo test:ci --filter='!mio-agent'
 
       - name: Upload test results
         if: ${{ !cancelled() }}
@@ -116,7 +116,7 @@ jobs:
       - run: bun install --frozen-lockfile
 
       - name: Run agent unit tests (non-blocking)
-        run: bun turbo test:ci --filter='mimo-agent'
+        run: bun turbo test:ci --filter='mio-agent'
 
       - name: Upload agent test results
         if: ${{ !cancelled() }}

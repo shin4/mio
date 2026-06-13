@@ -75,7 +75,7 @@ if (!(root instanceof HTMLElement) && import.meta.env.DEV) {
 
 const getCurrentUrl = () => {
   if (import.meta.env.DEV)
-    return `http://${import.meta.env.VITE_MIMO_SERVER_HOST ?? "localhost"}:${import.meta.env.VITE_MIMO_SERVER_PORT ?? "4096"}`
+    return `http://${import.meta.env.VITE_MIO_SERVER_HOST ?? "localhost"}:${import.meta.env.VITE_MIO_SERVER_PORT ?? "4096"}`
   return location.origin
 }
 
@@ -120,7 +120,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     integrations: (integrations) => {
       return integrations.filter(
         (i) =>
-          i.name !== "Breadcrumbs" && !(import.meta.env.VITE_MIMO_CHANNEL === "prod" && i.name === "GlobalHandlers"),
+          i.name !== "Breadcrumbs" && !(import.meta.env.VITE_MIO_CHANNEL === "prod" && i.name === "GlobalHandlers"),
       )
     },
   })

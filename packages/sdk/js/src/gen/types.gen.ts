@@ -1209,7 +1209,7 @@ export type Config = {
     diff_style?: "auto" | "stacked"
   }
   /**
-   * Command configuration for MiMo-Code.
+   * Command configuration for Mio.
    */
   command?: {
     [key: string]: {
@@ -1266,7 +1266,7 @@ export type Config = {
     [key: string]: AgentConfig | undefined
   }
   /**
-   * Agent configuration for MiMo-Code.
+   * Agent configuration for Mio.
    */
   agent?: {
     plan?: AgentConfig

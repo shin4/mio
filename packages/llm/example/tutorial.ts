@@ -8,13 +8,13 @@ import { MiMo } from "@opencode-ai/llm/providers"
  *
  * Run from `packages/llm` with a MiMo key in the environment:
  *
- *   MIMO_API_KEY=... bun example/tutorial.ts
+ *   MIO_API_KEY=... bun example/tutorial.ts
  *
  * The file is intentionally written as a normal TypeScript program. You can
  * hover imports and local values to see how the public API is typed.
  */
 
-const apiKey = Config.redacted("MIMO_API_KEY")
+const apiKey = Config.redacted("MIO_API_KEY")
 
 // 1. Pick a model. The provider helper records provider identity, protocol
 // choice, capabilities, deployment options, authentication, and defaults.

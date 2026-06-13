@@ -40,7 +40,7 @@ export function ide() {
 }
 
 export function alreadyInstalled() {
-  return process.env["MIMO_CALLER"] === "vscode" || process.env["MIMO_CALLER"] === "vscode-insiders"
+  return process.env["MIO_CALLER"] === "vscode" || process.env["MIO_CALLER"] === "vscode-insiders"
 }
 
 export async function install(ide: (typeof SUPPORTED_IDES)[number]["name"]) {

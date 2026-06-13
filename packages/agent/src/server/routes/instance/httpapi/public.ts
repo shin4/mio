@@ -75,7 +75,7 @@ const QueryParameterSchemas: Record<string, OpenApiSchema> = {
 
 const LegacyComponentDescriptions: Record<string, string> = {
   LogLevel: "Log level",
-  ServerConfig: "Server configuration for MiMo-Code serve and web commands",
+  ServerConfig: "Server configuration for Mio serve and web commands",
   LayoutConfig: "@deprecated Always uses stretch layout.",
 }
 
@@ -527,9 +527,9 @@ function normalizeParameter(param: OpenApiParameter, route: string) {
 
 export const PublicApi = OpenCodeHttpApi.annotateMerge(
   OpenApi.annotations({
-    title: "MiMo-Code",
+    title: "Mio",
     version: "1.0.0",
-    description: "MiMo-Code API",
+    description: "Mio API",
     transform: matchLegacyOpenApi,
   }),
 )

@@ -51,7 +51,7 @@ export const dict: Record<Keys, string> = {
 
   "dialog.usageExceeded.freeTier.title": "Gratis grense nådd",
   "dialog.usageExceeded.freeTier.description":
-    "Abonner på MiMo-Code Go for pålitelig tilgang til de beste åpen kildekode-modellene, fra $5/måned.",
+    "Abonner på Mio Go for pålitelig tilgang til de beste åpen kildekode-modellene, fra $5/måned.",
   "dialog.usageExceeded.freeTier.actionLabel": "Abonner",
   "dialog.usageExceeded.accountRateLimit.title": "Go-grense nådd",
   "dialog.usageExceeded.accountRateLimit.description":

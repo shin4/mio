@@ -149,7 +149,7 @@ export const McpApi = HttpApi.make("mcp")
   )
   .annotateMerge(
     OpenApi.annotations({
-      title: "MiMo-Code experimental HttpApi",
+      title: "Mio experimental HttpApi",
       version: "0.0.1",
       description: "Experimental HttpApi surface for selected instance routes.",
     }),

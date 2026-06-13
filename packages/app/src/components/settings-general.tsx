@@ -487,7 +487,7 @@ export const SettingsGeneral: Component = () => {
           description={
             <>
               {language.t("settings.general.row.theme.description")}{" "}
-              <Link href="https://github.com/shin4/mimo-code">{language.t("common.learnMore")}</Link>
+              <Link href="https://github.com/shin4/mio">{language.t("common.learnMore")}</Link>
             </>
           }
         >

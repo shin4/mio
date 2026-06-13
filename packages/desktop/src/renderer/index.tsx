@@ -34,7 +34,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     environment: import.meta.env.VITE_SENTRY_ENVIRONMENT ?? import.meta.env.MODE,
-    release: import.meta.env.VITE_SENTRY_RELEASE ?? `desktop@${import.meta.env.MIMO_VERSION}`,
+    release: import.meta.env.VITE_SENTRY_RELEASE ?? `desktop@${import.meta.env.MIO_VERSION}`,
     initialScope: {
       tags: {
         platform: "desktop",
@@ -45,7 +45,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
         (i) =>
           i.name !== "Breadcrumbs" &&
           !(
-            import.meta.env.VITE_MIMO_CHANNEL === "prod" &&
+            import.meta.env.VITE_MIO_CHANNEL === "prod" &&
             (i.name === "GlobalHandlers" || i.name === "BrowserApiErrors")
           ),
       )
@@ -55,13 +55,13 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 
 void initI18n()
 
-const deepLinkEvent = "mimo:deep-link"
+const deepLinkEvent = "mio:deep-link"
 
 const emitDeepLinks = (urls: string[]) => {
   if (urls.length === 0) return
-  window.__MIMO__ ??= {}
-  const pending = window.__MIMO__.deepLinks ?? []
-  window.__MIMO__.deepLinks = [...pending, ...urls]
+  window.__MIO__ ??= {}
+  const pending = window.__MIO__.deepLinks ?? []
+  window.__MIO__.deepLinks = [...pending, ...urls]
   window.dispatchEvent(new CustomEvent(deepLinkEvent, { detail: { urls } }))
 }
 
@@ -146,7 +146,7 @@ const createPlatform = (): Platform => {
   return {
     platform: "desktop",
     os,
-    version: import.meta.env.MIMO_VERSION,
+    version: import.meta.env.MIO_VERSION,
 
     async openDirectoryPickerDialog(opts) {
       const defaultPath = await wslHome()
@@ -310,7 +310,7 @@ render(() => {
   const platform = createPlatform()
   const [windowConfig] = createResource(() => window.api.getWindowConfig().catch(() => ({ updaterEnabled: false })))
   const loadLocale = async () => {
-    const current = await platform.storage?.("mimo.global.dat").getItem("language")
+    const current = await platform.storage?.("mio.global.dat").getItem("language")
     const legacy = current ? undefined : await platform.storage?.().getItem("language.v1")
     const raw = current ?? legacy
     if (!raw) return
@@ -397,7 +397,7 @@ render(() => {
     return (
       <div data-component="desktop-startup-fallback" class="desktop-startup-fallback" role="status" aria-live="polite">
         <div class="desktop-startup-fallback__spinner" />
-        <div class="desktop-startup-fallback__text">Starting MiMo Code...</div>
+        <div class="desktop-startup-fallback__text">Starting Mio...</div>
       </div>
     )
   }
@@ -410,7 +410,7 @@ render(() => {
       void window.api.recordFatalRendererError({
         error: `startup resource pending: ${pending.join(", ")}`,
         url: window.location.href,
-        version: import.meta.env.MIMO_VERSION,
+        version: import.meta.env.MIO_VERSION,
         platform: "desktop",
         os: platform.os,
       })

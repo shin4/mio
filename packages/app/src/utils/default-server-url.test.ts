@@ -43,7 +43,7 @@ describe("default server URL storage", () => {
   test("uses the MiMo key without reading the upstream opencode key", () => {
     localStorage.setItem("opencode.settings.dat:defaultServerUrl", "http://legacy.example")
 
-    expect(DEFAULT_SERVER_URL_KEY).toBe("mimo.settings.dat:defaultServerUrl")
+    expect(DEFAULT_SERVER_URL_KEY).toBe("mio.settings.dat:defaultServerUrl")
     expect(readDefaultServerUrl()).toBeNull()
   })
 

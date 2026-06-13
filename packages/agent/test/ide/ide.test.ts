@@ -62,20 +62,20 @@ describe("ide", () => {
     expect(Ide.ide()).toBe("unknown")
   })
 
-  test("should recognize vscode-insiders MIMO_CALLER", () => {
-    process.env["MIMO_CALLER"] = "vscode-insiders"
+  test("should recognize vscode-insiders MIO_CALLER", () => {
+    process.env["MIO_CALLER"] = "vscode-insiders"
 
     expect(Ide.alreadyInstalled()).toBe(true)
   })
 
-  test("should recognize vscode MIMO_CALLER", () => {
-    process.env["MIMO_CALLER"] = "vscode"
+  test("should recognize vscode MIO_CALLER", () => {
+    process.env["MIO_CALLER"] = "vscode"
 
     expect(Ide.alreadyInstalled()).toBe(true)
   })
 
-  test("should return false for unknown MIMO_CALLER", () => {
-    process.env["MIMO_CALLER"] = "unknown"
+  test("should return false for unknown MIO_CALLER", () => {
+    process.env["MIO_CALLER"] = "unknown"
 
     expect(Ide.alreadyInstalled()).toBe(false)
   })

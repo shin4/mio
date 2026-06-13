@@ -50,11 +50,11 @@ Use this skill.
         )
         yield* Effect.promise(() => Bun.write(path.join(skill, "scripts", "demo.txt"), "demo"))
 
-        const home = process.env.MIMO_TEST_HOME
-        process.env.MIMO_TEST_HOME = dir
+        const home = process.env.MIO_TEST_HOME
+        process.env.MIO_TEST_HOME = dir
         yield* Effect.addFinalizer(() =>
           Effect.sync(() => {
-            process.env.MIMO_TEST_HOME = home
+            process.env.MIO_TEST_HOME = home
           }),
         )
 
@@ -94,11 +94,11 @@ Use this skill.
   it.live("execute preserves not found message", () =>
     provideTmpdirInstance((dir) =>
       Effect.gen(function* () {
-        const home = process.env.MIMO_TEST_HOME
-        process.env.MIMO_TEST_HOME = dir
+        const home = process.env.MIO_TEST_HOME
+        process.env.MIO_TEST_HOME = dir
         yield* Effect.addFinalizer(() =>
           Effect.sync(() => {
-            process.env.MIMO_TEST_HOME = home
+            process.env.MIO_TEST_HOME = home
           }),
         )
 

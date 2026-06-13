@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="760" height="56" viewBox="0 0 760 56" role="img" aria-label="应用内状态栏：缓存 98%，前缀稳定，上下文 101.9K / 1.0M，用量 4.5M，82 tok/s">
-  <title>MiMo-Code 应用内状态栏</title>
+  <title>Mio 应用内状态栏</title>
   <rect x="1" y="1" width="758" height="54" rx="27" fill="#ffffff" stroke="#E6E6E9" stroke-width="1"/>
   <!-- cache ring (98%) -->
   <circle cx="40" cy="28" r="9" fill="none" stroke="#E6E6E9" stroke-width="3.2"/>

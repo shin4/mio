@@ -65,7 +65,7 @@ export type Config = RouteDefaultsInput &
 const auth = (options: ProviderAuthOption<"optional">) => {
   if ("auth" in options && options.auth) return options.auth
   return Auth.optional("apiKey" in options ? options.apiKey : undefined, "apiKey")
-    .orElse(Auth.config("MIMO_API_KEY"))
+    .orElse(Auth.config("MIO_API_KEY"))
     .pipe(Auth.header("api-key"))
 }
 

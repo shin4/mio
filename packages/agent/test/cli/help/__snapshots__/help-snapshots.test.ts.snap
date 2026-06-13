@@ -1,16 +1,16 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo mcp --help 1`] = `
-"mimo mcp
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio mcp --help 1`] = `
+"mio mcp
 
 manage MCP (Model Context Protocol) servers
 
 Commands:
-  mimo mcp add            add an MCP server
-  mimo mcp list           list MCP servers and their status                            [aliases: ls]
-  mimo mcp auth [name]    authenticate with an OAuth-enabled MCP server
-  mimo mcp logout [name]  remove OAuth credentials for an MCP server
-  mimo mcp debug <name>   debug OAuth connection for an MCP server
+  mio mcp add            add an MCP server
+  mio mcp list           list MCP servers and their status                             [aliases: ls]
+  mio mcp auth [name]    authenticate with an OAuth-enabled MCP server
+  mio mcp logout [name]  remove OAuth credentials for an MCP server
+  mio mcp debug <name>   debug OAuth connection for an MCP server
 
 Options:
   -h, --help        show help                                                              [boolean]
@@ -20,14 +20,14 @@ Options:
       --pure        run without external plugins                                           [boolean]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo agent --help 1`] = `
-"mimo agent
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio agent --help 1`] = `
+"mio agent
 
 manage agents
 
 Commands:
-  mimo agent create  create a new agent
-  mimo agent list    list all available agents
+  mio agent create  create a new agent
+  mio agent list    list all available agents
 
 Options:
   -h, --help        show help                                                              [boolean]
@@ -37,10 +37,10 @@ Options:
       --pure        run without external plugins                                           [boolean]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo serve --help 1`] = `
-"mimo serve
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio serve --help 1`] = `
+"mio serve
 
-starts a headless MiMo-Code server
+starts a headless Mio server
 
 Options:
   -h, --help         show help                                                             [boolean]
@@ -52,30 +52,30 @@ Options:
       --hostname     hostname to listen on                           [string] [default: "127.0.0.1"]
       --mdns         enable mDNS service discovery (defaults hostname to 0.0.0.0)
                                                                           [boolean] [default: false]
-      --mdns-domain  custom domain name for mDNS service (default: mimo.local)
-                                                                    [string] [default: "mimo.local"]
+      --mdns-domain  custom domain name for mDNS service (default: mio.local)
+                                                                     [string] [default: "mio.local"]
       --cors         additional domains to allow for CORS                      [array] [default: []]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo debug --help 1`] = `
-"mimo debug
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio debug --help 1`] = `
+"mio debug
 
 debugging and troubleshooting tools
 
 Commands:
-  mimo debug config        show resolved configuration
-  mimo debug lsp           LSP debugging utilities
-  mimo debug rg            ripgrep debugging utilities
-  mimo debug file          file system debugging utilities
-  mimo debug scrap         list all known projects
-  mimo debug skill         list all available skills
-  mimo debug snapshot      snapshot debugging utilities
-  mimo debug startup       print startup timing
-  mimo debug agent <name>  show agent configuration details
-  mimo debug v2            debug v2 catalog and built-in plugins
-  mimo debug info          show debug information
-  mimo debug paths         show global paths (data, config, cache, state)
-  mimo debug wait          wait indefinitely (for debugging)
+  mio debug config        show resolved configuration
+  mio debug lsp           LSP debugging utilities
+  mio debug rg            ripgrep debugging utilities
+  mio debug file          file system debugging utilities
+  mio debug scrap         list all known projects
+  mio debug skill         list all available skills
+  mio debug snapshot      snapshot debugging utilities
+  mio debug startup       print startup timing
+  mio debug agent <name>  show agent configuration details
+  mio debug v2            debug v2 catalog and built-in plugins
+  mio debug info          show debug information
+  mio debug paths         show global paths (data, config, cache, state)
+  mio debug wait          wait indefinitely (for debugging)
 
 Options:
   -h, --help        show help                                                              [boolean]
@@ -85,15 +85,15 @@ Options:
       --pure        run without external plugins                                           [boolean]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo db --help 1`] = `
-"mimo db
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio db --help 1`] = `
+"mio db
 
 database tools
 
 Commands:
-  mimo db [query]     open an interactive sqlite3 shell or run a query                     [default]
-  mimo db path        print the database path
-  mimo db migrate     migrate JSON data to SQLite (merges with existing data)
+  mio db [query]     open an interactive sqlite3 shell or run a query                      [default]
+  mio db path        print the database path
+  mio db migrate     migrate JSON data to SQLite (merges with existing data)
 
 Positionals:
   query  SQL query to execute                                                               [string]
@@ -107,8 +107,8 @@ Options:
       --format      Output format                 [string] [choices: "json", "tsv"] [default: "tsv"]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo mcp list --help 1`] = `
-"mimo mcp list
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio mcp list --help 1`] = `
+"mio mcp list
 
 list MCP servers and their status
 
@@ -120,8 +120,8 @@ Options:
       --pure        run without external plugins                                           [boolean]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo mcp add --help 1`] = `
-"mimo mcp add
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio mcp add --help 1`] = `
+"mio mcp add
 
 add an MCP server
 
@@ -133,13 +133,13 @@ Options:
       --pure        run without external plugins                                           [boolean]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo mcp auth --help 1`] = `
-"mimo mcp auth [name]
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio mcp auth --help 1`] = `
+"mio mcp auth [name]
 
 authenticate with an OAuth-enabled MCP server
 
 Commands:
-  mimo mcp auth list  list OAuth-capable MCP servers and their auth status             [aliases: ls]
+  mio mcp auth list  list OAuth-capable MCP servers and their auth status              [aliases: ls]
 
 Positionals:
   name  name of the MCP server                                                              [string]
@@ -152,8 +152,8 @@ Options:
       --pure        run without external plugins                                           [boolean]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo mcp logout --help 1`] = `
-"mimo mcp logout [name]
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio mcp logout --help 1`] = `
+"mio mcp logout [name]
 
 remove OAuth credentials for an MCP server
 
@@ -168,8 +168,8 @@ Options:
       --pure        run without external plugins                                           [boolean]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo agent create --help 1`] = `
-"mimo agent create
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio agent create --help 1`] = `
+"mio agent create
 
 create a new agent
 
@@ -188,8 +188,8 @@ Options:
   -m, --model                 model to use in the format of provider/model                  [string]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo agent list --help 1`] = `
-"mimo agent list
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio agent list --help 1`] = `
+"mio agent list
 
 list all available agents
 
@@ -201,8 +201,8 @@ Options:
       --pure        run without external plugins                                           [boolean]"
 `;
 
-exports[`mimo CLI help-text snapshots every documented command emits stable help text: mimo db path --help 1`] = `
-"mimo db path
+exports[`mio CLI help-text snapshots every documented command emits stable help text: mio db path --help 1`] = `
+"mio db path
 
 print the database path
 

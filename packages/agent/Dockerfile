@@ -7,12 +7,12 @@ ENV BUN_RUNTIME_TRANSPILER_CACHE_PATH=${BUN_RUNTIME_TRANSPILER_CACHE_PATH}
 RUN apk add libgcc libstdc++ ripgrep
 
 FROM base AS build-amd64
-COPY dist/mimo-linux-x64-baseline-musl/bin/mimo /usr/local/bin/mimo
+COPY dist/mio-linux-x64-baseline-musl/bin/mio /usr/local/bin/mio
 
 FROM base AS build-arm64
-COPY dist/mimo-linux-arm64-musl/bin/mimo /usr/local/bin/mimo
+COPY dist/mio-linux-arm64-musl/bin/mio /usr/local/bin/mio
 
 ARG TARGETARCH
 FROM build-${TARGETARCH}
-RUN mimo --version
-ENTRYPOINT ["mimo"]
+RUN mio --version
+ENTRYPOINT ["mio"]

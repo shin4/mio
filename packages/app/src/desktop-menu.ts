@@ -72,7 +72,7 @@ export type DesktopMenu = {
 export const DESKTOP_MENU: DesktopMenu[] = [
   {
     id: "app",
-    label: "MiMo Code Desktop",
+    label: "Mio Desktop",
     platforms: ["macos"],
     items: [
       { type: "item", role: "about" },
@@ -200,18 +200,18 @@ export const DESKTOP_MENU: DesktopMenu[] = [
     id: "help",
     label: "Help",
     items: [
-      { type: "item", label: "MiMo-Code Repository", href: "https://github.com/shin4/mimo-code" },
+      { type: "item", label: "Mio Repository", href: "https://github.com/shin4/mio" },
       { type: "item", label: "Export Logs...", command: "logs.export" },
       { type: "separator" },
       {
         type: "item",
         label: "Share Feedback",
-        href: "https://github.com/shin4/mimo-code/issues/new",
+        href: "https://github.com/shin4/mio/issues/new",
       },
       {
         type: "item",
         label: "Report a Bug",
-        href: "https://github.com/shin4/mimo-code/issues/new",
+        href: "https://github.com/shin4/mio/issues/new",
       },
     ],
   },

@@ -8,8 +8,8 @@
 // diff tells you exactly which command(s) changed.
 //
 // Snapshots are taken at COLUMNS=120 so wrapping is stable across
-// terminal sizes. The default mimo tui command is excluded —
-// `mimo --help` includes an ASCII banner that pulls in the install
+// terminal sizes. The default mio tui command is excluded —
+// `mio --help` includes an ASCII banner that pulls in the install
 // version (changes per release), so we'd snapshot a moving target.
 import { describe, expect } from "bun:test"
 import { Effect } from "effect"
@@ -38,7 +38,7 @@ function normalize(text: string): string {
   })
 }
 
-// Top-level commands. Order matches what `mimo --help` prints today;
+// Top-level commands. Order matches what `mio --help` prints today;
 // keep it in that order so the snapshot file reads as a table of contents.
 // `completion` is intentionally excluded — it's a yargs built-in that emits
 // top-level help on `--help` and exits 1; not a real MiMo command.
@@ -62,7 +62,7 @@ const SUBCOMMANDS = [
 // different wraps from a 200-col local terminal.
 const SNAPSHOT_ENV = { COLUMNS: "120" }
 
-describe("mimo CLI help-text snapshots", () => {
+describe("mio CLI help-text snapshots", () => {
   // Single test, parallel spawns. Each command's help fires under
   // `concurrency: 8` — wall-clock stays under ~10s even for ~35 commands,
   // versus ~1 minute if we serialized.
@@ -81,7 +81,7 @@ describe("mimo CLI help-text snapshots", () => {
           (argv) =>
             Effect.gen(function* () {
               const result = yield* opencode.spawn([...argv, "--help"], { env: SNAPSHOT_ENV })
-              if (result.exitCode !== 0) return yield* Effect.fail(`mimo ${argv.join(" ")}: exit ${result.exitCode}`)
+              if (result.exitCode !== 0) return yield* Effect.fail(`mio ${argv.join(" ")}: exit ${result.exitCode}`)
               return { argv, result }
             }),
           { concurrency: 8 },
@@ -91,7 +91,7 @@ describe("mimo CLI help-text snapshots", () => {
           // yargs writes --help to stderr, not stdout. Snapshotting stderr
           // means our test catches the help body; stdout for these commands
           // is expected to be empty.
-          expect(normalize(result.stderr)).toMatchSnapshot(`mimo ${argv.join(" ")} --help`)
+          expect(normalize(result.stderr)).toMatchSnapshot(`mio ${argv.join(" ")} --help`)
         }
         if (failures.length > 0) {
           throw new Error(`Help text failed for:\n  ${failures.join("\n  ")}`)

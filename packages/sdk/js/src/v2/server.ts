@@ -19,7 +19,7 @@ export type TuiOptions = {
   config?: Config
 }
 
-export async function createMimoServer(options?: ServerOptions) {
+export async function createMioServer(options?: ServerOptions) {
   options = Object.assign(
     {
       hostname: "127.0.0.1",
@@ -32,10 +32,10 @@ export async function createMimoServer(options?: ServerOptions) {
   const args = [`serve`, `--hostname=${options.hostname}`, `--port=${options.port}`]
   if (options.config?.logLevel) args.push(`--log-level=${options.config.logLevel}`)
 
-  const proc = launch(`mimo`, args, {
+  const proc = launch(`mio`, args, {
     env: {
       ...process.env,
-      MIMO_CONFIG_CONTENT: JSON.stringify(options.config ?? {}),
+      MIO_CONFIG_CONTENT: JSON.stringify(options.config ?? {}),
     },
   })
   let clear = () => {}
@@ -53,7 +53,7 @@ export async function createMimoServer(options?: ServerOptions) {
       output += chunk.toString()
       const lines = output.split("\n")
       for (const line of lines) {
-        if (line.startsWith("mimo server listening")) {
+        if (line.startsWith("mio server listening")) {
           const match = line.match(/on\s+(https?:\/\/[^\s]+)/)
           if (!match) {
             clear()
@@ -99,9 +99,9 @@ export async function createMimoServer(options?: ServerOptions) {
   }
 }
 
-export const createOpencodeServer = createMimoServer
+export const createOpencodeServer = createMioServer
 
-export function createMimoTui(options?: TuiOptions) {
+export function createMioTui(options?: TuiOptions) {
   const args = []
 
   if (options?.project) {
@@ -117,11 +117,11 @@ export function createMimoTui(options?: TuiOptions) {
     args.push(`--agent=${options.agent}`)
   }
 
-  const proc = launch(`mimo`, args, {
+  const proc = launch(`mio`, args, {
     stdio: "inherit",
     env: {
       ...process.env,
-      MIMO_CONFIG_CONTENT: JSON.stringify(options?.config ?? {}),
+      MIO_CONFIG_CONTENT: JSON.stringify(options?.config ?? {}),
     },
   })
 
@@ -135,4 +135,4 @@ export function createMimoTui(options?: TuiOptions) {
   }
 }
 
-export const createOpencodeTui = createMimoTui
+export const createOpencodeTui = createMioTui

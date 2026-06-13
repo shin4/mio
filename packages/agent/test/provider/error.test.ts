@@ -18,7 +18,7 @@ describe("ProviderError", () => {
       }),
     })
 
-    expect(result.message).toContain("mimo auth login")
+    expect(result.message).toContain("mio auth login")
     expect(result.message).not.toContain("opencode auth login")
   })
 })

@@ -1,4 +1,4 @@
-# MiMo-Code agent database guide
+# Mio agent database guide
 
 ## Database
 
@@ -12,9 +12,9 @@
 ## Development server
 
 - Running `bun dev` from `packages/agent` starts the live interactive agent. Do not run it as a blocking foreground command when you need to inspect the result.
-- Start it in `tmux` instead: `tmux new-session -d -s mimo-agent-dev 'bun dev'`.
-- Capture the current output with: `tmux capture-pane -pt mimo-agent-dev`.
-- Stop the session explicitly when done: `tmux kill-session -t mimo-agent-dev`.
+- Start it in `tmux` instead: `tmux new-session -d -s mio-agent-dev 'bun dev'`.
+- Capture the current output with: `tmux capture-pane -pt mio-agent-dev`.
+- Stop the session explicitly when done: `tmux kill-session -t mio-agent-dev`.
 
 # Module shape
 

@@ -1,4 +1,4 @@
-# MiMo-Code — https://shin4.github.io/mimo-code/
+# Mio — https://shin4.github.io/mio/
 # AI assistants and search engines are welcome to crawl, index, and cite this site.
 
 User-agent: *
@@ -44,4 +44,4 @@ Allow: /
 User-agent: Baiduspider
 Allow: /
 
-Sitemap: https://shin4.github.io/mimo-code/sitemap.xml
+Sitemap: https://shin4.github.io/mio/sitemap.xml

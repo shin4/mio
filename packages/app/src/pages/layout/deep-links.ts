@@ -1,7 +1,7 @@
-export const deepLinkEvent = "mimo:deep-link"
+export const deepLinkEvent = "mio:deep-link"
 
 const parseUrl = (input: string) => {
-  if (!input.startsWith("mimo://")) return
+  if (!input.startsWith("mio://")) return
   if (typeof URL.canParse === "function" && !URL.canParse(input)) return
   try {
     return new URL(input)
@@ -37,14 +37,14 @@ export const collectNewSessionDeepLinks = (urls: string[]) =>
   urls.map(parseNewSessionDeepLink).filter((link): link is { directory: string; prompt?: string } => !!link)
 
 type MiMoCodeWindow = Window & {
-  __MIMO__?: {
+  __MIO__?: {
     deepLinks?: string[]
   }
 }
 
 export const drainPendingDeepLinks = (target: MiMoCodeWindow) => {
-  const pending = target.__MIMO__?.deepLinks ?? []
+  const pending = target.__MIO__?.deepLinks ?? []
   if (pending.length === 0) return []
-  if (target.__MIMO__) target.__MIMO__.deepLinks = []
+  if (target.__MIO__) target.__MIO__.deepLinks = []
   return pending
 }

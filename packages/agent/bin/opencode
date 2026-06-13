@@ -43,13 +43,13 @@ function run(target) {
   })
 }
 
-const envPath = process.env.MIMO_BIN_PATH
+const envPath = process.env.MIO_BIN_PATH
 
 const scriptPath = fs.realpathSync(__filename)
 const scriptDir = path.dirname(scriptPath)
 
 //
-const cached = path.join(scriptDir, ".mimo")
+const cached = path.join(scriptDir, ".mio")
 
 const platformMap = {
   darwin: "darwin",
@@ -70,8 +70,8 @@ let arch = archMap[os.arch()]
 if (!arch) {
   arch = os.arch()
 }
-const base = "mimo-" + platform + "-" + arch
-const binary = platform === "windows" ? "mimo.exe" : "mimo"
+const base = "mio-" + platform + "-" + arch
+const binary = platform === "windows" ? "mio.exe" : "mio"
 
 function supportsAvx2() {
   if (arch !== "x64") return false
@@ -189,7 +189,7 @@ function findBinary(startDir) {
 const resolved = envPath || (fs.existsSync(cached) ? cached : findBinary(scriptDir))
 if (!resolved) {
   console.error(
-    "It seems that your package manager failed to install the right version of the MiMo CLI for your platform. You can try manually installing " +
+    "It seems that your package manager failed to install the right version of the Mio CLI for your platform. You can try manually installing " +
       names.map((n) => `\"${n}\"`).join(" or ") +
       " package",
   )

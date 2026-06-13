@@ -59,7 +59,7 @@ describe("config HttpApi", () => {
         lsp: false,
       })
       yield* Fiber.join(disposed)
-      expect(yield* Effect.promise(() => Bun.file(path.join(tmp.path, "mimo.json")).json())).toMatchObject({
+      expect(yield* Effect.promise(() => Bun.file(path.join(tmp.path, "mio.json")).json())).toMatchObject({
         username: "patched-user",
         formatter: false,
         lsp: false,

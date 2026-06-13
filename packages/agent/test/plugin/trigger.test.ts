@@ -48,10 +48,10 @@ function withProject<A, E, R>(source: string, self: Effect.Effect<A, E, R>) {
           Effect.promise(() => Bun.write(file, source)),
           Effect.promise(() =>
             Bun.write(
-              path.join(dir, "mimo.json"),
+              path.join(dir, "mio.json"),
               JSON.stringify(
                 {
-                  $schema: "https://platform.xiaomimimo.com/mimo-code/config.json",
+                  $schema: "https://raw.githubusercontent.com/shin4/mio/main/schema/config.json",
                   plugin: [pathToFileURL(file).href],
                 },
                 null,

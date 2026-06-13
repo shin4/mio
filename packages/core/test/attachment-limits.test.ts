@@ -3,7 +3,7 @@ import {
   base64PayloadBytes,
   formatBytesDecimal,
   isMimoGovernedMediaMime,
-  MIMO_BASE64_MEDIA_LIMIT_BYTES,
+  MIO_BASE64_MEDIA_LIMIT_BYTES,
   projectedBase64Bytes,
 } from "../src/attachment-limits"
 
@@ -35,7 +35,7 @@ describe("MiMo attachment limits", () => {
   })
 
   test("formats decimal byte values for tooltip copy", () => {
-    expect(MIMO_BASE64_MEDIA_LIMIT_BYTES).toBe(50_000_000)
+    expect(MIO_BASE64_MEDIA_LIMIT_BYTES).toBe(50_000_000)
     expect(formatBytesDecimal(999)).toBe("999 B")
     expect(formatBytesDecimal(1_500)).toBe("1.5 KB")
     expect(formatBytesDecimal(50_000_000)).toBe("50 MB")

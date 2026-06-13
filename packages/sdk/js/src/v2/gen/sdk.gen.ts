@@ -387,7 +387,7 @@ export class App extends HeyApiClient {
   /**
    * List agents
    *
-   * Get a list of all available AI agents in the MiMo-Code system.
+   * Get a list of all available AI agents in the Mio system.
    */
   public agents<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -417,7 +417,7 @@ export class App extends HeyApiClient {
   /**
    * List skills
    *
-   * Get a list of all available skills in the MiMo-Code system.
+   * Get a list of all available skills in the Mio system.
    */
   public skills<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -449,7 +449,7 @@ export class Config extends HeyApiClient {
   /**
    * Get global configuration
    *
-   * Retrieve the current global MiMo-Code configuration settings and preferences.
+   * Retrieve the current global Mio configuration settings and preferences.
    */
   public get<ThrowOnError extends boolean = false>(options?: Options<never, ThrowOnError>) {
     return (options?.client ?? this.client).get<GlobalConfigGetResponses, GlobalConfigGetErrors, ThrowOnError>({
@@ -461,7 +461,7 @@ export class Config extends HeyApiClient {
   /**
    * Update global configuration
    *
-   * Update global MiMo-Code configuration settings and preferences.
+   * Update global Mio configuration settings and preferences.
    */
   public update<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -487,7 +487,7 @@ export class Global extends HeyApiClient {
   /**
    * Get health
    *
-   * Get health information about the MiMo-Code server.
+   * Get health information about the Mio server.
    */
   public health<ThrowOnError extends boolean = false>(options?: Options<never, ThrowOnError>) {
     return (options?.client ?? this.client).get<GlobalHealthResponses, GlobalHealthErrors, ThrowOnError>({
@@ -499,7 +499,7 @@ export class Global extends HeyApiClient {
   /**
    * Get global events
    *
-   * Subscribe to global events from the MiMo-Code system using server-sent events.
+   * Subscribe to global events from the Mio system using server-sent events.
    */
   public event<ThrowOnError extends boolean = false>(options?: Options<never, ThrowOnError>) {
     return (options?.client ?? this.client).sse.get<GlobalEventResponses, GlobalEventErrors, ThrowOnError>({
@@ -511,7 +511,7 @@ export class Global extends HeyApiClient {
   /**
    * Dispose instance
    *
-   * Clean up and dispose all MiMo-Code instances, releasing all resources.
+   * Clean up and dispose all Mio instances, releasing all resources.
    */
   public dispose<ThrowOnError extends boolean = false>(options?: Options<never, ThrowOnError>) {
     return (options?.client ?? this.client).post<GlobalDisposeResponses, GlobalDisposeErrors, ThrowOnError>({
@@ -521,9 +521,9 @@ export class Global extends HeyApiClient {
   }
 
   /**
-   * Upgrade MiMo-Code
+   * Upgrade Mio
    *
-   * Upgrade MiMo-Code to the specified version or latest if not specified.
+   * Upgrade Mio to the specified version or latest if not specified.
    */
   public upgrade<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -586,7 +586,7 @@ export class Config2 extends HeyApiClient {
   /**
    * Get configuration
    *
-   * Retrieve the current MiMo-Code configuration settings and preferences.
+   * Retrieve the current Mio configuration settings and preferences.
    */
   public get<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -616,7 +616,7 @@ export class Config2 extends HeyApiClient {
   /**
    * Update configuration
    *
-   * Update MiMo-Code configuration settings and preferences.
+   * Update Mio configuration settings and preferences.
    */
   public update<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -800,7 +800,7 @@ export class Console extends HeyApiClient {
   /**
    * Switch active Console org
    *
-   * Persist a new active Console account/org selection for the current local MiMo-Code state.
+   * Persist a new active Console account/org selection for the current local Mio state.
    */
   public switchOrg<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -841,7 +841,7 @@ export class Session extends HeyApiClient {
   /**
    * List sessions
    *
-   * Get a list of all MiMo-Code sessions across projects, sorted by most recently updated. Archived sessions are excluded by default.
+   * Get a list of all Mio sessions across projects, sorted by most recently updated. Archived sessions are excluded by default.
    */
   public list<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -1351,7 +1351,7 @@ export class Instance extends HeyApiClient {
   /**
    * Dispose instance
    *
-   * Clean up and dispose the current MiMo-Code instance, releasing all resources.
+   * Clean up and dispose the current Mio instance, releasing all resources.
    */
   public dispose<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -1383,7 +1383,7 @@ export class Path extends HeyApiClient {
   /**
    * Get paths
    *
-   * Retrieve the current working directory and related path information for the MiMo-Code instance.
+   * Retrieve the current working directory and related path information for the Mio instance.
    */
   public get<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -1585,7 +1585,7 @@ export class Command extends HeyApiClient {
   /**
    * List commands
    *
-   * Get a list of all available commands in the MiMo-Code system.
+   * Get a list of all available commands in the Mio system.
    */
   public list<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -1956,7 +1956,7 @@ export class Project extends HeyApiClient {
   /**
    * List all projects
    *
-   * Get a list of projects that have been opened with MiMo-Code.
+   * Get a list of projects that have been opened with Mio.
    */
   public list<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -1986,7 +1986,7 @@ export class Project extends HeyApiClient {
   /**
    * Get current project
    *
-   * Retrieve the currently active project that MiMo-Code is working with.
+   * Retrieve the currently active project that Mio is working with.
    */
   public current<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -2130,7 +2130,7 @@ export class Pty extends HeyApiClient {
   /**
    * List PTY sessions
    *
-   * Get a list of all active pseudo-terminal (PTY) sessions managed by MiMo-Code.
+   * Get a list of all active pseudo-terminal (PTY) sessions managed by Mio.
    */
   public list<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -2765,7 +2765,7 @@ export class Session2 extends HeyApiClient {
   /**
    * List sessions
    *
-   * Get a list of all MiMo-Code sessions, sorted by most recently updated.
+   * Get a list of all Mio sessions, sorted by most recently updated.
    */
   public list<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -2807,7 +2807,7 @@ export class Session2 extends HeyApiClient {
   /**
    * Create session
    *
-   * Create a new MiMo-Code session for interacting with AI assistants and managing conversations.
+   * Create a new Mio session for interacting with AI assistants and managing conversations.
    */
   public create<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -2920,7 +2920,7 @@ export class Session2 extends HeyApiClient {
   /**
    * Get session
    *
-   * Retrieve detailed information about a specific MiMo-Code session.
+   * Retrieve detailed information about a specific Mio session.
    */
   public get<ThrowOnError extends boolean = false>(
     parameters: {

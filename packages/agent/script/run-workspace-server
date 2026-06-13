@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-// This script runs a separate MiMo-Code server to be used as a remote
+// This script runs a separate Mio server to be used as a remote
 // workspace, simulating a remote environment but all local to make
 // debugger easier
 //
@@ -14,7 +14,7 @@
 import { stat } from "node:fs/promises"
 import { setTimeout as sleep } from "node:timers/promises"
 
-const DEV_DATA_FILE = "/tmp/mimo-code-workspace-dev-data.json"
+const DEV_DATA_FILE = "/tmp/mio-workspace-dev-data.json"
 const RESTART_POLL_INTERVAL = 250
 
 async function readData() {

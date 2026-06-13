@@ -1,4 +1,4 @@
-export const DEFAULT_SERVER_URL_KEY = "mimo.settings.dat:defaultServerUrl"
+export const DEFAULT_SERVER_URL_KEY = "mio.settings.dat:defaultServerUrl"
 
 const getStorage = (key: string) => {
   if (typeof localStorage === "undefined") return null

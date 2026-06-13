@@ -111,7 +111,7 @@ describe("tool.webfetch", () => {
     ),
   )
 
-  it.instance("uses MiMo-Code user agent when retrying Cloudflare challenges", () =>
+  it.instance("uses Mio user agent when retrying Cloudflare challenges", () =>
     Effect.gen(function* () {
       const seen: string[] = []
       yield* withFetch(

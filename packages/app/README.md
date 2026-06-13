@@ -1,6 +1,6 @@
-# MiMo-Code App
+# Mio App
 
-Solid UI shared by the MiMo-Code desktop application. The app expects an agent
+Solid UI shared by the Mio desktop application. The app expects an agent
 HTTP server, usually on `localhost:4096`, for full functionality.
 
 ## Development

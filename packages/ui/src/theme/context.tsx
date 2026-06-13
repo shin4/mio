@@ -73,7 +73,7 @@ const names: Record<string, string> = {
   nord: "Nord",
   "one-dark": "One Dark",
   onedarkpro: "One Dark Pro",
-  opencode: "MiMo-Code",
+  opencode: "Mio",
   orng: "Orng",
   "osaka-jade": "Osaka Jade",
   palenight: "Palenight",

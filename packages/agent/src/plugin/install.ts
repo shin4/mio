@@ -32,7 +32,7 @@ export type PatchDeps = {
   readText: (file: string) => Promise<string>
   write: (file: string, text: string) => Promise<void>
   exists: (file: string) => Promise<boolean>
-  files: (dir: string, name: "mimo" | "tui") => string[]
+  files: (dir: string, name: "mio" | "tui") => string[]
 }
 
 export type PatchInput = {
@@ -338,7 +338,7 @@ function patchDir(input: PatchInput) {
   return path.join(root, AppInfo.projectConfigDir)
 }
 
-function patchName(kind: Kind): "mimo" | "tui" {
+function patchName(kind: Kind): "mio" | "tui" {
   if (kind === "server") return AppInfo.configBasename
   return "tui"
 }

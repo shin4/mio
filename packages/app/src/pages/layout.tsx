@@ -1834,7 +1834,7 @@ export default function Layout(props: ParentProps) {
           </Show>
         </main>
       </div>
-      {import.meta.env.DEV && import.meta.env.MIMO_SHOW_DEBUG_BAR === "1" && <DebugBar />}
+      {import.meta.env.DEV && import.meta.env.MIO_SHOW_DEBUG_BAR === "1" && <DebugBar />}
       <Toast.Region />
     </div>
   )

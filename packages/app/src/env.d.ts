@@ -1,7 +1,7 @@
 interface ImportMetaEnv {
-  readonly VITE_MIMO_SERVER_HOST: string
-  readonly VITE_MIMO_SERVER_PORT: string
-  readonly VITE_MIMO_CHANNEL?: "dev" | "beta" | "prod"
+  readonly VITE_MIO_SERVER_HOST: string
+  readonly VITE_MIO_SERVER_PORT: string
+  readonly VITE_MIO_CHANNEL?: "dev" | "beta" | "prod"
 
   readonly VITE_SENTRY_DSN?: string
   readonly VITE_SENTRY_ENVIRONMENT?: string

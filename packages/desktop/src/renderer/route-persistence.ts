@@ -6,7 +6,7 @@
 // by persisting the last visited location and seeding the memory history with
 // it on the next launch.
 
-const ROUTE_STORE = "mimo.global.dat"
+const ROUTE_STORE = "mio.global.dat"
 const ROUTE_KEY = "route.last"
 const PERSIST_DEBOUNCE_MS = 200
 

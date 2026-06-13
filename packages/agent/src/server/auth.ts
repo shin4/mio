@@ -15,8 +15,8 @@ export type DecodedCredentials = {
 }
 
 export class Config extends ConfigService.Service<Config>()("@opencode/ServerAuthConfig", {
-  password: EffectConfig.string("MIMO_SERVER_PASSWORD").pipe(EffectConfig.option),
-  username: EffectConfig.string("MIMO_SERVER_USERNAME").pipe(EffectConfig.withDefault("mimo")),
+  password: EffectConfig.string("MIO_SERVER_PASSWORD").pipe(EffectConfig.option),
+  username: EffectConfig.string("MIO_SERVER_USERNAME").pipe(EffectConfig.withDefault("mimo")),
 }) {}
 
 export type Info = Context.Service.Shape<typeof Config>
@@ -34,10 +34,10 @@ export function authorized(credentials: DecodedCredentials, config: Info) {
 }
 
 export function header(credentials?: Credentials) {
-  const password = credentials?.password ?? Flag.MIMO_SERVER_PASSWORD
+  const password = credentials?.password ?? Flag.MIO_SERVER_PASSWORD
   if (!password) return undefined
 
-  const username = credentials?.username ?? Flag.MIMO_SERVER_USERNAME ?? "mimo"
+  const username = credentials?.username ?? Flag.MIO_SERVER_USERNAME ?? "mimo"
   return `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`
 }
 

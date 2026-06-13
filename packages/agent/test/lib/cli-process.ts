@@ -6,9 +6,9 @@
 // the original /event race or #27371's invalid-model hang).
 //
 // Configuration flows through opencode's built-in test affordances:
-//   - MIMO_CONFIG_CONTENT      : provider config inline, no files to find
-//   - MIMO_TEST_HOME           : pins os.homedir() → tmpdir
-//   - MIMO_DISABLE_PROJECT_CONFIG : skip walking up for mimo.json
+//   - MIO_CONFIG_CONTENT      : provider config inline, no files to find
+//   - MIO_TEST_HOME           : pins os.homedir() → tmpdir
+//   - MIO_DISABLE_PROJECT_CONFIG : skip walking up for mio.json
 //   - OPENCODE_PURE                : skip external plugin discovery + install
 //   - OPENCODE_DISABLE_AUTOUPDATE / AUTOCOMPACT / MODELS_FETCH : no background work
 // Plus HOME / XDG_* pointing at the tmpdir for belt-and-suspenders isolation.
@@ -59,19 +59,19 @@ function forkStderrDrain(stream: ReadableStream<Uint8Array>, into: string[]) {
 
 function isolatedEnv(home: string, configJson: string): Record<string, string> {
   return {
-    MIMO_TEST_HOME: home,
+    MIO_TEST_HOME: home,
     HOME: home,
     XDG_CONFIG_HOME: path.join(home, ".config"),
     XDG_DATA_HOME: path.join(home, ".local/share"),
     XDG_STATE_HOME: path.join(home, ".local/state"),
     XDG_CACHE_HOME: path.join(home, ".cache"),
-    MIMO_CONFIG_CONTENT: configJson,
-    MIMO_DISABLE_PROJECT_CONFIG: "1",
+    MIO_CONFIG_CONTENT: configJson,
+    MIO_DISABLE_PROJECT_CONFIG: "1",
     OPENCODE_PURE: "1",
     OPENCODE_DISABLE_AUTOUPDATE: "1",
     OPENCODE_DISABLE_AUTOCOMPACT: "1",
     OPENCODE_DISABLE_MODELS_FETCH: "1",
-    MIMO_AUTH_CONTENT: "{}",
+    MIO_AUTH_CONTENT: "{}",
   }
 }
 

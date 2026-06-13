@@ -8,10 +8,10 @@ const SUPPORTED_VIDEO_MIMES = new Set([
   "video/x-ms-wmv",
 ])
 
-export const MIMO_BASE64_MEDIA_LIMIT_BYTES = 50_000_000
+export const MIO_BASE64_MEDIA_LIMIT_BYTES = 50_000_000
 
 // MiMo ASR (mimo-v2.5-asr) caps the base64-encoded audio payload at 10MB.
-export const MIMO_ASR_BASE64_LIMIT_BYTES = 10_000_000
+export const MIO_ASR_BASE64_LIMIT_BYTES = 10_000_000
 
 function cleanMime(mime: string) {
   return mime.split(";", 1)[0]?.trim().toLowerCase() ?? ""

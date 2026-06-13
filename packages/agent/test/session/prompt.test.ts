@@ -5,7 +5,7 @@ import { Cause, Deferred, Duration, Effect, Exit, Fiber, Layer } from "effect"
 import path from "path"
 import { truncate as truncateFile } from "fs/promises"
 import { fileURLToPath, pathToFileURL } from "url"
-import { MIMO_BASE64_MEDIA_LIMIT_BYTES } from "@opencode-ai/core/attachment-limits"
+import { MIO_BASE64_MEDIA_LIMIT_BYTES } from "@opencode-ai/core/attachment-limits"
 import { NamedError } from "@opencode-ai/core/util/error"
 import { Agent as AgentSvc } from "../../src/agent/agent"
 import { BackgroundJob } from "@/background/job"
@@ -75,20 +75,20 @@ const ref = {
 }
 
 // The single MiMo provider is repointed at the local TestLLMServer (or, for
-// tests with no server, a dead loopback URL) via env. MIMO_BASE_URL is a live
+// tests with no server, a dead loopback URL) via env. MIO_BASE_URL is a live
 // getter; OPENCODE_AUTH_CONTENT injects the saved key so the provider is
-// "connected". useServerConfig() overrides MIMO_BASE_URL with the live URL.
+// "connected". useServerConfig() overrides MIO_BASE_URL with the live URL.
 const DEAD_LLM_URL = "http://localhost:1/v1"
-const MIMO_AUTH_CONTENT = JSON.stringify({
+const MIO_AUTH_CONTENT = JSON.stringify({
   mimo: { type: "api", key: "test-key", metadata: { protocol: "openai", billing: "pay-as-you-go", region: "sgp", model: "mimo-v2.5" } },
 })
 beforeEach(() => {
-  process.env.MIMO_BASE_URL = DEAD_LLM_URL
-  process.env.MIMO_AUTH_CONTENT = MIMO_AUTH_CONTENT
+  process.env.MIO_BASE_URL = DEAD_LLM_URL
+  process.env.MIO_AUTH_CONTENT = MIO_AUTH_CONTENT
 })
 afterEach(() => {
-  delete process.env.MIMO_BASE_URL
-  delete process.env.MIMO_AUTH_CONTENT
+  delete process.env.MIO_BASE_URL
+  delete process.env.MIO_AUTH_CONTENT
 })
 
 function withSh<A, E, R>(fx: () => Effect.Effect<A, E, R>) {
@@ -326,7 +326,7 @@ const ensureDir = Effect.fn("test.ensureDir")(function* (dir: string) {
 const writeConfig = Effect.fn("test.writeConfig")(function* (dir: string, config: Partial<Config.Info>) {
   yield* writeText(
     path.join(dir, "opencode.json"),
-    JSON.stringify({ $schema: "https://platform.xiaomimimo.com/mimo-code/config.json", ...config }),
+    JSON.stringify({ $schema: "https://raw.githubusercontent.com/shin4/mio/main/schema/config.json", ...config }),
   )
 })
 
@@ -334,7 +334,7 @@ const useServerConfig = Effect.fn("test.useServerConfig")(function* (config: (ur
   const { directory: dir } = yield* TestInstance
   const llm = yield* TestLLMServer
   // Repoint the MiMo provider at the live test server for this test.
-  yield* Effect.sync(() => void (process.env.MIMO_BASE_URL = llm.url))
+  yield* Effect.sync(() => void (process.env.MIO_BASE_URL = llm.url))
   // Config write kept for tests that read other config (provider block is a
   // no-op now — the single MiMo provider is configured via env above).
   yield* writeConfig(dir, config(llm.url))
@@ -597,7 +597,7 @@ noLLMServer.instance(
               type: "file",
               mime: attachment.mime,
               filename: attachment.filename,
-              url: `data:${attachment.mime};base64,${"A".repeat(MIMO_BASE64_MEDIA_LIMIT_BYTES + 1)}`,
+              url: `data:${attachment.mime};base64,${"A".repeat(MIO_BASE64_MEDIA_LIMIT_BYTES + 1)}`,
             },
           ],
         })

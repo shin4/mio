@@ -30,8 +30,8 @@ export type ServiceClass<Self, Id extends string, Service> = Context.ServiceClas
  * class ServerAuthConfig extends ConfigService.Service<ServerAuthConfig>()(
  *   "@opencode/ServerAuthConfig",
  *   {
- *     password: Config.string("MIMO_SERVER_PASSWORD").pipe(Config.option),
- *     username: Config.string("MIMO_SERVER_USERNAME").pipe(Config.withDefault("mimo")),
+ *     password: Config.string("MIO_SERVER_PASSWORD").pipe(Config.option),
+ *     username: Config.string("MIO_SERVER_USERNAME").pipe(Config.withDefault("mimo")),
  *   },
  * ) {}
  *

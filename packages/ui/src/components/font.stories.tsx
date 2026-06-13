@@ -41,8 +41,8 @@ export const Basic = {
   render: () => (
     <div style={{ display: "grid", gap: "8px" }}>
       <mod.Font />
-      <div style={{ "font-family": "var(--font-family-sans)" }}>MiMo-Code Sans Sample</div>
-      <div style={{ "font-family": "var(--font-family-mono)" }}>MiMo-Code Mono Sample</div>
+      <div style={{ "font-family": "var(--font-family-sans)" }}>Mio Sans Sample</div>
+      <div style={{ "font-family": "var(--font-family-mono)" }}>Mio Mono Sample</div>
     </div>
   ),
 }

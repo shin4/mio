@@ -119,7 +119,7 @@ export namespace PluginLoader {
         },
       }
 
-    // npm plugins can declare which MiMo-Code versions they support; file plugins are treated
+    // npm plugins can declare which Mio versions they support; file plugins are treated
     // as local development code and skip this compatibility gate.
     if (base.source === "npm") {
       try {

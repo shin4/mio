@@ -76,9 +76,9 @@
     --v2-orange-300: #ffd8c6ff;
     --v2-orange-400: #ffc1a4ff;
     --v2-orange-500: #ffa478ff;
-    /* MiMo Xiaomi-orange accent: 600 = #ff6900 (accent), 700 = #e85d00 (press) */
-    --v2-orange-600: #ff6900ff;
-    --v2-orange-700: #e85d00ff;
+    /* Mio brand orange: 600 = #ff8a00 (accent), 700 = #e67c00 (press) */
+    --v2-orange-600: #ff8a00ff;
+    --v2-orange-700: #e67c00ff;
     --v2-orange-800: #d16427ff;
     --v2-orange-900: #b35624ff;
     --v2-orange-1000: #954c27ff;

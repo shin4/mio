@@ -54,7 +54,7 @@ export async function exportDebugLogs() {
     await netLog.stopLogging().catch((error) => write("network", "failed to stop net log", { error }))
   }
 
-  const output = join(app.getPath("downloads"), `mimo-debug-${stamp()}.zip`)
+  const output = join(app.getPath("downloads"), `mio-debug-${stamp()}.zip`)
   try {
     write("main", "exporting debug logs", { output })
     await writeZip(output, [
@@ -153,8 +153,8 @@ function serverLogRoots() {
   const xdgData = process.env.XDG_DATA_HOME || join(homedir(), ".local", "share")
   return [
     ...new Set([
-      join(xdgData, "mimo", "log"),
-      join(app.getPath("userData"), "mimo", "log"),
+      join(xdgData, "mio", "log"),
+      join(app.getPath("userData"), "mio", "log"),
       join(xdgData, "opencode", "log"),
       join(app.getPath("userData"), "opencode", "log"),
     ]),

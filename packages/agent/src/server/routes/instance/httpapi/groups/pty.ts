@@ -58,7 +58,7 @@ export const PtyApi = HttpApi.make("pty")
           OpenApi.annotations({
             identifier: "pty.list",
             summary: "List PTY sessions",
-            description: "Get a list of all active pseudo-terminal (PTY) sessions managed by MiMo-Code.",
+            description: "Get a list of all active pseudo-terminal (PTY) sessions managed by Mio.",
           }),
         ),
         HttpApiEndpoint.post("create", PtyPaths.create, {
@@ -130,7 +130,7 @@ export const PtyApi = HttpApi.make("pty")
   )
   .annotateMerge(
     OpenApi.annotations({
-      title: "MiMo-Code experimental HttpApi",
+      title: "Mio experimental HttpApi",
       version: "0.0.1",
       description: "Experimental HttpApi surface for selected instance routes.",
     }),

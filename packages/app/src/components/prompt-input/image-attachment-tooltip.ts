@@ -2,7 +2,7 @@ import {
   base64PayloadBytes,
   formatBytesDecimal,
   isMimoGovernedMediaMime,
-  MIMO_BASE64_MEDIA_LIMIT_BYTES,
+  MIO_BASE64_MEDIA_LIMIT_BYTES,
 } from "@opencode-ai/core/attachment-limits"
 import type { MediaAttachmentPart } from "@/context/prompt"
 
@@ -17,7 +17,7 @@ export function attachmentTooltipRows(attachment: MediaAttachmentPart) {
       : [
           {
             label: "Encoded",
-            value: `${formatBytesDecimal(payloadBytes)} / ${formatBytesDecimal(MIMO_BASE64_MEDIA_LIMIT_BYTES)}`,
+            value: `${formatBytesDecimal(payloadBytes)} / ${formatBytesDecimal(MIO_BASE64_MEDIA_LIMIT_BYTES)}`,
           },
         ]),
   ]

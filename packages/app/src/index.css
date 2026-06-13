@@ -25,11 +25,11 @@
    ============================================================================ */
 @layer theme {
   :root {
-    --mimo-accent: var(--v2-orange-600); /* #ff6900 */
-    --mimo-accent-press: var(--v2-orange-700); /* #e85d00 */
-    --mimo-accent-text: #d35700; /* darker, readable on light */
-    --mimo-accent-soft: rgba(255, 105, 0, 0.1);
-    --mimo-accent-ring: rgba(255, 105, 0, 0.28);
+    --mimo-accent: var(--v2-orange-600); /* #ff8a00 */
+    --mimo-accent-press: var(--v2-orange-700); /* #e67c00 */
+    --mimo-accent-text: #c06a00; /* darker, readable on light */
+    --mimo-accent-soft: rgba(255, 138, 0, 0.1);
+    --mimo-accent-ring: rgba(255, 138, 0, 0.28);
     --mimo-radius-lg: 16px;
     --mimo-radius-md: 11px;
     --mimo-pro-fx-1: #0891b2;
@@ -38,11 +38,11 @@
   }
 
   [data-color-scheme="dark"] {
-    --mimo-accent: #ff7d28;
+    --mimo-accent: #ff9d3d;
     --mimo-accent-press: var(--v2-orange-600);
-    --mimo-accent-text: #ff9a52;
-    --mimo-accent-soft: rgba(255, 125, 40, 0.14);
-    --mimo-accent-ring: rgba(255, 125, 40, 0.32);
+    --mimo-accent-text: #ffb066;
+    --mimo-accent-soft: rgba(255, 157, 61, 0.14);
+    --mimo-accent-ring: rgba(255, 157, 61, 0.32);
     --mimo-pro-fx-1: #67e8f9;
     --mimo-pro-fx-2: #a78bfa;
     --mimo-pro-fx-3: #f472b6;

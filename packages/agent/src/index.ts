@@ -41,7 +41,7 @@ const args = hideBin(process.argv)
 
 function show(out: string) {
   const text = out.trimStart()
-  if (!text.startsWith("mimo ")) {
+  if (!text.startsWith("mio ")) {
     process.stderr.write(UI.logo() + EOL + EOL)
     process.stderr.write(text)
     return
@@ -51,7 +51,7 @@ function show(out: string) {
 
 const cli = yargs(args)
   .parserConfiguration({ "populate--": true })
-  .scriptName("mimo")
+  .scriptName("mio")
   .wrap(100)
   .help("help", "show help")
   .alias("help", "h")
@@ -72,7 +72,7 @@ const cli = yargs(args)
   })
   .middleware(async (opts) => {
     if (opts.pure) {
-      process.env.MIMO_PURE = "1"
+      process.env.MIO_PURE = "1"
     }
 
     await Log.init({
@@ -87,17 +87,17 @@ const cli = yargs(args)
     Heap.start()
 
     process.env.AGENT = "1"
-    process.env.MIMO = "1"
-    process.env.MIMO_PID = String(process.pid)
+    process.env.MIO = "1"
+    process.env.MIO_PID = String(process.pid)
 
-    Log.Default.info("mimo-agent", {
+    Log.Default.info("mio-agent", {
       version: InstallationVersion,
       args: process.argv.slice(2),
       process_role: processMetadata.processRole,
       run_id: processMetadata.runID,
     })
 
-    const marker = path.join(Global.Path.data, "mimo.db")
+    const marker = path.join(Global.Path.data, "mio.db")
     if (!(await Filesystem.exists(marker))) {
       const tty = process.stderr.isTTY
       if (tty) {

@@ -2,7 +2,7 @@
 
 ## MiSans
 
-MiMo-Code embeds `MiSansVF.ttf` as the default UI sans-serif font.
+Mio embeds `MiSansVF.ttf` as the default UI sans-serif font.
 
 - Copyright: Xiaomi Inc.
 - Source: https://hyperos.mi.com/font/zh/download/
@@ -15,11 +15,11 @@ as a standalone package, rename it, or offer it as a separate download.
 
 Per the official MiSans FAQ ("Can it be used as an embedded font? Yes, but you
 should specifically note in your software that the MiSans font is used."),
-MiMo-Code hereby notes that it uses the MiSans font.
+Mio hereby notes that it uses the MiSans font.
 
 ## JetBrains Mono Nerd Font
 
-MiMo-Code embeds `JetBrainsMonoNerdFontMono-Regular.woff2` as a monospace UI font.
+Mio embeds `JetBrainsMonoNerdFontMono-Regular.woff2` as a monospace UI font.
 
 - Base font: JetBrains Mono, Copyright JetBrains s.r.o., licensed under the SIL
   Open Font License 1.1 (https://github.com/JetBrains/JetBrainsMono)

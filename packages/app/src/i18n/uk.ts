@@ -118,7 +118,7 @@ export const dict = {
   "dialog.model.manage.description": "Налаштуйте, які моделі відображатимуться у виборі моделей.",
   "dialog.model.manage.provider.toggle": "Перемкнути всі моделі {{provider}}",
 
-  "dialog.model.unpaid.freeModels.title": "Безкоштовні моделі від MiMo-Code",
+  "dialog.model.unpaid.freeModels.title": "Безкоштовні моделі від Mio",
   "dialog.model.unpaid.addMore.title": "Додати більше моделей від популярних провайдерів",
 
   "dialog.provider.viewAll": "Показати більше провайдерів",
@@ -131,12 +131,12 @@ export const dict = {
   "provider.connect.status.waiting": "Очікування авторизації...",
   "provider.connect.status.failed": "Авторизація не вдалася: {{error}}",
   "provider.connect.apiKey.description":
-    "Введіть ключ API {{provider}}, щоб підключити обліковий запис і використовувати моделі {{provider}} у MiMo-Code.",
+    "Введіть ключ API {{provider}}, щоб підключити обліковий запис і використовувати моделі {{provider}} у Mio.",
   "provider.connect.apiKey.label": "Ключ API {{provider}}",
   "provider.connect.apiKey.placeholder": "Ключ API",
   "provider.connect.apiKey.required": "Ключ API обов'язковий",
   "provider.connect.mimoZen.line1":
-    "MiMo-Code Zen надає доступ до відібраного набору надійних оптимізованих моделей для агентів кодування.",
+    "Mio Zen надає доступ до відібраного набору надійних оптимізованих моделей для агентів кодування.",
   "provider.connect.mimoZen.line2":
     "З одним ключем API ви отримаєте доступ до таких моделей, як Claude, GPT, Gemini, GLM та інших.",
   "provider.connect.mimoZen.visit.prefix": "Відвідайте ",
@@ -145,7 +145,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Відвідайте ",
   "provider.connect.oauth.code.visit.link": "це посилання",
   "provider.connect.oauth.code.visit.suffix":
-    ", щоб отримати код авторизації, підключити обліковий запис і використовувати моделі {{provider}} у MiMo-Code.",
+    ", щоб отримати код авторизації, підключити обліковий запис і використовувати моделі {{provider}} у Mio.",
   "provider.connect.oauth.code.label": "Код авторизації {{method}}",
   "provider.connect.oauth.code.placeholder": "Код авторизації",
   "provider.connect.oauth.code.required": "Код авторизації обов'язковий",
@@ -153,7 +153,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Відвідайте ",
   "provider.connect.oauth.auto.visit.link": "це посилання",
   "provider.connect.oauth.auto.visit.suffix":
-    " і введіть код нижче, щоб підключити обліковий запис і використовувати моделі {{provider}} у MiMo-Code.",
+    " і введіть код нижче, щоб підключити обліковий запис і використовувати моделі {{provider}} у Mio.",
   "provider.connect.oauth.auto.confirmationCode": "Код підтвердження",
   "provider.connect.toast.connected.title": "{{provider}} підключено",
   "provider.connect.toast.connected.description": "Моделі {{provider}} тепер доступні для використання.",
@@ -301,7 +301,7 @@ export const dict = {
   "dialog.mcp.empty": "MCP не налаштовано",
 
   "dialog.lsp.empty": "LSP автоматично виявлені за типами файлів",
-  "dialog.plugins.empty": "Плагіни налаштовані в mimo.json",
+  "dialog.plugins.empty": "Плагіни налаштовані в mio.json",
 
   "mcp.status.connected": "підключено",
   "mcp.status.failed": "помилка",
@@ -319,7 +319,7 @@ export const dict = {
   "app.server.otherServers": "Інші сервери",
 
   "dialog.server.title": "Сервери",
-  "dialog.server.description": "Перемкніть сервер MiMo-Code, до якого підключається ця програма.",
+  "dialog.server.description": "Перемкніть сервер Mio, до якого підключається ця програма.",
   "dialog.server.search.placeholder": "Пошук серверів",
   "dialog.server.empty": "Ще немає серверів",
   "dialog.server.add.title": "Додати сервер",
@@ -462,7 +462,7 @@ export const dict = {
   "toast.project.reloadFailed.title": "Не вдалося перезавантажити {{project}}",
 
   "toast.update.title": "Доступне оновлення",
-  "toast.update.description": "Нова версія MiMo-Code ({{version}}) тепер доступна для встановлення.",
+  "toast.update.description": "Нова версія Mio ({{version}}) тепер доступна для встановлення.",
   "toast.update.action.installRestart": "Встановити та перезапустити",
   "toast.update.action.notYet": "Не зараз",
 
@@ -476,7 +476,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Перевірити оновлення",
   "error.page.action.updateTo": "Оновити до {{version}}",
   "error.page.circular": "[Циклічне]",
-  "error.page.report.prefix": "Будь ласка, повідомте про цю помилку команді MiMo-Code",
+  "error.page.report.prefix": "Будь ласка, повідомте про цю помилку команді Mio",
   "error.page.report.discord": "на GitHub",
   "error.page.version": "Версія: {{version}}",
 
@@ -501,9 +501,9 @@ export const dict = {
   "error.chain.responseBody": "Тіло відповіді:\n{{body}}",
   "error.chain.didYouMean": "Можливо, ви мали на увазі: {{suggestions}}",
   "error.chain.modelNotFound": "Модель не знайдено: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Перевірте назви провайдерів/моделей у конфігурації (mimo.json)",
+  "error.chain.checkConfig": "Перевірте назви провайдерів/моделей у конфігурації (mio.json)",
   "error.chain.mcpFailed":
-    'Сервер MCP "{{name}}" не працює. Зверніть увагу, MiMo-Code ще не підтримує автентифікацію MCP.',
+    'Сервер MCP "{{name}}" не працює. Зверніть увагу, Mio ще не підтримує автентифікацію MCP.',
   "error.chain.providerAuthFailed": "Автентифікація провайдера не вдалася ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'Не вдалося ініціалізувати провайдера "{{provider}}". Перевірте облікові дані та конфігурацію.',
@@ -684,7 +684,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Увімкнути робочі області",
   "sidebar.workspaces.disable": "Вимкнути робочі області",
   "sidebar.gettingStarted.title": "Початок роботи",
-  "sidebar.gettingStarted.line1": "MiMo-Code містить безкоштовні моделі, тому ви можете почати негайно.",
+  "sidebar.gettingStarted.line1": "Mio містить безкоштовні моделі, тому ви можете почати негайно.",
   "sidebar.gettingStarted.line2":
     "Підключіть будь-якого провайдера, щоб використовувати моделі, включаючи Claude, GPT, Gemini тощо.",
   "sidebar.project.recentSessions": "Нещодавні сесії",
@@ -717,7 +717,7 @@ export const dict = {
   "debugBar.mem.tipUnavailable": "Використана купа JS проти ліміту купи. Тільки Chromium.",
   "debugBar.mem.tip": "Використана купа JS проти ліміту купи. {{used}} з {{limit}}.",
 
-  "app.name.desktop": "MiMo Code Desktop",
+  "app.name.desktop": "Mio Desktop",
 
   "settings.section.desktop": "Робочий стіл",
   "settings.section.server": "Сервер",
@@ -725,7 +725,7 @@ export const dict = {
   "settings.tab.shortcuts": "Скорочення",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "Інтеграція WSL",
-  "settings.desktop.wsl.description": "Запускати сервер MiMo-Code всередині WSL на Windows.",
+  "settings.desktop.wsl.description": "Запускати сервер Mio всередині WSL на Windows.",
 
   "settings.general.section.appearance": "Зовнішній вигляд",
   "settings.general.section.advanced": "Додатково",
@@ -736,18 +736,18 @@ export const dict = {
   "settings.general.section.display": "Дисплей",
 
   "settings.general.row.language.title": "Мова",
-  "settings.general.row.language.description": "Змінити мову інтерфейсу MiMo-Code",
+  "settings.general.row.language.description": "Змінити мову інтерфейсу Mio",
   "settings.general.row.shell.title": "Командна оболонка термінала",
   "settings.general.row.shell.description":
     "Виберіть оболонку для термінала. Сумісні оболонки також використовуються для викликів інструментів агента.",
   "settings.general.row.shell.autoDefault": "Авто (за замовчуванням)",
   "settings.general.row.shell.terminalOnly": "тільки термінал",
   "settings.general.row.appearance.title": "Зовнішній вигляд",
-  "settings.general.row.appearance.description": "Налаштуйте вигляд MiMo-Code на вашому пристрої",
+  "settings.general.row.appearance.description": "Налаштуйте вигляд Mio на вашому пристрої",
   "settings.general.row.colorScheme.title": "Кольорова схема",
-  "settings.general.row.colorScheme.description": "Виберіть, чи MiMo-Code використовує системну, світлу або темну тему",
+  "settings.general.row.colorScheme.description": "Виберіть, чи Mio використовує системну, світлу або темну тему",
   "settings.general.row.theme.title": "Тема",
-  "settings.general.row.theme.description": "Налаштуйте тему MiMo-Code.",
+  "settings.general.row.theme.description": "Налаштуйте тему Mio.",
   "settings.general.row.font.title": "Шрифт коду",
   "settings.general.row.font.description": "Налаштуйте шрифт, який використовується в блоках коду",
   "settings.general.row.terminalFont.title": "Шрифт термінала",
@@ -790,13 +790,13 @@ export const dict = {
   "settings.general.row.releaseNotes.description": 'Показувати спливаючі вікна "Що нового" після оновлень',
 
   "settings.updates.row.startup.title": "Перевіряти оновлення під час запуску",
-  "settings.updates.row.startup.description": "Автоматично перевіряти наявність оновлень під час запуску MiMo-Code",
+  "settings.updates.row.startup.description": "Автоматично перевіряти наявність оновлень під час запуску Mio",
   "settings.updates.row.check.title": "Перевірити оновлення",
   "settings.updates.row.check.description": "Вручну перевірити наявність оновлень і встановити, якщо доступні",
   "settings.updates.action.checkNow": "Перевірити зараз",
   "settings.updates.action.checking": "Перевірка...",
   "settings.updates.toast.latest.title": "У вас актуальна версія",
-  "settings.updates.toast.latest.description": "Ви використовуєте останню версію MiMo-Code.",
+  "settings.updates.toast.latest.description": "Ви використовуєте останню версію Mio.",
   "sound.option.none": "Немає",
   "sound.option.alert01": "Alert 01",
   "sound.option.alert02": "Alert 02",

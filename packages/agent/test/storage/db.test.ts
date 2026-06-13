@@ -12,8 +12,8 @@ describe("Database.getChannelPath", () => {
     Effect.gen(function* () {
       const flags = yield* RuntimeFlags.Service
       const expected = ["latest", "beta", "prod"].includes(InstallationChannel)
-        ? path.join(Global.Path.data, "mimo.db")
-        : path.join(Global.Path.data, `mimo-${InstallationChannel.replace(/[^a-zA-Z0-9._-]/g, "-")}.db`)
+        ? path.join(Global.Path.data, "mio.db")
+        : path.join(Global.Path.data, `mio-${InstallationChannel.replace(/[^a-zA-Z0-9._-]/g, "-")}.db`)
 
       expect(Database.getChannelPath(flags)).toBe(expected)
     }).pipe(Effect.provide(RuntimeFlags.layer())),
@@ -23,7 +23,7 @@ describe("Database.getChannelPath", () => {
     Effect.gen(function* () {
       const flags = yield* RuntimeFlags.Service
 
-      expect(Database.getChannelPath(flags)).toBe(path.join(Global.Path.data, "mimo.db"))
+      expect(Database.getChannelPath(flags)).toBe(path.join(Global.Path.data, "mio.db"))
     }).pipe(Effect.provide(RuntimeFlags.layer({ disableChannelDb: true }))),
   )
 

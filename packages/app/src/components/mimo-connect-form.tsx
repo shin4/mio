@@ -25,7 +25,7 @@ export type MimoBilling = "pay-as-you-go" | "token-plan"
 export type MimoRegion = "cn" | "sgp" | "ams"
 
 const PROVIDER_ID = "mimo"
-export const MIMO_PLATFORM_URL = "https://platform.xiaomimimo.com"
+export const MIO_PLATFORM_URL = "https://platform.xiaomimimo.com"
 
 // Context window budget is fixed at the 1M maximum; the selector was removed from the UI.
 const CONTEXT_WINDOW = 1_048_576
@@ -205,11 +205,11 @@ export const MimoConnectForm: Component<MimoConnectFormProps> = (props) => {
           <p class="text-12-regular text-text-weak">
             {t("provider.mimo.dialog.description")}
             <a
-              href={MIMO_PLATFORM_URL}
+              href={MIO_PLATFORM_URL}
               class="text-text-interactive-base ml-1"
               onClick={(event) => {
                 event.preventDefault()
-                platform.openLink(MIMO_PLATFORM_URL)
+                platform.openLink(MIO_PLATFORM_URL)
               }}
             >
               {t("provider.mimo.dialog.getKey")}

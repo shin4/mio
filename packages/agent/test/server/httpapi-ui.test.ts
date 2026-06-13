@@ -25,18 +25,18 @@ void Log.init({ print: false })
 const testStateLayer = Layer.effectDiscard(
   Effect.gen(function* () {
     const original = {
-      MIMO_SERVER_PASSWORD: Flag.MIMO_SERVER_PASSWORD,
-      MIMO_SERVER_USERNAME: Flag.MIMO_SERVER_USERNAME,
-      envPassword: process.env.MIMO_SERVER_PASSWORD,
-      envUsername: process.env.MIMO_SERVER_USERNAME,
+      MIO_SERVER_PASSWORD: Flag.MIO_SERVER_PASSWORD,
+      MIO_SERVER_USERNAME: Flag.MIO_SERVER_USERNAME,
+      envPassword: process.env.MIO_SERVER_PASSWORD,
+      envUsername: process.env.MIO_SERVER_USERNAME,
     }
 
     yield* Effect.addFinalizer(() =>
       Effect.sync(() => {
-        Flag.MIMO_SERVER_PASSWORD = original.MIMO_SERVER_PASSWORD
-        Flag.MIMO_SERVER_USERNAME = original.MIMO_SERVER_USERNAME
-        restoreEnv("MIMO_SERVER_PASSWORD", original.envPassword)
-        restoreEnv("MIMO_SERVER_USERNAME", original.envUsername)
+        Flag.MIO_SERVER_PASSWORD = original.MIO_SERVER_PASSWORD
+        Flag.MIO_SERVER_USERNAME = original.MIO_SERVER_USERNAME
+        restoreEnv("MIO_SERVER_PASSWORD", original.envPassword)
+        restoreEnv("MIO_SERVER_USERNAME", original.envUsername)
       }),
     )
   }),
@@ -58,8 +58,8 @@ function app(input?: { password?: string; username?: string }) {
       Layer.provide(
         ConfigProvider.layer(
           ConfigProvider.fromUnknown({
-            MIMO_SERVER_PASSWORD: input?.password,
-            MIMO_SERVER_USERNAME: input?.username,
+            MIO_SERVER_PASSWORD: input?.password,
+            MIO_SERVER_USERNAME: input?.username,
           }),
         ),
       ),
@@ -105,8 +105,8 @@ function uiApp(input?: {
         HttpServer.layerServices,
         ConfigProvider.layer(
           ConfigProvider.fromUnknown({
-            MIMO_SERVER_PASSWORD: input?.password,
-            MIMO_SERVER_USERNAME: input?.username,
+            MIO_SERVER_PASSWORD: input?.password,
+            MIO_SERVER_USERNAME: input?.username,
           }),
         ),
       ]),

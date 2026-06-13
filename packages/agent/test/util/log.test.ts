@@ -51,22 +51,22 @@ it.live("init cleanup keeps the newest timestamped logs", () =>
 it.live("local dev log is not truncated twice for the same run", () =>
   Effect.gen(function* () {
     const log = Global.Path.log
-    const runID = process.env.MIMO_RUN_ID
-    const initialized = process.env.MIMO_LOG_INITIALIZED_RUN_ID
+    const runID = process.env.MIO_RUN_ID
+    const initialized = process.env.MIO_LOG_INITIALIZED_RUN_ID
     yield* Effect.addFinalizer(() =>
       Effect.sync(() => {
         Global.Path.log = log
-        if (runID === undefined) delete process.env.MIMO_RUN_ID
-        else process.env.MIMO_RUN_ID = runID
-        if (initialized === undefined) delete process.env.MIMO_LOG_INITIALIZED_RUN_ID
-        else process.env.MIMO_LOG_INITIALIZED_RUN_ID = initialized
+        if (runID === undefined) delete process.env.MIO_RUN_ID
+        else process.env.MIO_RUN_ID = runID
+        if (initialized === undefined) delete process.env.MIO_LOG_INITIALIZED_RUN_ID
+        else process.env.MIO_LOG_INITIALIZED_RUN_ID = initialized
       }),
     )
 
     const dir = yield* tmpdirScoped()
     Global.Path.log = dir
-    process.env.MIMO_RUN_ID = "run-1"
-    delete process.env.MIMO_LOG_INITIALIZED_RUN_ID
+    process.env.MIO_RUN_ID = "run-1"
+    delete process.env.MIO_LOG_INITIALIZED_RUN_ID
 
     yield* Effect.promise(() => Log.init({ print: false, dev: true }))
     yield* Effect.promise(() => fs.writeFile(path.join(dir, "dev.log"), "main startup\n"))

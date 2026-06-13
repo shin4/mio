@@ -33,19 +33,19 @@ process.env["XDG_DATA_HOME"] = path.join(dir, "share")
 process.env["XDG_CACHE_HOME"] = path.join(dir, "cache")
 process.env["XDG_CONFIG_HOME"] = path.join(dir, "config")
 process.env["XDG_STATE_HOME"] = path.join(dir, "state")
-process.env["MIMO_MODELS_PATH"] = path.join(import.meta.dir, "tool", "fixtures", "models-api.json")
-process.env["MIMO_EXPERIMENTAL_EVENT_SYSTEM"] = "true"
-process.env["MIMO_EXPERIMENTAL_WORKSPACES"] = "true"
+process.env["MIO_MODELS_PATH"] = path.join(import.meta.dir, "tool", "fixtures", "models-api.json")
+process.env["MIO_EXPERIMENTAL_EVENT_SYSTEM"] = "true"
+process.env["MIO_EXPERIMENTAL_WORKSPACES"] = "true"
 
 // Set test home directory to isolate tests from user's actual home directory
 // This prevents tests from picking up real user configs/skills from ~/.claude/skills
 const testHome = path.join(dir, "home")
 await fs.mkdir(testHome, { recursive: true })
-process.env["MIMO_TEST_HOME"] = testHome
+process.env["MIO_TEST_HOME"] = testHome
 
 // Set test managed config directory to isolate tests from system managed settings
 const testManagedConfigDir = path.join(dir, "managed")
-process.env["MIMO_TEST_MANAGED_CONFIG_DIR"] = testManagedConfigDir
+process.env["MIO_TEST_MANAGED_CONFIG_DIR"] = testManagedConfigDir
 
 // Write the cache version file to prevent global/index.ts from clearing the cache
 const cacheDir = path.join(dir, "cache", "opencode")
@@ -73,11 +73,11 @@ delete process.env["DEEPSEEK_API_KEY"]
 delete process.env["FIREWORKS_API_KEY"]
 delete process.env["CEREBRAS_API_KEY"]
 delete process.env["SAMBANOVA_API_KEY"]
-delete process.env["MIMO_SERVER_PASSWORD"]
-delete process.env["MIMO_SERVER_USERNAME"]
+delete process.env["MIO_SERVER_PASSWORD"]
+delete process.env["MIO_SERVER_USERNAME"]
 
 // Use in-memory sqlite
-process.env["MIMO_DB"] = ":memory:"
+process.env["MIO_DB"] = ":memory:"
 
 // Now safe to import from src/
 const { Log } = await import("@opencode-ai/core/util/log")

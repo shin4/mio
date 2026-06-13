@@ -1,4 +1,4 @@
-import { base64PayloadBytes, MIMO_ASR_BASE64_LIMIT_BYTES } from "@opencode-ai/core/attachment-limits"
+import { base64PayloadBytes, MIO_ASR_BASE64_LIMIT_BYTES } from "@opencode-ai/core/attachment-limits"
 import { decodePcm16MonoWavDataUrl, validateDictationAudio } from "@opencode-ai/core/dictation-audio"
 import type { DictationLanguage, DictationRequest } from "../groups/dictation"
 
@@ -41,7 +41,7 @@ export function buildDictationBody(payload: DictationRequest): DictationBodyResu
   }
 
   const bytes = base64PayloadBytes(dataUrl)
-  if (bytes !== undefined && bytes > MIMO_ASR_BASE64_LIMIT_BYTES) {
+  if (bytes !== undefined && bytes > MIO_ASR_BASE64_LIMIT_BYTES) {
     return { ok: false, message: "audio is too large (max 10MB base64)" }
   }
 

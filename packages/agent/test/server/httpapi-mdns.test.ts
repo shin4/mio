@@ -29,22 +29,22 @@ void mock.module("bonjour-service", () => ({
 const { Server } = await import("../../src/server/server")
 
 const original = {
-  MIMO_SERVER_PASSWORD: Flag.MIMO_SERVER_PASSWORD,
-  MIMO_SERVER_USERNAME: Flag.MIMO_SERVER_USERNAME,
+  MIO_SERVER_PASSWORD: Flag.MIO_SERVER_PASSWORD,
+  MIO_SERVER_USERNAME: Flag.MIO_SERVER_USERNAME,
 }
 
 afterEach(async () => {
   events.length = 0
-  Flag.MIMO_SERVER_PASSWORD = original.MIMO_SERVER_PASSWORD
-  Flag.MIMO_SERVER_USERNAME = original.MIMO_SERVER_USERNAME
+  Flag.MIO_SERVER_PASSWORD = original.MIO_SERVER_PASSWORD
+  Flag.MIO_SERVER_USERNAME = original.MIO_SERVER_USERNAME
   await disposeAllInstances()
   await resetDatabase()
 })
 
 describe("HttpApi Server.listen mDNS", () => {
   test("skips publish for loopback hostnames", async () => {
-    Flag.MIMO_SERVER_PASSWORD = "mdns-secret"
-    Flag.MIMO_SERVER_USERNAME = "mimo"
+    Flag.MIO_SERVER_PASSWORD = "mdns-secret"
+    Flag.MIO_SERVER_USERNAME = "mimo"
     const listener = await Server.listen({ hostname: "127.0.0.1", port: 0, mdns: true })
     try {
       expect(events.filter((e) => e.kind === "publish")).toEqual([])
@@ -55,8 +55,8 @@ describe("HttpApi Server.listen mDNS", () => {
   })
 
   test("publishes for non-loopback hostnames and unpublishes on stop", async () => {
-    Flag.MIMO_SERVER_PASSWORD = "mdns-secret"
-    Flag.MIMO_SERVER_USERNAME = "mimo"
+    Flag.MIO_SERVER_PASSWORD = "mdns-secret"
+    Flag.MIO_SERVER_USERNAME = "mimo"
     const listener = await Server.listen({ hostname: "0.0.0.0", port: 0, mdns: true })
     try {
       const published = events.filter((e) => e.kind === "publish")
@@ -71,8 +71,8 @@ describe("HttpApi Server.listen mDNS", () => {
   })
 
   test("scope finalizer unpublishes even if stop() is not called for force-close", async () => {
-    Flag.MIMO_SERVER_PASSWORD = "mdns-secret"
-    Flag.MIMO_SERVER_USERNAME = "mimo"
+    Flag.MIO_SERVER_PASSWORD = "mdns-secret"
+    Flag.MIO_SERVER_USERNAME = "mimo"
     const listener = await Server.listen({ hostname: "0.0.0.0", port: 0, mdns: true })
     expect(events.filter((e) => e.kind === "publish").length).toBe(1)
     // Plain (graceful) stop without close=true should still unpublish.

@@ -94,9 +94,9 @@ export async function tmpdir<T>(options?: TmpDirOptions<T>) {
   }
   if (options?.config) {
     await Bun.write(
-      path.join(dirpath, "mimo.json"),
+      path.join(dirpath, "mio.json"),
       JSON.stringify({
-        $schema: "https://platform.xiaomimimo.com/mimo-code/config.json",
+        $schema: "https://raw.githubusercontent.com/shin4/mio/main/schema/config.json",
         ...options.config,
       }),
     )
@@ -152,8 +152,8 @@ export function tmpdirScoped(options?: {
       const resolved = typeof options.config === "function" ? options.config() : options.config
       yield* Effect.promise(() =>
         fs.writeFile(
-          path.join(dir, "mimo.json"),
-          JSON.stringify({ $schema: "https://platform.xiaomimimo.com/mimo-code/config.json", ...resolved }),
+          path.join(dir, "mio.json"),
+          JSON.stringify({ $schema: "https://raw.githubusercontent.com/shin4/mio/main/schema/config.json", ...resolved }),
         ),
       )
     }
