@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/shin4/mimo-code",
+  "homepage": "https://github.com/shin4/mio",
   "author": {
-    "name": "MiMo-Code"
+    "name": "Mio"
   },
   "scripts": {
     "typecheck": "tsgo -b",

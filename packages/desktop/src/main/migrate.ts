@@ -32,10 +32,10 @@ function tauriAppId() {
 }
 
 // Migrate a single Tauri .dat file into the corresponding electron-store.
-// Settings files are special: they map to the `mimo.settings` store
+// Settings files are special: they map to the `mio.settings` store
 // (the electron-store name without the `.dat` extension). All other .dat files
 // keep their full filename as the electron-store name so they match what the
-// renderer already passes via IPC (e.g. `"default.dat"`, `"mimo.global.dat"`).
+// renderer already passes via IPC (e.g. `"default.dat"`, `"mio.global.dat"`).
 function migrateFile(datPath: string, filename: string) {
   let data: Record<string, unknown>
   try {
@@ -45,11 +45,13 @@ function migrateFile(datPath: string, filename: string) {
     return
   }
 
-  // settings .dat files → the electron settings store ("mimo.settings").
+  // settings .dat files → the electron settings store ("mio.settings").
   // All other .dat files keep their full filename as the store name so they match
-  // what the renderer passes via IPC (e.g. "default.dat", "mimo.global.dat").
+  // what the renderer passes via IPC (e.g. "default.dat", "mio.global.dat").
   const storeName =
-    filename === "opencode.settings.dat" || filename === "mimo.settings.dat" ? "mimo.settings" : filename
+    filename === "opencode.settings.dat" || filename === "mimo.settings.dat" || filename === "mio.settings.dat"
+      ? "mio.settings"
+      : filename
   const target = getStore(storeName)
   const migrated: string[] = []
   const skipped: string[] = []

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test"
 
 import { attachRoutePersistence, loadPersistedRoute, type SeedableHistory } from "./route-persistence"
 
-const ROUTE_STORE = "mimo.global.dat"
+const ROUTE_STORE = "mio.global.dat"
 const ROUTE_KEY = "route.last"
 
 type StoreCall = { name: string; key: string; value?: string }

@@ -4,7 +4,7 @@ type Channel = "dev" | "beta" | "prod"
 const raw = import.meta.env.MIO_CHANNEL
 export const CHANNEL: Channel = raw === "dev" || raw === "beta" || raw === "prod" ? raw : "dev"
 
-export const SETTINGS_STORE = "mimo.settings"
+export const SETTINGS_STORE = "mio.settings"
 export const DEFAULT_SERVER_URL_KEY = "defaultServerUrl"
 export const WSL_ENABLED_KEY = "wslEnabled"
 export const PINCH_ZOOM_ENABLED_KEY = "pinchZoomEnabled"

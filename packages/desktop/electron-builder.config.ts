@@ -34,11 +34,11 @@ const appleTeamId = process.env.APPLE_TEAM_ID
 const macSign = Boolean(process.env.CSC_LINK)
 
 const getBase = (): Configuration => ({
-  artifactName: "mimo-desktop-${os}-${arch}.${ext}",
+  artifactName: "mio-desktop-${os}-${arch}.${ext}",
   // Publishing to GitHub Releases is what makes electron-builder emit the
   // electron-updater metadata (latest.yml / latest-mac.yml) and bake the
   // matching app-update.yml into the app. Without it auto-update is dead.
-  publish: [{ provider: "github", owner: "shin4", repo: "mimo-code" }],
+  publish: [{ provider: "github", owner: "shin4", repo: "mio" }],
   directories: {
     output: "dist",
     buildResources: "resources",
@@ -59,7 +59,7 @@ const getBase = (): Configuration => ({
     entitlements: "resources/entitlements.plist",
     entitlementsInherit: "resources/entitlements.plist",
     extendInfo: {
-      NSMicrophoneUsageDescription: "MiMo Code uses the microphone only when you start dictation.",
+      NSMicrophoneUsageDescription: "Mio uses the microphone only when you start dictation.",
     },
     // electron-builder 26 schema requires mac.notarize to be a boolean. When
     // true, notarization reads APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD /
@@ -73,8 +73,8 @@ const getBase = (): Configuration => ({
     sign: macSign,
   },
   protocols: {
-    name: "MiMo Code Desktop",
-    schemes: ["mimo"],
+    name: "Mio Desktop",
+    schemes: ["mio"],
   },
   win: {
     icon: `resources/icons/icon.ico`,
@@ -109,27 +109,27 @@ function getConfig() {
     case "dev": {
       return {
         ...base,
-        appId: "io.github.shin4.mimo.desktop.dev",
-        productName: "MiMo Code Desktop Dev",
-        rpm: { packageName: "mimo-desktop-dev" },
+        appId: "io.github.shin4.mio.desktop.dev",
+        productName: "Mio Desktop Dev",
+        rpm: { packageName: "mio-desktop-dev" },
       }
     }
     case "beta": {
       return {
         ...base,
-        appId: "io.github.shin4.mimo.desktop.beta",
-        productName: "MiMo Code Desktop Beta",
-        protocols: { name: "MiMo Code Desktop Beta", schemes: ["mimo"] },
-        rpm: { packageName: "mimo-desktop-beta" },
+        appId: "io.github.shin4.mio.desktop.beta",
+        productName: "Mio Desktop Beta",
+        protocols: { name: "Mio Desktop Beta", schemes: ["mio"] },
+        rpm: { packageName: "mio-desktop-beta" },
       }
     }
     case "prod": {
       return {
         ...base,
-        appId: "io.github.shin4.mimo.desktop",
-        productName: "MiMo Code Desktop",
-        protocols: { name: "MiMo Code Desktop", schemes: ["mimo"] },
-        rpm: { packageName: "mimo-desktop" },
+        appId: "io.github.shin4.mio.desktop",
+        productName: "Mio Desktop",
+        protocols: { name: "Mio Desktop", schemes: ["mio"] },
+        rpm: { packageName: "mio-desktop" },
       }
     }
   }

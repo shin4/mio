@@ -57,14 +57,14 @@ export default defineConfig({
     },
     plugins: [
       {
-        name: "mimo:node-pty-narrower",
+        name: "mio:node-pty-narrower",
         enforce: "pre",
         resolveId(s) {
           if (s === "@lydell/node-pty") return nodePtyPkg
         },
       },
       {
-        name: "mimo:embedded-ui-stub",
+        name: "mio:embedded-ui-stub",
         enforce: "pre",
         resolveId(id) {
           // The bundled agent server tries to dynamic-import this file. It's
@@ -75,14 +75,14 @@ export default defineConfig({
         },
       },
       {
-        name: "mimo:virtual-server-module",
+        name: "mio:virtual-server-module",
         enforce: "pre",
         resolveId(id) {
           if (id === "virtual:opencode-server") return this.resolve(`${MIO_SERVER_DIST}/node.js`)
         },
       },
       {
-        name: "mimo:copy-server-assets",
+        name: "mio:copy-server-assets",
         async writeBundle() {
           for (const l of await fs.readdir(MIO_SERVER_DIST)) {
             if (!l.endsWith(".wasm")) continue

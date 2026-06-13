@@ -43,14 +43,14 @@ import { Deferred, Effect, Fiber } from "effect"
 import { DEFAULT_AUTH_USERNAME } from "./auth"
 
 const APP_NAMES: Record<string, string> = {
-  dev: "MiMo Desktop Dev",
-  beta: "MiMo Desktop Beta",
-  prod: "MiMo Desktop",
+  dev: "Mio Desktop Dev",
+  beta: "Mio Desktop Beta",
+  prod: "Mio Desktop",
 }
 const APP_IDS: Record<string, string> = {
-  dev: "io.github.shin4.mimo.desktop.dev",
-  beta: "io.github.shin4.mimo.desktop.beta",
-  prod: "io.github.shin4.mimo.desktop",
+  dev: "io.github.shin4.mio.desktop.dev",
+  beta: "io.github.shin4.mio.desktop.beta",
+  prod: "io.github.shin4.mio.desktop",
 }
 const TEST_ONBOARDING = process.env.MIO_TEST_ONBOARDING === "1"
 const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports"
@@ -122,11 +122,11 @@ const main = Effect.gen(function* () {
 
   process.env.MIO_DISABLE_EMBEDDED_WEB_UI = "true"
 
-  const appId = app.isPackaged ? APP_IDS[CHANNEL] : "io.github.shin4.mimo.desktop.dev"
+  const appId = app.isPackaged ? APP_IDS[CHANNEL] : "io.github.shin4.mio.desktop.dev"
   const onboardingTestRoot = ((): string | undefined => {
     if (!TEST_ONBOARDING) return
 
-    const root = join(tmpdir(), `mimo-onboarding-${randomUUID()}`)
+    const root = join(tmpdir(), `mio-onboarding-${randomUUID()}`)
     rmSync(root, { recursive: true, force: true })
     ;["data", "config", "cache", "state", "desktop", "session"].forEach((dir) =>
       mkdirSync(join(root, dir), { recursive: true }),
@@ -138,7 +138,7 @@ const main = Effect.gen(function* () {
     process.env.XDG_STATE_HOME = join(root, "state")
     return root
   })()
-  app.setName(app.isPackaged ? APP_NAMES[CHANNEL] : "MiMo Desktop Dev")
+  app.setName(app.isPackaged ? APP_NAMES[CHANNEL] : "Mio Desktop Dev")
   app.setAppUserModelId(appId)
   app.setPath(
     "userData",
@@ -176,7 +176,7 @@ const main = Effect.gen(function* () {
   preferAppEnv(app.getPath("userData"))
 
   app.on("second-instance", (_event: Event, argv: string[]) => {
-    const urls = argv.filter((arg: string) => arg.startsWith("mimo://"))
+    const urls = argv.filter((arg: string) => arg.startsWith("mio://"))
     if (urls.length) {
       logger.log("deep link received via second-instance", { urls })
       emitDeepLinks(urls)
@@ -284,7 +284,7 @@ const main = Effect.gen(function* () {
   yield* Effect.promise(() => app.whenReady())
 
   if (!TEST_ONBOARDING) migrate()
-  app.setAsDefaultProtocolClient("mimo")
+  app.setAsDefaultProtocolClient("mio")
   registerRendererProtocol()
   setDockIcon()
   setupAutoUpdater()
@@ -301,7 +301,7 @@ const main = Effect.gen(function* () {
 
     const xdg = process.env.XDG_DATA_HOME
     const base = xdg && xdg.length > 0 ? xdg : join(homedir(), ".local", "share")
-    return !existsSync(join(base, "mimo", "mimo.db"))
+    return !existsSync(join(base, "mio", "mio.db"))
   })()
   let overlay: BrowserWindow | null = null
 
