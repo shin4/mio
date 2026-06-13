@@ -1,4 +1,4 @@
-export const deepLinkEvent = "mimo:deep-link"
+export const deepLinkEvent = "mio:deep-link"
 
 const parseUrl = (input: string) => {
   if (!input.startsWith("mio://")) return

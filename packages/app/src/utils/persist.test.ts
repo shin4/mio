@@ -114,7 +114,7 @@ describe("persist localStorage resilience", () => {
   test("workspace storage sanitizes Windows filename characters", () => {
     const result = persistTesting.workspaceStorage("C:\\Users\\foo")
 
-    expect(result).toStartWith("mimo.workspace.")
+    expect(result).toStartWith("mio.workspace.")
     expect(result.endsWith(".dat")).toBeTrue()
     expect(/[:\\/]/.test(result)).toBeFalse()
   })
@@ -124,7 +124,7 @@ describe("persist localStorage resilience", () => {
 
     expect(target.storage).toBe(persistTesting.workspaceStorage("C:/Users/foo"))
     expect(target.legacyStorageNames).toHaveLength(2)
-    expect(target.legacyStorageNames?.every((name) => name.startsWith("opencode.workspace."))).toBeTrue()
+    expect(target.legacyStorageNames?.every((name) => name.startsWith("mimo.workspace."))).toBeTrue()
     expect(target.legacyStorageNames?.every((name) => name.endsWith(".dat"))).toBeTrue()
     expect(new Set(target.legacyStorageNames).size).toBe(2)
   })
@@ -134,7 +134,7 @@ describe("persist localStorage resilience", () => {
 
     expect(target.storage).toBe(persistTesting.workspaceStorage("C:/Users/foo"))
     expect(target.legacyStorageNames).toHaveLength(2)
-    expect(target.legacyStorageNames?.every((name) => name.startsWith("opencode.workspace."))).toBeTrue()
+    expect(target.legacyStorageNames?.every((name) => name.startsWith("mimo.workspace."))).toBeTrue()
     expect(target.legacyStorageNames?.every((name) => name.endsWith(".dat"))).toBeTrue()
     expect(new Set(target.legacyStorageNames).size).toBe(2)
   })
@@ -143,7 +143,7 @@ describe("persist localStorage resilience", () => {
     const target = Persist.global("language")
 
     expect(target.storage).toBe("mio.global.dat")
-    expect(target.legacyStorageNames).toEqual(["opencode.global.dat"])
+    expect(target.legacyStorageNames).toEqual(["mimo.global.dat"])
   })
 
   test("migrates direct legacy keys into scoped storage", () => {

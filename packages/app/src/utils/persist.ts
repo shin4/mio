@@ -23,9 +23,9 @@ type PersistTarget = {
 
 const LEGACY_STORAGE = "default.dat"
 const GLOBAL_STORAGE = "mio.global.dat"
-const LEGACY_GLOBAL_STORAGE = "opencode.global.dat"
-const LOCAL_PREFIX = "mimo."
-const LEGACY_LOCAL_PREFIX = "opencode"
+const LEGACY_GLOBAL_STORAGE = "mimo.global.dat"
+const LOCAL_PREFIX = "mio."
+const LEGACY_LOCAL_PREFIX = "mimo"
 const fallback = new Map<string, boolean>()
 
 const CACHE_MAX_ENTRIES = 500
@@ -343,7 +343,7 @@ function workspaceStorageName(prefix: string, dir: string) {
 }
 
 function workspaceStorage(dir: string) {
-  return workspaceStorageName("mimo", dir)
+  return workspaceStorageName(LOCAL_PREFIX.replace(/\.$/, ""), dir)
 }
 
 function legacyWorkspaceStorage(dir: string) {
