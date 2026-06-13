@@ -4,25 +4,25 @@ import appPlugin from "@opencode-ai/app/vite"
 import * as fs from "node:fs/promises"
 import { readFileSync } from "node:fs"
 
-const MIMO_SERVER_DIST = "../agent/dist/node"
+const MIO_SERVER_DIST = "../agent/dist/node"
 
 const channel = (() => {
-  const raw = process.env.MIMO_CHANNEL
+  const raw = process.env.MIO_CHANNEL
   if (raw === "dev" || raw === "beta" || raw === "prod") return raw
-  if (process.env.MIMO_CHANNEL === "latest") return "prod"
+  if (process.env.MIO_CHANNEL === "latest") return "prod"
   return "dev"
 })()
 
-// Displayed app version. MIMO_VERSION (set by CI's set-version.ts in releases, or
+// Displayed app version. MIO_VERSION (set by CI's set-version.ts in releases, or
 // exported manually in dev) takes precedence; otherwise fall back to the version
-// in package.json. This lets `MIMO_VERSION=1.2.3 bun run dev:desktop` show 1.2.3
+// in package.json. This lets `MIO_VERSION=1.2.3 bun run dev:desktop` show 1.2.3
 // without ever writing to package.json. Injected into both the main and renderer
-// bundles as `import.meta.env.MIMO_VERSION`.
+// bundles as `import.meta.env.MIO_VERSION`.
 const pkgVersion: string = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")).version
-const version = (process.env.MIMO_VERSION ?? pkgVersion).replace(/^v/, "")
+const version = (process.env.MIO_VERSION ?? pkgVersion).replace(/^v/, "")
 
-const targetPlatform = process.env.MIMO_TARGET_PLATFORM ?? process.platform
-const targetArch = process.env.MIMO_TARGET_ARCH ?? process.arch
+const targetPlatform = process.env.MIO_TARGET_PLATFORM ?? process.platform
+const targetArch = process.env.MIO_TARGET_ARCH ?? process.arch
 const nodePtyPkg = `@lydell/node-pty-${targetPlatform}-${targetArch}`
 
 const sentry =
@@ -45,8 +45,8 @@ const sentry =
 export default defineConfig({
   main: {
     define: {
-      "import.meta.env.MIMO_CHANNEL": JSON.stringify(channel),
-      "import.meta.env.MIMO_VERSION": JSON.stringify(version),
+      "import.meta.env.MIO_CHANNEL": JSON.stringify(channel),
+      "import.meta.env.MIO_VERSION": JSON.stringify(version),
     },
     build: {
       rollupOptions: {
@@ -78,15 +78,15 @@ export default defineConfig({
         name: "mimo:virtual-server-module",
         enforce: "pre",
         resolveId(id) {
-          if (id === "virtual:opencode-server") return this.resolve(`${MIMO_SERVER_DIST}/node.js`)
+          if (id === "virtual:opencode-server") return this.resolve(`${MIO_SERVER_DIST}/node.js`)
         },
       },
       {
         name: "mimo:copy-server-assets",
         async writeBundle() {
-          for (const l of await fs.readdir(MIMO_SERVER_DIST)) {
+          for (const l of await fs.readdir(MIO_SERVER_DIST)) {
             if (!l.endsWith(".wasm")) continue
-            await fs.writeFile(`./out/main/chunks/${l}`, await fs.readFile(`${MIMO_SERVER_DIST}/${l}`))
+            await fs.writeFile(`./out/main/chunks/${l}`, await fs.readFile(`${MIO_SERVER_DIST}/${l}`))
           }
         },
       },
@@ -105,7 +105,7 @@ export default defineConfig({
   },
   renderer: {
     define: {
-      "import.meta.env.MIMO_VERSION": JSON.stringify(version),
+      "import.meta.env.MIO_VERSION": JSON.stringify(version),
     },
     plugins: [appPlugin, sentry],
     publicDir: "../../../app/public",

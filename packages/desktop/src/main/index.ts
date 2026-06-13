@@ -52,7 +52,7 @@ const APP_IDS: Record<string, string> = {
   beta: "io.github.shin4.mimo.desktop.beta",
   prod: "io.github.shin4.mimo.desktop",
 }
-const TEST_ONBOARDING = process.env.MIMO_TEST_ONBOARDING === "1"
+const TEST_ONBOARDING = process.env.MIO_TEST_ONBOARDING === "1"
 const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports"
 
 let logger: ReturnType<typeof initLogging>
@@ -120,7 +120,7 @@ const main = Effect.gen(function* () {
     process.chdir(homedir())
   } catch {}
 
-  process.env.MIMO_DISABLE_EMBEDDED_WEB_UI = "true"
+  process.env.MIO_DISABLE_EMBEDDED_WEB_UI = "true"
 
   const appId = app.isPackaged ? APP_IDS[CHANNEL] : "io.github.shin4.mimo.desktop.dev"
   const onboardingTestRoot = ((): string | undefined => {
@@ -131,7 +131,7 @@ const main = Effect.gen(function* () {
     ;["data", "config", "cache", "state", "desktop", "session"].forEach((dir) =>
       mkdirSync(join(root, dir), { recursive: true }),
     )
-    process.env.MIMO_DB = ":memory:"
+    process.env.MIO_DB = ":memory:"
     process.env.XDG_DATA_HOME = join(root, "data")
     process.env.XDG_CONFIG_HOME = join(root, "config")
     process.env.XDG_CACHE_HOME = join(root, "cache")
@@ -155,7 +155,7 @@ const main = Effect.gen(function* () {
   }
 
   logger.log("app starting", {
-    version: import.meta.env.MIMO_VERSION,
+    version: import.meta.env.MIO_VERSION,
     electronAppVersion: app.getVersion(),
     packaged: app.isPackaged,
     onboardingTest: Boolean(onboardingTestRoot),
@@ -297,7 +297,7 @@ const main = Effect.gen(function* () {
   )
 
   const needsMigration = ((): boolean => {
-    if (process.env.MIMO_DB === ":memory:") return false
+    if (process.env.MIO_DB === ":memory:") return false
 
     const xdg = process.env.XDG_DATA_HOME
     const base = xdg && xdg.length > 0 ? xdg : join(homedir(), ".local", "share")
@@ -306,7 +306,7 @@ const main = Effect.gen(function* () {
   let overlay: BrowserWindow | null = null
 
   const port = yield* Effect.gen(function* () {
-    const fromEnv = process.env.MIMO_PORT
+    const fromEnv = process.env.MIO_PORT
     if (fromEnv) {
       const parsed = Number.parseInt(fromEnv, 10)
       if (!Number.isNaN(parsed)) return parsed

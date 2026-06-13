@@ -12,7 +12,7 @@ boundaries. If you need strong isolation, run MiMo-Code in a container, VM, or
 other restricted environment.
 
 Server mode is opt-in. When enabling it, configure authentication with
-`MIMO_SERVER_PASSWORD`. MiMo-Code does not read upstream `OPENCODE_*`
+`MIO_SERVER_PASSWORD`. MiMo-Code does not read upstream `OPENCODE_*`
 environment variables by default, which prevents an upstream OpenCode shell
 configuration from silently affecting MiMo-Code. Exposing an unauthenticated
 server is an operator error, not a product vulnerability.

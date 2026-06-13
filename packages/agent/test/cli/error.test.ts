@@ -73,7 +73,7 @@ describe("cli.error", () => {
     const expected = [
       "Model not found: anthropic/claude-sonet-4",
       "Did you mean: claude-sonnet-4",
-      "Try: `mimo models` to list available models",
+      "Try: `mio models` to list available models",
       "Or check your config (mio.json) provider/model names",
     ].join("\n")
 

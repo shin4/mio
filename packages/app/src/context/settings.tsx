@@ -61,7 +61,7 @@ export interface Settings {
 }
 
 // MiMo TTS (mimo-v2.5-tts) read-aloud voices. Kept in sync with the server-side
-// TtsVoiceId literal union and the MIMO_VOICES list in settings-mimo.tsx.
+// TtsVoiceId literal union and the MIO_VOICES list in settings-mimo.tsx.
 export const TTS_VOICES = ["mimo_default", "冰糖", "茉莉", "苏打", "白桦", "Mia", "Chloe", "Milo", "Dean"] as const
 export type TtsVoice = (typeof TTS_VOICES)[number]
 export const DEFAULT_TTS_VOICE: TtsVoice = "mimo_default"

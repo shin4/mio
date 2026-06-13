@@ -34,8 +34,8 @@ const it = testEffect(
 )
 
 const original = {
-  MIMO_SERVER_PASSWORD: Flag.MIMO_SERVER_PASSWORD,
-  MIMO_SERVER_USERNAME: Flag.MIMO_SERVER_USERNAME,
+  MIO_SERVER_PASSWORD: Flag.MIO_SERVER_PASSWORD,
+  MIO_SERVER_USERNAME: Flag.MIO_SERVER_USERNAME,
 }
 
 type ServerPath = "default" | "raw"
@@ -48,8 +48,8 @@ type TestServices = AppFileSystem.Service | ChildProcessSpawner.ChildProcessSpaw
 type TestScope = Scope.Scope | TestServices
 
 function app(serverPath: ServerPath, input?: { password?: string; username?: string }) {
-  Flag.MIMO_SERVER_PASSWORD = input?.password
-  Flag.MIMO_SERVER_USERNAME = input?.username
+  Flag.MIO_SERVER_PASSWORD = input?.password
+  Flag.MIO_SERVER_USERNAME = input?.username
   if (serverPath === "default") return Server.Default().app
 
   const handler = HttpRouter.toWebHandler(
@@ -57,8 +57,8 @@ function app(serverPath: ServerPath, input?: { password?: string; username?: str
       Layer.provide(
         ConfigProvider.layer(
           ConfigProvider.fromUnknown({
-            MIMO_SERVER_PASSWORD: input?.password,
-            MIMO_SERVER_USERNAME: input?.username,
+            MIO_SERVER_PASSWORD: input?.password,
+            MIO_SERVER_USERNAME: input?.username,
           }),
         ),
       ),
@@ -332,8 +332,8 @@ function seedMessage(directory: string, sessionID: string) {
 }
 
 afterEach(async () => {
-  Flag.MIMO_SERVER_PASSWORD = original.MIMO_SERVER_PASSWORD
-  Flag.MIMO_SERVER_USERNAME = original.MIMO_SERVER_USERNAME
+  Flag.MIO_SERVER_PASSWORD = original.MIO_SERVER_PASSWORD
+  Flag.MIO_SERVER_USERNAME = original.MIO_SERVER_USERNAME
   await disposeAllInstances()
   await resetDatabase()
 })

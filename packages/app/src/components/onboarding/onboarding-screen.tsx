@@ -12,7 +12,7 @@ import { Splash } from "@opencode-ai/ui/logo"
 import { createSignal, Show } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
-import { MimoConnectForm, MIMO_PLATFORM_URL } from "../mimo-connect-form"
+import { MimoConnectForm, MIO_PLATFORM_URL } from "../mimo-connect-form"
 
 export function OnboardingScreen() {
   const t = useLanguage().t
@@ -33,7 +33,7 @@ export function OnboardingScreen() {
               </div>
               <p class="text-14-regular text-text-weak">{t("onboarding.welcome.body")}</p>
               <div class="flex flex-col gap-2 w-full max-w-xs">
-                <Button variant="primary" size="large" onClick={() => platform.openLink(MIMO_PLATFORM_URL)}>
+                <Button variant="primary" size="large" onClick={() => platform.openLink(MIO_PLATFORM_URL)}>
                   {t("onboarding.welcome.getKey")}
                 </Button>
                 <Button variant="ghost" size="large" onClick={() => setStep("configure")}>

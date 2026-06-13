@@ -1,7 +1,7 @@
 <!--
   Built-in skill. Name and description are registered in code at
-  packages/agent/src/skill/index.ts (see CUSTOMIZE_MIMO_SKILL_NAME
-  and CUSTOMIZE_MIMO_SKILL_DESCRIPTION). The body below becomes the
+  packages/agent/src/skill/index.ts (see CUSTOMIZE_MIO_SKILL_NAME
+  and CUSTOMIZE_MIO_SKILL_DESCRIPTION). The body below becomes the
   skill's content.
 -->
 
@@ -227,7 +227,7 @@ file, `disable: true` in frontmatter.
 ### Built-in agents
 
 MiMo-Code ships with `build`, `plan`, `general`, `explore`, plus optionally
-`scout` (gated on `MIMO_EXPERIMENTAL_SCOUT`). Hidden internal agents:
+`scout` (gated on `MIO_EXPERIMENTAL_SCOUT`). Hidden internal agents:
 `compaction`, `title`, `summary`. To override a built-in's fields, define the
 same key in `agent: { <name>: { ... } }`.
 
@@ -349,16 +349,16 @@ the `plan` agent's permission ruleset (`edit: deny *`).
 
 When a user's config is broken and MiMo-Code won't start, these env vars help:
 
-- `MIMO_DISABLE_PROJECT_CONFIG=1`: skip the project's local `mio.json`
+- `MIO_DISABLE_PROJECT_CONFIG=1`: skip the project's local `mio.json`
   and start from globals only. Run from the project directory, MiMo-Code loads,
   the user edits the broken file, then they restart without the flag.
-- `MIMO_CONFIG=/path/to/file.json`: load an additional explicit config.
-- `MIMO_CONFIG_CONTENT='{"$schema":"https://raw.githubusercontent.com/shin4/mio/main/schema/config.json"}'`:
+- `MIO_CONFIG=/path/to/file.json`: load an additional explicit config.
+- `MIO_CONFIG_CONTENT='{"$schema":"https://raw.githubusercontent.com/shin4/mio/main/schema/config.json"}'`:
   inject inline JSON as a final local-scope merge.
-- `MIMO_DISABLE_DEFAULT_PLUGINS=1`: skip default plugins.
-- `MIMO_PURE=1`: skip external plugins entirely.
-- `MIMO_DISABLE_EXTERNAL_SKILLS=1`,
-  `MIMO_DISABLE_CLAUDE_CODE_SKILLS=1`: skip the external skill scans under
+- `MIO_DISABLE_DEFAULT_PLUGINS=1`: skip default plugins.
+- `MIO_PURE=1`: skip external plugins entirely.
+- `MIO_DISABLE_EXTERNAL_SKILLS=1`,
+  `MIO_DISABLE_CLAUDE_CODE_SKILLS=1`: skip the external skill scans under
   `~/.claude/` and `~/.agents/`.
 
 ## When proposing edits

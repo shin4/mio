@@ -70,7 +70,7 @@ function UiI18nBridge(props: ParentProps) {
 
 declare global {
   interface Window {
-    __MIMO__?: {
+    __MIO__?: {
       updaterEnabled?: boolean
       deepLinks?: string[]
       wsl?: boolean

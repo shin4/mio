@@ -11,8 +11,8 @@ const targetArch = process.argv.includes("--arm64") ? "arm64" : "x64"
 const hostPlatform = process.platform
 const hostArch = process.arch
 const targetEnv = {
-  MIMO_TARGET_PLATFORM: targetPlatform,
-  MIMO_TARGET_ARCH: targetArch,
+  MIO_TARGET_PLATFORM: targetPlatform,
+  MIO_TARGET_ARCH: targetArch,
 }
 const builderArgs = process.argv.slice(2).filter((arg) => arg !== "--x64" && arg !== "--arm64")
 

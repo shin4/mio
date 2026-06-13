@@ -32,7 +32,7 @@ function systemManagedConfigDir(): string {
 }
 
 export function managedConfigDir() {
-  return process.env.MIMO_TEST_MANAGED_CONFIG_DIR || systemManagedConfigDir()
+  return process.env.MIO_TEST_MANAGED_CONFIG_DIR || systemManagedConfigDir()
 }
 
 export function parseManagedPlist(json: string): string {

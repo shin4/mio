@@ -15,7 +15,7 @@ import { EffectBridge } from "@/effect/bridge"
 import { init } from "#db"
 import { Effect, Schema } from "effect"
 
-declare const MIMO_MIGRATIONS: { sql: string; timestamp: number; name: string }[] | undefined
+declare const MIO_MIGRATIONS: { sql: string; timestamp: number; name: string }[] | undefined
 
 export const NotFoundError = NamedError.create("NotFoundError", {
   message: Schema.String,
@@ -36,9 +36,9 @@ export function getChannelPath(flags: Pick<DatabaseFlags, "disableChannelDb"> = 
 }
 
 export const getPath = (flags?: Pick<DatabaseFlags, "disableChannelDb">) => {
-  if (Flag.MIMO_DB) {
-    if (Flag.MIMO_DB === ":memory:" || path.isAbsolute(Flag.MIMO_DB)) return Flag.MIMO_DB
-    return path.join(Global.Path.data, Flag.MIMO_DB)
+  if (Flag.MIO_DB) {
+    if (Flag.MIO_DB === ":memory:" || path.isAbsolute(Flag.MIO_DB)) return Flag.MIO_DB
+    return path.join(Global.Path.data, Flag.MIO_DB)
   }
   return getChannelPath(flags)
 }
@@ -111,15 +111,15 @@ export const Client = Object.assign(
     // Apply schema migrations
     const migrationDir = path.join(import.meta.dirname, "../../migration")
     const entries =
-      typeof MIMO_MIGRATIONS !== "undefined"
-        ? MIMO_MIGRATIONS
+      typeof MIO_MIGRATIONS !== "undefined"
+        ? MIO_MIGRATIONS
         : existsSync(migrationDir)
           ? migrations(migrationDir)
           : []
     if (entries.length > 0) {
       log.info("applying migrations", {
         count: entries.length,
-        mode: typeof MIMO_MIGRATIONS !== "undefined" ? "bundled" : "dev",
+        mode: typeof MIO_MIGRATIONS !== "undefined" ? "bundled" : "dev",
       })
       if (flags.skipMigrations) {
         for (const item of entries) {

@@ -9,8 +9,8 @@ describe("windows package target", () => {
   test("node-pty native package selection uses the explicit build target", async () => {
     const config = await Bun.file(join(root, "electron.vite.config.ts")).text()
 
-    expect(config).toContain("MIMO_TARGET_PLATFORM")
-    expect(config).toContain("MIMO_TARGET_ARCH")
+    expect(config).toContain("MIO_TARGET_PLATFORM")
+    expect(config).toContain("MIO_TARGET_ARCH")
     expect(config).not.toContain("`@lydell/node-pty-${process.platform}-${process.arch}`")
   })
 
@@ -21,8 +21,8 @@ describe("windows package target", () => {
     expect(pkg.scripts["package:win"]).toContain("scripts/package-win.ts")
     expect(script).toContain("bun install")
     expect(script).toContain("--os=win32")
-    expect(script).toContain("MIMO_TARGET_PLATFORM")
-    expect(script).toContain("MIMO_TARGET_ARCH")
+    expect(script).toContain("MIO_TARGET_PLATFORM")
+    expect(script).toContain("MIO_TARGET_ARCH")
     expect(script).toContain("bun run build")
     expect(script).toContain("electron-builder")
     expect(script).toContain("pruneNativeOptionalPackages")

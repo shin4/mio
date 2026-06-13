@@ -10,7 +10,7 @@
  * never go stale. See docs/superpowers/specs/2026-06-08-multimodal-playground-design.md.
  *
  * It POSTs each sample's input + a fixed prompt straight to MiMo's
- * `${MIMO_BASE_URL}/chat/completions` (stream:false), using the exact wire
+ * `${MIO_BASE_URL}/chat/completions` (stream:false), using the exact wire
  * shapes the agent server uses (api-key header; OpenAI-compatible multimodal
  * content parts; ASR via mimo-v2.5-asr + asr_options). It then writes the
  * captured text/code back into demos.json (creating it from the SOURCES seed if
@@ -21,11 +21,11 @@
  * from the environment.
  *
  * Required env:
- *   MIMO_API_KEY     MiMo API key (sent as the `api-key` header)
- *   MIMO_BASE_URL    MiMo API base, e.g. https://api.example.com/v1
+ *   MIO_API_KEY     MiMo API key (sent as the `api-key` header)
+ *   MIO_BASE_URL    MiMo API base, e.g. https://api.example.com/v1
  *                    ("/chat/completions" is appended to it)
  * Optional env:
- *   MIMO_CHAT_MODEL  chat/vision/video model id (default "mimo-v2.5")
+ *   MIO_CHAT_MODEL  chat/vision/video model id (default "mimo-v2.5")
  *
  * Prereqs:
  *   - The sample assets exist under docs/assets/playground/{img2code,video,voice}/.
@@ -33,15 +33,15 @@
  *     them. Vision needs a raster image (PNG/JPG), not an .svg; ASR needs a WAV.
  *
  * Run from the repo root (this is a maintainer tool — run once with real assets):
- *   MIMO_API_KEY=sk-... MIMO_BASE_URL=https://api.example.com/v1 \
+ *   MIO_API_KEY=sk-... MIO_BASE_URL=https://api.example.com/v1 \
  *     bun run script/gen-playground.ts
  */
 
 import path from "node:path"
 
-const API_KEY = process.env["MIMO_API_KEY"]
-const BASE_URL = process.env["MIMO_BASE_URL"]?.replace(/\/+$/, "")
-const CHAT_MODEL = process.env["MIMO_CHAT_MODEL"] ?? "mimo-v2.5"
+const API_KEY = process.env["MIO_API_KEY"]
+const BASE_URL = process.env["MIO_BASE_URL"]?.replace(/\/+$/, "")
+const CHAT_MODEL = process.env["MIO_CHAT_MODEL"] ?? "mimo-v2.5"
 // MiMo's dedicated ASR model — fixed, matching the agent's DICTATION_MODEL.
 const ASR_MODEL = "mimo-v2.5-asr"
 // MiMo's TTS model — used to synthesize the voice-demo clips when absent.
@@ -514,11 +514,11 @@ async function main() {
   if (!API_KEY || !BASE_URL) {
     console.error(
       "✗ Missing required env.\n" +
-        "  MIMO_API_KEY  and  MIMO_BASE_URL  are required.\n" +
+        "  MIO_API_KEY  and  MIO_BASE_URL  are required.\n" +
         "  Example (run from the repo root):\n" +
-        "    MIMO_API_KEY=sk-... MIMO_BASE_URL=https://api.example.com/v1 \\\n" +
+        "    MIO_API_KEY=sk-... MIO_BASE_URL=https://api.example.com/v1 \\\n" +
         "      bun run script/gen-playground.ts\n" +
-        '  Optional: MIMO_CHAT_MODEL (default "mimo-v2.5").',
+        '  Optional: MIO_CHAT_MODEL (default "mimo-v2.5").',
     )
     process.exit(1)
   }
@@ -526,9 +526,9 @@ async function main() {
   const demos = await loadDemos()
   const capturedAt = new Date().toISOString().slice(0, 10)
   const stamps: Array<string> = []
-  // Optional comma-separated demo-id filter (e.g. MIMO_ONLY=voice) to re-capture
+  // Optional comma-separated demo-id filter (e.g. MIO_ONLY=voice) to re-capture
   // a subset without re-spending on the demos that are already good.
-  const only = process.env["MIMO_ONLY"]?.split(",").map((s) => s.trim()).filter(Boolean)
+  const only = process.env["MIO_ONLY"]?.split(",").map((s) => s.trim()).filter(Boolean)
 
   for (const job of SOURCES) {
     if (only && !only.includes(job.demoId)) continue

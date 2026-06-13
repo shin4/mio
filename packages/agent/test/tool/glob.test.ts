@@ -68,15 +68,15 @@ const asks = () => {
 const githubBase = <A, E, R>(url: string, self: Effect.Effect<A, E, R>) =>
   Effect.acquireUseRelease(
     Effect.sync(() => {
-      const previous = process.env.MIMO_REPO_CLONE_GITHUB_BASE_URL
-      process.env.MIMO_REPO_CLONE_GITHUB_BASE_URL = url
+      const previous = process.env.MIO_REPO_CLONE_GITHUB_BASE_URL
+      process.env.MIO_REPO_CLONE_GITHUB_BASE_URL = url
       return previous
     }),
     () => self,
     (previous) =>
       Effect.sync(() => {
-        if (previous) process.env.MIMO_REPO_CLONE_GITHUB_BASE_URL = previous
-        else delete process.env.MIMO_REPO_CLONE_GITHUB_BASE_URL
+        if (previous) process.env.MIO_REPO_CLONE_GITHUB_BASE_URL = previous
+        else delete process.env.MIO_REPO_CLONE_GITHUB_BASE_URL
       }),
   )
 

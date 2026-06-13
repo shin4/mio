@@ -14,17 +14,17 @@ describe("websearch provider", () => {
   })
 
   test("supports an operational override", () => {
-    const original = process.env.MIMO_WEBSEARCH_PROVIDER
+    const original = process.env.MIO_WEBSEARCH_PROVIDER
 
     try {
-      process.env.MIMO_WEBSEARCH_PROVIDER = "parallel"
+      process.env.MIO_WEBSEARCH_PROVIDER = "parallel"
       expect(selectWebSearchProvider(SESSION_ID)).toBe("parallel")
 
-      process.env.MIMO_WEBSEARCH_PROVIDER = "exa"
+      process.env.MIO_WEBSEARCH_PROVIDER = "exa"
       expect(selectWebSearchProvider(SESSION_ID)).toBe("exa")
     } finally {
-      if (original === undefined) delete process.env.MIMO_WEBSEARCH_PROVIDER
-      else process.env.MIMO_WEBSEARCH_PROVIDER = original
+      if (original === undefined) delete process.env.MIO_WEBSEARCH_PROVIDER
+      else process.env.MIO_WEBSEARCH_PROVIDER = original
     }
   })
 

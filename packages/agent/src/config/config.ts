@@ -458,7 +458,7 @@ export const layer = Layer.effect(
       yield* migrateGlobalConfig()
       // Seed the default global config with the schema for editor completion, but avoid writing when the user
       // explicitly routes config through env-provided paths or content.
-      if (!Flag.MIMO_CONFIG && !Flag.MIMO_CONFIG_DIR && !Flag.MIMO_CONFIG_CONTENT) {
+      if (!Flag.MIO_CONFIG && !Flag.MIO_CONFIG_DIR && !Flag.MIO_CONFIG_CONTENT) {
         const file = globalConfigFile()
         if (!existsSync(file)) {
           yield* fs
@@ -516,7 +516,7 @@ export const layer = Layer.effect(
 
         const pluginScopeForSource = Effect.fnUntraced(function* (source: string) {
           if (source.startsWith("http://") || source.startsWith("https://")) return "global"
-          if (source === "MIMO_CONFIG_CONTENT") return "local"
+          if (source === "MIO_CONFIG_CONTENT") return "local"
           if (containsPath(source, ctx)) return "local"
           return "global"
         })
@@ -592,12 +592,12 @@ export const layer = Layer.effect(
         const global = Object.keys(authEnv).length ? yield* loadGlobal(authEnv) : yield* getGlobal()
         yield* merge(Global.Path.config, global, "global")
 
-        if (Flag.MIMO_CONFIG) {
-          yield* merge(Flag.MIMO_CONFIG, yield* loadFile(Flag.MIMO_CONFIG, authEnv))
-          log.debug("loaded custom config", { path: Flag.MIMO_CONFIG })
+        if (Flag.MIO_CONFIG) {
+          yield* merge(Flag.MIO_CONFIG, yield* loadFile(Flag.MIO_CONFIG, authEnv))
+          log.debug("loaded custom config", { path: Flag.MIO_CONFIG })
         }
 
-        if (!Flag.MIMO_DISABLE_PROJECT_CONFIG) {
+        if (!Flag.MIO_DISABLE_PROJECT_CONFIG) {
           // legacy first: later merges win, so the renamed config overrides the legacy one
           const projectFiles = [
             ...(yield* ConfigPaths.files(AppInfo.legacyConfigBasename, ctx.directory, ctx.worktree).pipe(Effect.orDie)),
@@ -614,8 +614,8 @@ export const layer = Layer.effect(
 
         const directories = yield* ConfigPaths.directories(ctx.directory, ctx.worktree)
 
-        if (Flag.MIMO_CONFIG_DIR) {
-          log.debug("loading config from MIMO_CONFIG_DIR", { path: Flag.MIMO_CONFIG_DIR })
+        if (Flag.MIO_CONFIG_DIR) {
+          log.debug("loading config from MIO_CONFIG_DIR", { path: Flag.MIO_CONFIG_DIR })
         }
 
         const deps: Fiber.Fiber<void>[] = []
@@ -624,12 +624,12 @@ export const layer = Layer.effect(
           if (
             dir.endsWith(AppInfo.projectConfigDir) ||
             dir.endsWith(AppInfo.legacyProjectConfigDir) ||
-            dir === Flag.MIMO_CONFIG_DIR
+            dir === Flag.MIO_CONFIG_DIR
           ) {
-            // MIMO_CONFIG_DIR may point at either an old or new dir, so accept both names there.
+            // MIO_CONFIG_DIR may point at either an old or new dir, so accept both names there.
             // A discovered legacy dir (.mimo) reads only legacy files, mirroring how .mio reads only current files.
             const files =
-              dir === Flag.MIMO_CONFIG_DIR
+              dir === Flag.MIO_CONFIG_DIR
                 ? [...AppInfo.legacyConfigFiles.toReversed(), ...AppInfo.configFiles.toReversed()]
                 : dir.endsWith(AppInfo.legacyProjectConfigDir)
                   ? AppInfo.legacyConfigFiles.toReversed()
@@ -678,14 +678,14 @@ export const layer = Layer.effect(
           yield* mergePluginOrigins(dir, list)
         }
 
-        if (Flag.MIMO_CONFIG_CONTENT) {
-          const source = "MIMO_CONFIG_CONTENT"
-          const next = yield* loadConfig(Flag.MIMO_CONFIG_CONTENT, {
+        if (Flag.MIO_CONFIG_CONTENT) {
+          const source = "MIO_CONFIG_CONTENT"
+          const next = yield* loadConfig(Flag.MIO_CONFIG_CONTENT, {
             dir: ctx.directory,
             source,
           })
           yield* merge(source, next, "local")
-          log.debug("loaded custom config from MIMO_CONFIG_CONTENT")
+          log.debug("loaded custom config from MIO_CONFIG_CONTENT")
         }
 
         const activeAccount = Option.getOrUndefined(
@@ -701,8 +701,8 @@ export const layer = Layer.effect(
               { concurrency: 2 },
             )
             if (Option.isSome(tokenOpt)) {
-              process.env["MIMO_CONSOLE_TOKEN"] = tokenOpt.value
-              yield* env.set("MIMO_CONSOLE_TOKEN", tokenOpt.value)
+              process.env["MIO_CONSOLE_TOKEN"] = tokenOpt.value
+              yield* env.set("MIO_CONSOLE_TOKEN", tokenOpt.value)
             }
 
             if (Option.isSome(configOpt)) {
@@ -756,11 +756,11 @@ export const layer = Layer.effect(
           })
         }
 
-        if (Flag.MIMO_PERMISSION) {
+        if (Flag.MIO_PERMISSION) {
           try {
-            result.permission = mergeDeep(result.permission ?? {}, JSON.parse(Flag.MIMO_PERMISSION))
+            result.permission = mergeDeep(result.permission ?? {}, JSON.parse(Flag.MIO_PERMISSION))
           } catch (err) {
-            log.warn("MIMO_PERMISSION contains invalid JSON, skipping", { err })
+            log.warn("MIO_PERMISSION contains invalid JSON, skipping", { err })
           }
         }
 
@@ -790,10 +790,10 @@ export const layer = Layer.effect(
           result.share = "auto"
         }
 
-        if (Flag.MIMO_DISABLE_AUTOCOMPACT) {
+        if (Flag.MIO_DISABLE_AUTOCOMPACT) {
           result.compaction = { ...result.compaction, auto: false }
         }
-        if (Flag.MIMO_DISABLE_PRUNE) {
+        if (Flag.MIO_DISABLE_PRUNE) {
           result.compaction = { ...result.compaction, prune: false }
         }
 

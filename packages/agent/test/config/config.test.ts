@@ -138,9 +138,9 @@ const clearEffect = (wait = false) =>
     )
 const clear = (wait = false) => Effect.runPromise(clearEffect(wait))
 // Get managed config directory from environment (set in preload.ts)
-const managedConfigDir = process.env.MIMO_TEST_MANAGED_CONFIG_DIR!
+const managedConfigDir = process.env.MIO_TEST_MANAGED_CONFIG_DIR!
 const originalTestToken = process.env.TEST_TOKEN
-const originalConsoleToken = process.env.MIMO_CONSOLE_TOKEN
+const originalConsoleToken = process.env.MIO_CONSOLE_TOKEN
 
 beforeEach(async () => {
   await clear(true)
@@ -150,8 +150,8 @@ afterEach(async () => {
   await fs.rm(managedConfigDir, { force: true, recursive: true }).catch(() => {})
   if (originalTestToken === undefined) delete process.env.TEST_TOKEN
   else process.env.TEST_TOKEN = originalTestToken
-  if (originalConsoleToken === undefined) delete process.env.MIMO_CONSOLE_TOKEN
-  else process.env.MIMO_CONSOLE_TOKEN = originalConsoleToken
+  if (originalConsoleToken === undefined) delete process.env.MIO_CONSOLE_TOKEN
+  else process.env.MIO_CONSOLE_TOKEN = originalConsoleToken
   await clear(true)
 })
 
@@ -328,12 +328,12 @@ it.effect("creates global jsonc config with schema when no global configs exist"
   ),
 )
 
-it.effect("does not create global config when MIMO_CONFIG_DIR is set", () =>
+it.effect("does not create global config when MIO_CONFIG_DIR is set", () =>
   Effect.gen(function* () {
     const custom = yield* tmpdirScoped()
     yield* withGlobalConfig({}, ({ dir }) =>
       withProcessEnv(
-        "MIMO_CONFIG_DIR",
+        "MIO_CONFIG_DIR",
         custom,
         Effect.gen(function* () {
           yield* Config.use.get().pipe(provideInstanceEffect(dir))
@@ -604,7 +604,7 @@ const accountTokenIt = configIt({
     config: () =>
       Effect.succeed(
         Option.some({
-          provider: { opencode: { options: { apiKey: "{env:MIMO_CONSOLE_TOKEN}" } } },
+          provider: { opencode: { options: { apiKey: "{env:MIO_CONSOLE_TOKEN}" } } },
         }),
       ),
     token: () => Effect.succeed(Option.some(AccessToken.make("st_test_token"))),
@@ -766,18 +766,18 @@ Legacy agent prompt`,
   }),
 )
 
-it.instance("loads legacy OpenCode config only when MIMO_CONFIG explicitly points to it", () =>
+it.instance("loads legacy OpenCode config only when MIO_CONFIG explicitly points to it", () =>
   Effect.gen(function* () {
     const test = yield* TestInstance
     const legacy = path.join(test.directory, "opencode.json")
     yield* AppFileSystem.use.writeWithDirs(legacy, JSON.stringify(schemaConfig({ model: "legacy/explicit" })))
 
-    const config = yield* withProcessEnv("MIMO_CONFIG", legacy, Config.use.get())
+    const config = yield* withProcessEnv("MIO_CONFIG", legacy, Config.use.get())
     expect(config.model).toBe("legacy/explicit")
   }),
 )
 
-it.instance("loads legacy mimo config when MIMO_CONFIG_DIR explicitly points to it", () =>
+it.instance("loads legacy mimo config when MIO_CONFIG_DIR explicitly points to it", () =>
   Effect.gen(function* () {
     const test = yield* TestInstance
     const legacy = path.join(test.directory, ".mimo")
@@ -786,7 +786,7 @@ it.instance("loads legacy mimo config when MIMO_CONFIG_DIR explicitly points to 
       JSON.stringify(schemaConfig({ model: "legacy/config-dir" })),
     )
 
-    const config = yield* withProcessEnv("MIMO_CONFIG_DIR", legacy, Config.use.get())
+    const config = yield* withProcessEnv("MIO_CONFIG_DIR", legacy, Config.use.get())
     expect(config.model).toBe("legacy/config-dir")
   }),
 )
@@ -956,7 +956,7 @@ it.instance("gets config directories", () =>
   }),
 )
 
-it.effect("does not try to install dependencies in read-only MIMO_CONFIG_DIR", () =>
+it.effect("does not try to install dependencies in read-only MIO_CONFIG_DIR", () =>
   Effect.gen(function* () {
     if (process.platform === "win32") return
 
@@ -966,18 +966,18 @@ it.effect("does not try to install dependencies in read-only MIMO_CONFIG_DIR", (
     yield* AppFileSystem.use.chmod(readonly, 0o555)
     yield* Effect.addFinalizer(() => AppFileSystem.use.chmod(readonly, 0o755).pipe(Effect.ignore))
 
-    yield* withProcessEnv("MIMO_CONFIG_DIR", readonly, Config.use.get().pipe(provideInstanceEffect(dir)))
+    yield* withProcessEnv("MIO_CONFIG_DIR", readonly, Config.use.get().pipe(provideInstanceEffect(dir)))
   }).pipe(Effect.provide(testInstanceStoreLayer), Effect.provide(CrossSpawnSpawner.defaultLayer)),
 )
 
-it.effect("installs dependencies in writable MIMO_CONFIG_DIR", () =>
+it.effect("installs dependencies in writable MIO_CONFIG_DIR", () =>
   Effect.gen(function* () {
     const dir = yield* tmpdirScoped()
     const configDir = path.join(dir, "configdir")
     yield* AppFileSystem.use.ensureDir(configDir)
 
     yield* withProcessEnv(
-      "MIMO_CONFIG_DIR",
+      "MIO_CONFIG_DIR",
       configDir,
       Config.Service.use((svc) => svc.get().pipe(Effect.andThen(svc.waitForDependencies()))).pipe(
         provideInstanceEffect(dir),
@@ -1048,7 +1048,7 @@ it.effect("global config remains global when project config is disabled", () =>
       local: { model: "local/model" },
     },
     withProcessEnv(
-      "MIMO_DISABLE_PROJECT_CONFIG",
+      "MIO_DISABLE_PROJECT_CONFIG",
       "true",
       Effect.gen(function* () {
         const config = yield* Config.use.get()
@@ -1202,7 +1202,7 @@ it.instance("migrates legacy write tool to edit permission", () =>
 )
 
 // Managed settings tests
-// Note: preload.ts sets MIMO_TEST_MANAGED_CONFIG_DIR which Global.Path.managedConfig uses
+// Note: preload.ts sets MIO_TEST_MANAGED_CONFIG_DIR which Global.Path.managedConfig uses
 
 it.instance(
   "managed settings override user settings",
@@ -1816,12 +1816,12 @@ describe("deduplicatePluginOrigins", () => {
   )
 })
 
-describe("MIMO_DISABLE_PROJECT_CONFIG", () => {
+describe("MIO_DISABLE_PROJECT_CONFIG", () => {
   it.instance(
     "skips project config files when flag is set",
     () =>
       withProcessEnv(
-        "MIMO_DISABLE_PROJECT_CONFIG",
+        "MIO_DISABLE_PROJECT_CONFIG",
         "true",
         Effect.gen(function* () {
           const config = yield* Config.use.get()
@@ -1834,7 +1834,7 @@ describe("MIMO_DISABLE_PROJECT_CONFIG", () => {
 
   it.instance("skips project .mio/ directories when flag is set", () =>
     withProcessEnv(
-      "MIMO_DISABLE_PROJECT_CONFIG",
+      "MIO_DISABLE_PROJECT_CONFIG",
       "true",
       Effect.gen(function* () {
         const test = yield* TestInstance
@@ -1850,7 +1850,7 @@ describe("MIMO_DISABLE_PROJECT_CONFIG", () => {
 
   it.instance("still loads global config when flag is set", () =>
     withProcessEnv(
-      "MIMO_DISABLE_PROJECT_CONFIG",
+      "MIO_DISABLE_PROJECT_CONFIG",
       "true",
       Effect.gen(function* () {
         const config = yield* Config.use.get()
@@ -1864,7 +1864,7 @@ describe("MIMO_DISABLE_PROJECT_CONFIG", () => {
     "skips relative instructions with warning when flag is set but no config dir",
     () =>
       withProcessEnvs(
-        { MIMO_CONFIG_DIR: undefined, MIMO_DISABLE_PROJECT_CONFIG: "true" },
+        { MIO_CONFIG_DIR: undefined, MIO_DISABLE_PROJECT_CONFIG: "true" },
         Effect.gen(function* () {
           const test = yield* TestInstance
           yield* AppFileSystem.use.writeWithDirs(path.join(test.directory, "CUSTOM.md"), "# Custom Instructions")
@@ -1877,12 +1877,12 @@ describe("MIMO_DISABLE_PROJECT_CONFIG", () => {
   )
 
   it.instance(
-    "MIMO_CONFIG_DIR still works when flag is set",
+    "MIO_CONFIG_DIR still works when flag is set",
     () =>
       Effect.gen(function* () {
         const configDir = yield* tmpdirScoped({ config: { model: "configdir/model" } })
         yield* withProcessEnvs(
-          { MIMO_DISABLE_PROJECT_CONFIG: "true", MIMO_CONFIG_DIR: configDir },
+          { MIO_DISABLE_PROJECT_CONFIG: "true", MIO_CONFIG_DIR: configDir },
           Effect.gen(function* () {
             const config = yield* Config.use.get()
             expect(config.model).toBe("configdir/model")
@@ -1893,13 +1893,13 @@ describe("MIMO_DISABLE_PROJECT_CONFIG", () => {
   )
 })
 
-// Regression for #28206: malformed MIMO_PERMISSION JSON used to crash
+// Regression for #28206: malformed MIO_PERMISSION JSON used to crash
 // the app on startup with an unhandled SyntaxError. Loading the config with
 // an invalid JSON value in this env var should not throw.
-describe("MIMO_PERMISSION env var", () => {
-  it.instance("does not crash when MIMO_PERMISSION contains invalid JSON", () =>
+describe("MIO_PERMISSION env var", () => {
+  it.instance("does not crash when MIO_PERMISSION contains invalid JSON", () =>
     withProcessEnv(
-      "MIMO_PERMISSION",
+      "MIO_PERMISSION",
       "{invalid",
       Effect.gen(function* () {
         const config = yield* Config.use.get()
@@ -1910,13 +1910,13 @@ describe("MIMO_PERMISSION env var", () => {
   )
 })
 
-describe("MIMO_CONFIG_CONTENT token substitution", () => {
-  it.instance("substitutes {env:} tokens in MIMO_CONFIG_CONTENT", () =>
+describe("MIO_CONFIG_CONTENT token substitution", () => {
+  it.instance("substitutes {env:} tokens in MIO_CONFIG_CONTENT", () =>
     withProcessEnv(
       "TEST_CONFIG_VAR",
       "test_api_key_12345",
       withProcessEnv(
-        "MIMO_CONFIG_CONTENT",
+        "MIO_CONFIG_CONTENT",
         JSON.stringify({
           $schema: "https://raw.githubusercontent.com/shin4/mio/main/schema/config.json",
           username: "{env:TEST_CONFIG_VAR}",
@@ -1929,12 +1929,12 @@ describe("MIMO_CONFIG_CONTENT token substitution", () => {
     ),
   )
 
-  it.instance("substitutes {file:} tokens in MIMO_CONFIG_CONTENT", () =>
+  it.instance("substitutes {file:} tokens in MIO_CONFIG_CONTENT", () =>
     Effect.gen(function* () {
       const test = yield* TestInstance
       yield* AppFileSystem.use.writeWithDirs(path.join(test.directory, "api_key.txt"), "secret_key_from_file")
       yield* withProcessEnv(
-        "MIMO_CONFIG_CONTENT",
+        "MIO_CONFIG_CONTENT",
         JSON.stringify({
           $schema: "https://raw.githubusercontent.com/shin4/mio/main/schema/config.json",
           username: "{file:./api_key.txt}",

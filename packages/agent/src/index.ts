@@ -72,7 +72,7 @@ const cli = yargs(args)
   })
   .middleware(async (opts) => {
     if (opts.pure) {
-      process.env.MIMO_PURE = "1"
+      process.env.MIO_PURE = "1"
     }
 
     await Log.init({
@@ -87,8 +87,8 @@ const cli = yargs(args)
     Heap.start()
 
     process.env.AGENT = "1"
-    process.env.MIMO = "1"
-    process.env.MIMO_PID = String(process.pid)
+    process.env.MIO = "1"
+    process.env.MIO_PID = String(process.pid)
 
     Log.Default.info("mio-agent", {
       version: InstallationVersion,

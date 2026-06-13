@@ -13,13 +13,13 @@ import { testEffect } from "../lib/effect"
 const testStateLayer = Layer.effectDiscard(
   Effect.gen(function* () {
     const original = {
-      MIMO_SERVER_PASSWORD: Flag.MIMO_SERVER_PASSWORD,
+      MIO_SERVER_PASSWORD: Flag.MIO_SERVER_PASSWORD,
     }
-    Flag.MIMO_SERVER_PASSWORD = "secret"
+    Flag.MIO_SERVER_PASSWORD = "secret"
     yield* Effect.promise(() => resetDatabase())
     yield* Effect.addFinalizer(() =>
       Effect.promise(async () => {
-        Flag.MIMO_SERVER_PASSWORD = original.MIMO_SERVER_PASSWORD
+        Flag.MIO_SERVER_PASSWORD = original.MIO_SERVER_PASSWORD
         await resetDatabase()
       }),
     )
@@ -64,7 +64,7 @@ describe("HttpApi CORS", () => {
     Effect.gen(function* () {
       const handler = HttpRouter.toWebHandler(
         HttpApiApp.createRoutes().pipe(
-          Layer.provide(ConfigProvider.layer(ConfigProvider.fromUnknown({ MIMO_SERVER_PASSWORD: "secret" }))),
+          Layer.provide(ConfigProvider.layer(ConfigProvider.fromUnknown({ MIO_SERVER_PASSWORD: "secret" }))),
         ),
         { disableLogger: true },
       ).handler

@@ -111,7 +111,7 @@ export const TaskTool = Tool.define(
       const runInBackground = params.background === true
       if (runInBackground && !flags.experimentalBackgroundSubagents) {
         return yield* Effect.fail(
-          new Error("Background subagents require MIMO_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true"),
+          new Error("Background subagents require MIO_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true"),
         )
       }
 

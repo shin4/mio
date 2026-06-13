@@ -434,7 +434,7 @@ export const layer = Layer.effect(
         key: cfg.apiKey,
         options: {
           apiKey: cfg.apiKey,
-          baseURL: Flag.MIMO_BASE_URL ?? resolveBaseURL(cfg),
+          baseURL: Flag.MIO_BASE_URL ?? resolveBaseURL(cfg),
           billing: cfg.billing,
           region: cfg.region,
           protocol: cfg.protocol,
@@ -452,10 +452,10 @@ export const layer = Layer.effect(
     // Resolve config from auth.json on every list/getProvider call so
     // Settings-UI saves are picked up without a restart.
     const refresh = Effect.gen(function* () {
-      if (!warnedEnvKey && process.env["MIMO_API_KEY"]) {
+      if (!warnedEnvKey && process.env["MIO_API_KEY"]) {
         warnedEnvKey = true
         console.warn(
-          "MIMO_API_KEY environment variable is no longer used. Configure MiMo via Settings → Providers → MiMo.",
+          "MIO_API_KEY environment variable is no longer used. Configure MiMo via Settings → Providers → MiMo.",
         )
       }
       const stored = yield* auth.get(mimoID as unknown as string).pipe(Effect.catch(() => Effect.succeed(undefined)))
@@ -512,7 +512,7 @@ export const layer = Layer.effect(
       Effect.gen(function* () {
         yield* refresh
         const stored = (info.options.model as string | undefined) ?? "mimo-v2.5"
-        const preferredID = Flag.MIMO_MODEL ?? stored
+        const preferredID = Flag.MIO_MODEL ?? stored
         const modelID = ModelID.make(preferredID)
         if (!info.models[preferredID]) {
           return yield* Effect.fail(new ModelNotFoundError({ providerID: mimoID, modelID }))

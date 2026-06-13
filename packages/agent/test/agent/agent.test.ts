@@ -608,12 +608,12 @@ description: Permission skill.
         ),
       )
 
-      const home = process.env.MIMO_TEST_HOME
-      process.env.MIMO_TEST_HOME = test.directory
+      const home = process.env.MIO_TEST_HOME
+      process.env.MIO_TEST_HOME = test.directory
       yield* Effect.addFinalizer(() =>
         Effect.sync(() => {
-          if (home === undefined) delete process.env.MIMO_TEST_HOME
-          else process.env.MIMO_TEST_HOME = home
+          if (home === undefined) delete process.env.MIO_TEST_HOME
+          else process.env.MIO_TEST_HOME = home
         }),
       )
 

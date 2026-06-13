@@ -14,14 +14,14 @@ import { RuntimeFlags } from "@/effect/runtime-flags"
 import { Glob } from "@opencode-ai/core/util/glob"
 import * as Log from "@opencode-ai/core/util/log"
 import { Discovery } from "./discovery"
-import CUSTOMIZE_MIMO_SKILL_BODY from "./prompt/customize-mimo.md" with { type: "text" }
+import CUSTOMIZE_MIO_SKILL_BODY from "./prompt/customize-mimo.md" with { type: "text" }
 import { isRecord } from "@/util/record"
 
 const log = Log.create({ service: "skill" })
 const CLAUDE_EXTERNAL_DIR = ".claude"
 const AGENTS_EXTERNAL_DIR = ".agents"
 const EXTERNAL_SKILL_PATTERN = "skills/**/SKILL.md"
-const MIMO_SKILL_PATTERN = "{skill,skills}/**/SKILL.md"
+const MIO_SKILL_PATTERN = "{skill,skills}/**/SKILL.md"
 const SKILL_PATTERN = "**/SKILL.md"
 
 // Built-in skill that ships with MiMo-Code. The model's intuition for what an
@@ -29,11 +29,11 @@ const SKILL_PATTERN = "**/SKILL.md"
 // invalid config, so users hit cryptic startup errors. Loading this skill
 // when the model is asked to touch MiMo-Code's own config files gives it the
 // actual schemas instead of guesses.
-const CUSTOMIZE_MIMO_SKILL_NAME = "customize-mimo"
+const CUSTOMIZE_MIO_SKILL_NAME = "customize-mimo"
 const CUSTOMIZE_OPENCODE_LEGACY_SKILL_NAME = "customize-opencode"
-const CUSTOMIZE_MIMO_SKILL_DESCRIPTION =
+const CUSTOMIZE_MIO_SKILL_DESCRIPTION =
   "Use ONLY when the user is editing or creating MiMo-Code's own configuration: mio.json, mio.jsonc, files under .mio/, or files under ~/.config/mio/. Also use when creating or fixing MiMo-Code agents, subagents, skills, plugins, MCP servers, or permission rules. Do not use for the user's own application code, or for any project that is not configuring MiMo-Code itself."
-const CUSTOMIZE_OPENCODE_LEGACY_SKILL_DESCRIPTION = `Legacy alias for ${CUSTOMIZE_MIMO_SKILL_NAME}. ${CUSTOMIZE_MIMO_SKILL_DESCRIPTION}`
+const CUSTOMIZE_OPENCODE_LEGACY_SKILL_DESCRIPTION = `Legacy alias for ${CUSTOMIZE_MIO_SKILL_NAME}. ${CUSTOMIZE_MIO_SKILL_DESCRIPTION}`
 
 export const Info = Schema.Struct({
   name: Schema.String,
@@ -209,7 +209,7 @@ const discoverSkills = Effect.fnUntraced(function* (
 
   const configDirs = yield* config.directories()
   for (const dir of configDirs) {
-    yield* scan(state, dir, MIMO_SKILL_PATTERN)
+    yield* scan(state, dir, MIO_SKILL_PATTERN)
   }
 
   const cfg = yield* config.get()
@@ -276,17 +276,17 @@ export const layer = Layer.effect(
         const s: State = { skills: {}, dirs: new Set() }
         // Register the built-in skill BEFORE disk discovery so a user-disk
         // skill with the same name can override it.
-        s.skills[CUSTOMIZE_MIMO_SKILL_NAME] = {
-          name: CUSTOMIZE_MIMO_SKILL_NAME,
-          description: CUSTOMIZE_MIMO_SKILL_DESCRIPTION,
+        s.skills[CUSTOMIZE_MIO_SKILL_NAME] = {
+          name: CUSTOMIZE_MIO_SKILL_NAME,
+          description: CUSTOMIZE_MIO_SKILL_DESCRIPTION,
           location: "<built-in>",
-          content: CUSTOMIZE_MIMO_SKILL_BODY,
+          content: CUSTOMIZE_MIO_SKILL_BODY,
         }
         s.skills[CUSTOMIZE_OPENCODE_LEGACY_SKILL_NAME] = {
           name: CUSTOMIZE_OPENCODE_LEGACY_SKILL_NAME,
           description: CUSTOMIZE_OPENCODE_LEGACY_SKILL_DESCRIPTION,
           location: "<built-in>",
-          content: CUSTOMIZE_MIMO_SKILL_BODY,
+          content: CUSTOMIZE_MIO_SKILL_BODY,
           // Legacy alias of customize-mimo: keep invokable, hide from palette.
           hidden: true,
         }

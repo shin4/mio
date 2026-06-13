@@ -8,7 +8,7 @@ boundaries.
 
 - Read `AGENTS.md` for the local style guide and repository-specific commands.
 - Use MiMo project paths and environment variables for new code: `.mimo/`,
-  `mimo.json`, `mimo.jsonc`, and `MIMO_*`.
+  `mimo.json`, `mimo.jsonc`, and `MIO_*`.
 - Do not add default reads or writes for upstream OpenCode project state such
   as `.opencode/`, `opencode.json`, `opencode.jsonc`, or `OPENCODE_*`.
 - Keep package scope and SDK compatibility symbols such as `@opencode-ai/*`

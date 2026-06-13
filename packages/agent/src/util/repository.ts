@@ -97,7 +97,7 @@ function withSlash(input: string) {
 }
 
 function githubRemote(pathname: string) {
-  const base = process.env.MIMO_REPO_CLONE_GITHUB_BASE_URL
+  const base = process.env.MIO_REPO_CLONE_GITHUB_BASE_URL
   if (!base) return `https://github.com/${pathname}.git`
   return new URL(`${pathname}.git`, withSlash(base)).href
 }

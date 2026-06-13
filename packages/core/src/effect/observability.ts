@@ -45,7 +45,7 @@ export function resource(): { serviceName: string; serviceVersion: string; attri
     attributes: {
       ...attributes,
       "deployment.environment.name": InstallationChannel,
-      "mimo.client": Flag.MIMO_CLIENT,
+      "mimo.client": Flag.MIO_CLIENT,
       "mimo.process_role": processMetadata.processRole,
       "mimo.run_id": processMetadata.runID,
       "service.instance.id": processID,

@@ -93,10 +93,10 @@ describe("layout deep links", () => {
 
   test("drains global deep links once", () => {
     const target = {
-      __MIMO__: {
+      __MIO__: {
         deepLinks: ["mimo://open-project?directory=/a"],
       },
-    } as unknown as Window & { __MIMO__?: { deepLinks?: string[] } }
+    } as unknown as Window & { __MIO__?: { deepLinks?: string[] } }
 
     expect(drainPendingDeepLinks(target)).toEqual(["mimo://open-project?directory=/a"])
     expect(drainPendingDeepLinks(target)).toEqual([])

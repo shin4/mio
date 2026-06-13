@@ -4,27 +4,27 @@ import { Flag } from "@opencode-ai/core/flag/flag"
 import { ServerAuth } from "../../src/server/auth"
 
 const original = {
-  MIMO_SERVER_PASSWORD: Flag.MIMO_SERVER_PASSWORD,
-  MIMO_SERVER_USERNAME: Flag.MIMO_SERVER_USERNAME,
+  MIO_SERVER_PASSWORD: Flag.MIO_SERVER_PASSWORD,
+  MIO_SERVER_USERNAME: Flag.MIO_SERVER_USERNAME,
 }
 
 afterEach(() => {
-  Flag.MIMO_SERVER_PASSWORD = original.MIMO_SERVER_PASSWORD
-  Flag.MIMO_SERVER_USERNAME = original.MIMO_SERVER_USERNAME
+  Flag.MIO_SERVER_PASSWORD = original.MIO_SERVER_PASSWORD
+  Flag.MIO_SERVER_USERNAME = original.MIO_SERVER_USERNAME
 })
 
 describe("ServerAuth", () => {
   test("does not emit auth headers without a password", () => {
-    Flag.MIMO_SERVER_PASSWORD = undefined
-    Flag.MIMO_SERVER_USERNAME = "alice"
+    Flag.MIO_SERVER_PASSWORD = undefined
+    Flag.MIO_SERVER_USERNAME = "alice"
 
     expect(ServerAuth.header()).toBeUndefined()
     expect(ServerAuth.headers()).toBeUndefined()
   })
 
   test("defaults to the mimo username", () => {
-    Flag.MIMO_SERVER_PASSWORD = "secret"
-    Flag.MIMO_SERVER_USERNAME = undefined
+    Flag.MIO_SERVER_PASSWORD = "secret"
+    Flag.MIO_SERVER_USERNAME = undefined
 
     expect(ServerAuth.headers()).toEqual({
       Authorization: `Basic ${Buffer.from("mimo:secret").toString("base64")}`,
@@ -32,8 +32,8 @@ describe("ServerAuth", () => {
   })
 
   test("uses the configured username", () => {
-    Flag.MIMO_SERVER_PASSWORD = "secret"
-    Flag.MIMO_SERVER_USERNAME = "alice"
+    Flag.MIO_SERVER_PASSWORD = "secret"
+    Flag.MIO_SERVER_USERNAME = "alice"
 
     expect(ServerAuth.headers()).toEqual({
       Authorization: `Basic ${Buffer.from("alice:secret").toString("base64")}`,
@@ -41,8 +41,8 @@ describe("ServerAuth", () => {
   })
 
   test("prefers explicit credentials", () => {
-    Flag.MIMO_SERVER_PASSWORD = "secret"
-    Flag.MIMO_SERVER_USERNAME = "alice"
+    Flag.MIO_SERVER_PASSWORD = "secret"
+    Flag.MIO_SERVER_USERNAME = "alice"
 
     expect(ServerAuth.headers({ password: "cli-secret", username: "bob" })).toEqual({
       Authorization: `Basic ${Buffer.from("bob:cli-secret").toString("base64")}`,

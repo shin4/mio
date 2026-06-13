@@ -6,9 +6,9 @@ import { fileURLToPath } from "url"
 const theme = fileURLToPath(new URL("./public/oc-theme-preload.js", import.meta.url))
 
 const channel = (() => {
-  const raw = process.env.MIMO_CHANNEL
+  const raw = process.env.MIO_CHANNEL
   if (raw === "dev" || raw === "beta" || raw === "prod") return raw
-  if (process.env.MIMO_CHANNEL === "latest") return "prod"
+  if (process.env.MIO_CHANNEL === "latest") return "prod"
   return "dev"
 })()
 
@@ -26,7 +26,7 @@ export default [
           },
         },
         define: {
-          "import.meta.env.VITE_MIMO_CHANNEL": JSON.stringify(channel),
+          "import.meta.env.VITE_MIO_CHANNEL": JSON.stringify(channel),
         },
         worker: {
           format: "es",

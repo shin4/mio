@@ -15,21 +15,21 @@
  *
  * Run from the repo root:
  *   bun run script/gen-promo-tts.ts
- *   MIMO_SERVER=http://127.0.0.1:5000 bun run script/gen-promo-tts.ts   # custom port
+ *   MIO_SERVER=http://127.0.0.1:5000 bun run script/gen-promo-tts.ts   # custom port
  */
 
 import { rm } from "node:fs/promises"
 import path from "node:path"
 
-const SERVER = (process.env["MIMO_SERVER"] ?? "http://127.0.0.1:4096").replace(/\/+$/, "")
+const SERVER = (process.env["MIO_SERVER"] ?? "http://127.0.0.1:4096").replace(/\/+$/, "")
 const ROOT = path.resolve(import.meta.dir, "..")
 const ASSETS = path.join(ROOT, "docs", "assets")
 // Any valid project dir resolves an instance; the repo root works.
 const DIRECTORY = ROOT
 
 // Optional Basic auth — only needed if the server was started with a password.
-const USER = process.env["MIMO_SERVER_USERNAME"]
-const PASS = process.env["MIMO_SERVER_PASSWORD"]
+const USER = process.env["MIO_SERVER_USERNAME"]
+const PASS = process.env["MIO_SERVER_PASSWORD"]
 
 type Clip = { id: string; voice: string; text: string }
 
@@ -95,7 +95,7 @@ async function main() {
       `✗ No MiMo-Code agent server at ${SERVER}\n` +
         `  Start one (it reuses your connected MiMo key) from the repo root:\n` +
         `    bun run dev:agent serve --port 4096\n` +
-        `  then re-run — set MIMO_SERVER=http://127.0.0.1:<port> if you chose another port.`,
+        `  then re-run — set MIO_SERVER=http://127.0.0.1:<port> if you chose another port.`,
     )
     process.exit(1)
   }

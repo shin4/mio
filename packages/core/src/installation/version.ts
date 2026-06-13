@@ -1,8 +1,8 @@
 declare global {
-  const MIMO_VERSION: string
-  const MIMO_CHANNEL: string
+  const MIO_VERSION: string
+  const MIO_CHANNEL: string
 }
 
-export const InstallationVersion = typeof MIMO_VERSION === "string" ? MIMO_VERSION : "local"
-export const InstallationChannel = typeof MIMO_CHANNEL === "string" ? MIMO_CHANNEL : "local"
+export const InstallationVersion = typeof MIO_VERSION === "string" ? MIO_VERSION : "local"
+export const InstallationChannel = typeof MIO_CHANNEL === "string" ? MIO_CHANNEL : "local"
 export const InstallationLocal = InstallationChannel === "local"

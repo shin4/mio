@@ -18,8 +18,8 @@ function app(input: { password?: string; username?: string }) {
       Layer.provide(
         ConfigProvider.layer(
           ConfigProvider.fromUnknown({
-            MIMO_SERVER_PASSWORD: input.password,
-            MIMO_SERVER_USERNAME: input.username,
+            MIO_SERVER_PASSWORD: input.password,
+            MIO_SERVER_USERNAME: input.username,
           }),
         ),
       ),

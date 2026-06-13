@@ -62,7 +62,7 @@ const InfoCommand = effectCmd({
     console.log(`os: ${os.type()} ${os.release()} ${os.arch()}`)
     console.log(`terminal: ${terminal || "unknown"}`)
     console.log("plugins:")
-    if (Flag.MIMO_PURE) {
+    if (Flag.MIO_PURE) {
       console.log("external plugins disabled (--pure)")
       return
     }

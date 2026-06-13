@@ -684,9 +684,9 @@ function NewSessionTabItem(props: { href: string; title: string; onClose: () => 
 function ChannelIndicator() {
   return (
     <>
-      {["beta", "dev"].includes(import.meta.env.VITE_MIMO_CHANNEL) && (
+      {["beta", "dev"].includes(import.meta.env.VITE_MIO_CHANNEL) && (
         <div class="bg-icon-interactive-base text-[#FFF] font-medium px-2 rounded-sm uppercase font-mono">
-          {import.meta.env.VITE_MIMO_CHANNEL.toUpperCase()}
+          {import.meta.env.VITE_MIO_CHANNEL.toUpperCase()}
         </div>
       )}
     </>

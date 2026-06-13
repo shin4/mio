@@ -30,7 +30,7 @@ MiMo-Code 桌面端通过两个 GitHub Actions 工作流构建：
 
 也可以在 **Actions → release → Run workflow** 手动触发，填入版本号（不带 `v`）。
 
-> 渠道固定为 `MIMO_CHANNEL=prod`（appId `io.github.shin4.mimo.desktop`）。`dev` 渠道会禁用自动更新，不要用于正式发布。
+> 渠道固定为 `MIO_CHANNEL=prod`（appId `io.github.shin4.mimo.desktop`）。`dev` 渠道会禁用自动更新，不要用于正式发布。
 
 ---
 
@@ -103,8 +103,8 @@ base64 -i developer-id.p12 | pbcopy   # 已复制到剪贴板，直接粘到 CSC
 
 ```bash
 cd packages/desktop
-MIMO_CHANNEL=prod bun run package:mac     # 本机 macOS
-MIMO_CHANNEL=prod bun run package:win     # 从 macOS 交叉构建 Windows（package-win.ts）
+MIO_CHANNEL=prod bun run package:mac     # 本机 macOS
+MIO_CHANNEL=prod bun run package:win     # 从 macOS 交叉构建 Windows（package-win.ts）
 ```
 
 本地默认不签名（未设 `CSC_LINK` / `APPLE_TEAM_ID`），产物在 `packages/desktop/dist/`。
@@ -113,7 +113,7 @@ MIMO_CHANNEL=prod bun run package:win     # 从 macOS 交叉构建 Windows（pac
 
 ## 工作原理要点
 
-- **版本号来源**：`release` 用 `scripts/set-version.ts` 把 tag（去掉 `v`）写入 `packages/desktop/package.json`，electron-builder 据此打包；同一版本号通过 `MIMO_VERSION` 注入 agent 构建，保持一致。
+- **版本号来源**：`release` 用 `scripts/set-version.ts` 把 tag（去掉 `v`）写入 `packages/desktop/package.json`，electron-builder 据此打包；同一版本号通过 `MIO_VERSION` 注入 agent 构建，保持一致。
 - **自动更新**：`electron-builder.config.ts` 的 `publish: github` 是必需的——它既生成 `latest*.yml`，又把 `app-update.yml` 打进 App，`electron-updater` 才能工作。各 job 用 `--publish always` 直接上传，因此**不需要** `finalize-latest-*.ts` 合并脚本（仅在单 OS 同时构建多架构时才需要）。
 - **签名是「按需」的**：未配置密钥时 macOS 走 `CSC_IDENTITY_AUTO_DISCOVERY=false` 跳过签名、`notarize: false` 跳过公证；Windows 由 `sign-windows.ps1` 自行跳过。都不会让构建失败。
 - **Windows 安装路径**：NSIS 已切换为引导式安装（`oneClick: false` + `allowToChangeInstallationDirectory: true`），用户可自选安装目录。

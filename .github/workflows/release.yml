@@ -96,10 +96,10 @@ jobs:
             yml: latest-linux-arm64.yml
     runs-on: ${{ matrix.os }}
     env:
-      MIMO_CHANNEL: prod
-      MIMO_VERSION: ${{ needs.prepare.outputs.version }}
-      MIMO_TARGET_PLATFORM: ${{ matrix.platform }}
-      MIMO_TARGET_ARCH: ${{ matrix.arch }}
+      MIO_CHANNEL: prod
+      MIO_VERSION: ${{ needs.prepare.outputs.version }}
+      MIO_TARGET_PLATFORM: ${{ matrix.platform }}
+      MIO_TARGET_ARCH: ${{ matrix.arch }}
     steps:
       - uses: actions/checkout@v6
 
@@ -169,7 +169,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          MIMO_VERSION: ${{ needs.prepare.outputs.version }}
+          MIO_VERSION: ${{ needs.prepare.outputs.version }}
           LATEST_YML_DIR: ${{ github.workspace }}/latest-yml
         run: bun scripts/finalize-latest-yml.ts
 

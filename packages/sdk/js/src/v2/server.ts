@@ -35,7 +35,7 @@ export async function createMimoServer(options?: ServerOptions) {
   const proc = launch(`mimo`, args, {
     env: {
       ...process.env,
-      MIMO_CONFIG_CONTENT: JSON.stringify(options.config ?? {}),
+      MIO_CONFIG_CONTENT: JSON.stringify(options.config ?? {}),
     },
   })
   let clear = () => {}
@@ -121,7 +121,7 @@ export function createMimoTui(options?: TuiOptions) {
     stdio: "inherit",
     env: {
       ...process.env,
-      MIMO_CONFIG_CONTENT: JSON.stringify(options?.config ?? {}),
+      MIO_CONFIG_CONTENT: JSON.stringify(options?.config ?? {}),
     },
   })
 

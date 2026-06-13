@@ -2,14 +2,14 @@ import { afterEach, describe, expect, test } from "bun:test"
 import { resource } from "@opencode-ai/core/effect/observability"
 
 const otelResourceAttributes = process.env.OTEL_RESOURCE_ATTRIBUTES
-const mimoClient = process.env.MIMO_CLIENT
+const mimoClient = process.env.MIO_CLIENT
 
 afterEach(() => {
   if (otelResourceAttributes === undefined) delete process.env.OTEL_RESOURCE_ATTRIBUTES
   else process.env.OTEL_RESOURCE_ATTRIBUTES = otelResourceAttributes
 
-  if (mimoClient === undefined) delete process.env.MIMO_CLIENT
-  else process.env.MIMO_CLIENT = mimoClient
+  if (mimoClient === undefined) delete process.env.MIO_CLIENT
+  else process.env.MIO_CLIENT = mimoClient
 })
 
 describe("resource", () => {
@@ -33,7 +33,7 @@ describe("resource", () => {
   })
 
   test("keeps built-in attributes when env values conflict", () => {
-    process.env.MIMO_CLIENT = "cli"
+    process.env.MIO_CLIENT = "cli"
     process.env.OTEL_RESOURCE_ATTRIBUTES = "mimo.client=web,service.instance.id=override,service.namespace=anomalyco"
 
     expect(resource().attributes).toMatchObject({

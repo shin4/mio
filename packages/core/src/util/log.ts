@@ -20,7 +20,7 @@ const levelPriority: Record<Level, number> = {
   ERROR: 3,
 }
 const keep = 10
-const initializedRunID = "MIMO_LOG_INITIALIZED_RUN_ID"
+const initializedRunID = "MIO_LOG_INITIALIZED_RUN_ID"
 
 let level: Level = "INFO"
 
@@ -71,7 +71,7 @@ export async function init(options: Options) {
     Global.Path.log,
     options.dev ? "dev.log" : new Date().toISOString().split(".")[0].replace(/:/g, "") + ".log",
   )
-  const runID = process.env.MIMO_RUN_ID
+  const runID = process.env.MIO_RUN_ID
   const shouldTruncate = !options.dev || !runID || process.env[initializedRunID] !== runID
   if (shouldTruncate) await fs.truncate(logpath).catch(() => {})
   if (options.dev && runID) process.env[initializedRunID] = runID

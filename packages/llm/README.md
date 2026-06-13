@@ -12,7 +12,7 @@ import { Effect } from "effect"
 import { LLM, LLMClient } from "@opencode-ai/llm"
 import { MiMo } from "@opencode-ai/llm/providers"
 
-const model = MiMo.configure({ apiKey: process.env.MIMO_API_KEY }).model("mimo-v2.5")
+const model = MiMo.configure({ apiKey: process.env.MIO_API_KEY }).model("mimo-v2.5")
 
 const request = LLM.request({
   model,

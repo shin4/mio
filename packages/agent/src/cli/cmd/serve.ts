@@ -12,8 +12,8 @@ export const ServeCommand = effectCmd({
   // need for an ambient project InstanceContext at startup.
   instance: false,
   handler: Effect.fn("Cli.serve")(function* (args) {
-    if (!Flag.MIMO_SERVER_PASSWORD) {
-      console.log("Warning: MIMO_SERVER_PASSWORD is not set; server is unsecured.")
+    if (!Flag.MIO_SERVER_PASSWORD) {
+      console.log("Warning: MIO_SERVER_PASSWORD is not set; server is unsecured.")
     }
     const opts = yield* resolveNetworkOptions(args)
     const server = yield* Effect.promise(() => Server.listen(opts))
