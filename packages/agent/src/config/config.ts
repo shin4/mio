@@ -626,10 +626,14 @@ export const layer = Layer.effect(
             dir.endsWith(AppInfo.legacyProjectConfigDir) ||
             dir === Flag.MIMO_CONFIG_DIR
           ) {
+            // MIMO_CONFIG_DIR may point at either an old or new dir, so accept both names there.
+            // A discovered legacy dir (.mimo) reads only legacy files, mirroring how .mio reads only current files.
             const files =
-              dir === Flag.MIMO_CONFIG_DIR || dir.endsWith(AppInfo.legacyProjectConfigDir)
+              dir === Flag.MIMO_CONFIG_DIR
                 ? [...AppInfo.legacyConfigFiles.toReversed(), ...AppInfo.configFiles.toReversed()]
-                : AppInfo.configFiles.toReversed()
+                : dir.endsWith(AppInfo.legacyProjectConfigDir)
+                  ? AppInfo.legacyConfigFiles.toReversed()
+                  : AppInfo.configFiles.toReversed()
             for (const file of files) {
               const source = path.join(dir, file)
               log.debug(`loading config from ${source}`)

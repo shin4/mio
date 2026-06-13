@@ -4,6 +4,7 @@ export const AppInfo = {
   legacyProjectConfigDir: ".mimo",
   configBasename: "mio",
   legacyConfigBasename: "mimo",
+  // schema/config.json is generated and committed by the schema-export step; this URL is intentional (pending that file landing on main).
   configSchema: "https://raw.githubusercontent.com/shin4/mio/main/schema/config.json",
   wellKnownConfigPath: ".well-known/mio",
   configFiles: ["mio.jsonc", "mio.json"] as const,

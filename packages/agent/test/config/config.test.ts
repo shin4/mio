@@ -345,6 +345,18 @@ it.effect("does not create global config when MIMO_CONFIG_DIR is set", () =>
   }),
 )
 
+it.effect("migrates legacy global mimo.jsonc to mio.jsonc and loads it", () =>
+  withGlobalConfig({ config: { model: "legacy/global" }, name: "mimo.jsonc" }, ({ dir }) =>
+    Effect.gen(function* () {
+      const config = yield* Config.use.get().pipe(provideInstanceEffect(dir))
+      expect(config.model).toBe("legacy/global")
+
+      // migration copies the legacy global config to the renamed file
+      expect(yield* AppFileSystem.use.existsSafe(path.join(dir, "mio.jsonc"))).toBe(true)
+    }).pipe(Effect.provide(testInstanceStoreLayer), Effect.provide(CrossSpawnSpawner.defaultLayer)),
+  ),
+)
+
 it.instance(
   "loads JSON config file",
   Effect.gen(function* () {
