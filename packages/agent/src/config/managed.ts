@@ -8,9 +8,9 @@ import { Process } from "@/util/process"
 
 const log = Log.create({ service: "config" })
 
-const MANAGED_PLIST_DOMAIN = "io.github.shin4.mimo.managed"
+const MANAGED_PLIST_DOMAIN = "io.github.shin4.mio.managed"
 
-// Keys injected by macOS/MDM into the managed plist that are not MiMo-Code config
+// Keys injected by macOS/MDM into the managed plist that are not Mio config
 const PLIST_META = new Set([
   "PayloadDisplayName",
   "PayloadIdentifier",
@@ -23,11 +23,11 @@ const PLIST_META = new Set([
 function systemManagedConfigDir(): string {
   switch (process.platform) {
     case "darwin":
-      return "/Library/Application Support/mimo"
+      return "/Library/Application Support/mio"
     case "win32":
-      return path.join(process.env.ProgramData || "C:\\ProgramData", "mimo")
+      return path.join(process.env.ProgramData || "C:\\ProgramData", "mio")
     default:
-      return "/etc/mimo"
+      return "/etc/mio"
   }
 }
 

@@ -30,9 +30,9 @@ const readRuntimeFlags = () =>
 
 export function getChannelPath(flags: Pick<DatabaseFlags, "disableChannelDb"> = readRuntimeFlags()) {
   if (["latest", "beta", "prod"].includes(InstallationChannel) || flags.disableChannelDb)
-    return path.join(Global.Path.data, "mimo.db")
+    return path.join(Global.Path.data, "mio.db")
   const safe = InstallationChannel.replace(/[^a-zA-Z0-9._-]/g, "-")
-  return path.join(Global.Path.data, `mimo-${safe}.db`)
+  return path.join(Global.Path.data, `mio-${safe}.db`)
 }
 
 export const getPath = (flags?: Pick<DatabaseFlags, "disableChannelDb">) => {

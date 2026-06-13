@@ -685,7 +685,7 @@ export const McpDebugCommand = effectCmd({
             params: {
               protocolVersion: "2024-11-05",
               capabilities: {},
-              clientInfo: { name: "mimo-code-debug", version: InstallationVersion },
+              clientInfo: { name: "mio-debug", version: InstallationVersion },
             },
             id: 1,
           }),
@@ -728,7 +728,7 @@ export const McpDebugCommand = effectCmd({
 
           try {
             const client = new Client({
-              name: "mimo-code-debug",
+              name: "mio-debug",
               version: InstallationVersion,
             })
             await client.connect(transport)
