@@ -464,6 +464,11 @@ export const dict = {
   "context.breakdown.assistant": "Assistant",
   "context.breakdown.tool": "Tool Calls",
   "context.breakdown.other": "Other",
+  "context.breakdown.messages": "Messages",
+  "context.capsule.window": "Context window",
+  "context.capsule.note": "live total · estimated breakdown",
+  "context.capsule.approx": "approx",
+  "context.capsule.empty": "No usage yet",
 
   "context.systemPrompt.title": "System Prompt",
   "context.rawMessages.title": "Raw messages",
@@ -743,6 +748,7 @@ export const dict = {
   "status.popover.tab.mcp": "MCP",
   "status.popover.tab.lsp": "LSP",
   "status.popover.tab.plugins": "Plugins",
+  "status.popover.tab.context": "Context",
   "status.popover.action.manageServers": "Manage servers",
 
   "session.share.popover.title": "Publish on web",
