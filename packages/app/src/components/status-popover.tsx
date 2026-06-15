@@ -12,7 +12,7 @@ import { useServers } from "@/context/servers"
 const Body = lazy(() => import("./status-popover-body").then((x) => ({ default: x.StatusPopoverBody })))
 const ServerBody = lazy(() => import("./status-popover-body").then((x) => ({ default: x.StatusPopoverServerBody })))
 
-export function StatusPopover() {
+export function StatusPopover(props: { sessionID?: string }) {
   const language = useLanguage()
   const server = useServer()
   const servers = useServers()
@@ -67,19 +67,19 @@ export function StatusPopover() {
             <div class="w-[360px] h-14 rounded-xl bg-background-strong shadow-[var(--shadow-lg-border-base)]" />
           }
         >
-          <Body shown={shown} />
+          <Body shown={shown} sessionID={props.sessionID} />
         </Suspense>
       </Show>
     </Popover>
   )
 }
 
-export function StatusPopoverV2(props: { scope?: "server" }) {
+export function StatusPopoverV2(props: { scope?: "server"; sessionID?: string }) {
   if (props.scope === "server") return <ServerStatusPopover />
-  return <DirectoryStatusPopover />
+  return <DirectoryStatusPopover sessionID={props.sessionID} />
 }
 
-function DirectoryStatusPopover() {
+function DirectoryStatusPopover(props: { sessionID?: string }) {
   const language = useLanguage()
   const server = useServer()
   const servers = useServers()
@@ -105,7 +105,7 @@ function DirectoryStatusPopover() {
     onOpenChange: setShown,
     body: () => (
       <StatusPopoverBody shown={shown()}>
-        <Body shown={shown} />
+        <Body shown={shown} sessionID={props.sessionID} />
       </StatusPopoverBody>
     ),
   }))
