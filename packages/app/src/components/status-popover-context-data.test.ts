@@ -12,9 +12,8 @@ const seg = (key: SessionContextBreakdownSegment["key"], tokens: number): Sessio
 describe("toCapsuleSegments", () => {
   test("merges user + assistant into a single messages segment", () => {
     const out = toCapsuleSegments([seg("user", 30), seg("assistant", 20), seg("tool", 50)])
-    const messages = out.find((s) => s.key === "messages")
-    expect(messages?.tokens).toBe(50)
-    expect(out.some((s) => s.key === "user" || s.key === "assistant")).toBe(false)
+    expect(out.map((s) => s.key)).toEqual(["messages", "tool"])
+    expect(out.find((s) => s.key === "messages")?.tokens).toBe(50)
   })
 
   test("keeps system / tool / other and orders messages,tool,system,other", () => {
