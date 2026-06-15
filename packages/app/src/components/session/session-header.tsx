@@ -238,6 +238,7 @@ export function SessionHeader() {
   const v2ActionsState = createMemo<SessionHeaderV2ActionsState>(() => ({
     statusVisible: status(),
     statusLabel: language.t("status.popover.trigger"),
+    sessionID: params.id,
     reviewLabel: language.t("command.review.toggle"),
     reviewKeybind: command.keybind("review.toggle"),
     reviewOpened: view().reviewPanel.opened(),
@@ -443,7 +444,7 @@ export function SessionHeader() {
                   <div class="flex items-center gap-1">
                     <Show when={status()}>
                       <Tooltip placement="bottom" value={language.t("status.popover.trigger")}>
-                        <StatusPopover />
+                        <StatusPopover sessionID={params.id} />
                       </Tooltip>
                     </Show>
                     <Show when={term()}>
@@ -524,6 +525,7 @@ export function SessionHeader() {
 type SessionHeaderV2ActionsState = {
   statusVisible: boolean
   statusLabel: string
+  sessionID?: string
   reviewLabel: string
   reviewKeybind: string
   reviewOpened: boolean
@@ -535,7 +537,7 @@ function SessionHeaderV2Actions(props: { state: SessionHeaderV2ActionsState }) {
     <div class="flex items-center gap-0">
       <Show when={props.state.statusVisible}>
         <Tooltip placement="bottom" value={props.state.statusLabel}>
-          <StatusPopoverV2 />
+          <StatusPopoverV2 sessionID={props.state.sessionID} />
         </Tooltip>
       </Show>
       <TooltipKeybind title={props.state.reviewLabel} keybind={props.state.reviewKeybind}>
