@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/solid-query"
 import { showToast } from "@opencode-ai/ui/toast"
 import { useNavigate } from "@solidjs/router"
 import { type Accessor, createEffect, createMemo, For, type JSXElement, onCleanup, Show } from "solid-js"
+import { StatusPopoverContext } from "./status-popover-context"
 import { createStore } from "solid-js/store"
 import { ServerHealthIndicator, ServerRow } from "@/components/server/server-row"
 import { useLanguage } from "@/context/language"
@@ -286,7 +287,7 @@ function ServerStatusList(props: { state: ServerStatusState }) {
   )
 }
 
-export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
+export function StatusPopoverBody(props: { shown: Accessor<boolean>; sessionID?: string }) {
   const sync = useSync()
   const servers = useServers()
   const server = useServer()
@@ -354,6 +355,11 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
             {pluginCount() > 0 ? `${pluginCount()} ` : ""}
             {language.t("status.popover.tab.plugins")}
           </Tabs.Trigger>
+          <Show when={props.sessionID}>
+            <Tabs.Trigger value="context" data-slot="tab" class="text-12-regular">
+              {language.t("status.popover.tab.context")}
+            </Tabs.Trigger>
+          </Show>
         </Tabs.List>
 
         <Tabs.Content value="servers">
@@ -530,6 +536,13 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
             </div>
           </div>
         </Tabs.Content>
+        <Show when={props.sessionID}>
+          {(id) => (
+            <Tabs.Content value="context">
+              <StatusPopoverContext sessionID={id()} />
+            </Tabs.Content>
+          )}
+        </Show>
       </Tabs>
     </div>
   )
