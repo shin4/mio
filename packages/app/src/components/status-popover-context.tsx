@@ -30,16 +30,19 @@ export function StatusPopoverContext(props: { sessionID: string }) {
         messages: messages(),
         parts: sync.data.part as Record<string, Part[] | undefined>,
         input: c.input,
+        // System prompt omitted in this condensed view: its tokens fold into "other".
+        // Wiring the real prompt text (and finer buckets) is the precise-tokenizer upgrade.
         systemPrompt: undefined,
       }),
     )
   })
 
-  const compact = (n: number) =>
-    new Intl.NumberFormat(language.intl(), { notation: "compact", maximumFractionDigits: 1 }).format(n)
+  const formatter = createMemo(() =>
+    new Intl.NumberFormat(language.intl(), { notation: "compact", maximumFractionDigits: 1 }),
+  )
+  const compact = (n: number) => formatter().format(n)
 
-  const label = (key: CapsuleSegmentKey) =>
-    key === "messages" ? language.t("context.breakdown.messages") : language.t(`context.breakdown.${key}`)
+  const label = (key: CapsuleSegmentKey) => language.t(`context.breakdown.${key}`)
 
   return (
     <div class="p-4">
