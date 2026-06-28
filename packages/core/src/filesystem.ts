@@ -11,7 +11,7 @@ import { serviceUse } from "./effect/service-use"
 export namespace AppFileSystem {
   export class FileSystemError extends Schema.TaggedErrorClass<FileSystemError>()("FileSystemError", {
     method: Schema.String,
-    cause: Schema.optional(Schema.Defect),
+    cause: Schema.optional(Schema.Defect()),
   }) {}
 
   export type Error = PlatformError | FileSystemError

@@ -97,7 +97,7 @@ See `specs/effect/migration.md` for the compact pattern reference and examples.
 - Use `Schema.Class` for multi-field data.
 - Use branded schemas (`Schema.brand`) for single-value types.
 - Use `Schema.TaggedErrorClass` for typed errors.
-- Use `Schema.Defect` instead of `unknown` for defect-like causes.
+- Use `Schema.Defect()` instead of `unknown` for defect-like causes.
 - In `Effect.gen` / `Effect.fn`, prefer `yield* new MyError(...)` over `yield* Effect.fail(new MyError(...))` for direct early-failure branches.
 
 ## Runtime vs InstanceState
