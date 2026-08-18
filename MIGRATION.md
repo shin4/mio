@@ -33,6 +33,7 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` provisions the repo-local `.dsh/` profile and installs the plugin as a packed tarball; `bun run dev:runtime` boots green |
 | `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 9 replay tests green |
 | dsh pin | `0.1.0-rc.6` (rc.7 blocked by bunfig `minimumReleaseAge`; bump when aged) |
+| End-to-end | Verified 2026-08-19 against a live MiMo token-plan account: real answers, real tool use, real file writes through the dsh web UI |
 
 ## Phase 1 — MiMo provider adapter (dsh-native elsewhere)
 
@@ -42,10 +43,14 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 - [x] Replay tests against real recorded OpenAI-chat SSE from
       `archive/packages/llm/test/fixtures/recordings` (text, tool calls, usage/cache split,
       reasoning, finish mapping, empty-assistant filtering, HTTP error facts)
-- [ ] First real MiMo round-trip through `dsh web` (needs `MIO_API_KEY`; text + tool calls) —
-      the one blocking item; everything below is judged against what it reveals
-- [ ] MiMo-specific cassettes once the round-trip works: `reasoning_content` turns, cache-hit
-      usage shapes, any wire divergence the recordings expose
+- [x] **First real MiMo round-trip — verified end to end (2026-08-19)** against a live
+      token-plan / cn account. Adapter probe: reasoning + text blocks, tool call
+      (`get_weather` → `{"city": "Paris"}`, finish `tool-calls`), tool-result continuation, and
+      `cacheReadTokens` on the second turn. Full runtime through the dsh web UI: MiMo answered in
+      the composer, drove `Read` → `Write` in a real workspace, and produced the correct file.
+      No adapter changes were needed — the wire translation was right first time
+- [ ] MiMo-specific cassettes: capture the verified shapes (`reasoning_content` turns, cache-hit
+      usage) as recordings so the suite covers real MiMo traffic, not just OpenAI-chat cassettes
 - [x] Settings/credentials seams like `dsh-llm-deepseek`: connection facts resolve per request
       through `installSettingsSection` + `ctx.credentials`, so a changed key/billing/region lands
       on the next request without a restart
@@ -79,9 +84,12 @@ Other archived MiMo behavior, same audit:
   (`dsh-time-context`) is opt-in and lands in request history rather than the system prefix.
   Verify cache-hit rates on real traffic instead; `system-prompt/assemble` is the seam if a
   stability guard is ever needed.
-- **Cache-hit observability** — dsh-native: `dsh-token-meter` already projects
-  `cacheReadTokens` / `cacheWriteTokens`, and the adapter reports the disjoint split (tested).
-  No custom cache meter needed in the runtime.
+- **Cache-hit observability** — dsh-native, now confirmed on real traffic: the session footer
+  showed `缓存命中 66%` for a live MiMo turn, fed by the adapter's disjoint usage split. No
+  custom cache meter needed in the runtime.
+- **Prefix caching itself works without any Mio machinery** — the live session reported rising
+  cache-hit rates across turns with dsh's stock prompt assembly, which is the evidence behind
+  dropping the archived drift-hashing work above.
 - **Multimodal audio/video input** — out of scope this version. dsh's `ModelModalityMap` is
   `text | image`; audio/video would need a modality extension plus attachment wiring. Ship
   text (and image, once verified through dsh's attachment path); revisit audio/video later.

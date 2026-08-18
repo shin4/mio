@@ -41,6 +41,43 @@ MIO_API_KEY=<your key> bun run dev:runtime
 `.env` files and the credentials store also work; the reference name is configurable via the
 plugin's `apiKeyEnv` config.
 
+## Selecting the billing track
+
+The composition ships `pay-as-you-go`. A token-plan account sets its track and region in the
+profile's **user settings** (`$DSH_HOME/settings.yaml`, i.e. `.dsh/settings.yaml` for the
+repo-local profile) — not in `mio.patch.yml`, which is product composition rather than a
+deployment choice:
+
+```yaml
+llm-mimo:
+  billing: token-plan
+  region: cn
+```
+
+The settings section is live: `installSettingsSection` re-resolves the connection per request, so
+a changed track, region, or key reaches the next request without a restart. Never put the API key
+in this file — it belongs in the credentials seam.
+
+## Headless checks and the directory picker
+
+`directory-picker-auto` resolves to the **native** OS dialog on a desktop session, which an
+automated check cannot drive. To pick a workspace from inside the page, pin the browse pair with
+an extra overlay (test-only — do not fold this into `mio.patch.yml`):
+
+```yaml
+- id: directory-picker
+  disabled: true
+- insert:
+    - id: directory-picker-browse
+      name: '@deepseek-ai/dsh-host-directory-picker-browse'
+    - id: ui-directory-picker-browse
+      name: '@deepseek-ai/dsh-client-ui-directory-picker-browse'
+```
+
+```bash
+dsh web --patch ./mio.patch.yml --patch ./browse-picker.yml
+```
+
 ## Useful commands
 
 ```bash
