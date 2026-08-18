@@ -29,7 +29,7 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 |---|---|
 | `archive/packages/{agent,llm,plugin,http-recorder}` | Frozen reference, out of workspace, excluded from lint/CI |
 | `packages/{app,ui,core,sdk}` | Kept green (typecheck + lint) as **read-only reference** for MiMo UX/i18n ports; retires in Phase 4 per the UI decision |
-| `packages/desktop` | Builds and launches; sidecar resolves to `src/main/server-stub.ts`, which throws with a pointer here — replaced by the thin shell in Phase 2 |
+| `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
 | `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` provisions the repo-local `.dsh/` profile and installs the plugin as a packed tarball; `bun run dev:runtime` boots green |
 | `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 9 replay tests green |
 | dsh pin | `0.1.0-rc.6` (rc.7 blocked by bunfig `minimumReleaseAge`; bump when aged) |
@@ -129,8 +129,13 @@ Other archived MiMo behavior, same audit:
 - [ ] Carry over the shell services worth keeping: auto-update, `mio://` deep links, native menus,
       window state, shell-env import, system CA / env-proxy propagation (from `main/sidecar.ts`);
       decide the desktop-pet window's fate
-- [ ] Archive the old desktop app (`packages/desktop`) — superseded by `packages/shell`; its
-      `server-stub.ts` and utilityProcess sidecar path go with it
+- [x] **Archived the old desktop app (2026-08-19)** — `packages/desktop` → `archive/packages/`,
+      taking `server-stub.ts` and the utilityProcess sidecar path with it. Its packaging CI
+      (`build-check.yml`, `release.yml`) and `docs/releasing.md` moved to `archive/workflows/`,
+      since both only build the old app; they stay as the reference for what the new shell's
+      release job must cover. All references cleaned: root scripts, ci.yml, gitleaks paths,
+      CONTRIBUTING.md. Verified after the move: `bun run dev:desktop` boots the new shell and
+      serves the UI, typecheck 6/6, lint clean
 - [ ] Packaging: electron-builder for the new shell, shipping dsh + `@mio/llm-mimo` + a
       provisioned profile in one `node_modules` tree
 - [ ] Carry the still-missing shell services: auto-update, `mio://` deep links, native menus,

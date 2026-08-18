@@ -49,10 +49,6 @@ jobs:
         working-directory: packages/core
         run: bun typecheck
 
-      - name: Typecheck desktop
-        working-directory: packages/desktop
-        run: bun typecheck
-
       - name: Typecheck JavaScript SDK
         working-directory: packages/sdk/js
         run: bun typecheck

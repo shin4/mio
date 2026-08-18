@@ -28,17 +28,16 @@ Install dependencies from the repository root:
 bun install
 ```
 
-Run the desktop app:
+Run the desktop app (starts the dsh runtime and opens the shell):
 
 ```bash
 bun run dev:desktop
 ```
 
-Run the agent and app separately:
+Run the runtime on its own, serving the dsh web UI in a browser:
 
 ```bash
-bun run dev:agent
-bun run dev:app
+bun run dev:runtime
 ```
 
 ## Package Checks
@@ -47,11 +46,10 @@ Do not run tests from the repository root. Run checks inside package
 directories:
 
 ```bash
-cd packages/agent && bun typecheck
+cd packages/llm-mimo && bun typecheck && bun run test
+cd packages/shell && bun typecheck
 cd packages/app && bun typecheck
 cd packages/core && bun typecheck
-cd packages/desktop && bun typecheck
-cd packages/llm && bun typecheck
 ```
 
 Use `bun typecheck`, not `tsc` directly.
@@ -70,7 +68,7 @@ Review generated files before committing.
 
 - Use conventional commit-style titles: `type(scope): summary`.
 - Valid types are `feat`, `fix`, `docs`, `chore`, `refactor`, and `test`.
-- Scopes are optional; use package names such as `agent`, `app`, `desktop`,
+- Scopes are optional; use package names such as `runtime`, `llm-mimo`, `shell`, `app`,
   `core`, `llm`, `sdk`, or `plugin` when helpful.
 - Include the verification commands you ran and any commands you could not run.
 - Keep UI changes accompanied by screenshots or a short recording when the

@@ -9,6 +9,7 @@ paths = [
   '''(^|/)node_modules/''',
   '''(^|/)\.turbo/''',
   '''(^|/)dist/''',
+  '''^packages/shell/lib/''',
   '''^packages/desktop/out/''',
 ]
 
