@@ -1,0 +1,17 @@
+{
+  "name": "@mio/runtime",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Mio agent runtime composed on DeepSeek Harness (dsh) — MiMo-first plugin composition",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "scripts": {
+    "dev": "dsh web --patch ./mio.patch.yml"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh": "0.1.0-rc.6",
+    "@mio/llm-mimo": "workspace:*"
+  }
+}

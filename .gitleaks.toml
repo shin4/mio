@@ -17,7 +17,10 @@ description = "Intentional fake secret fixtures for HTTP recorder redaction test
 condition = "AND"
 targetRules = ["generic-api-key", "gcp-api-key"]
 regexTarget = "line"
-paths = ['''^packages/http-recorder/test/record-replay\.test\.ts$''']
+paths = [
+  '''^archive/packages/http-recorder/test/record-replay\.test\.ts$''',
+  '''^packages/http-recorder/test/record-replay\.test\.ts$''',
+]
 regexes = [
   '''sk-123456789012345678901234''',
   '''AIzaSyDHibiBRvJZLsFnPYPoiTwxY4ztQ55yqCE''',

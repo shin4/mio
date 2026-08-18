@@ -8,17 +8,7 @@
       "dependsOn": [],
       "outputs": ["dist/**"]
     },
-    "mio-agent#test": {
-      "dependsOn": ["^build"],
-      "outputs": [],
-      "passThroughEnv": ["*"]
-    },
     "test:ci": {
-      "outputs": [".artifacts/unit/junit.xml"],
-      "passThroughEnv": ["*"]
-    },
-    "mio-agent#test:ci": {
-      "dependsOn": ["^build"],
       "outputs": [".artifacts/unit/junit.xml"],
       "passThroughEnv": ["*"]
     },

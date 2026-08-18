@@ -1,10 +1,7 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin"
 import { defineConfig } from "electron-vite"
 import appPlugin from "@opencode-ai/app/vite"
-import * as fs from "node:fs/promises"
 import { readFileSync } from "node:fs"
-
-const MIO_SERVER_DIST = "../agent/dist/node"
 
 const channel = (() => {
   const raw = process.env.MIO_CHANNEL
@@ -51,7 +48,6 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: { index: "src/main/index.ts", sidecar: "src/main/sidecar.ts" },
-        external: ["opencode-web-ui.gen.ts"],
       },
       externalizeDeps: { include: [nodePtyPkg] },
     },
@@ -64,30 +60,12 @@ export default defineConfig({
         },
       },
       {
-        name: "mio:embedded-ui-stub",
-        enforce: "pre",
-        resolveId(id) {
-          // The bundled agent server tries to dynamic-import this file. It's
-          // never produced in dev (embedded UI is upstream-fetched). Tell
-          // Rollup it's external so the build doesn't fail; the runtime
-          // import catches the failure and falls through to fetch.
-          if (id === "opencode-web-ui.gen.ts") return { id, external: true }
-        },
-      },
-      {
         name: "mio:virtual-server-module",
         enforce: "pre",
         resolveId(id) {
-          if (id === "virtual:opencode-server") return this.resolve(`${MIO_SERVER_DIST}/node.js`)
-        },
-      },
-      {
-        name: "mio:copy-server-assets",
-        async writeBundle() {
-          for (const l of await fs.readdir(MIO_SERVER_DIST)) {
-            if (!l.endsWith(".wasm")) continue
-            await fs.writeFile(`./out/main/chunks/${l}`, await fs.readFile(`${MIO_SERVER_DIST}/${l}`))
-          }
+          // Interim: the OpenCode agent bundle is archived; the stub throws with
+          // a pointer to MIGRATION.md until the dsh runtime lands (Phase 2).
+          if (id === "virtual:opencode-server") return this.resolve("./src/main/server-stub.ts")
         },
       },
     ],

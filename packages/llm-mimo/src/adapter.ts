@@ -1,0 +1,302 @@
+/**
+ * Direct-fetch MiMo adapter speaking the OpenAI-chat wire protocol over SSE.
+ *
+ * The serialization + chunk translation is a port of the MiMo-tuned pieces of
+ * the archived Effect runtime (archive/packages/llm/src/protocols/openai-chat.ts
+ * and archive/packages/agent/src/provider/transform.ts). Phase 1 (MIGRATION.md)
+ * adds: multimodal user parts (audio data-URLs, video_url + fps), the 4-stage
+ * tool-call repair pipeline as an `llm/stream` waterfall, the Anthropic-messages
+ * route, and replay tests against the archived HTTP recordings.
+ */
+import {
+  attributionHeaders,
+  CallId,
+  LlmAdapter,
+  LlmError,
+  ProviderRequestId,
+  type ContentBlock,
+  type FinishReason,
+  type GenerateOptions,
+  type LlmModelInfo,
+  type LlmProviderInfo,
+  type LlmResolvedModelInfo,
+  type Message,
+  type StreamChunk,
+  type TokenUsage,
+  type ToolResultBlock,
+} from "@deepseek-ai/dsh-llm"
+import { listModels, providerInfo, resolveModel, DEFAULT_MAX_TOKENS } from "./catalog.ts"
+
+const PKG = "@mio/llm-mimo"
+
+// Public product identity for provider-request attribution (User-Agent).
+// TODO(phase-1): source the version from package metadata at build time.
+const MIO_IDENTITY = { product: "mio", version: "0.0.1", url: "https://github.com/shin4/mio" }
+
+export interface MimoAdapterOptions {
+  readonly baseURL: string
+  readonly apiKeyEnv: string
+}
+
+type WireToolCall = { index?: number; id?: string; function?: { name?: string; arguments?: string } }
+type WireDelta = { content?: string | null; reasoning_content?: string | null; tool_calls?: WireToolCall[] }
+type WireEvent = {
+  choices?: { delta?: WireDelta; finish_reason?: string | null }[]
+  usage?: {
+    prompt_tokens?: number
+    completion_tokens?: number
+    prompt_tokens_details?: { cached_tokens?: number }
+    completion_tokens_details?: { reasoning_tokens?: number }
+  } | null
+}
+
+type OpenAIMessage =
+  | { role: "system" | "user"; content: string }
+  | {
+      role: "assistant"
+      content: string | null
+      tool_calls?: { id: string; type: "function"; function: { name: string; arguments: string } }[]
+    }
+  | { role: "tool"; tool_call_id: string; content: string }
+
+const HTTP_ERROR_CODES: Record<number, string> = {
+  400: "INVALID_REQUEST",
+  401: "AUTH",
+  403: "AUTH",
+  404: "NOT_FOUND",
+  429: "RATE_LIMIT",
+}
+
+export class MimoAdapter extends LlmAdapter {
+  constructor(private readonly options: MimoAdapterOptions) {
+    super()
+  }
+
+  override providerInfo(): LlmProviderInfo {
+    return providerInfo
+  }
+
+  override listModels(provider: string): Promise<readonly LlmModelInfo[]> {
+    return Promise.resolve(listModels(provider))
+  }
+
+  override resolveModel(provider: string, model: string): Promise<LlmResolvedModelInfo> {
+    return Promise.resolve(resolveModel(provider, model))
+  }
+
+  async *stream(options: GenerateOptions): AsyncIterable<StreamChunk> {
+    const raw = process.env[this.options.apiKeyEnv]
+    if (!raw)
+      throw new LlmError(`${PKG}: no MiMo API key found in $${this.options.apiKeyEnv}`, "MISSING_CREDENTIAL")
+
+    const response = await fetch(`${this.options.baseURL}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        // MiMo auth: lowercase `api-key` header, not Authorization: Bearer.
+        "api-key": raw.trim(),
+        ...attributionHeaders(MIO_IDENTITY),
+      },
+      body: JSON.stringify(serializeRequest(options)),
+      signal: options.signal,
+    })
+    if (!response.ok) throw await httpError(response)
+    if (!response.body) throw new LlmError(`${PKG}: response has no body`, "PROTOCOL")
+
+    yield* translateSse(response.body)
+  }
+}
+
+function serializeRequest(options: GenerateOptions): Record<string, unknown> {
+  return {
+    model: options.model,
+    messages: serializeMessages(options),
+    stream: true,
+    stream_options: { include_usage: true },
+    max_tokens: options.maxTokens ?? DEFAULT_MAX_TOKENS,
+    ...(options.temperature === undefined ? {} : { temperature: options.temperature }),
+    ...(options.stop?.length ? { stop: options.stop } : {}),
+    ...(options.tools?.length
+      ? {
+          tools: options.tools.map((tool) => ({
+            type: "function",
+            function: { name: tool.name, description: tool.description, parameters: tool.parameters },
+          })),
+        }
+      : {}),
+  }
+}
+
+function serializeMessages(options: GenerateOptions): OpenAIMessage[] {
+  const system: OpenAIMessage[] = options.system ? [{ role: "system", content: options.system }] : []
+  return [...system, ...options.messages.flatMap(serializeMessage)]
+}
+
+function serializeMessage(message: Message): OpenAIMessage[] {
+  const toolResults = message.content
+    .filter((block): block is ToolResultBlock => block.type === "tool-result")
+    .map((block): OpenAIMessage => ({ role: "tool", tool_call_id: block.toolCallId, content: textOf(block.content) }))
+
+  if (message.role === "assistant") {
+    const toolCalls = message.content
+      .filter((block) => block.type === "tool-call")
+      .map((block) => ({
+        id: block.id as string,
+        type: "function" as const,
+        function: { name: block.name, arguments: block.arguments },
+      }))
+    const text = textOf(message.content)
+    // Port of filterMimoOpenAIEmptyAssistantMessages: MiMo rejects assistant
+    // turns that carry neither text nor tool calls.
+    if (!text && toolCalls.length === 0) return toolResults
+    return [
+      ...toolResults,
+      { role: "assistant", content: text || null, ...(toolCalls.length ? { tool_calls: toolCalls } : {}) },
+    ]
+  }
+
+  if (message.content.some((block) => block.type === "image"))
+    throw new LlmError(`${PKG}: image input is not wired yet (MIGRATION.md, Phase 1 multimodal parts)`, "UNSUPPORTED_CONTENT")
+
+  const text = textOf(message.content)
+  if (!text) return toolResults
+  return [...toolResults, { role: message.role === "system" ? "system" : "user", content: text }]
+}
+
+function textOf(blocks: readonly ContentBlock[]): string {
+  return blocks
+    .filter((block) => block.type === "text")
+    .map((block) => block.text)
+    .join("")
+}
+
+async function httpError(response: Response): Promise<LlmError> {
+  const body = await response.text()
+  const code = HTTP_ERROR_CODES[response.status] ?? (response.status >= 500 ? "SERVER" : "HTTP")
+  const retryAfterSeconds = Number(response.headers.get("retry-after"))
+  const requestId = response.headers.get("x-request-id")
+  return new LlmError(`${PKG}: HTTP ${response.status} from MiMo: ${body.slice(0, 300)}`, code, {
+    status: response.status,
+    ...(Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+      ? { providerRetryAfterMs: retryAfterSeconds * 1000 }
+      : {}),
+    ...(requestId ? { requestId: ProviderRequestId(requestId) } : {}),
+  })
+}
+
+async function* translateSse(body: ReadableStream<Uint8Array>): AsyncIterable<StreamChunk> {
+  const decoder = new TextDecoder()
+  let buffer = ""
+
+  // Open-block state: indexes are assigned in arrival order and closed in the
+  // same order before the terminal chunks.
+  let nextIndex = 0
+  let text: { index: number; accum: string } | undefined
+  let reasoning: { index: number; accum: string } | undefined
+  const toolCalls = new Map<number, { index: number; id: string; name: string; accum: string }>()
+  let finishReason: string | undefined
+  let usage: TokenUsage | undefined
+
+  function* handle(event: WireEvent): Generator<StreamChunk> {
+    const choice = event.choices?.[0]
+    const delta = choice?.delta
+
+    if (delta?.reasoning_content) {
+      if (!reasoning) {
+        reasoning = { index: nextIndex++, accum: "" }
+        yield { type: "block-start", index: reasoning.index, blockType: "reasoning" }
+      }
+      reasoning.accum += delta.reasoning_content
+      yield { type: "reasoning-delta", index: reasoning.index, text: delta.reasoning_content }
+    }
+
+    if (delta?.content) {
+      if (!text) {
+        text = { index: nextIndex++, accum: "" }
+        yield { type: "block-start", index: text.index, blockType: "text" }
+      }
+      text.accum += delta.content
+      yield { type: "text-delta", index: text.index, text: delta.content }
+    }
+
+    for (const wireCall of delta?.tool_calls ?? []) {
+      const key = wireCall.index ?? 0
+      const existing = toolCalls.get(key)
+      const call = existing ?? {
+        index: nextIndex++,
+        // MiMo occasionally omits the call id on the first fragment; synthesize
+        // a stable one so correlation survives (mirrors the archived assembler).
+        id: wireCall.id ?? `mimo-call-${key}-${nextIndex}`,
+        name: "",
+        accum: "",
+      }
+      if (!existing) {
+        toolCalls.set(key, call)
+        yield { type: "block-start", index: call.index, blockType: "tool-call" }
+      }
+      call.name = call.name || (wireCall.function?.name ?? "")
+      const argumentsDelta = wireCall.function?.arguments ?? ""
+      call.accum += argumentsDelta
+      yield {
+        type: "tool-call-delta",
+        index: call.index,
+        id: CallId(call.id),
+        ...(wireCall.function?.name ? { name: wireCall.function.name } : {}),
+        argumentsDelta,
+      }
+    }
+
+    if (choice?.finish_reason) finishReason = choice.finish_reason
+    if (event.usage) {
+      const cached = event.usage.prompt_tokens_details?.cached_tokens ?? 0
+      usage = {
+        // dsh counts are disjoint: uncached input only; cache reads separate.
+        inputTokens: Math.max(0, (event.usage.prompt_tokens ?? 0) - cached),
+        outputTokens: event.usage.completion_tokens ?? 0,
+        ...(cached ? { cacheReadTokens: cached } : {}),
+        ...(event.usage.completion_tokens_details?.reasoning_tokens
+          ? { reasoningTokens: event.usage.completion_tokens_details.reasoning_tokens }
+          : {}),
+      }
+    }
+  }
+
+  for await (const bytes of body) {
+    buffer += decoder.decode(bytes, { stream: true })
+    const lines = buffer.split("\n")
+    buffer = lines.pop() ?? ""
+    for (const line of lines) {
+      const payload = line.replace(/\r$/, "")
+      if (!payload.startsWith("data:")) continue
+      const data = payload.slice(5).trim()
+      if (!data || data === "[DONE]") continue
+      yield* handle(JSON.parse(data) as WireEvent)
+    }
+  }
+
+  // Close open blocks in the order they were opened.
+  const closures: StreamChunk[] = [
+    ...(reasoning ? [{ type: "block-end", index: reasoning.index, block: { type: "reasoning", text: reasoning.accum } } as const] : []),
+    ...(text ? [{ type: "block-end", index: text.index, block: { type: "text", text: text.accum } } as const] : []),
+    ...[...toolCalls.values()].map(
+      (call) =>
+        ({
+          type: "block-end",
+          index: call.index,
+          block: { type: "tool-call", id: CallId(call.id), name: call.name, arguments: call.accum },
+        }) as const,
+    ),
+  ].sort((left, right) => left.index - right.index)
+  yield* closures
+
+  if (usage) yield { type: "usage", usage }
+  // MiMo tolerance (ported): a stream that ends without finish_reason counts
+  // as a clean stop rather than a protocol failure.
+  yield { type: "finish", reason: mapFinishReason(finishReason ?? "stop") }
+}
+
+function mapFinishReason(reason: string): FinishReason {
+  if (reason === "tool_calls") return { kind: "tool-calls" }
+  if (reason === "length") return { kind: "max-tokens" }
+  return { kind: "stop" }
+}

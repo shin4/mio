@@ -7,25 +7,28 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
+// Resolved by the `mio:virtual-server-module` plugin in electron.vite.config.ts.
+// Interim: backed by server-stub.ts until the dsh runtime lands (MIGRATION.md,
+// Phase 2) — keep these declarations in sync with that stub.
 declare module "virtual:opencode-server" {
-  export namespace Server {
-    export const listen: typeof import("../../../agent/dist/types/src/node").Server.listen
-    export type Listener = import("../../../agent/dist/types/src/node").Server.Listener
-  }
-  export namespace Config {
-    export const get: typeof import("../../../agent/dist/types/src/node").Config.get
-    export type Info = import("../../../agent/dist/types/src/node").Config.Info
-  }
   export namespace Log {
-    export const init: typeof import("../../../agent/dist/types/src/node").Log.init
+    export function init(options: { level: string }): Promise<void>
   }
   export namespace Database {
-    export const getPath: typeof import("../../../agent/dist/types/src/node").Database.getPath
-    export const Client: typeof import("../../../agent/dist/types/src/node").Database.Client
+    export function getPath(): string
+    export function Client(): { $client: never }
   }
   export namespace JsonMigration {
-    export type Progress = import("../../../agent/dist/types/src/node").JsonMigration.Progress
-    export const run: typeof import("../../../agent/dist/types/src/node").JsonMigration.run
+    export type Progress = { current: number; total: number }
+    export function run(db: unknown, options: { progress: (event: Progress) => void }): Promise<void>
   }
-  export const bootstrap: typeof import("../../../agent/dist/types/src/node").bootstrap
+  export namespace Server {
+    export type Listener = { stop(close?: boolean): void | Promise<void> }
+    export function listen(options: { port: number; hostname: string; cors: string[] }): Promise<Listener>
+  }
+  export namespace Config {
+    export type Info = unknown
+    export function get(): Promise<never>
+  }
+  export function bootstrap(): never
 }
