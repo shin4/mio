@@ -111,14 +111,30 @@ Other archived MiMo behavior, same audit:
 
 ## Phase 2 — thin Electron shell hosting the dsh web UI
 
-- [ ] New thin shell: Electron main spawns the dsh runtime (web profile + `mio.patch.yml`) as a
-      child process and loads the local dsh host URL in a BrowserWindow (port pick + auth,
-      readiness poll)
+- [x] **New thin shell — `packages/shell` (`@mio/shell`), written from scratch (2026-08-19).**
+      Electron main spawns the dsh runtime as a child process using Electron's bundled Node
+      (`ELECTRON_RUN_AS_NODE`, so no system Node is required), reads the URL back from the
+      runtime's own startup line (`--port 0`, so nothing can collide with `dev:runtime`), and
+      loads it in a sandboxed window (`contextIsolation`, no `nodeIntegration`, no preload
+      bridge). Verified: window loads the dsh UI over HTTP 200, and the runtime child exits with
+      the app — no orphan. Shares no code with the archived desktop app.
+
+      Two environment facts this cost real debugging, both documented in `packages/shell/README.md`:
+      the runtime child **must** get `--expose-internals` (dsh otherwise needs the
+      `node-addon-require-builtin` addon, which is built for Node's ABI and fails under Electron —
+      silently breaking plugin resolution and loudly breaking HMR), and `@mio/llm-mimo` must live
+      in the same `node_modules` tree as `@deepseek-ai/dsh` (a profile-local install is invisible
+      on that fallback path), which is why it is a root dependency and what packaging must
+      preserve
 - [ ] Carry over the shell services worth keeping: auto-update, `mio://` deep links, native menus,
       window state, shell-env import, system CA / env-proxy propagation (from `main/sidecar.ts`);
       decide the desktop-pet window's fate
-- [ ] Retire `server-stub.ts` and the old utilityProcess sidecar path once the wrapper boots;
-      restore predev/prebuild around the new spawn path
+- [ ] Archive the old desktop app (`packages/desktop`) — superseded by `packages/shell`; its
+      `server-stub.ts` and utilityProcess sidecar path go with it
+- [ ] Packaging: electron-builder for the new shell, shipping dsh + `@mio/llm-mimo` + a
+      provisioned profile in one `node_modules` tree
+- [ ] Carry the still-missing shell services: auto-update, `mio://` deep links, native menus,
+      shell-env import, system CA / proxy propagation
 - [ ] Parity audit against the Solid UI's feature areas: terminal (dsh-terminal + client UI),
       permissions/questions (dsh-user-approval / dsh-interaction), plan mode (dsh-plan-mode +
       client-ui-plan), attachments, model selection — explicit keep/cut list for the rest

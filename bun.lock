@@ -5,6 +5,7 @@
     "": {
       "name": "opencode",
       "dependencies": {
+        "@mio/llm-mimo": "workspace:*",
         "@opencode-ai/sdk": "workspace:*",
         "typescript": "catalog:",
       },
@@ -236,6 +237,20 @@
         "@types/cross-spawn": "catalog:",
         "@types/node": "catalog:",
         "@typescript/native-preview": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
+    "packages/shell": {
+      "name": "@mio/shell",
+      "version": "0.0.1",
+      "dependencies": {
+        "@deepseek-ai/dsh": "0.1.0-rc.6",
+        "@mio/llm-mimo": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/node": "catalog:",
+        "@typescript/native-preview": "catalog:",
+        "electron": "41.2.1",
         "typescript": "catalog:",
       },
     },
@@ -1232,6 +1247,8 @@
     "@mio/llm-mimo": ["@mio/llm-mimo@workspace:packages/llm-mimo"],
 
     "@mio/runtime": ["@mio/runtime@workspace:packages/runtime"],
+
+    "@mio/shell": ["@mio/shell@workspace:packages/shell"],
 
     "@mistralai/mistralai": ["@mistralai/mistralai@2.2.6", "", { "dependencies": { "@opentelemetry/semantic-conventions": "^1.40.0", "ws": "^8.18.0", "zod": "^3.25.0 || ^4.0.0", "zod-to-json-schema": "^3.25.0" }, "peerDependencies": { "@opentelemetry/api": "^1.9.0" }, "optionalPeers": ["@opentelemetry/api"] }, "sha512-W8pX7zHxjJvMIpw8JMxeJEleapXX0Q9NPszdNzqkM3MIEoIGPObdodujj+WHteXEvGfaP/AMwlNyRfEzSY6dQQ=="],
 

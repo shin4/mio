@@ -37,6 +37,10 @@ jobs:
         working-directory: packages/llm-mimo
         run: bun typecheck
 
+      - name: Typecheck shell
+        working-directory: packages/shell
+        run: bun typecheck
+
       - name: Typecheck app
         working-directory: packages/app
         run: bun typecheck
