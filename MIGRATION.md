@@ -49,8 +49,15 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
       `cacheReadTokens` on the second turn. Full runtime through the dsh web UI: MiMo answered in
       the composer, drove `Read` → `Write` in a real workspace, and produced the correct file.
       No adapter changes were needed — the wire translation was right first time
-- [ ] MiMo-specific cassettes: capture the verified shapes (`reasoning_content` turns, cache-hit
-      usage) as recordings so the suite covers real MiMo traffic, not just OpenAI-chat cassettes
+- [x] **MiMo cassettes captured from the live API** (`packages/llm-mimo/script/record.ts` →
+      `test/fixtures/recordings/`): reasoning+text, tool call, tool-result continuation with cache
+      reads, max-tokens truncation, and a 401. The suite now replays real MiMo traffic and no
+      longer reads anything from `archive/` — one Phase 4 blocker removed. Cassettes carry no
+      credentials (the `api-key` header is never recorded).
+      Wire facts the recordings pinned down: MiMo sends explicit `null` for absent delta fields
+      *and* for `prompt_tokens_details`; only the first tool-call fragment carries `id`/`name`.
+      The adapter already handled all of it — the wire types were tightened to stop implying
+      otherwise
 - [x] Settings/credentials seams like `dsh-llm-deepseek`: connection facts resolve per request
       through `installSettingsSection` + `ctx.credentials`, so a changed key/billing/region lands
       on the next request without a restart

@@ -1,12 +1,16 @@
 /**
  * Direct-fetch MiMo adapter speaking the OpenAI-chat wire protocol over SSE.
  *
- * The serialization + chunk translation is a port of the MiMo-tuned pieces of
- * the archived Effect runtime (archive/packages/llm/src/protocols/openai-chat.ts
- * and archive/packages/agent/src/provider/transform.ts). Phase 1 (MIGRATION.md)
- * adds: multimodal user parts (audio data-URLs, video_url + fps), the 4-stage
- * tool-call repair pipeline as an `llm/stream` waterfall, the Anthropic-messages
- * route, and replay tests against the archived HTTP recordings.
+ * The serialization + chunk translation started as a port of the MiMo-tuned
+ * pieces of the archived Effect runtime (archive/packages/llm/src/protocols/
+ * openai-chat.ts and archive/packages/agent/src/provider/transform.ts) and is
+ * now verified against cassettes captured from the live API (`script/record.ts`,
+ * replayed by `test/adapter.test.ts`).
+ *
+ * MiMo wire facts this relies on, all present in those cassettes: absent delta
+ * fields arrive as explicit `null` (including `prompt_tokens_details`), only the
+ * first tool-call fragment carries `id` and `name`, and `prompt_tokens` includes
+ * cache hits that dsh wants counted separately.
  */
 import {
   attributionHeaders,
@@ -47,15 +51,26 @@ export interface MimoAdapterOptions {
   readonly resolveApiKey: (ref: string) => Promise<string>
 }
 
-type WireToolCall = { index?: number; id?: string; function?: { name?: string; arguments?: string } }
-type WireDelta = { content?: string | null; reasoning_content?: string | null; tool_calls?: WireToolCall[] }
+// MiMo sends explicit `null` for every absent field rather than omitting it —
+// including the usage detail objects. These types say so (verified by the
+// cassettes) so nothing downstream assumes a missing key means undefined.
+type WireToolCall = {
+  index?: number
+  id?: string | null
+  function?: { name?: string | null; arguments?: string | null } | null
+}
+type WireDelta = {
+  content?: string | null
+  reasoning_content?: string | null
+  tool_calls?: WireToolCall[] | null
+}
 type WireEvent = {
-  choices?: { delta?: WireDelta; finish_reason?: string | null }[]
+  choices?: { delta?: WireDelta | null; finish_reason?: string | null }[]
   usage?: {
     prompt_tokens?: number
     completion_tokens?: number
-    prompt_tokens_details?: { cached_tokens?: number }
-    completion_tokens_details?: { reasoning_tokens?: number }
+    prompt_tokens_details?: { cached_tokens?: number } | null
+    completion_tokens_details?: { reasoning_tokens?: number } | null
   } | null
 }
 
