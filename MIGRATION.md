@@ -61,9 +61,17 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 - [x] Settings/credentials seams like `dsh-llm-deepseek`: connection facts resolve per request
       through `installSettingsSection` + `ctx.credentials`, so a changed key/billing/region lands
       on the next request without a restart
-- [ ] Reasoning-effort exposure via `LlmModelReasoningInfo` (adapter-owned; dsh has no default)
-- [ ] Anthropic-messages protocol option (token-plan endpoints expose both) — only if a real need
-      appears; the OpenAI-chat route already reaches every endpoint
+- [x] **Reasoning-effort exposure via `LlmModelReasoningInfo`** — tiers established by probing the
+      live API, not from docs: MiMo accepts `none | low | medium | high` and answers everything
+      else (`off`, `minimal`, `xhigh`, `max`) with an opaque HTTP 400, so the adapter validates
+      client-side and names the allowed set. Both `mimo-v2.5` and `-pro` expose the same four.
+      No adapter default — omitting the field preserves MiMo's own. Verified live: `none` returns
+      no reasoning block at all, `high` returns one
+- [ ] Anthropic-messages protocol option (token-plan endpoints expose both) — deferred by the
+      dsh-native principle; the OpenAI-chat route already reaches every endpoint. Revisit only if
+      a capability turns out to be Anthropic-route-only
+
+**Phase 1 is complete for this version.** What remains above is deferred by design, not pending.
 
 ### Audited against dsh — NOT ported (2026-08-19)
 

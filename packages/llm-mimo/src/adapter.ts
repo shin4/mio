@@ -29,7 +29,7 @@ import {
   type TokenUsage,
   type ToolResultBlock,
 } from "@deepseek-ai/dsh-llm"
-import { listModels, providerInfo, resolveModel, DEFAULT_MAX_TOKENS } from "./catalog.ts"
+import { isReasoningEffort, listModels, providerInfo, resolveModel, DEFAULT_MAX_TOKENS, REASONING_EFFORTS } from "./catalog.ts"
 
 const PKG = "@mio/llm-mimo"
 
@@ -144,6 +144,7 @@ function serializeRequest(options: GenerateOptions): Record<string, unknown> {
     stream: true,
     stream_options: { include_usage: true },
     max_tokens: options.maxTokens ?? DEFAULT_MAX_TOKENS,
+    ...(options.reasoningEffort === undefined ? {} : { reasoning_effort: reasoningEffort(options.reasoningEffort) }),
     ...(options.temperature === undefined ? {} : { temperature: options.temperature }),
     ...(options.stop?.length ? { stop: options.stop } : {}),
     ...(options.tools?.length
@@ -155,6 +156,19 @@ function serializeRequest(options: GenerateOptions): Record<string, unknown> {
         }
       : {}),
   }
+}
+
+/**
+ * Validate the caller's effort against the tiers MiMo accepts. Refusing here
+ * names the offending value and the allowed set; MiMo's own rejection is an
+ * opaque 400 "Invalid request parameters" with an empty `param`.
+ */
+function reasoningEffort(effort: string): string {
+  if (isReasoningEffort(effort)) return effort
+  throw new LlmError(
+    `${PKG}: unsupported reasoning effort "${effort}" (MiMo accepts ${REASONING_EFFORTS.join(", ")})`,
+    "INVALID_REQUEST",
+  )
 }
 
 function serializeMessages(options: GenerateOptions): OpenAIMessage[] {

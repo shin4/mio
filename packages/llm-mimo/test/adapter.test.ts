@@ -280,3 +280,41 @@ test("drops an assistant turn that carries neither text nor tool calls", async (
     ["user"],
   )
 })
+
+test("advertises exactly the reasoning tiers MiMo accepts, with no adapter default", async () => {
+  const resolved = await adapterFor("http://127.0.0.1:1").resolveModel("mimo", "mimo-v2.5")
+  deepStrictEqual(resolved.reasoning?.efforts.map((effort) => effort.id), ["none", "low", "medium", "high"])
+  // Absent on purpose: omitting the field preserves MiMo's own default.
+  strictEqual(resolved.reasoning?.defaultEffort, undefined)
+
+  const pro = await adapterFor("http://127.0.0.1:1").resolveModel("mimo", "mimo-v2.5-pro")
+  deepStrictEqual(pro.reasoning?.efforts.map((effort) => effort.id), ["none", "low", "medium", "high"])
+})
+
+test("sends a selected reasoning effort on the wire, and omits it when unset", async () => {
+  const withEffort = await replay("reasoning-and-text")
+  await collect(adapterFor(withEffort.baseURL).stream(request({ reasoningEffort: "low" as never })))
+  strictEqual((JSON.parse(withEffort.captured.body!) as { reasoning_effort?: string }).reasoning_effort, "low")
+
+  const without = await replay("reasoning-and-text")
+  await collect(adapterFor(without.baseURL).stream(request()))
+  ok(
+    !("reasoning_effort" in (JSON.parse(without.captured.body!) as object)),
+    "an unset effort must leave the field off the request entirely",
+  )
+})
+
+test("refuses an effort MiMo would reject, naming the allowed set", async () => {
+  const { baseURL } = await replay("reasoning-and-text")
+  const error = await adapterFor(baseURL)
+    .stream(request({ reasoningEffort: "xhigh" as never }))
+    [Symbol.asyncIterator]()
+    .next()
+    .then(() => undefined)
+    .catch((cause: unknown) => cause)
+
+  ok(error instanceof Error)
+  strictEqual((error as { code?: string }).code, "INVALID_REQUEST")
+  // MiMo answers an unsupported tier with an opaque 400; fail before the call.
+  ok(error.message.includes("xhigh") && error.message.includes("none, low, medium, high"))
+})
