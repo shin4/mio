@@ -23,17 +23,20 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `archive/packages/{agent,llm,plugin,http-recorder}` | Frozen reference, out of workspace, excluded from lint/CI |
 | `packages/{app,ui,core,sdk}` | Kept green (typecheck + lint) as **read-only reference** for MiMo UX/i18n ports; retires in Phase 4 per the UI decision |
 | `packages/desktop` | Builds and launches; sidecar resolves to `src/main/server-stub.ts`, which throws with a pointer here — replaced by the thin shell in Phase 2 |
-| `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile (validated with `--dump-config`); `bun run dev:runtime` |
-| `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin registering a `MimoAdapter` on `ctx.llm` for the `mimo` route: ported endpoint/billing/region tables, `api-key` auth, OpenAI-chat SSE → StreamChunk translation, catalog (mimo-v2.5 / -pro), typechecks clean |
+| `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` provisions the repo-local `.dsh/` profile and installs the plugin as a packed tarball; `bun run dev:runtime` boots green |
+| `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 9 replay tests green |
 | dsh pin | `0.1.0-rc.6` (rc.7 blocked by bunfig `minimumReleaseAge`; bump when aged) |
 
 ## Phase 1 — MiMo adapter to parity (port from `archive/`)
 
-- [ ] Load `@mio/llm-mimo` into a dsh profile: plugin build step (Node won't type-strip inside
-      node_modules) + `dsh plugin add`, or a loader path that resolves the workspace source
-- [ ] First real MiMo round-trip through `dsh web` (text + tool calls)
-- [ ] Replay tests: port MiMo cassettes from `archive/packages/http-recorder` /
-      `archive/packages/llm/test` onto dsh's snapshot-replay harness
+- [x] Load `@mio/llm-mimo` into a dsh profile — build to `lib/` + packed-tarball install
+      (`bun run dev:runtime`); verified enabled in the running runtime's plugin inventory,
+      with `llm-deepseek` / `llm-pi-ai` disabled by the patch layer
+- [x] Replay tests against real recorded OpenAI-chat SSE from
+      `archive/packages/llm/test/fixtures/recordings` (text, tool calls, usage/cache split,
+      reasoning, finish mapping, empty-assistant filtering, HTTP error facts)
+- [ ] First real MiMo round-trip through `dsh web` (needs `MIO_API_KEY`; text + tool calls)
+- [ ] MiMo-specific cassettes: `reasoning_content` turns, multimodal parts, truncation repair
 - [ ] Multimodal user parts: audio as data: URL, `video_url` + `fps` / `media_resolution`
       (`archive/packages/llm/src/protocols/openai-chat.ts`); needs dsh `ModelModalityMap` extension
       for audio/video and attachment-service wiring for images
@@ -43,8 +46,9 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 - [ ] Prefix-cache discipline: stable system prompt + drift hashing + cache-hit observability
       (`archive/packages/agent/src/session/context.ts`, `processor.ts`) — needs a dsh seam for
       prompt-assembly stability; upstream discussion likely
-- [ ] Settings/credentials seams like `dsh-llm-deepseek` (live key/billing switch without restart);
-      token-plan region + billing surfaced in settings
+- [x] Settings/credentials seams like `dsh-llm-deepseek`: connection facts resolve per request
+      through `installSettingsSection` + `ctx.credentials`, so a changed key/billing/region lands
+      on the next request without a restart
 - [ ] MiMo quota/upsell error mapping (`archive/packages/agent/src/session/retry.ts`) via
       provider retry policy + error codes
 - [ ] Anthropic-messages protocol option (token-plan endpoints expose both)
@@ -68,6 +72,11 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 
 ## Phase 3 — MiMo product surfaces and data
 
+- [ ] **MiMo provider card as a dsh client UI plugin** — verified gap: the Models page picks a
+      hand-written editor per provider family (`layoutOf()` in `dsh-client-ui-settings-models`
+      knows only `llm-deepseek` / `llm-pi-ai`), so third-party routes get a read-only card with
+      no API-key input. Until then the key comes from `MIO_API_KEY` / the credentials store.
+      Consider an upstream PR making that layout registry extensible
 - [ ] MiMo UI as dsh client plugins (React): connection form (billing track / region / key),
       catalog presentation, quota/upsell dialogs, context/cache-usage meter (over
       `ctx.tokenMeter`) — port UX from the archived Solid components (`mimo-connect-form.tsx`,

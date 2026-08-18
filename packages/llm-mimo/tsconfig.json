@@ -10,7 +10,10 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    // Node type-stripping runs these files as-is: erasable syntax only
+    // (no enums, namespaces, or parameter properties).
+    "erasableSyntaxOnly": true
   },
-  "include": ["src"]
+  "include": ["src", "test"]
 }

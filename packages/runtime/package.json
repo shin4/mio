@@ -8,7 +8,8 @@
     "node": "^22.19.0 || >=24.0.0"
   },
   "scripts": {
-    "dev": "dsh web --patch ./mio.patch.yml"
+    "setup": "bun ./scripts/setup-profile.ts",
+    "dev": "bun ./scripts/setup-profile.ts && DSH_HOME=${DSH_HOME:-$PWD/.dsh} dsh web --patch ./mio.patch.yml"
   },
   "dependencies": {
     "@deepseek-ai/dsh": "0.1.0-rc.6",

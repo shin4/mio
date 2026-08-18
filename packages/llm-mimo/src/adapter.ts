@@ -33,9 +33,18 @@ const PKG = "@mio/llm-mimo"
 // TODO(phase-1): source the version from package metadata at build time.
 const MIO_IDENTITY = { product: "mio", version: "0.0.1", url: "https://github.com/shin4/mio" }
 
-export interface MimoAdapterOptions {
+/** One resolution's complete connection facts, re-read per request. */
+export interface MimoConnection {
   readonly baseURL: string
-  readonly apiKeyEnv: string
+  /** Credential reference (environment-variable name) resolved per request. */
+  readonly apiKeyRef: string
+}
+
+export interface MimoAdapterOptions {
+  /** Current connection facts; re-read per request so settings edits land immediately. */
+  readonly connection: () => MimoConnection
+  /** Resolve the credential named by {@link MimoConnection.apiKeyRef}. */
+  readonly resolveApiKey: (ref: string) => Promise<string>
 }
 
 type WireToolCall = { index?: number; id?: string; function?: { name?: string; arguments?: string } }
@@ -68,8 +77,12 @@ const HTTP_ERROR_CODES: Record<number, string> = {
 }
 
 export class MimoAdapter extends LlmAdapter {
-  constructor(private readonly options: MimoAdapterOptions) {
+  // Erasable syntax only (Node type-stripping): no parameter properties.
+  readonly options: MimoAdapterOptions
+
+  constructor(options: MimoAdapterOptions) {
     super()
+    this.options = options
   }
 
   override providerInfo(): LlmProviderInfo {
@@ -85,16 +98,18 @@ export class MimoAdapter extends LlmAdapter {
   }
 
   async *stream(options: GenerateOptions): AsyncIterable<StreamChunk> {
-    const raw = process.env[this.options.apiKeyEnv]
-    if (!raw)
-      throw new LlmError(`${PKG}: no MiMo API key found in $${this.options.apiKeyEnv}`, "MISSING_CREDENTIAL")
+    // Connection and credential resolve together: a rejected snapshot keeps the
+    // whole previous generation, so a request can never pair a stale endpoint
+    // with a newer key.
+    const connection = this.options.connection()
+    const apiKey = await this.options.resolveApiKey(connection.apiKeyRef)
 
-    const response = await fetch(`${this.options.baseURL}/chat/completions`, {
+    const response = await fetch(`${connection.baseURL}/chat/completions`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
         // MiMo auth: lowercase `api-key` header, not Authorization: Bearer.
-        "api-key": raw.trim(),
+        "api-key": apiKey,
         ...attributionHeaders(MIO_IDENTITY),
       },
       body: JSON.stringify(serializeRequest(options)),
@@ -290,13 +305,21 @@ async function* translateSse(body: ReadableStream<Uint8Array>): AsyncIterable<St
   yield* closures
 
   if (usage) yield { type: "usage", usage }
-  // MiMo tolerance (ported): a stream that ends without finish_reason counts
-  // as a clean stop rather than a protocol failure.
-  yield { type: "finish", reason: mapFinishReason(finishReason ?? "stop") }
+  // MiMo tolerance (ported): a stream that ends without any finish_reason counts
+  // as a clean stop rather than a protocol failure. An unrecognized reason is
+  // NOT swallowed — it surfaces as an error finish, as dsh's own adapters do.
+  yield { type: "finish", reason: finishReason === undefined ? { kind: "stop" } : mapFinishReason(finishReason) }
 }
 
+/**
+ * Map the wire finish_reason vocabulary to the harness FinishReason. The
+ * mapping is verbatim: the agent loop dispatches tools from the assembled
+ * tool-call blocks, not from this reason, so a provider that labels a
+ * tool-call turn `stop` still drives the loop correctly.
+ */
 function mapFinishReason(reason: string): FinishReason {
+  if (reason === "stop") return { kind: "stop" }
   if (reason === "tool_calls") return { kind: "tool-calls" }
   if (reason === "length") return { kind: "max-tokens" }
-  return { kind: "stop" }
+  return { kind: "error", failure: { message: `model stopped: ${reason}`, code: reason.toUpperCase() } }
 }

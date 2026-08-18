@@ -33,6 +33,10 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
+      - name: Typecheck llm-mimo
+        working-directory: packages/llm-mimo
+        run: bun typecheck
+
       - name: Typecheck app
         working-directory: packages/app
         run: bun typecheck
@@ -76,6 +80,16 @@ jobs:
 
       - name: Run unit tests
         run: bun turbo test:ci
+
+      # The runtime tier targets Node, not Bun: its tests run under `node --test`
+      # with type stripping (see packages/llm-mimo/package.json).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Run llm-mimo replay tests
+        working-directory: packages/llm-mimo
+        run: bun run test:ci
 
       - name: Upload test results
         if: ${{ !cancelled() }}
