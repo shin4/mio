@@ -22,6 +22,11 @@ Contents:
 | `packages/http-recorder` | HTTP record/replay used by the archived tests — its MiMo cassettes seed the Phase 1 replay tests |
 | `script/gen-config-schema.ts` | Schema generator driven by the archived agent |
 | `packages/desktop` | The OpenCode-derived Electron app (`@opencode-ai/desktop`), superseded by `packages/shell`. Its renderer embedded the Solid UI tier and its main process spawned the archived agent as a utilityProcess sidecar |
+| `packages/app` | The SolidJS renderer (`@opencode-ai/app`) — MiMo UX and 19 locale files; the reference for Phase 3's dsh client plugins |
+| `packages/ui` | Shared Solid components, theme, i18n (`@opencode-ai/ui`) |
+| `packages/core` | Utilities the Solid tier imported (`@opencode-ai/core`), including the `mimo-catalog.ts` twin now owned by `@mio/llm-mimo` |
+| `packages/sdk` | The generated HTTP/SSE client (`@opencode-ai/sdk`) the Solid renderer spoke, and the `createOpencode*` compatibility symbols |
+| `patches/` | `solid-js` and `virtua` patches, used only by the Solid tier |
 | `workflows/` | `build-check.yml` and `release.yml` (electron-builder packaging + electron-updater feeds for the old app) and `releasing.md`. Packaging CI returns when `packages/shell` gets its own build — these are kept as the reference for what a release job has to do |
 
 Highest-value porting references (MIGRATION.md, Phase 1):

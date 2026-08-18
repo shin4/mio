@@ -6,19 +6,24 @@ boundaries.
 
 ## Before Changing Code
 
+- Read `MIGRATION.md` first — it is the plan of record for the move onto
+  DeepSeek Harness (dsh), and records which archived behavior was deliberately
+  not ported, and why.
 - Read `AGENTS.md` for the local style guide and repository-specific commands.
-- Use MiMo project paths and environment variables for new code: `.mimo/`,
-  `mimo.json`, `mimo.jsonc`, and `MIO_*`.
+- **dsh-native is the mainline.** Ship dsh's own behavior wherever dsh has an
+  answer; add MiMo-specific code only where dsh structurally cannot serve MiMo.
+  Check dsh's shipped plugins before building anything, and prefer configuring
+  one over writing one.
+- New runtime capabilities are new Cordis plugins added to
+  `packages/runtime/mio.patch.yml` — never forks of dsh internals.
+- Use MiMo project paths and environment variables for new code: `.mio/`,
+  `mio.json`, `mio.jsonc`, and `MIO_*`. `.mimo/` and `mimo.json` are read-only
+  legacy.
 - Do not add default reads or writes for upstream OpenCode project state such
   as `.opencode/`, `opencode.json`, `opencode.jsonc`, or `OPENCODE_*`.
-- Keep package scope and SDK compatibility symbols such as `@opencode-ai/*`
-  and `createOpencode*` unless a dedicated API migration says otherwise.
 - Do not introduce new providers or release infrastructure without a design
   discussion. The current product direction is MiMo-first.
-- The v2 session/provider path under `packages/agent/src/v2/` is an in-progress
-  migration. `src/v2/provider-parity-checklist.md` tracks legacy behavior still
-  to be ported from `src/provider/provider.ts` — consult it before touching
-  provider setup, model filtering, or auth.
+- `archive/` is frozen reference: port logic out of it, never edit it.
 
 ## Development
 
@@ -48,18 +53,19 @@ directories:
 ```bash
 cd packages/llm-mimo && bun typecheck && bun run test
 cd packages/shell && bun typecheck
-cd packages/app && bun typecheck
-cd packages/core && bun typecheck
 ```
 
 Use `bun typecheck`, not `tsc` directly.
 
-## SDK Generation
+## Runtime Composition
 
-If API or SDK output changes, regenerate the JavaScript SDK with:
+Mio composes dsh rather than forking it. Inspect what a change does to the plugin
+tree before booting:
 
 ```bash
-./packages/sdk/js/script/build.ts
+cd packages/runtime
+bunx dsh --profile web --dump-default-config          # dsh's own tree
+bunx dsh web --patch ./mio.patch.yml --dump-config    # with Mio's layer applied
 ```
 
 Review generated files before committing.
@@ -68,7 +74,7 @@ Review generated files before committing.
 
 - Use conventional commit-style titles: `type(scope): summary`.
 - Valid types are `feat`, `fix`, `docs`, `chore`, `refactor`, and `test`.
-- Scopes are optional; use package names such as `runtime`, `llm-mimo`, `shell`, `app`,
+- Scopes are optional; use package names such as `runtime`, `llm-mimo`, `shell`,
   `core`, `llm`, `sdk`, or `plugin` when helpful.
 - Include the verification commands you ran and any commands you could not run.
 - Keep UI changes accompanied by screenshots or a short recording when the

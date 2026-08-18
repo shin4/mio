@@ -28,7 +28,7 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | Area | State |
 |---|---|
 | `archive/packages/{agent,llm,plugin,http-recorder}` | Frozen reference, out of workspace, excluded from lint/CI |
-| `packages/{app,ui,core,sdk}` | Kept green (typecheck + lint) as **read-only reference** for MiMo UX/i18n ports; retires in Phase 4 per the UI decision |
+| `archive/packages/{app,ui,core,sdk}` | The Solid UI tier, archived 2026-08-19 once the shell replaced its only consumer. Still the reference for MiMo UX and the 19 locale files when Phase 3 builds dsh client plugins |
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
 | `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` provisions the repo-local `.dsh/` profile and installs the plugin as a packed tarball; `bun run dev:runtime` boots green |
 | `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 9 replay tests green |
@@ -169,8 +169,12 @@ Other archived MiMo behavior, same audit:
 
 ## Phase 4 — cleanup
 
-- [ ] Archive the Solid UI tier (`packages/{app,ui,sdk,core}` and the superseded desktop
-      main/renderer code) once the Phase 2 shell reaches daily-driver parity; the
-      `@opencode-ai/*` package names and `createOpencode*` symbols retire with it
+- [x] **Archived the Solid UI tier (2026-08-19)** — `packages/{app,ui,core,sdk}` moved to
+      `archive/packages/`, together with the `solid-js` / `virtua` patches and the opentui
+      upgrade script. The `@opencode-ai/*` package names and `createOpencode*` symbols retired
+      with them, so no API migration was needed. Root config pruned to match: the workspace
+      catalog dropped from 50 entries to 4, `patchedDependencies` and `overrides` are gone, and
+      CI is three jobs over three packages. Active workspace is now `runtime`, `llm-mimo`,
+      `shell` only
 - [ ] Remove `archive/` once ports + replay tests land; the git branch/tag remain the record
 - [ ] CI: runtime boot smoke test, adapter replay suite, drop stale allowlists (gitleaks paths)

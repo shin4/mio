@@ -11,6 +11,7 @@ paths = [
   '''(^|/)dist/''',
   '''^packages/shell/lib/''',
   '''^packages/desktop/out/''',
+  '''(^|/)out/''',
 ]
 
 [[allowlists]]
@@ -33,5 +34,5 @@ description = "Keyboard shortcut labels that look like generic API keys"
 condition = "AND"
 targetRules = ["generic-api-key"]
 regexTarget = "line"
-paths = ['''^packages/app/src/pages/layout\.tsx$''']
+paths = ['''^archive/packages/app/src/pages/layout\.tsx$''', '''^packages/app/src/pages/layout\.tsx$''']
 regexes = ['''keybind:\s*"shift\+alt\+arrow(up|down)"''']

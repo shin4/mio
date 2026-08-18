@@ -1,7 +1,7 @@
 /**
- * The MiMo model catalog, mirroring packages/core/src/mimo-catalog.ts (the v2
- * ModelV2 catalog that drives the app UI). Keep the two in sync until the UI
- * reads models through the dsh runtime instead (MIGRATION.md, Phase 2).
+ * The MiMo model catalog — the single source of truth now that the Solid UI
+ * tier (and its `packages/core/src/mimo-catalog.ts` twin) is archived. dsh's
+ * model surfaces read this through the adapter's `listModels` / `resolveModel`.
  */
 import {
   ReasoningEffortId,
