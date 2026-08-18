@@ -2,10 +2,16 @@
 
 **Decision (2026-08-18):** replace Mio's OpenCode-derived agent core with a runtime composed on
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`@deepseek-ai/dsh`, Cordis
-plugin architecture), keeping the Solid/Electron UI tier and re-porting the MiMo-specific stack
-as dsh plugins. The OpenCode core is frozen under `archive/` (also branch
-`archive/opencode-baseline`, tag `opencode-final`). Upstream sync had already been impossible —
-history was squashed at the fork point with no upstream remote — so nothing is lost by retiring it.
+plugin architecture), re-porting the MiMo-specific stack as dsh plugins. The OpenCode core is
+frozen under `archive/` (also branch `archive/opencode-baseline`, tag `opencode-final`). Upstream
+sync had already been impossible — history was squashed at the fork point with no upstream
+remote — so nothing is lost by retiring it.
+
+**UI decision (2026-08-18, same day):** the product UI is **dsh's native web client**
+(`dsh-web-frontend`, prebuilt static dist served by the dsh host; ships `zh`/`en` locales), hosted
+by a thin Electron shell. No BFF and no renderer port: the Solid UI tier stays in the workspace as
+read-only reference until the Phase 2 shell reaches parity, then retires into `archive/` (Phase 4).
+MiMo product UX is rebuilt as dsh client UI plugins (React).
 
 **Risk accepted:** dsh is a days-old developer preview (`0.1.0-rc.x`, pinned exact) that warns of
 compatibility-breaking changes. Expect churn; keep the pin exact and bump deliberately.
@@ -15,8 +21,8 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | Area | State |
 |---|---|
 | `archive/packages/{agent,llm,plugin,http-recorder}` | Frozen reference, out of workspace, excluded from lint/CI |
-| `packages/{app,ui,core,sdk}` | Kept and green (typecheck + lint). `sdk` doubles as the API contract any BFF must serve; `core` still feeds UI imports |
-| `packages/desktop` | Builds and launches; sidecar resolves to `src/main/server-stub.ts`, which throws with a pointer here — the app UI shows a server error until Phase 2 |
+| `packages/{app,ui,core,sdk}` | Kept green (typecheck + lint) as **read-only reference** for MiMo UX/i18n ports; retires in Phase 4 per the UI decision |
+| `packages/desktop` | Builds and launches; sidecar resolves to `src/main/server-stub.ts`, which throws with a pointer here — replaced by the thin shell in Phase 2 |
 | `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile (validated with `--dump-config`); `bun run dev:runtime` |
 | `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin registering a `MimoAdapter` on `ctx.llm` for the `mimo` route: ported endpoint/billing/region tables, `api-key` auth, OpenAI-chat SSE → StreamChunk translation, catalog (mimo-v2.5 / -pro), typechecks clean |
 | dsh pin | `0.1.0-rc.6` (rc.7 blocked by bunfig `minimumReleaseAge`; bump when aged) |
@@ -44,22 +50,30 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 - [ ] Anthropic-messages protocol option (token-plan endpoints expose both)
 - [ ] Reasoning-effort exposure via `LlmModelReasoningInfo`
 
-## Phase 2 — desktop shell onto the dsh runtime
+## Phase 2 — thin Electron shell hosting the dsh web UI
 
-- [ ] Decide the renderer seam: BFF translating the existing `@opencode-ai/sdk` HTTP/SSE contract
-      to dsh (keeps the 100k-line UI intact) vs. adopting dsh's web client/wire protocol. Audit the
-      app's actually-used endpoint subset first (likely far fewer than the 109 declared)
-- [ ] Electron main spawns the dsh runtime (stdio JSON-RPC SDK or `dsh-host-webserver`) instead of
-      the archived utilityProcess sidecar; retire `server-stub.ts`, restore predev/prebuild
-- [ ] Permissions/questions mapped to `dsh-interaction`/`dsh-user-approval`; terminal to
-      `dsh-terminal`; plan mode to `dsh-plan-mode`
-- [ ] Feature-gap list with explicit keep/cut calls (session revert, worktrees, share, PTY tickets,
-      LSP depth, desktop pet server hooks, …)
+- [ ] New thin shell: Electron main spawns the dsh runtime (web profile + `mio.patch.yml`) as a
+      child process and loads the local dsh host URL in a BrowserWindow (port pick + auth,
+      readiness poll)
+- [ ] Carry over the shell services worth keeping: auto-update, `mio://` deep links, native menus,
+      window state, shell-env import, system CA / env-proxy propagation (from `main/sidecar.ts`);
+      decide the desktop-pet window's fate
+- [ ] Retire `server-stub.ts` and the old utilityProcess sidecar path once the wrapper boots;
+      restore predev/prebuild around the new spawn path
+- [ ] Parity audit against the Solid UI's feature areas: terminal (dsh-terminal + client UI),
+      permissions/questions (dsh-user-approval / dsh-interaction), plan mode (dsh-plan-mode +
+      client-ui-plan), attachments, model selection — explicit keep/cut list for the rest
+      (session revert, worktrees, share, PTY tickets, …)
+- [ ] Verify zh locale coverage in real use (dsh ships `LOCALE_IDS = ["zh", "en"]`)
 
-## Phase 3 — platform features and data
+## Phase 3 — MiMo product surfaces and data
 
+- [ ] MiMo UI as dsh client plugins (React): connection form (billing track / region / key),
+      catalog presentation, quota/upsell dialogs, context/cache-usage meter (over
+      `ctx.tokenMeter`) — port UX from the archived Solid components (`mimo-connect-form.tsx`,
+      `settings-mimo.tsx`, `cache-meter.tsx`, `status-popover-context*`)
 - [ ] TTS (9 voices + voicedesign/voiceclone) and dictation (`mimo-v2.5-asr`) rebuilt as dsh
-      plugins (`archive/packages/agent/.../groups/tts.ts`, `dictation.ts`)
+      runtime + client-UI plugins (`archive/packages/agent/.../groups/tts.ts`, `dictation.ts`)
 - [ ] Session data: migrate Drizzle/SQLite sessions into dsh's session log, or ship a read-only
       history viewer over the old DB
 - [ ] Config bridge: `mio.json(c)` / `.mio/` → cordis.yml patch layers; `MIO_*` env respected
@@ -68,7 +82,8 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 
 ## Phase 4 — cleanup
 
-- [ ] Retire `@opencode-ai/sdk` + `createOpencode*` symbols (dedicated API migration), then drop
-      `packages/sdk`; fold `packages/core` UI helpers into `packages/ui` or the BFF
+- [ ] Archive the Solid UI tier (`packages/{app,ui,sdk,core}` and the superseded desktop
+      main/renderer code) once the Phase 2 shell reaches daily-driver parity; the
+      `@opencode-ai/*` package names and `createOpencode*` symbols retire with it
 - [ ] Remove `archive/` once ports + replay tests land; the git branch/tag remain the record
 - [ ] CI: runtime boot smoke test, adapter replay suite, drop stale allowlists (gitleaks paths)
