@@ -6,8 +6,10 @@ endorsed by Xiaomi Inc. The names "MiMo" and "MiSans" are referenced solely to
 identify the MiMo model platform that Mio connects to and the third-party
 font it embeds.
 
-Portions of this repository are derived from opencode. The upstream MIT license
-notice is preserved in `LICENSE`.
+Mio's agent runtime is composed on DeepSeek Harness (dsh), MIT-licensed by
+DeepSeek. Portions of this repository — the frozen core under `archive/` — are
+derived from opencode; the upstream MIT license notice is preserved in
+`LICENSE`.
 
 Third-party asset notices, including the embedded MiSans UI font, are listed in
 `THIRD_PARTY_NOTICES.md`.

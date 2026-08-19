@@ -9,9 +9,9 @@ remote — so nothing is lost by retiring it.
 
 **UI decision (2026-08-18, same day):** the product UI is **dsh's native web client**
 (`dsh-web-frontend`, prebuilt static dist served by the dsh host; ships `zh`/`en` locales), hosted
-by a thin Electron shell. No BFF and no renderer port: the Solid UI tier stays in the workspace as
-read-only reference until the Phase 2 shell reaches parity, then retires into `archive/` (Phase 4).
-MiMo product UX is rebuilt as dsh client UI plugins (React).
+by a thin Electron shell. No BFF and no renderer port. The Solid UI tier was archived on
+2026-08-19 once the shell replaced its only consumer; MiMo product UX is rebuilt as dsh client
+UI plugins (React).
 
 **Scope principle (2026-08-19): dsh-native is the mainline.** This version ships dsh's own
 behavior wherever dsh has an answer. MiMo-specific code is added only where dsh structurally
@@ -23,7 +23,7 @@ dsh's current design, not against the old core.
 **Risk accepted:** dsh is a days-old developer preview (`0.1.0-rc.x`, pinned exact) that warns of
 compatibility-breaking changes. Expect churn; keep the pin exact and bump deliberately.
 
-## State after Phase 0 (this change)
+## Current state
 
 | Area | State |
 |---|---|
@@ -31,7 +31,7 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `archive/packages/{app,ui,core,sdk}` | The Solid UI tier, archived 2026-08-19 once the shell replaced its only consumer. Still the reference for MiMo UX and the 19 locale files when Phase 3 builds dsh client plugins |
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
 | `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` provisions the repo-local `.dsh/` profile and installs the plugin as a packed tarball; `bun run dev:runtime` boots green |
-| `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 9 replay tests green |
+| `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 14 replay tests green over live-captured cassettes |
 | dsh pin | `0.1.0-rc.6` (rc.7 blocked by bunfig `minimumReleaseAge`; bump when aged) |
 | End-to-end | Verified 2026-08-19 against a live MiMo token-plan account: real answers, real tool use, real file writes through the dsh web UI |
 
@@ -40,9 +40,6 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 - [x] Load `@mio/llm-mimo` into a dsh profile — build to `lib/` + packed-tarball install
       (`bun run dev:runtime`); verified enabled in the running runtime's plugin inventory,
       with `llm-deepseek` / `llm-pi-ai` disabled by the patch layer
-- [x] Replay tests against real recorded OpenAI-chat SSE from
-      `archive/packages/llm/test/fixtures/recordings` (text, tool calls, usage/cache split,
-      reasoning, finish mapping, empty-assistant filtering, HTTP error facts)
 - [x] **First real MiMo round-trip — verified end to end (2026-08-19)** against a live
       token-plan / cn account. Adapter probe: reasoning + text blocks, tool call
       (`get_weather` → `{"city": "Paris"}`, finish `tool-calls`), tool-result continuation, and

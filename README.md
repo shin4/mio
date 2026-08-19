@@ -23,9 +23,16 @@ English | [简体中文](./README.zh-CN.md)
 
 Mio is a free, open-source **native desktop coding agent for the MiMo model family**, available
 for Windows and macOS. Instead of treating MiMo as a generic OpenAI-compatible provider, it makes MiMo
-a first-class participant in the agent runtime — built on the OpenCode harness and adapted to be
+a first-class participant in the agent runtime — composed on
+[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (dsh) and adapted to be
 MiMo-first. It brings coding, reasoning, multimodal understanding (image, PDF, and video), voice
 dictation (ASR), and speech generation (TTS) together in a single desktop app.
+
+> **Status — the agent core is being rebuilt.** Mio's runtime has moved off its
+> OpenCode-derived core onto dsh (`MIGRATION.md` is the plan of record; the old core is frozen
+> under `archive/`). The published releases below were built from the previous architecture. On
+> `main` today, MiMo chat, tool use, and the desktop shell work end to end; installer packaging
+> and the multimodal / voice features are being rebuilt as dsh plugins.
 
 ## 🔊 Hear it
 
@@ -79,8 +86,9 @@ bun install
 bun run dev:desktop
 ```
 
-Installer builds: `bun run package:mac` and `bun run package:win` (Linux is also buildable with
-`bun run package:linux`). See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full setup.
+`bun run dev:runtime` boots the runtime alone and serves the dsh web UI in a browser.
+Installer packaging for the new shell is not wired yet (MIGRATION.md, Phase 2). See
+[CONTRIBUTING.md](./CONTRIBUTING.md) for the full setup.
 
 ## Connect to MiMo
 
@@ -127,7 +135,8 @@ then add a MiMo API key from [platform.xiaomimimo.com](https://platform.xiaomimi
 
 ## License
 
-[MIT](./LICENSE). Mio is derived from [opencode](https://github.com/anomalyco/opencode); see
+[MIT](./LICENSE). Mio composes [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
+(MIT) and its archived core is derived from [opencode](https://github.com/anomalyco/opencode); see
 [NOTICE.md](./NOTICE.md) for attribution and third-party notices.
 
 > **Disclaimer:** Mio is an independent, community-maintained project. It is not an official
