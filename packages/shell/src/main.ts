@@ -32,30 +32,28 @@ function dshHome(): string {
 const PROFILE = "web"
 
 /**
- * Where app-owned files live.
+ * Where app-owned files live, and where the two layouts differ.
  *
  * A packaged build reads them from `app.asar.unpacked`: the runtime is a real
  * child process and the plugin copy uses plain `fs`, so neither can see inside
- * an asar archive. `electron-builder.config.ts` unpacks exactly this subtree.
+ * an asar archive. `electron-builder.config.ts` unpacks exactly that subtree,
+ * where the plugin sits under its package name. In development the same plugin
+ * is the workspace directory, whose path has no scope in it.
  */
 function resources() {
   if (!app.isPackaged) {
+    const workspace = path.join(PACKAGE_ROOT, "..")
     return {
-      modules: path.join(PACKAGE_ROOT, ".."),
-      patch: path.join(PACKAGE_ROOT, "..", "runtime", "mio.patch.yml"),
+      plugins: [{ name: "@mio/llm-mimo", source: path.join(workspace, "llm-mimo") }],
+      patch: path.join(workspace, "runtime", "mio.patch.yml"),
     }
   }
+  const modules = path.join(process.resourcesPath, "app.asar.unpacked", "node_modules")
   return {
-    // Code, unpacked so the child process and the plugin copy can read it.
-    modules: path.join(process.resourcesPath, "app.asar.unpacked", "node_modules"),
+    plugins: [{ name: "@mio/llm-mimo", source: path.join(modules, "@mio", "llm-mimo") }],
     // Data, shipped as an extra resource rather than as part of the app bundle.
     patch: path.join(process.resourcesPath, "mio.patch.yml"),
   }
-}
-
-/** Plugins shipped with the app and copied into the profile at startup. */
-function bundledPlugins(modules: string) {
-  return [{ name: "@mio/llm-mimo", source: path.join(modules, "@mio", "llm-mimo") }]
 }
 
 // One shell per profile: a second instance would start a second runtime against
@@ -66,8 +64,8 @@ let runtime: RuntimeHandle | undefined
 
 async function start() {
   const home = dshHome()
-  const { modules, patch } = resources()
-  const installed = await installBundledPlugins(home, PROFILE, bundledPlugins(modules))
+  const { plugins, patch } = resources()
+  const installed = await installBundledPlugins(home, PROFILE, plugins)
   if (installed.length > 0) console.log(`[shell] installed into the ${PROFILE} profile: ${installed.join(", ")}`)
 
   runtime = await startRuntime({

@@ -32,7 +32,7 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
 | `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` builds the plugin and copies it into the repo-local `.dsh/` profile; `bun run dev:runtime` boots green |
 | `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 14 replay tests green over live-captured cassettes |
-| dsh pin | `0.1.0-rc.6` (rc.7 blocked by bunfig `minimumReleaseAge`; bump when aged) |
+| dsh pin | `0.1.0-rc.7`, bumped 2026-08-19 — the whole family moved together (61 direct deps, none added or removed). Nothing in Mio changed to absorb it |
 | End-to-end | Verified 2026-08-19 against a live MiMo token-plan account: real answers, real tool use, real file writes through the dsh web UI |
 
 ## Phase 1 — MiMo provider adapter (dsh-native elsewhere)
@@ -153,6 +153,12 @@ Other archived MiMo behavior, same audit:
       uninferrable from a production-only tree, npm re-resolving dsh's `^` ranges to an untested
       release, and dsh's runtime peer dependencies not being materialized. The reasoning behind
       each is in `packages/shell/README.md`
+- [x] **dsh rc.6 → rc.7 (2026-08-19)** — the first churn rehearsal, and the architecture absorbed
+      it with no code change: typecheck clean, 14 replay tests green, a live MiMo request correct,
+      and the runtime, the shell, and a packaged build all boot. rc.7 was still 1.3 days short of
+      `bunfig.toml`'s 3-day gate, so it was installed with a one-off
+      `bun install --minimum-release-age=0`; the policy itself is unchanged, deliberately — the
+      gate matters most for the fastest-moving dependency
 - [ ] Cross-architecture builds: only the host arch is verified. Native modules (ripgrep, koffi,
       sharp, `node-addon-require-builtin`) come from platform-specific packages that the staging
       step installs for the machine it runs on, so Intel-Mac / Windows / Linux artifacts need a
