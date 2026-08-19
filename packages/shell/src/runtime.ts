@@ -34,10 +34,17 @@ export interface RuntimeOptions {
   readonly onLog?: (line: string) => void
 }
 
-/** Resolve dsh's CLI entry from this package's dependency, not from $PATH. */
+/**
+ * Resolve dsh's CLI entry from this package's dependency, not from $PATH.
+ *
+ * In a packaged build `require.resolve` lands inside `app.asar`, which the
+ * spawned child cannot read as ordinary files; the real tree is the unpacked
+ * twin beside it, so the path is redirected there.
+ */
 function dshBin(): string {
   const require = createRequire(import.meta.url)
-  return path.join(path.dirname(require.resolve("@deepseek-ai/dsh/package.json")), "lib", "bin.js")
+  const pkg = path.dirname(require.resolve("@deepseek-ai/dsh/package.json"))
+  return path.join(pkg.replace(`${path.sep}app.asar${path.sep}`, `${path.sep}app.asar.unpacked${path.sep}`), "lib", "bin.js")
 }
 
 /**

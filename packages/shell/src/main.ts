@@ -28,24 +28,34 @@ function dshHome(): string {
   return path.join(PACKAGE_ROOT, "..", "runtime", ".dsh")
 }
 
-const runtimeDir = path.join(PACKAGE_ROOT, "..", "runtime")
-
 /** The dsh profile Mio composes; `mio.patch.yml` is layered over it. */
 const PROFILE = "web"
 
 /**
- * Plugins shipped with the app and copied into the profile at startup. Packaged
- * builds resolve them from the unpacked resources next to dsh; in development
- * they come straight from the workspace's build output.
+ * Where app-owned files live.
+ *
+ * A packaged build reads them from `app.asar.unpacked`: the runtime is a real
+ * child process and the plugin copy uses plain `fs`, so neither can see inside
+ * an asar archive. `electron-builder.config.ts` unpacks exactly this subtree.
  */
-function bundledPlugins() {
-  const root = app.isPackaged ? path.join(process.resourcesPath, "app.asar.unpacked", "node_modules") : undefined
-  return [
-    {
-      name: "@mio/llm-mimo",
-      source: root ? path.join(root, "@mio", "llm-mimo") : path.join(PACKAGE_ROOT, "..", "llm-mimo"),
-    },
-  ]
+function resources() {
+  if (!app.isPackaged) {
+    return {
+      modules: path.join(PACKAGE_ROOT, ".."),
+      patch: path.join(PACKAGE_ROOT, "..", "runtime", "mio.patch.yml"),
+    }
+  }
+  return {
+    // Code, unpacked so the child process and the plugin copy can read it.
+    modules: path.join(process.resourcesPath, "app.asar.unpacked", "node_modules"),
+    // Data, shipped as an extra resource rather than as part of the app bundle.
+    patch: path.join(process.resourcesPath, "mio.patch.yml"),
+  }
+}
+
+/** Plugins shipped with the app and copied into the profile at startup. */
+function bundledPlugins(modules: string) {
+  return [{ name: "@mio/llm-mimo", source: path.join(modules, "@mio", "llm-mimo") }]
 }
 
 // One shell per profile: a second instance would start a second runtime against
@@ -56,13 +66,16 @@ let runtime: RuntimeHandle | undefined
 
 async function start() {
   const home = dshHome()
-  const installed = await installBundledPlugins(home, PROFILE, bundledPlugins())
+  const { modules, patch } = resources()
+  const installed = await installBundledPlugins(home, PROFILE, bundledPlugins(modules))
   if (installed.length > 0) console.log(`[shell] installed into the ${PROFILE} profile: ${installed.join(", ")}`)
 
   runtime = await startRuntime({
     dshHome: home,
-    cwd: runtimeDir,
-    patch: path.join(runtimeDir, "mio.patch.yml"),
+    // The runtime's cwd is only a resolution base; every path it is given is
+    // absolute. $DSH_HOME is a directory that always exists and is writable.
+    cwd: home,
+    patch,
     onLog: (line) => console.log(`[runtime] ${line}`),
   })
   await createWindow(runtime.url, app.getPath("userData"))

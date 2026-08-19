@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "description": "Mio desktop shell — a thin Electron wrapper that hosts the dsh runtime and its web UI",
+  "description": "Mio desktop shell \u2014 a thin Electron wrapper that hosts the dsh runtime and its web UI",
   "main": "./lib/main.js",
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
@@ -11,15 +11,20 @@
   "scripts": {
     "build": "tsgo -p tsconfig.build.json",
     "typecheck": "tsgo --noEmit -p tsconfig.json",
-    "dev": "bun run --cwd ../runtime setup && bun run build && electron ."
+    "dev": "bun run --cwd ../runtime setup && bun run build && electron .",
+    "package": "bun run stage && electron-builder --projectDir .package --config electron-builder.config.ts",
+    "package:mac": "bun run stage && electron-builder --projectDir .package --config electron-builder.config.ts --mac",
+    "stage": "bun ./scripts/stage.ts"
   },
   "dependencies": {
-    "@deepseek-ai/dsh": "0.1.0-rc.6"
+    "@deepseek-ai/dsh": "0.1.0-rc.6",
+    "@mio/llm-mimo": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
     "electron": "41.2.1",
+    "electron-builder": "^26",
     "typescript": "catalog:"
   }
 }

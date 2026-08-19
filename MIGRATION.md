@@ -143,9 +143,22 @@ Other archived MiMo behavior, same audit:
       tarball, no network. The root `@mio/llm-mimo` dependency added on the earlier (wrong)
       diagnosis is removed. Verified from an empty profile on both paths, and from a
       `$DSH_HOME` outside the repo entirely
-- [ ] Packaging: electron-builder for the new shell. dsh and the built plugin must be
-      `asarUnpack`ed (the startup copy reads the plugin with plain `fs`); `mio.patch.yml` ships in
-      resources; the profile itself is created on the user's machine at first launch
+- [x] **Packaging — electron-builder, verified by launching the result (2026-08-19).** An
+      unsigned macOS build starts, provisions a profile in a fresh `$DSH_HOME`, boots the runtime,
+      serves the UI, shows MiMo as configured, and leaves no orphan on quit. Seven distinct
+      failures had to be fixed first, and every one of them produced a build that completed
+      without a warning and only broke at runtime: incomplete dependency collection from Bun's
+      layout, the dsh entry resolving inside `app.asar`, `asarUnpack` covering only scoped
+      packages, `directories.app` not redirecting the build, electron's version being
+      uninferrable from a production-only tree, npm re-resolving dsh's `^` ranges to an untested
+      release, and dsh's runtime peer dependencies not being materialized. The reasoning behind
+      each is in `packages/shell/README.md`
+- [ ] Cross-architecture builds: only the host arch is verified. Native modules (ripgrep, koffi,
+      sharp, `node-addon-require-builtin`) come from platform-specific packages that the staging
+      step installs for the machine it runs on, so Intel-Mac / Windows / Linux artifacts need a
+      CI matrix, not a flag
+- [ ] Signing, notarization, and an updater feed (the archived `workflows/release.yml` is the
+      reference for what a release job has to cover)
 - [ ] Carry the still-missing shell services: auto-update, `mio://` deep links, native menus,
       shell-env import, system CA / proxy propagation
 - [ ] Parity audit against the Solid UI's feature areas: terminal (dsh-terminal + client UI),
