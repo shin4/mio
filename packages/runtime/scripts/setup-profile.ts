@@ -2,19 +2,17 @@
 /**
  * Provision the repo-local dsh profile that `bun run dev:runtime` boots.
  *
- * The plugin is installed as a PACKED TARBALL, not a `link:`. A symlinked
- * workspace package resolves its `@deepseek-ai/*` imports from the repo's own
- * node_modules, giving the runtime two copies of `dsh-llm` — the adapter class
- * it extends would then differ from the one the profile's `ctx.llm` knows, and
- * `instanceof`-shaped behavior (error classification, retry policy) would
- * silently diverge. Installing the tarball lets the plugin's peerDependencies
- * resolve to the profile's copies, exactly as a published install would.
+ * Builds `@mio/llm-mimo` and copies it into the profile, mirroring exactly what
+ * the desktop shell does at startup (`packages/shell/src/profile.ts`) so a
+ * problem shows up in whichever one you run first. No package manager is
+ * involved: dsh resolves plugin entries relative to the profile directory, and a
+ * plain directory copy under `profiles/<name>/node_modules` resolves its peer
+ * dependencies through the symlink farm dsh scaffolds in `profiles/node_modules`.
  *
  * Re-run after changing packages/llm-mimo. Idempotent.
  */
 import { $ } from "bun"
-import { mkdir, readdir, rm } from "node:fs/promises"
-import { homedir } from "node:os"
+import { cp, mkdir, readFile, rm } from "node:fs/promises"
 import path from "node:path"
 
 const RUNTIME = path.resolve(import.meta.dir, "..")
@@ -24,22 +22,21 @@ const PROFILE = path.join(DSH_HOME, "profiles", "web")
 
 await $`bun run --cwd ${PLUGIN} build`
 
-// Boot once with --dump-default-config so dsh scaffolds the profile if absent.
-if (!(await Bun.file(path.join(PROFILE, "package.json")).exists())) {
-  await $`bunx dsh --profile web --dump-default-config`.cwd(RUNTIME).env({ ...process.env, DSH_HOME }).quiet()
+const version = async (dir: string) =>
+  readFile(path.join(dir, "package.json"), "utf8")
+    .then((raw) => (JSON.parse(raw) as { version?: string }).version)
+    .catch(() => undefined)
+
+const target = path.join(PROFILE, "node_modules", "@mio", "llm-mimo")
+if ((await version(PLUGIN)) === (await version(target))) {
+  console.log(`setup-profile: @mio/llm-mimo already current in ${PROFILE}`)
+} else {
+  // Replace wholesale (a merge would keep stale files from an older build), and
+  // copy only what the package publishes — the checkout's tests, scripts, and
+  // node_modules have no business in the profile.
+  await rm(target, { recursive: true, force: true })
+  await mkdir(target, { recursive: true })
+  await cp(path.join(PLUGIN, "package.json"), path.join(target, "package.json"))
+  await cp(path.join(PLUGIN, "lib"), path.join(target, "lib"), { recursive: true, dereference: true })
+  console.log(`setup-profile: @mio/llm-mimo installed into ${PROFILE}`)
 }
-
-const staging = path.join(DSH_HOME, ".staging")
-await rm(staging, { recursive: true, force: true })
-await mkdir(staging, { recursive: true })
-await $`bun pm pack --destination ${staging}`.cwd(PLUGIN).quiet()
-
-const tarball = (await readdir(staging)).find((entry) => entry.endsWith(".tgz"))
-if (!tarball) throw new Error("setup-profile: bun pm pack produced no tarball")
-
-await $`bunx dsh plugin --profile web add ${path.join(staging, tarball)}`
-  .cwd(RUNTIME)
-  .env({ ...process.env, DSH_HOME, HOME: process.env.HOME ?? homedir() })
-
-await rm(staging, { recursive: true, force: true })
-console.log(`setup-profile: @mio/llm-mimo installed into ${PROFILE}`)

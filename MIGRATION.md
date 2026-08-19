@@ -30,14 +30,14 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `archive/packages/{agent,llm,plugin,http-recorder}` | Frozen reference, out of workspace, excluded from lint/CI |
 | `archive/packages/{app,ui,core,sdk}` | The Solid UI tier, archived 2026-08-19 once the shell replaced its only consumer. Still the reference for MiMo UX and the 19 locale files when Phase 3 builds dsh client plugins |
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
-| `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` provisions the repo-local `.dsh/` profile and installs the plugin as a packed tarball; `bun run dev:runtime` boots green |
+| `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` builds the plugin and copies it into the repo-local `.dsh/` profile; `bun run dev:runtime` boots green |
 | `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 14 replay tests green over live-captured cassettes |
 | dsh pin | `0.1.0-rc.6` (rc.7 blocked by bunfig `minimumReleaseAge`; bump when aged) |
 | End-to-end | Verified 2026-08-19 against a live MiMo token-plan account: real answers, real tool use, real file writes through the dsh web UI |
 
 ## Phase 1 — MiMo provider adapter (dsh-native elsewhere)
 
-- [x] Load `@mio/llm-mimo` into a dsh profile — build to `lib/` + packed-tarball install
+- [x] Load `@mio/llm-mimo` into a dsh profile — built to `lib/` and copied into the profile
       (`bun run dev:runtime`); verified enabled in the running runtime's plugin inventory,
       with `llm-deepseek` / `llm-pi-ai` disabled by the patch layer
 - [x] **First real MiMo round-trip — verified end to end (2026-08-19)** against a live
@@ -133,8 +133,19 @@ Other archived MiMo behavior, same audit:
       release job must cover. All references cleaned: root scripts, ci.yml, gitleaks paths,
       CONTRIBUTING.md. Verified after the move: `bun run dev:desktop` boots the new shell and
       serves the UI, typecheck 6/6, lint clean
-- [ ] Packaging: electron-builder for the new shell, shipping dsh + `@mio/llm-mimo` + a
-      provisioned profile in one `node_modules` tree
+- [x] **Plugin provisioning without a package manager (2026-08-19)** — prerequisite for
+      packaging, and it corrected a wrong diagnosis. dsh resolves plugin entries **relative to
+      the profile directory**, not to its own installation: a virgin `$DSH_HOME` outside the repo
+      fails to find `@mio/llm-mimo` no matter what is beside dsh. Installing it is therefore a
+      plain copy of the published surface (`package.json` + `lib/`) into
+      `profiles/web/node_modules/@mio/llm-mimo`, which dsh scaffolds around and preserves.
+      `setup-profile.ts` and the shell's `src/profile.ts` now do exactly that — no pnpm, no
+      tarball, no network. The root `@mio/llm-mimo` dependency added on the earlier (wrong)
+      diagnosis is removed. Verified from an empty profile on both paths, and from a
+      `$DSH_HOME` outside the repo entirely
+- [ ] Packaging: electron-builder for the new shell. dsh and the built plugin must be
+      `asarUnpack`ed (the startup copy reads the plugin with plain `fs`); `mio.patch.yml` ships in
+      resources; the profile itself is created on the user's machine at first launch
 - [ ] Carry the still-missing shell services: auto-update, `mio://` deep links, native menus,
       shell-env import, system CA / proxy propagation
 - [ ] Parity audit against the Solid UI's feature areas: terminal (dsh-terminal + client UI),

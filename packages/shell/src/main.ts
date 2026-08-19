@@ -9,6 +9,7 @@
 import { app, BrowserWindow, dialog } from "electron"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import { installBundledPlugins } from "./profile.ts"
 import { startRuntime, type RuntimeHandle } from "./runtime.ts"
 import { createWindow } from "./window.ts"
 
@@ -29,6 +30,24 @@ function dshHome(): string {
 
 const runtimeDir = path.join(PACKAGE_ROOT, "..", "runtime")
 
+/** The dsh profile Mio composes; `mio.patch.yml` is layered over it. */
+const PROFILE = "web"
+
+/**
+ * Plugins shipped with the app and copied into the profile at startup. Packaged
+ * builds resolve them from the unpacked resources next to dsh; in development
+ * they come straight from the workspace's build output.
+ */
+function bundledPlugins() {
+  const root = app.isPackaged ? path.join(process.resourcesPath, "app.asar.unpacked", "node_modules") : undefined
+  return [
+    {
+      name: "@mio/llm-mimo",
+      source: root ? path.join(root, "@mio", "llm-mimo") : path.join(PACKAGE_ROOT, "..", "llm-mimo"),
+    },
+  ]
+}
+
 // One shell per profile: a second instance would start a second runtime against
 // the same session store.
 if (!app.requestSingleInstanceLock()) app.quit()
@@ -36,8 +55,12 @@ if (!app.requestSingleInstanceLock()) app.quit()
 let runtime: RuntimeHandle | undefined
 
 async function start() {
+  const home = dshHome()
+  const installed = await installBundledPlugins(home, PROFILE, bundledPlugins())
+  if (installed.length > 0) console.log(`[shell] installed into the ${PROFILE} profile: ${installed.join(", ")}`)
+
   runtime = await startRuntime({
-    dshHome: dshHome(),
+    dshHome: home,
     cwd: runtimeDir,
     patch: path.join(runtimeDir, "mio.patch.yml"),
     onLog: (line) => console.log(`[runtime] ${line}`),

@@ -32,12 +32,21 @@ of them is loud:
   plugins (including `@mio/llm-mimo`) are not found;
 - the HMR service refuses to start and takes the boot down with it.
 
-## Why the plugin is also a root dependency
+## How Mio's plugins reach the runtime
 
-`@mio/llm-mimo` is listed in the repo root's `dependencies` so it resolves from the same tree as
-`@deepseek-ai/dsh`. dsh resolves plugin entries relative to its own installation, so a plugin that
-exists only inside `$DSH_HOME/profiles/<name>/node_modules` is invisible on the fallback path
-above. Packaging must preserve this: ship the plugin in the same `node_modules` tree as dsh.
+dsh resolves a plugin entry **relative to the profile directory**, walking up from
+`$DSH_HOME/profiles/web`. The profile lives in the user's data directory, whose parent chain never
+reaches the app bundle, so a plugin shipped inside the app is invisible until it is placed in the
+profile itself.
+
+`src/profile.ts` does that at startup: a plain directory copy of the plugin's published surface
+(`package.json` + `lib/`), re-copied when the shipped version differs so an app update replaces
+what the previous version left behind. No package manager runs on the user's machine — dsh
+symlinks its own installation's packages into `profiles/node_modules` when it scaffolds, and the
+copied plugin resolves its `peerDependencies` through that farm.
+
+Packaging must therefore ship the built plugin as a real directory (`asarUnpack`), since the copy
+reads it with plain `fs`.
 
 ## Port and profile
 

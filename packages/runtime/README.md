@@ -16,15 +16,20 @@ for the full replacement plan.
 bun run dev:runtime      # from the repo root: setup + boot the Mio composition
 ```
 
-## Why the plugin is installed as a tarball, not a link
+## How the plugin reaches the runtime
 
-`setup-profile.ts` packs `@mio/llm-mimo` and installs the tarball. A `link:` install would
-resolve the plugin's `@deepseek-ai/*` imports from the repo's own `node_modules`, so the
-runtime would hold **two copies** of `dsh-llm`: the `LlmAdapter` the plugin extends would
-not be the class the profile's `ctx.llm` knows, and `instanceof`-shaped behavior (error
-classification, retry policy) would silently diverge. Installing the tarball lets the
-plugin's `peerDependencies` resolve to the profile's copies, exactly as a published
-install would.
+dsh resolves a plugin entry **relative to the profile directory**, walking up from
+`$DSH_HOME/profiles/web`. So a plugin is installed by copying its published surface
+(`package.json` + `lib/`) into `profiles/web/node_modules/@mio/llm-mimo` — that is all
+`setup-profile.ts` does, and the desktop shell does the same thing at startup
+(`packages/shell/src/profile.ts`).
+
+No package manager is involved. When dsh scaffolds a profile it symlinks the running
+installation's packages into `profiles/node_modules`, so the copied plugin resolves its
+`peerDependencies` through that farm and shares the host's single `dsh-llm` — two copies
+would mean two `LlmAdapter` classes and silently divergent `instanceof` behavior.
+
+The copy may run before the profile exists: dsh scaffolds around it and leaves it in place.
 
 ## Supplying the MiMo API key
 

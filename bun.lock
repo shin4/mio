@@ -5,7 +5,6 @@
     "": {
       "name": "opencode",
       "dependencies": {
-        "@mio/llm-mimo": "workspace:*",
         "typescript": "catalog:",
       },
       "devDependencies": {
@@ -55,7 +54,6 @@
       "version": "0.0.1",
       "dependencies": {
         "@deepseek-ai/dsh": "0.1.0-rc.6",
-        "@mio/llm-mimo": "workspace:*",
       },
       "devDependencies": {
         "@types/node": "catalog:",

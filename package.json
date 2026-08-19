@@ -34,7 +34,6 @@
     "turbo": "2.8.13"
   },
   "dependencies": {
-    "@mio/llm-mimo": "workspace:*",
     "typescript": "catalog:"
   },
   "repository": {
