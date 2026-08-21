@@ -119,6 +119,13 @@ Three things about this setup are easy to get wrong:
   the keychain through electron-builder's identity auto-discovery, so the result is signed and
   hardened — and Gatekeeper still refuses it (`spctl: rejected, source=Unnotarized Developer ID`).
   Notarization is a round trip to Apple and only happens in the release job.
+- **The app and the DMG are notarized separately.** electron-builder notarizes the `.app` and
+  *then* builds the image around it, so the container a user double-clicks would otherwise carry
+  no ticket at all — not "notarized but unstapled", which Gatekeeper's online lookup would still
+  rescue, but never submitted. `v0.3.0-rc.1` shipped exactly that, and Apple's
+  `syspolicy_check distribution` called it fatal. The `afterAllArtifactBuild` hook in the config
+  submits each DMG to `notarytool`, staples it, and validates the ticket; anything short of
+  `Accepted` fails the build.
 - **The entitlements are ours, not electron-builder's.** `resources/entitlements.mac.plist` is
   checked in and wired explicitly, including as `entitlementsInherit` — left unset, nested
   binaries get electron-builder's bundled template instead. The path in the config is absolute

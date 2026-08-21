@@ -220,9 +220,42 @@ Other archived MiMo behavior, same audit:
       survived the archiving unreferenced) but inert: the `AZURE_TRUSTED_SIGNING_*` secrets have
       never been configured, so Windows installers are unsigned — as they were before.
 
-      Verified locally end to end: the packaged app carries our entitlements, all four helper apps
-      inherit them, `codesign --verify --deep --strict` passes, and the signed build boots, spawns
-      the runtime child, serves the dsh UI over HTTP 200, and quits with no orphan
+      Verified locally, then closed on the real thing: `v0.3.0-rc.1` built all four artifacts,
+      and the published macOS DMG was downloaded and checked rather than trusted —
+      `spctl -a -t exec` reports `accepted, source=Notarized Developer ID`, `stapler validate`
+      finds the ticket, entitlements survive on the app and all four helper apps, and the released
+      app boots, spawns the runtime child, serves the dsh UI over HTTP 200, and quits with no
+      orphan. That is the gap this item existed for: `rejected / Unnotarized` → `accepted /
+      Notarized`.
+
+      `v0.3.0-rc.1` also surfaced a defect it did not fix, corrected in the entry below:
+      electron-builder notarizes the `.app` and *then* wraps it, so the **DMG a user actually
+      double-clicks carried no ticket**
+- [x] **The DMG carries its own notarization ticket (2026-08-22).** `v0.3.0-rc.1` shipped a
+      notarized *app* inside an unnotarized *image*: `macPackager.notarizeIfProvided(appPath)` is
+      electron-builder's only notarization call and there is no option covering artifacts, so the
+      DMG was built after the app was already notarized and stapled.
+
+      This was first written up here as a narrow, online-only problem, and that was wrong. The
+      published image was measured while online: `stapler validate` found no ticket, `spctl -a -t
+      open` returned `rejected, source=Unnotarized Developer ID`, and Apple's own
+      `syspolicy_check distribution` reported a **fatal** "Notary Ticket Missing" — against the app
+      inside the same file, which passed every check. Gatekeeper's online lookup cannot rescue it,
+      because the image was never submitted: there is nothing to find locally *or* on Apple's
+      servers. The first fix recorded here was wrong for the same reason — `stapler staple` alone
+      cannot attach a ticket that was never issued.
+
+      So an `afterAllArtifactBuild` hook submits each DMG to `notarytool`, staples it, and
+      validates the result, gated on the same credentials as the app notarization so a
+      credential-less build still succeeds. A submission that completes as anything but `Accepted`
+      fails the build rather than shipping unnoticed, and failures report scrubbed `stderr` — Node
+      puts the full argv into an execFile rejection, and the argv holds the app-specific password.
+
+      Verified by driving the hook directly with invalid credentials before spending a CI run: it
+      is invoked, non-DMG artifacts are filtered out, a DMG reaches `notarytool`, and the password
+      does not appear in the failure message. The packaging config is now covered by
+      `bun typecheck`, which it was not when it held no logic
+
 - [ ] Carry the still-missing shell services: auto-update, `mio://` deep links, native menus,
       shell-env import, system CA / proxy propagation. The updater is deferred deliberately, and
       the release job is shaped around that: `publish` stays `null` and no `latest*.yml` is
