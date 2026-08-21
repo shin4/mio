@@ -115,9 +115,20 @@ app.on("before-quit", (event) => {
   void stopping.stop().finally(() => app.quit())
 })
 
+/**
+ * Report a failure the app cannot continue past, and leave nothing behind.
+ *
+ * `app.exit` skips `before-quit`, which is where the runtime is normally stopped,
+ * so the child has to be stopped here. `start()` publishes the runtime before it
+ * opens a window: a window that fails to build or load lands in this function
+ * with the runtime already running, and without this the dsh process would
+ * outlive the app that spawned it.
+ */
 function showStartupFailure(cause: unknown) {
   const detail = cause instanceof Error ? cause.message : String(cause)
   console.error(detail)
+  const stopping = runtime?.stop() ?? Promise.resolve()
+  runtime = undefined
   dialog.showErrorBox("Mio could not start", detail)
-  app.exit(1)
+  void stopping.finally(() => app.exit(1))
 }

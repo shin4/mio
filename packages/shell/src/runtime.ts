@@ -116,37 +116,43 @@ export function startRuntime(options: RuntimeOptions): Promise<RuntimeHandle> {
 
     const timer = setTimeout(() => fail("dsh runtime did not report a URL in time."), READY_TIMEOUT_MS)
 
-    // The pipe splits wherever it likes, so the readiness announcement can arrive
-    // in two chunks. Hold the unterminated tail between reads — matching each chunk
-    // in isolation would miss the URL and kill a runtime that started fine.
-    let pending = ""
-    const read = (chunk: Buffer) => {
-      pending += chunk.toString()
-      const lines = pending.split("\n")
-      pending = lines.pop() ?? ""
-      for (const line of lines) {
-        if (!line.trim()) continue
-        options.onLog?.(line)
-        // Keep a bounded tail: enough to diagnose a failure, never a full log.
-        recent.push(line)
-        if (recent.length > 40) recent.shift()
-
-        const url = URL_LINE.exec(line)?.[1]
-        if (url)
-          finish(() =>
-            resolve({
-              url,
-              stop: () => {
-                stopping = true
-                return stop(child)
-              },
-            }),
-          )
+    // A pipe splits wherever it likes, so the readiness announcement can arrive in
+    // two chunks. Hold the unterminated tail between reads — matching each chunk in
+    // isolation would miss the URL and kill a runtime that started fine. Each pipe
+    // gets its own tail: sharing one would let a stderr line land in the middle of
+    // a half-read stdout line and destroy exactly the announcement being waited on.
+    const reader = () => {
+      let pending = ""
+      return (chunk: Buffer) => {
+        pending += chunk.toString()
+        const lines = pending.split("\n")
+        pending = lines.pop() ?? ""
+        for (const line of lines) read(line)
       }
     }
 
-    child.stdout.on("data", read)
-    child.stderr.on("data", read)
+    const read = (line: string) => {
+      if (!line.trim()) return
+      options.onLog?.(line)
+      // Keep a bounded tail: enough to diagnose a failure, never a full log.
+      recent.push(line)
+      if (recent.length > 40) recent.shift()
+
+      const url = URL_LINE.exec(line)?.[1]
+      if (url)
+        finish(() =>
+          resolve({
+            url,
+            stop: () => {
+              stopping = true
+              return stop(child)
+            },
+          }),
+        )
+    }
+
+    child.stdout.on("data", reader())
+    child.stderr.on("data", reader())
     child.on("error", (cause) => fail(`Failed to start the dsh runtime: ${cause.message}`))
     child.on("exit", (code, signal) => {
       if (!settled) {
