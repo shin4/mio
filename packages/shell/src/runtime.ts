@@ -61,9 +61,11 @@ export function startRuntime(options: RuntimeOptions): Promise<RuntimeHandle> {
   //
   // `--expose-internals` is required, not a convenience: dsh reaches Node's ESM
   // loader either through this flag or through the `node-addon-require-builtin`
-  // native addon, and that addon is built for Node's ABI, not Electron's. Without
-  // the flag the loader silently falls back to resolving plugin entries from its
-  // own location (so profile plugins vanish) and the HMR service refuses to start.
+  // native addon. The addon loads under Electron (it is N-API) but its lookup
+  // fails — Electron runs JS in its own V8 realm, and the addon cannot reach
+  // Node's internals from there. Without the flag the loader silently falls back
+  // to resolving plugin entries from its own location (so profile plugins
+  // vanish) and the HMR service refuses to start.
   // `--no-open`: since rc.8 the runtime opens the Web UI in the system browser
   // by default. The shell already shows that UI in its own window, so a browser
   // tab on every launch would be a second, stray copy of the app.

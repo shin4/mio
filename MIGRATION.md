@@ -118,8 +118,9 @@ Other archived MiMo behavior, same audit:
 
       Two environment facts this cost real debugging, both documented in `packages/shell/README.md`:
       the runtime child **must** get `--expose-internals` (dsh otherwise needs the
-      `node-addon-require-builtin` addon, which is built for Node's ABI and fails under Electron —
-      silently breaking plugin resolution and loudly breaking HMR), and `@mio/llm-mimo` must live
+      `node-addon-require-builtin` addon; it loads under Electron but cannot reach Node's
+      internals from Electron's own V8 realm — silently breaking plugin resolution and loudly
+      breaking HMR), and `@mio/llm-mimo` must live
       in the same `node_modules` tree as `@deepseek-ai/dsh` (a profile-local install is invisible
       on that fallback path), which is why it is a root dependency and what packaging must
       preserve

@@ -24,9 +24,11 @@ The runtime runs as a child process using Electron's bundled Node (`ELECTRON_RUN
 system Node install is required. That child **must** be started with `--expose-internals`.
 
 dsh reaches Node's internal ESM loader one of two ways: the `--expose-internals` flag, or the
-`node-addon-require-builtin` native addon. That addon is compiled against Node's ABI, not
-Electron's, so under Electron it fails to load. Without the flag, two things break — and only one
-of them is loud:
+`node-addon-require-builtin` native addon. The addon *loads* fine under Electron — it is N-API, so
+the ABI is not the problem — but its lookup then fails with `Unsupported/no-realm (no compatible
+GetAlignedPointerFromEmbedderData)`: Electron runs JavaScript in its own V8 realm, and the addon
+cannot reach Node's internals from there. Without the flag, two things break — and only one of
+them is loud:
 
 - the loader silently falls back to resolving plugin entries from its own location, so profile
   plugins (including `@mio/llm-mimo`) are not found;
