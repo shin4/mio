@@ -17,6 +17,20 @@ const rootDir = path.resolve(shellDir, "..", "..")
 const entitlements = path.join(shellDir, "resources", "entitlements.mac.plist")
 
 /**
+ * App icons, absolute for the same reason as the entitlements above: this
+ * config is loaded with `--projectDir .package`, so a relative path would
+ * resolve against the staged tree.
+ *
+ * Copied from the archived desktop app, which generated them to Apple's system
+ * icon template — the 1024px master's opaque bounds are exactly 104,104-919,919
+ * with an unclipped shadow, checked before adopting them
+ * (`archive/packages/desktop/scripts/check-mac-icon-geometry.ts` is the original
+ * guard). Source artwork is `favicon-v3.svg`: an orange #FF8A00 MIO wordmark on
+ * a #1C1B1A rounded field.
+ */
+const icon = (file: string) => path.join(shellDir, "resources", file)
+
+/**
  * Windows signing through Azure Trusted Signing. The script exits 0 when the
  * AZURE_TRUSTED_SIGNING_* variables are absent, so an unconfigured or local
  * build produces an unsigned installer instead of failing.
@@ -152,6 +166,7 @@ const config: Configuration = {
   mac: {
     category: "public.app-category.developer-tools",
     target: [{ target: "dmg" }],
+    icon: icon("icon.icns"),
     // On by default in electron-builder 26 for non-MAS targets; stated because
     // the entitlements below only exist to carve exceptions out of it.
     hardenedRuntime: true,
@@ -171,9 +186,12 @@ const config: Configuration = {
 
   dmg: { sign: macSign },
 
-  win: { target: [{ target: "nsis" }], signtoolOptions: { sign: signWindows } },
+  win: { target: [{ target: "nsis" }], icon: icon("icon.ico"), signtoolOptions: { sign: signWindows } },
 
-  linux: { target: [{ target: "AppImage" }], category: "Development" },
+  nsis: { installerIcon: icon("icon.ico"), installerHeaderIcon: icon("icon.ico") },
+
+  // A single large PNG: electron-builder derives the size set AppImage needs.
+  linux: { target: [{ target: "AppImage" }], icon: icon("icon.png"), category: "Development" },
 
   // Runs after every target is built, which is the only point where the DMG
   // exists. Returns no extra artifacts — the DMG is amended in place.

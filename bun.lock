@@ -17,36 +17,16 @@
         "turbo": "2.8.13",
       },
     },
-    "packages/llm-mimo": {
-      "name": "@mio/llm-mimo",
-      "version": "0.0.1",
-      "devDependencies": {
-        "@deepseek-ai/cordis": "4.0.1",
-        "@deepseek-ai/dsh-brand": "0.1.1-rc.1",
-        "@deepseek-ai/dsh-credentials": "0.1.1-rc.1",
-        "@deepseek-ai/dsh-launch-environment": "0.1.1-rc.1",
-        "@deepseek-ai/dsh-llm": "0.1.1-rc.1",
-        "@deepseek-ai/dsh-settings": "0.1.1-rc.1",
-        "@deepseek-ai/schemastery": "3.18.1",
-        "@types/node": "catalog:",
-        "@typescript/native-preview": "catalog:",
-        "typescript": "catalog:",
-      },
-      "peerDependencies": {
-        "@deepseek-ai/cordis": "4.0.1",
-        "@deepseek-ai/dsh-credentials": "0.1.1-rc.1",
-        "@deepseek-ai/dsh-launch-environment": "0.1.1-rc.1",
-        "@deepseek-ai/dsh-llm": "0.1.1-rc.1",
-        "@deepseek-ai/dsh-settings": "0.1.1-rc.1",
-        "@deepseek-ai/schemastery": "3.18.1",
-      },
-    },
     "packages/runtime": {
       "name": "@mio/runtime",
       "version": "0.0.1",
       "dependencies": {
         "@deepseek-ai/dsh": "0.1.1-rc.1",
-        "@mio/llm-mimo": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/node": "catalog:",
+        "@typescript/native-preview": "catalog:",
+        "typescript": "catalog:",
       },
     },
     "packages/shell": {
@@ -54,7 +34,6 @@
       "version": "0.0.1",
       "dependencies": {
         "@deepseek-ai/dsh": "0.1.1-rc.1",
-        "@mio/llm-mimo": "workspace:*",
       },
       "devDependencies": {
         "@types/node": "catalog:",
@@ -644,8 +623,6 @@
     "@malept/cross-spawn-promise": ["@malept/cross-spawn-promise@2.0.0", "", { "dependencies": { "cross-spawn": "^7.0.1" } }, "sha512-1DpKU0Z5ThltBwjNySMC14g0CkbyhCaz9FkhxqNsZI6uAPJXFS8cMXlBKo26FJ8ZuW6S9GCMcR9IO5k2X5/9Fg=="],
 
     "@malept/flatpak-bundler": ["@malept/flatpak-bundler@0.4.0", "", { "dependencies": { "debug": "^4.1.1", "fs-extra": "^9.0.0", "lodash": "^4.17.15", "tmp-promise": "^3.0.2" } }, "sha512-9QOtNffcOF/c1seMCDnjckb3R9WHcG34tky+FHpNKKCW0wc/scYLwMtO+ptyGUfMW0/b/n4qRiALlaFHc9Oj7Q=="],
-
-    "@mio/llm-mimo": ["@mio/llm-mimo@workspace:packages/llm-mimo"],
 
     "@mio/runtime": ["@mio/runtime@workspace:packages/runtime"],
 

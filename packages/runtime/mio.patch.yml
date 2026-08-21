@@ -1,15 +1,60 @@
-# Mio patch layer over the dsh web profile: MiMo-first composition.
+# Mio patch layer over the dsh web profile: MiMo served by dsh's own adapter.
 # Applied with: dsh web --patch ./mio.patch.yml
 # Semantics (cordis-plugin-include applyEntryPatches): a bare `id` entry merges
 # into the existing row; `insert:` appends new rows. Inspect the result with
 # `dsh --profile web --patch ./mio.patch.yml --dump-config`.
+#
+# MiMo rides `dsh-llm-pi-ai` rather than a Mio-written adapter. The reason the
+# repo had one — "MiMo authenticates with an `api-key` header, not
+# `Authorization: Bearer`, which pi-ai cannot send" — was carried over from the
+# archived Effect runtime's documentation and is false: the live API accepts
+# Bearer for non-streaming, streaming, reasoning, and tool calls alike
+# (measured 2026-08-22 against token-plan-cn; see MIGRATION.md Phase 3 Stage 1).
+#
+# Riding the shipped adapter is what puts MiMo on the web Models page with a
+# real API-key editor — `layoutOf()` in dsh-client-ui-settings-models keys on
+# the settings namespace, and a third-party namespace renders a read-only hint
+# instead — and it inherits pi-ai's stream idle watchdog, retry policy, error
+# classification, and image handling instead of reimplementing them.
 
-# Register the MiMo provider adapter.
-- insert:
-    - id: llm-mimo
-      name: '@mio/llm-mimo'
-      config:
-        billing: pay-as-you-go
+- id: llm-pi-ai
+  config:
+    providers:
+      mimo:
+        displayName: MiMo
+        # A credential *reference*: the key itself is resolved per request
+        # through ctx.credentials, so no secret enters this file. The Models
+        # page writes it; MIO_API_KEY in the launching environment also serves.
+        apiKeyEnv: MIO_API_KEY
+        # MiMo speaks OpenAI chat completions. pi-ai cannot infer the request
+        # shape from an unrecognized URL, so the protocol is named explicitly.
+        api: openai-completions
+        # Pay-as-you-go. Token-plan deployments point this at
+        # https://token-plan-{cn,sgp,ams}.xiaomimimo.com/v1 — the endpoint
+        # families are documented in archive/packages/llm-mimo/src/endpoints.ts.
+        baseURL: https://api.xiaomimimo.com/v1
+        models:
+          - id: mimo-v2.5
+            name: MiMo V2.5
+            contextWindow: 1048576
+            maxTokens: 128000
+            # MiMo accepts exactly these four on `reasoning_effort`; every other
+            # value probed — off, minimal, xhigh, max, default — is refused with
+            # HTTP 400. `off: none` maps dsh's Off onto the value MiMo takes.
+            reasoningEfforts:
+              off: none
+              low: low
+              medium: medium
+              high: high
+          - id: mimo-v2.5-pro
+            name: MiMo V2.5 Pro
+            contextWindow: 1048576
+            maxTokens: 128000
+            reasoningEfforts:
+              off: none
+              low: low
+              medium: medium
+              high: high
 
 # MiMo-first: default every new session to MiMo.
 - id: agent-default-model
@@ -17,8 +62,13 @@
     provider: mimo
     model: mimo-v2.5
 
-# Drop the bundled provider routes; Mio ships MiMo only.
+# DeepSeek's own routes stay off until Mio owns first-run onboarding.
+#
+# Enabling them is a two-line change with no technical risk — no route collides
+# with `mimo` — but `llm-deepseek` also contributes dsh's onboarding credential
+# step, and with it enabled a first launch of *Mio* opens with "添加一个 API Key
+# 开始使用 / 配置 DeepSeek 官方模型". Observed on a packaged build, not reasoned
+# about. Deleting these two rows is Phase 3 Stage 5, after the Mio onboarding
+# plugin can shadow that step (MIGRATION.md).
 - id: llm-deepseek
-  disabled: true
-- id: llm-pi-ai
   disabled: true

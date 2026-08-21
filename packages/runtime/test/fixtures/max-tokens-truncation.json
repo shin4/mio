@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "metadata": {
+    "name": "mimo/max-tokens-truncation",
+    "tags": [
+      "provider:mimo",
+      "protocol:openai-chat",
+      "truncation"
+    ]
+  },
+  "interactions": [
+    {
+      "transport": "http",
+      "request": {
+        "method": "POST",
+        "url": "https://token-plan-cn.xiaomimimo.com/v1/chat/completions",
+        "headers": {
+          "content-type": "application/json"
+        },
+        "body": "{\"model\":\"mimo-v2.5\",\"stream\":true,\"stream_options\":{\"include_usage\":true},\"messages\":[{\"role\":\"system\",\"content\":\"Be verbose.\"},{\"role\":\"user\",\"content\":\"Explain how HTTP caching works in detail.\"}],\"max_tokens\":16}"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "body": "data: {\"id\":\"a32ada29-7a91-4162-8681-ab1b4844ab74_ac3705af11d343e79825204f710c1589\",\"choices\":[{\"delta\":{\"content\":\"\",\"role\":\"assistant\",\"tool_calls\":null,\"reasoning_content\":null},\"finish_reason\":null,\"index\":0}],\"created\":1787069697,\"model\":\"mimo-v2.5\",\"object\":\"chat.completion.chunk\"}\n\ndata: {\"id\":\"a32ada29-7a91-4162-8681-ab1b4844ab74_ac3705af11d343e79825204f710c1589\",\"choices\":[{\"delta\":{\"content\":null,\"role\":null,\"tool_calls\":null,\"reasoning_content\":\"The\"},\"finish_reason\":null,\"index\":0}],\"created\":1787069697,\"model\":\"mimo-v2.5\",\"object\":\"chat.completion.chunk\"}\n\ndata: {\"id\":\"a32ada29-7a91-4162-8681-ab1b4844ab74_ac3705af11d343e79825204f710c1589\",\"choices\":[{\"delta\":{\"content\":null,\"role\":null,\"tool_calls\":null,\"reasoning_content\":\" user wants a\"},\"finish_reason\":null,\"index\":0}],\"created\":1787069698,\"model\":\"mimo-v2.5\",\"object\":\"chat.completion.chunk\"}\n\ndata: {\"id\":\"a32ada29-7a91-4162-8681-ab1b4844ab74_ac3705af11d343e79825204f710c1589\",\"choices\":[{\"delta\":{\"content\":null,\"role\":null,\"tool_calls\":null,\"reasoning_content\":\" detailed explanation of\"},\"finish_reason\":null,\"index\":0}],\"created\":1787069698,\"model\":\"mimo-v2.5\",\"object\":\"chat.completion.chunk\"}\n\ndata: {\"id\":\"a32ada29-7a91-4162-8681-ab1b4844ab74_ac3705af11d343e79825204f710c1589\",\"choices\":[{\"delta\":{\"content\":null,\"role\":null,\"tool_calls\":null,\"reasoning_content\":\" HTTP caching.\"},\"finish_reason\":null,\"index\":0}],\"created\":1787069698,\"model\":\"mimo-v2.5\",\"object\":\"chat.completion.chunk\"}\n\ndata: {\"id\":\"a32ada29-7a91-4162-8681-ab1b4844ab74_ac3705af11d343e79825204f710c1589\",\"choices\":[{\"delta\":{\"content\":null,\"role\":null,\"tool_calls\":null,\"reasoning_content\":\" I\"},\"finish_reason\":null,\"index\":0}],\"created\":1787069698,\"model\":\"mimo-v2.5\",\"object\":\"chat.completion.chunk\"}\n\ndata: {\"id\":\"a32ada29-7a91-4162-8681-ab1b4844ab74_ac3705af11d343e79825204f710c1589\",\"choices\":[{\"delta\":{\"content\":null,\"role\":null,\"tool_calls\":null,\"reasoning_content\":\"'ll cover the\"},\"finish_reason\":null,\"index\":0}],\"created\":1787069698,\"model\":\"mimo-v2.5\",\"object\":\"chat.completion.chunk\"}\n\ndata: {\"id\":\"a32ada29-7a91-4162-8681-ab1b4844ab74_ac3705af11d343e79825204f710c1589\",\"choices\":[{\"delta\":{\"content\":null,\"role\":null,\"tool_calls\":null,\"reasoning_content\":\" mechanisms\"},\"finish_reason\":null,\"index\":0}],\"created\":1787069698,\"model\":\"mimo-v2.5\",\"object\":\"chat.completion.chunk\"}\n\ndata: {\"id\":\"a32ada29-7a91-4162-8681-ab1b4844ab74_ac3705af11d343e79825204f710c1589\",\"choices\":[{\"delta\":{\"content\":null,\"role\":null,\"tool_calls\":null,\"reasoning_content\":null},\"finish_reason\":\"length\",\"index\":0}],\"created\":1787069698,\"model\":\"mimo-v2.5\",\"object\":\"chat.completion.chunk\",\"usage\":null}\n\ndata: {\"id\":\"a32ada29-7a91-4162-8681-ab1b4844ab74_ac3705af11d343e79825204f710c1589\",\"choices\":[],\"created\":1787069698,\"model\":\"mimo-v2.5\",\"object\":\"chat.completion.chunk\",\"usage\":{\"completion_tokens\":16,\"prompt_tokens\":23,\"total_tokens\":39,\"completion_tokens_details\":{\"reasoning_tokens\":15},\"prompt_tokens_details\":null}}\n\ndata: [DONE]\n\n"
+      }
+    }
+  ]
+}

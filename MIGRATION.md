@@ -288,9 +288,13 @@ routes until settings supply profiles. The one real consequence is a product asy
 reason below. **The MiMo card therefore has to land before the routes come back**, or Mio ships a
 UI where the competitor configures more easily than the product does.
 
-### The finding that reorders everything
+### The finding that reordered everything — **resolved in Stage 1**
 
-**A fresh Mio install has no in-app way to enter an API key.** Not a rough edge — a functional gap,
+The gap below was real when this plan was written. Stage 1 closed it as a side effect of deleting
+Mio's adapter: a route under `llm-pi-ai` renders dsh's own provider card, key input included. The
+analysis is kept because it is why the stages are ordered the way they are.
+
+**A fresh Mio install had no in-app way to enter an API key.** Not a rough edge — a functional gap,
 verified in the running UI, with both paths closed:
 
 - dsh's Models page picks a hand-written editor per provider family. `layoutOf()` in
@@ -304,52 +308,74 @@ verified in the running UI, with both paths closed:
 Today the key can only arrive through `MIO_API_KEY` or the credentials store. Onboarding is
 therefore not polish; it is the missing half of a shippable product.
 
-### Stage 0 — no dependencies
+### Stage 0 — no dependencies — **done 2026-08-22**
 
-- [ ] **Set the desktop app icon.** The packaged app currently ships Electron's default icon
-      (`default Electron icon is used — application icon is not set` in every build log). A full
-      Mio icon set already exists at `archive/packages/desktop/icons/prod/` (`.icns`, `.ico`, all
-      Linux PNG sizes) generated from `favicon-v3.svg` — an orange `#FF8A00` MIO wordmark on a
-      `#1C1B1A` rounded field. Pure gap-filling, touching no dsh internals
-- [ ] Refresh CLAUDE.md: it still describes `packages/desktop` and the Solid tier as active, and
-      its test commands point into `archive/`
+- [x] **Desktop app icon set.** The packaged app shipped Electron's default icon until now
+      (`default Electron icon is used — application icon is not set` in every build log).
+      `icon.icns` / `icon.ico` / `icon.png` (1024px master) are adopted from the archived desktop
+      app into `packages/shell/resources/`, wired with absolute paths for the same reason as the
+      entitlements: this config loads with `--projectDir .package`.
 
-### Stage 1 — MiMo adapter hardening (the "native-level" half)
+      The assets were checked before adopting rather than assumed good — the archive shipped a
+      dedicated guard (`scripts/check-mac-icon-geometry.ts`), which is a signal that icon geometry
+      had bitten someone. Extracting the `.icns` and re-running its core assertions confirms the
+      1024px master still matches Apple's system icon template exactly: opaque bounds
+      `104,104-919,919`, drop shadow unclipped at the canvas edge. Verified after packaging too —
+      the warning is gone, `CFBundleIconFile` resolves, the bundled `.icns` is byte-identical to
+      the source, and the rendered artwork is the Mio wordmark. The guard script itself is not
+      ported: it existed to catch regressions while the icon was being iterated on, and this is a
+      frozen asset
+- [x] **CLAUDE.md refreshed.** It described `packages/desktop` and the Solid tier as active, listed
+      a `dev:app` script that no longer exists, pointed its test commands into `archive/`, and
+      cited `packages/core/src/flag/flag.ts` for `MIO_*`. Also records the provider direction
+      change above. Note: CLAUDE.md and AGENTS.md are both in `.gitignore`, so that refresh is
+      local-only and does not travel with a clone — MIGRATION.md is the shared record
 
-Highest priority: these are defects in shipping code, and they need no new infrastructure. Twelve
-gaps were confirmed by driving the real adapter against a local server, not by reading it. **Four
-report success while losing data:**
+### Stage 1 — MiMo rides dsh's own adapter — **done 2026-08-22**
 
-- [ ] A **truncated stream is reported as a successful `stop`** with the partial text committed —
-      the adapter has no `[DONE]` discipline
-- [ ] A **final SSE event without a trailing newline is dropped outright**, losing model output
-      with no error
-- [ ] A **degenerate empty completion** becomes an empty assistant message instead of dsh's
-      retryable `EMPTY_RESPONSE`
-- [ ] An **image block in an assistant message is silently erased** from the wire body (the
-      user-role case is loudly refused; this one is not)
+The plan for this stage was to hand-fix twelve gaps in `@mio/llm-mimo`. It was the wrong plan.
+**The adapter should not have existed**, and every gap it had is gone with it.
 
-Compounding them: MiMo never emits `TRANSPORT`, `TIMEOUT`, `QUOTA`, `CONTEXT_WINDOW_EXCEEDED`, or
-`MALFORMED_RESPONSE`, and `dsh-llm-retry` matches on exactly
-`[EMPTY_RESPONSE, RATE_LIMIT, SERVER, TIMEOUT, TRANSPORT]` — so a network blip is a failed turn,
-not a retried one.
+Its entire justification was one claim, carried over from the archived Effect runtime's
+documentation and never tested: *MiMo authenticates with an `api-key` header, not
+`Authorization: Bearer`, so pi-ai cannot serve it.* The Phase 3 survey rated that `likely`, not
+verified. It is **false** — measured against the live API on 2026-08-22, MiMo accepts Bearer for
+non-streaming, streaming, `reasoning_content`, and tool calls alike, and returns the same
+standard OpenAI-compatible wire either way (usage with `cached_tokens`, first-fragment-only
+tool-call ids, a `[DONE]` terminator).
 
-- [ ] Classify the missing failure codes; a 402 "Insufficient balance" currently surfaces as an
-      unclassified error although dsh ships both the code and the detector helper
-- [ ] Add a stream idle watchdog — a stalled MiMo stream currently hangs indefinitely
-- [ ] Parse `Retry-After` in HTTP-date form; it is dropped today on exactly the rate-limit
-      responses where it matters
-- [ ] Pass `GenerateOptions.sessionId` / `.purpose` through — compaction and session-title calls
-      run at full reasoning cost because they are ignored
-- [ ] Fall back to the last good settings snapshot instead of breaking every subsequent request,
-      and throw `LlmError` rather than a bare `Error` (code `UNKNOWN`)
-- [ ] Decide the Anthropic path: `protocol` is hardcoded to `"openai"` at the one call site, so
-      the four `/anthropic` URLs in the endpoint table are dead constants. Either wire it or
-      delete them
+- [x] **`mio.patch.yml` configures `dsh-llm-pi-ai` to serve MiMo**, with the model catalog,
+      context window, and the four `reasoning_effort` tiers MiMo accepts. `@mio/llm-mimo` moved to
+      `archive/packages/`, and with it the four defects that reported success while losing data.
+      Mio now ships no provider code at all
+- [x] **The twelve gaps close by inheritance, not by hand.** pi-ai already has the stream idle
+      watchdog, retry policy, error classification, `Retry-After` parsing, request-size bounding,
+      and image pipeline this stage was going to build — and a dsh upgrade improves them for free
+- [x] **MiMo gets a real editor on dsh's own Models page.** `layoutOf()` keys on the *settings
+      namespace*, so a route under `llm-pi-ai` renders the pi-ai card: API key, display name,
+      **API base URL**, protocol, and an editable model catalog with a fetch button. Verified in a
+      packaged build. This is what answers the billing-track question — a token-plan account
+      repoints the endpoint from the UI instead of editing YAML — and it removes most of the
+      reason Stage 3 existed
+- [x] **Replay tests rebuilt at the composition level.** With no Mio adapter to unit-test, the
+      suite now boots the real headless profile against a local server replaying a cassette from
+      the archived suite and asserts the answer a user would see. It is mutation-checked: breaking
+      the model id in the patch layer fails it. This catches what can actually break now — a dsh
+      upgrade changing pi-ai's config schema, a route or model id drifting, or pi-ai mishandling
+      MiMo's wire
 
-Three items assumed to be gaps are **not**, because dsh has no such concept: monetary cost/pricing,
-structured output, and model discovery (`llm-deepseek` does not implement it either). Prompt
-caching is already at parity. Recording this so the list is not re-derived later.
+Two things this stage found by running the packaged build rather than reasoning about it:
+
+- **A cold-start regression this change introduced.** `$DSH_HOME` was created as a side effect of
+  placing a bundled plugin; with no plugin left to place, a first launch spawned the runtime child
+  with a non-existent cwd and died on a bare `spawn ENOENT` that reads as a missing binary. The
+  shell now creates the directory explicitly. Caught by deleting the profile directory and
+  relaunching, which is the only way this shows up
+- **Enabling DeepSeek is not free, for a reason that is not the Models page.** `llm-deepseek` also
+  contributes dsh's onboarding credential step, so with it enabled a first launch of *Mio* opens
+  on "添加一个 API Key 开始使用 / 配置 DeepSeek 官方模型". The rows stay disabled until Mio owns
+  onboarding — the sequencing this plan already required, arriving through a surface the plan had
+  not predicted
 
 ### Stage 2 — client UI plugin foundation (shared prerequisite)
 
@@ -381,11 +407,11 @@ Closes the gap above. dsh's onboarding chrome does not need rebuilding — only 
       `resolveConnection()` needs
 - [ ] **Validate the key before accepting it.** The archived form does **not**: no test request,
       no server check, only a non-blocking `sk-` / `tp-` prefix hint. Do not inherit that
-- [ ] **MiMo provider card as its own `settings.section` page** (decided 2026-08-22: option (a),
-      not an upstream PR). Writes the key through `api.credentials.set`, the same call dsh's own
-      card makes. Accepted trade-off: a Mio settings page coexists with dsh's Models page. An
-      upstream PR making `layoutOf()` extensible stays on the table but is not the plan — dsh is a
-      days-old preview and the patch would have to survive fast churn
+- [x] ~~**MiMo provider card as its own `settings.section` page.**~~ **Superseded by Stage 1**:
+      riding `llm-pi-ai` gives MiMo dsh's own pi-ai card — API key, base URL, protocol, and an
+      editable model catalog — so there is nothing left to hand-build, and the decision to avoid an
+      upstream `layoutOf()` PR is moot. Revisit only if MiMo needs a field that card cannot express
+      (a billing-track/region picker on top of the raw base URL is the likely candidate)
 - [ ] Note the surface's limit: the onboarding gate is `sessions ready && (no current session ||
       current session blank)`, so it can take over only from the empty state — a user who loses
       their key mid-session cannot be re-prompted there. The settings page is the answer for that
@@ -434,8 +460,14 @@ colour, and copy. The whale artwork and wordmark *are* compiled into
 
 ### Stage 5 — re-enable the DeepSeek routes
 
-- [ ] Drop the `disabled: true` rows for `llm-deepseek` and `llm-pi-ai` from `mio.patch.yml`,
-      after Stage 3 lands. Update CLAUDE.md's "MiMo-first" wording to match the decision above
+`llm-pi-ai` is already enabled — it is what serves MiMo (Stage 1). What remains is DeepSeek's own
+routes.
+
+- [ ] Drop the `disabled: true` row for `llm-deepseek`, after Stage 3 lands. The blocker is
+      concrete and was observed rather than predicted: `llm-deepseek` contributes dsh's onboarding
+      credential step, so enabling it makes a first launch of Mio ask for a **DeepSeek** key.
+      Mio's onboarding step has to shadow it first
+- [ ] Update CLAUDE.md's "MiMo-first" wording to match the decision above
 
 ### Stage 6 — MiMo ASR and TTS as standalone dsh plugins
 

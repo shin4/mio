@@ -67,7 +67,7 @@ jobs:
         with:
           bun-version: 1.3.14
 
-      # The runtime tier targets Node, not Bun: llm-mimo's replay tests run
+      # The runtime tier targets Node, not Bun: the composition replay tests run
       # under `node --test` with type stripping.
       - uses: actions/setup-node@v4
         with:

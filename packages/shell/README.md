@@ -28,7 +28,7 @@ dsh reaches Node's internal ESM loader one of two ways: the `--expose-internals`
 the ABI is not the problem — but its lookup then fails with `Unsupported/no-realm (no compatible
 GetAlignedPointerFromEmbedderData)`: Electron runs JavaScript in its own V8 realm, and the addon
 cannot reach Node's internals from there. Without the flag the loader falls back to resolving
-plugin entries from its own location, so profile plugins (including `@mio/llm-mimo`) are not
+plugin entries from its own location, so profile plugins are not
 found, and the HMR service refuses to start.
 
 Both take the runtime down — but **after** it has printed its URL. dsh serves before the plugin
@@ -44,15 +44,16 @@ reaches the app bundle, so a plugin shipped inside the app is invisible until it
 profile itself.
 
 `src/profile.ts` does that at startup: a plain directory copy of the plugin's published surface
-(`package.json` + `lib/`), re-copied when the shipped version differs so an app update replaces
-what the previous version left behind. No package manager runs on the user's machine — dsh
-symlinks its own installation's packages into `profiles/node_modules` when it scaffolds, and the
-copied plugin resolves its `peerDependencies` through that farm.
+(`package.json` + `lib/`), replaced wholesale on every launch so an app update cannot serve what
+the previous version left behind. No package manager runs on the user's machine — dsh symlinks its
+own installation's packages into `profiles/node_modules` when it scaffolds, and the copied plugin
+resolves its `peerDependencies` through that farm.
 
-`@mio/llm-mimo` is a dependency of this package for one reason only: so electron-builder collects
-it into the app. Module resolution never goes through it — the runtime resolves the copy in the
-profile. Packaging ships it as a real directory (`asarUnpack`) since the startup copy reads it
-with plain `fs`.
+**The list is empty today.** MiMo is served by dsh's own `llm-pi-ai` adapter through configuration
+alone (`packages/runtime/mio.patch.yml`), so Mio ships no runtime plugin and nothing needs
+placing. The machinery stays because the next Mio surface — the client UI plugin carrying
+onboarding and branding — needs exactly this placement, and re-deriving it would be churn
+(MIGRATION.md, Phase 3 Stage 2).
 
 ## Port and profile
 
