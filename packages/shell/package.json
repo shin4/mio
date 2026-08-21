@@ -11,13 +11,14 @@
   "scripts": {
     "build": "tsgo -p tsconfig.build.json",
     "typecheck": "tsgo --noEmit -p tsconfig.json",
-    "dev": "bun run build && electron .",
+    "dev": "bun run --cwd ../client-ui build && bun run build && electron .",
     "package": "bun run stage && electron-builder --projectDir .package --config ../electron-builder.config.ts",
     "package:mac": "bun run stage && electron-builder --projectDir .package --config ../electron-builder.config.ts --mac",
     "stage": "bun ./scripts/stage.ts"
   },
   "dependencies": {
-    "@deepseek-ai/dsh": "0.1.1-rc.1"
+    "@deepseek-ai/dsh": "0.1.1-rc.1",
+    "@mio/client-ui": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",
