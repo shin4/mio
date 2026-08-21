@@ -318,3 +318,33 @@ test("refuses an effort MiMo would reject, naming the allowed set", async () => 
   // MiMo answers an unsupported tier with an opaque 400; fail before the call.
   ok(error.message.includes("xhigh") && error.message.includes("none, low, medium, high"))
 })
+
+test("replays an assistant turn's reasoning back to the provider", async () => {
+  const { baseURL, captured } = await replay("reasoning-and-text")
+  const assistant = assistantMessage("m2", [
+    { type: "reasoning", text: "The user asked for arithmetic." },
+    { type: "text", text: "4." },
+  ])
+  await collect(
+    adapterFor(baseURL).stream(request({ messages: [userMessage("m1", "2+2?"), assistant, userMessage("m3", "×3?")] })),
+  )
+
+  const sent = JSON.parse(captured.body!) as { messages: { role: string; reasoning_content?: string }[] }
+  const turn = sent.messages.find((message) => message.role === "assistant")
+  // Dropping it would hide the reasoning state the previous turn produced; MiMo
+  // accepts the field in history (verified live).
+  strictEqual(turn?.reasoning_content, "The user asked for arithmetic.")
+})
+
+test("keeps a reasoning-only assistant turn instead of dropping it", async () => {
+  const { baseURL, captured } = await replay("reasoning-and-text")
+  const assistant = assistantMessage("m2", [{ type: "reasoning", text: "Still thinking." }])
+  await collect(
+    adapterFor(baseURL).stream(request({ messages: [userMessage("m1", "hi"), assistant, userMessage("m3", "go on")] })),
+  )
+
+  const sent = JSON.parse(captured.body!) as { messages: { role: string; reasoning_content?: string }[] }
+  const turn = sent.messages.find((message) => message.role === "assistant")
+  // The empty-assistant filter must not treat reasoning as "no content".
+  strictEqual(turn?.reasoning_content, "Still thinking.")
+})

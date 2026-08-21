@@ -79,6 +79,7 @@ type OpenAIMessage =
   | {
       role: "assistant"
       content: string | null
+      reasoning_content?: string
       tool_calls?: { id: string; type: "function"; function: { name: string; arguments: string } }[]
     }
   | { role: "tool"; tool_call_id: string; content: string }
@@ -190,12 +191,26 @@ function serializeMessage(message: Message): OpenAIMessage[] {
         function: { name: block.name, arguments: block.arguments },
       }))
     const text = textOf(message.content)
+    // Replayed so the model sees the reasoning state its previous turn produced,
+    // as dsh's own DeepSeek adapter does. MiMo accepts the field in history —
+    // verified against the live API, including a turn that carries reasoning and
+    // no content.
+    const reasoning = message.content
+      .filter((block) => block.type === "reasoning")
+      .map((block) => block.text)
+      .join("")
     // Port of filterMimoOpenAIEmptyAssistantMessages: MiMo rejects assistant
-    // turns that carry neither text nor tool calls.
-    if (!text && toolCalls.length === 0) return toolResults
+    // turns that carry neither text nor tool calls. A reasoning-only turn is
+    // still worth sending, so it counts as content here.
+    if (!text && !reasoning && toolCalls.length === 0) return toolResults
     return [
       ...toolResults,
-      { role: "assistant", content: text || null, ...(toolCalls.length ? { tool_calls: toolCalls } : {}) },
+      {
+        role: "assistant",
+        content: text || null,
+        ...(reasoning ? { reasoning_content: reasoning } : {}),
+        ...(toolCalls.length ? { tool_calls: toolCalls } : {}),
+      },
     ]
   }
 
