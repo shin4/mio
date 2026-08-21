@@ -348,3 +348,31 @@ test("keeps a reasoning-only assistant turn instead of dropping it", async () =>
   // The empty-assistant filter must not treat reasoning as "no content".
   strictEqual(turn?.reasoning_content, "Still thinking.")
 })
+
+test("refuses a tool result whose content it cannot serialize", async () => {
+  const { baseURL } = await replay("reasoning-and-text")
+  const result: Message = {
+    id: MessageId("t"),
+    role: "user",
+    content: [
+      {
+        type: "tool-result",
+        toolCallId: "call_1" as never,
+        // An image-only result: `textOf` would render it as "", producing a
+        // successful tool message with no evidence in it.
+        content: [{ type: "image", attachment: {} as never }],
+      },
+    ],
+    source: { kind: "tool", callId: "call_1" as never },
+  }
+  const error = await adapterFor(baseURL)
+    .stream(request({ messages: [userMessage("m1", "look"), result] }))
+    [Symbol.asyncIterator]()
+    .next()
+    .then(() => undefined)
+    .catch((cause: unknown) => cause)
+
+  ok(error instanceof Error)
+  strictEqual((error as { code?: string }).code, "UNSUPPORTED_CONTENT")
+  ok(error.message.includes("call_1"), "the refusal must name the call it concerns")
+})

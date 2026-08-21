@@ -180,7 +180,19 @@ function serializeMessages(options: GenerateOptions): OpenAIMessage[] {
 function serializeMessage(message: Message): OpenAIMessage[] {
   const toolResults = message.content
     .filter((block): block is ToolResultBlock => block.type === "tool-result")
-    .map((block): OpenAIMessage => ({ role: "tool", tool_call_id: block.toolCallId, content: textOf(block.content) }))
+    .map((block): OpenAIMessage => {
+      // A tool result carries its own blocks, and `textOf` keeps only the text
+      // ones. Silently dropping the rest would send a successful `role: "tool"`
+      // message with an empty body — the model would then reason about evidence
+      // it was never shown. Refuse instead, with the same error an unsupported
+      // user-side block raises.
+      if (block.content.some((inner) => inner.type !== "text"))
+        throw new LlmError(
+          `${PKG}: tool result for ${block.toolCallId} carries content this adapter cannot serialize yet (MIGRATION.md, Phase 1 multimodal parts)`,
+          "UNSUPPORTED_CONTENT",
+        )
+      return { role: "tool", tool_call_id: block.toolCallId, content: textOf(block.content) }
+    })
 
   if (message.role === "assistant") {
     const toolCalls = message.content

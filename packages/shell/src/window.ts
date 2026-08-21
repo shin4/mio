@@ -6,7 +6,7 @@
  * exposes nothing to the page: everything the product does is a dsh plugin, and
  * a privileged channel here would be a way around that.
  */
-import { BrowserWindow, shell } from "electron"
+import { BrowserWindow, screen, shell } from "electron"
 import { readFile, writeFile } from "node:fs/promises"
 import path from "node:path"
 
@@ -42,9 +42,36 @@ async function readBounds(file: string): Promise<Bounds> {
   return bounds as Bounds
 }
 
+/**
+ * Drop a saved position that no display can show any more.
+ *
+ * Bounds are restored from a previous run, and displays change between runs: the
+ * monitor the window was last closed on may be unplugged, or the layout
+ * rearranged. Spreading those coordinates would open the window somewhere the
+ * user cannot reach it, with no way back short of deleting a file they do not
+ * know about. Size is always safe to keep; only the position is dropped.
+ */
+function onVisibleDisplay(bounds: Bounds): Bounds {
+  if (bounds.x === undefined || bounds.y === undefined) return bounds
+  const visible = screen.getAllDisplays().some((display) => {
+    const area = display.workArea
+    // Any real overlap is enough — a window may straddle two displays, and the
+    // title bar only has to be reachable.
+    return (
+      bounds.x! < area.x + area.width &&
+      bounds.x! + bounds.width > area.x &&
+      bounds.y! < area.y + area.height &&
+      bounds.y! + bounds.height > area.y
+    )
+  })
+  if (visible) return bounds
+  const { x: _x, y: _y, ...size } = bounds
+  return size
+}
+
 export async function createWindow(url: string, stateDir: string): Promise<BrowserWindow> {
   const file = path.join(stateDir, "window.json")
-  const bounds = await readBounds(file)
+  const bounds = onVisibleDisplay(await readBounds(file))
 
   const window = new BrowserWindow({
     ...bounds,
