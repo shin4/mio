@@ -9,7 +9,9 @@ paths = [
   '''(^|/)node_modules/''',
   '''(^|/)\.turbo/''',
   '''(^|/)dist/''',
+  '''^packages/shell/lib/''',
   '''^packages/desktop/out/''',
+  '''(^|/)out/''',
 ]
 
 [[allowlists]]
@@ -17,7 +19,10 @@ description = "Intentional fake secret fixtures for HTTP recorder redaction test
 condition = "AND"
 targetRules = ["generic-api-key", "gcp-api-key"]
 regexTarget = "line"
-paths = ['''^packages/http-recorder/test/record-replay\.test\.ts$''']
+paths = [
+  '''^archive/packages/http-recorder/test/record-replay\.test\.ts$''',
+  '''^packages/http-recorder/test/record-replay\.test\.ts$''',
+]
 regexes = [
   '''sk-123456789012345678901234''',
   '''AIzaSyDHibiBRvJZLsFnPYPoiTwxY4ztQ55yqCE''',
@@ -29,5 +34,5 @@ description = "Keyboard shortcut labels that look like generic API keys"
 condition = "AND"
 targetRules = ["generic-api-key"]
 regexTarget = "line"
-paths = ['''^packages/app/src/pages/layout\.tsx$''']
+paths = ['''^archive/packages/app/src/pages/layout\.tsx$''', '''^packages/app/src/pages/layout\.tsx$''']
 regexes = ['''keybind:\s*"shift\+alt\+arrow(up|down)"''']

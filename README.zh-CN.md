@@ -22,8 +22,14 @@
 ## Mio 是什么？
 
 Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能体，支持 Windows 与 macOS。它不把 MiMo
-当作通用的 OpenAI 兼容提供商，而是让它成为智能体运行时中的一等公民——构建于 OpenCode harness 之上，并以
+当作通用的 OpenAI 兼容提供商，而是让它成为智能体运行时中的一等公民——基于
+[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（dsh）组合而成，并以
 MiMo 为先。它把编程、推理、多模态理解（图像、PDF、视频）、语音听写（ASR）与语音生成（TTS）整合在同一个桌面应用中。
+
+> **状态说明——智能体内核正在重建。** Mio 的运行时已从原先派生自 OpenCode 的内核迁移到 dsh
+> （`MIGRATION.md` 是计划的唯一依据，旧内核冻结在 `archive/`）。下方发布页中的安装包由旧架构构建。
+> 当前 `main` 分支上，MiMo 对话、工具调用与桌面壳已完整跑通；安装包打包与多模态 / 语音能力
+> 正在以 dsh 插件的形式重建。
 
 ## 🔊 听一段
 
@@ -56,7 +62,7 @@ MiMo 为先。它把编程、推理、多模态理解（图像、PDF、视频）
 - **带完整多模态上下文编程** — 直接拖入截图、PDF 或视频，让 MiMo 在编辑代码的同时对它们进行推理。
 - **用语音驱动编码** — 通过内置语音识别（ASR）口述提示，并让回答通过语音合成（TTS）朗读出来。
 - **让花费可预期** — 每个任务都会被路由到最具性价比的可用 MiMo 模型，token 与成本实时可见。
-- **与上游 OpenCode 并存** — 项目状态隔离在 `mimo.json` 与 `.mimo/` 中，本地配置互不混用。
+- **与上游 OpenCode 并存** — 项目状态隔离在 `mio.json` 与 `.mio/` 中，本地配置互不混用。
 
 ## 与通用方案的区别
 
@@ -76,8 +82,8 @@ bun install
 bun run dev:desktop
 ```
 
-构建安装包：`bun run package:mac`、`bun run package:win`（Linux 也可通过 `bun run package:linux` 构建）。
-完整开发环境请见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+`bun run dev:runtime` 可单独启动运行时，在浏览器中打开 dsh 的 Web UI。
+新桌面壳的安装包打包尚未接入（见 MIGRATION.md 第 2 阶段）。完整开发环境请见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
 ## 连接 MiMo
 
@@ -119,7 +125,8 @@ Mio 应用本身免费且采用 MIT 许可证，你只需为 MiMo API 用量付�
 
 ## 许可证
 
-[MIT](./LICENSE)。Mio 衍生自 [opencode](https://github.com/anomalyco/opencode)；归属与第三方声明见
+[MIT](./LICENSE)。Mio 基于 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（MIT）
+组合而成，其归档内核衍生自 [opencode](https://github.com/anomalyco/opencode)；归属与第三方声明见
 [NOTICE.md](./NOTICE.md)。
 
 > **声明：** Mio 是一个独立的、由社区维护的项目。它不是小米官方产品，与小米公司（Xiaomi Inc.）无附属、

@@ -8,7 +8,7 @@ import { type ComponentProps } from "solid-js"
 // viewBox and rounds every pixel by `MIO_RX` grid units, so each mark shares
 // one source of truth. The committed favicon SVGs and desktop icon images are
 // kept visually in sync with this grid (see packages/ui/src/assets/favicon and
-// packages/desktop/icons/*).
+// archive/packages/desktop/icons/*).
 
 const MIO_W = 37
 const MIO_H = 18

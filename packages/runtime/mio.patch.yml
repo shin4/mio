@@ -1,0 +1,24 @@
+# Mio patch layer over the dsh web profile: MiMo-first composition.
+# Applied with: dsh web --patch ./mio.patch.yml
+# Semantics (cordis-plugin-include applyEntryPatches): a bare `id` entry merges
+# into the existing row; `insert:` appends new rows. Inspect the result with
+# `dsh --profile web --patch ./mio.patch.yml --dump-config`.
+
+# Register the MiMo provider adapter.
+- insert:
+    - id: llm-mimo
+      name: '@mio/llm-mimo'
+      config:
+        billing: pay-as-you-go
+
+# MiMo-first: default every new session to MiMo.
+- id: agent-default-model
+  config:
+    provider: mimo
+    model: mimo-v2.5
+
+# Drop the bundled provider routes; Mio ships MiMo only.
+- id: llm-deepseek
+  disabled: true
+- id: llm-pi-ai
+  disabled: true
