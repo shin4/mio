@@ -32,7 +32,7 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
 | `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` builds the plugin and copies it into the repo-local `.dsh/` profile; `bun run dev:runtime` boots green |
 | `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 14 replay tests green over live-captured cassettes |
-| dsh pin | `0.1.0-rc.7`, bumped 2026-08-19 — the whole family moved together (61 direct deps, none added or removed). Nothing in Mio changed to absorb it |
+| dsh pin | `0.1.0-rc.8`, bumped 2026-08-21. Note it is tagged `next`, not `latest` — Mio deliberately tracks ahead of upstream's promoted release |
 | End-to-end | Verified 2026-08-19 against a live MiMo token-plan account: real answers, real tool use, real file writes through the dsh web UI |
 
 ## Phase 1 — MiMo provider adapter (dsh-native elsewhere)
@@ -159,6 +159,15 @@ Other archived MiMo behavior, same audit:
       `bunfig.toml`'s 3-day gate, so it was installed with a one-off
       `bun install --minimum-release-age=0`; the policy itself is unchanged, deliberately — the
       gate matters most for the fastest-moving dependency
+- [x] **dsh rc.7 → rc.8 (2026-08-21)** — second rehearsal, and the first one to catch a real
+      behavior change: since rc.8 the runtime opens the Web UI in the system browser by default,
+      which for the shell means a stray second copy of the app on every launch. Fixed by passing
+      `--no-open`. Everything else absorbed unchanged (typecheck, 14 replay tests, a live tool
+      call, runtime, shell, packaged build). rc.8 adds one plugin —
+      `dsh-tool-pwsh-persistent` — and is tagged `next` rather than `latest`; adopted knowingly,
+      again with a one-off `--minimum-release-age=0` and the gate left in place.
+      The lesson is the cadence: batching several dsh releases would have buried this change
+      among dozens of others
 - [ ] Cross-architecture builds: only the host arch is verified. Native modules (ripgrep, koffi,
       sharp, `node-addon-require-builtin`) come from platform-specific packages that the staging
       step installs for the machine it runs on, so Intel-Mac / Windows / Linux artifacts need a

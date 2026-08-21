@@ -64,7 +64,11 @@ export function startRuntime(options: RuntimeOptions): Promise<RuntimeHandle> {
   // native addon, and that addon is built for Node's ABI, not Electron's. Without
   // the flag the loader silently falls back to resolving plugin entries from its
   // own location (so profile plugins vanish) and the HMR service refuses to start.
-  const child = spawn(process.execPath, ["--expose-internals", dshBin(), "web", "--patch", options.patch, "--port", "0"], {
+  // `--no-open`: since rc.8 the runtime opens the Web UI in the system browser
+  // by default. The shell already shows that UI in its own window, so a browser
+  // tab on every launch would be a second, stray copy of the app.
+  const args = ["--expose-internals", dshBin(), "web", "--patch", options.patch, "--port", "0", "--no-open"]
+  const child = spawn(process.execPath, args, {
     cwd: options.cwd,
     env: { ...process.env, ELECTRON_RUN_AS_NODE: "1", DSH_HOME: options.dshHome },
     stdio: ["ignore", "pipe", "pipe"],
