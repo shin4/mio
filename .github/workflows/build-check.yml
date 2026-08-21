@@ -1,0 +1,67 @@
+name: build-check
+
+# Unsigned packaging smoke test for the desktop shell, one runner per artifact.
+#
+# The matrix is not a convenience: dsh's native dependencies (ripgrep, koffi,
+# sharp, node-addon-require-builtin) ship as platform packages, and the staging
+# step installs the ones for the machine it runs on. An artifact for another
+# platform or architecture has to be built on that platform — there is no
+# cross-compile flag that would make one runner sufficient.
+
+on:
+  pull_request:
+    paths-ignore: ["**/*.md", "docs/**"]
+  push:
+    branches: [main]
+    paths-ignore: ["**/*.md", "docs/**"]
+
+concurrency:
+  group: build-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: macOS arm64, os: macos-14 }
+          - { name: macOS x64, os: macos-13 }
+          - { name: Windows x64, os: windows-latest }
+          - { name: Linux x64, os: ubuntu-latest }
+    env:
+      # Unsigned: CI proves the app assembles and its tree is complete, not that
+      # it is distributable. Signing and notarization belong to a release job.
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      # The staging step installs the app tree with npm, so a Node toolchain is
+      # required alongside Bun.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install workspace
+        run: bun install --frozen-lockfile --minimum-release-age=0
+
+      - name: Package (unsigned)
+        working-directory: packages/shell
+        run: bun run package
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mio-${{ matrix.os }}
+          path: |
+            packages/shell/dist/*.dmg
+            packages/shell/dist/*.exe
+            packages/shell/dist/*.AppImage
+          if-no-files-found: error
+          retention-days: 7

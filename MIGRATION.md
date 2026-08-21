@@ -168,10 +168,18 @@ Other archived MiMo behavior, same audit:
       again with a one-off `--minimum-release-age=0` and the gate left in place.
       The lesson is the cadence: batching several dsh releases would have buried this change
       among dozens of others
-- [ ] Cross-architecture builds: only the host arch is verified. Native modules (ripgrep, koffi,
-      sharp, `node-addon-require-builtin`) come from platform-specific packages that the staging
-      step installs for the machine it runs on, so Intel-Mac / Windows / Linux artifacts need a
-      CI matrix, not a flag
+- [x] **Cross-platform packaging CI (2026-08-21)** — `.github/workflows/build-check.yml` builds
+      one unsigned artifact per runner: macOS arm64, macOS x64, Windows x64, Linux x64. The matrix
+      is structural, not stylistic: dsh's native dependencies ship as platform packages that the
+      staging step installs for the host, so no flag makes one runner sufficient.
+      Three bugs were fixed to make it possible, all found locally rather than by a red CI: the
+      electron-builder config hardcoded `["arm64","x64"]` for macOS (overriding the CLI and
+      producing an x64 artifact carrying arm64 binaries), the staging step used a Unix-only
+      `cp -R`, and `--projectDir` makes `--config` resolve against the staged directory so the
+      script's config path never existed.
+      CI installs with `--minimum-release-age=0`: the gate in `bunfig.toml` guards *resolution*,
+      and CI replays an already-reviewed lockfile — without it every dsh bump leaves CI red for
+      days. This was not hypothetical; the rc.8 bump broke the existing jobs
 - [ ] Signing, notarization, and an updater feed (the archived `workflows/release.yml` is the
       reference for what a release job has to cover)
 - [ ] Carry the still-missing shell services: auto-update, `mio://` deep links, native menus,

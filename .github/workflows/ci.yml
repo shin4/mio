@@ -31,7 +31,10 @@ jobs:
         with:
           bun-version: 1.3.14
 
-      - run: bun install --frozen-lockfile
+      # `--minimum-release-age=0`: the gate in bunfig.toml guards *resolution*,
+      # when a person adds or bumps a dependency. CI replays a lockfile that was
+      # already reviewed, and would otherwise fail for days after every dsh bump.
+      - run: bun install --frozen-lockfile --minimum-release-age=0
 
       - run: bun turbo typecheck
 
@@ -44,7 +47,10 @@ jobs:
         with:
           bun-version: 1.3.14
 
-      - run: bun install --frozen-lockfile
+      # `--minimum-release-age=0`: the gate in bunfig.toml guards *resolution*,
+      # when a person adds or bumps a dependency. CI replays a lockfile that was
+      # already reviewed, and would otherwise fail for days after every dsh bump.
+      - run: bun install --frozen-lockfile --minimum-release-age=0
 
       - name: Lint
         run: bun run lint
@@ -64,7 +70,10 @@ jobs:
         with:
           node-version: 24
 
-      - run: bun install --frozen-lockfile
+      # `--minimum-release-age=0`: the gate in bunfig.toml guards *resolution*,
+      # when a person adds or bumps a dependency. CI replays a lockfile that was
+      # already reviewed, and would otherwise fail for days after every dsh bump.
+      - run: bun install --frozen-lockfile --minimum-release-age=0
 
       - name: Run tests
         run: bun turbo test:ci

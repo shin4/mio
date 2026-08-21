@@ -16,7 +16,7 @@
  * files it publishes.
  */
 import { $ } from "bun"
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
+import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
 
 const SHELL = path.resolve(import.meta.dir, "..")
@@ -104,7 +104,9 @@ await writeFile(
 // warning, and a no-op echo. Do not blanket-approve them to silence the warning.
 await $`npm install --omit=dev --no-audit --no-fund`.cwd(STAGE)
 await rm(path.join(STAGE, tarball), { force: true })
-await $`cp -R ${path.join(SHELL, "lib")} ${path.join(STAGE, "lib")}`.quiet()
+// `fs.cp` rather than a shell copy: this script runs on the Windows and Linux
+// CI runners too.
+await cp(path.join(SHELL, "lib"), path.join(STAGE, "lib"), { recursive: true })
 
 const staged = (await readdir(path.join(STAGE, "node_modules", "@deepseek-ai"))).length
 console.log(`stage: app tree ready at ${STAGE} (${staged} dsh packages)`)

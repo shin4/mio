@@ -42,16 +42,21 @@ const config: Configuration = {
 
   extraResources: [{ from: "../../runtime/mio.patch.yml", to: "mio.patch.yml" }],
 
+  // No `arch` anywhere: each target builds for the machine it runs on. dsh's
+  // native modules (ripgrep, koffi, sharp, node-addon-require-builtin) arrive
+  // as platform packages that the staging step installs for the host, so a
+  // cross-arch artifact built here would carry the wrong binaries. Other
+  // architectures come from other runners — see .github/workflows/build-check.yml.
   mac: {
     category: "public.app-category.developer-tools",
-    target: [{ target: "dmg", arch: ["arm64", "x64"] }],
+    target: [{ target: "dmg" }],
     // Signing and notarization are opt-in; an unsigned local build is the default.
     identity: process.env.CSC_IDENTITY_AUTO_DISCOVERY === "false" ? null : undefined,
   },
 
-  win: { target: [{ target: "nsis", arch: ["x64"] }] },
+  win: { target: [{ target: "nsis" }] },
 
-  linux: { target: [{ target: "AppImage", arch: ["x64"] }], category: "Development" },
+  linux: { target: [{ target: "AppImage" }], category: "Development" },
 
   // Releases are not wired up yet (MIGRATION.md, Phase 2).
   publish: null,
