@@ -22,8 +22,12 @@ import type { Context } from "@deepseek-ai/cordis"
 // import — the harness stays external to this bundle.
 import type {} from "@deepseek-ai/dsh-host-webserver"
 
-/** Required service: the web host, for routes, the index transform, and the injection row. */
-export const inject = ["webServer"]
+// No top-level `inject`. The web work below needs `ctx.webServer`, but making
+// the whole entry depend on it would mean this plugin cannot activate in a
+// profile that has no web host — and a loader entry that never activates fails
+// the boot, taking the runtime down with it rather than degrading. The
+// browser half is served by the web host or not at all, so the Node half
+// simply has nothing to do there.
 
 /** What dsh's renderer calls the product, and what Mio calls it. */
 const DSH_PRODUCT = "DeepSeek Harness"
@@ -89,6 +93,15 @@ const TITLE_GUARD = `(() => {
  * @param ctx - the plugin context carrying `ctx.webServer`.
  */
 export function apply(ctx: Context): void {
+  // Runs once a web host exists, and never in a profile without one.
+  ctx.inject(["webServer"], (ctx) => applyWebBrand(ctx))
+}
+
+/**
+ * Everything that needs a browser to matter.
+ * @param ctx - a context in which `ctx.webServer` is available.
+ */
+function applyWebBrand(ctx: Context): void {
   // Two brand assets live in the prebuilt `dsh-web-frontend` dist, which Mio
   // does not patch. A named exact route is matched before the fallback that
   // serves that dist, so registering these paths shadows the shipped files

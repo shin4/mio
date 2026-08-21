@@ -405,7 +405,16 @@ and branding is the smallest real one.
 - [x] Provisioned through the same profile copy Phase 2 built and Stage 1 left idle —
       `installBundledPlugins` in the shell, `npm pack` into the staged tree for packaging. dsh
       loads plugins **relative to the profile directory**, so this placement is what makes the row
-      resolvable at all
+      resolvable at all. The composition test does the same placement, which CI had to teach:
+      adding the row to `mio.patch.yml` broke that test, and it was not re-run locally because the
+      change looked like it belonged to a different package. **The composition test reads
+      `mio.patch.yml` — any change to that file has to re-run it**
+- [x] **The plugin has no hard `inject`.** The Node half's web work needs `ctx.webServer`, but
+      declaring that at the entry level means the plugin cannot activate in a profile without a
+      web host — and a loader entry that never activates fails the whole boot rather than
+      degrading, which is how the headless composition test found it. The web work sits inside
+      `ctx.inject(["webServer"], …)` instead, so the entry always activates and contributes
+      nothing where there is no browser
 
 ### Stage 3 — onboarding and the MiMo provider card
 

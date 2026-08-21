@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "@mio/client-ui": "workspace:*"
   }
 }
