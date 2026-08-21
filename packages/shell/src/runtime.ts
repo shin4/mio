@@ -109,6 +109,10 @@ export function startRuntime(options: RuntimeOptions): Promise<RuntimeHandle> {
 
     const fail = (reason: string) => {
       finish(() => {
+        // This kill is ours, so the exit it causes must not also be reported as
+        // an unexpected one: the caller is already about to receive the
+        // rejection, and both paths show the user a dialog.
+        stopping = true
         child.kill()
         reject(new Error(`${reason}\n${recent.join("\n")}`.trim()))
       })

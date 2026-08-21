@@ -212,9 +212,10 @@ function serializeMessage(message: Message): OpenAIMessage[] {
       .map((block) => block.text)
       .join("")
     // Port of filterMimoOpenAIEmptyAssistantMessages: MiMo rejects assistant
-    // turns that carry neither text nor tool calls. A reasoning-only turn is
-    // still worth sending, so it counts as content here.
-    if (!text && !reasoning && toolCalls.length === 0) return toolResults
+    // turns that carry neither text nor tool calls, and counts whitespace-only
+    // content as empty — the archived filter trimmed before deciding, so this
+    // does too. A reasoning-only turn is still worth sending, so it counts.
+    if (!text.trim() && !reasoning.trim() && toolCalls.length === 0) return toolResults
     return [
       ...toolResults,
       {

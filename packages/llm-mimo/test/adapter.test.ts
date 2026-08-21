@@ -376,3 +376,17 @@ test("refuses a tool result whose content it cannot serialize", async () => {
   strictEqual((error as { code?: string }).code, "UNSUPPORTED_CONTENT")
   ok(error.message.includes("call_1"), "the refusal must name the call it concerns")
 })
+
+test("drops an assistant turn whose only content is whitespace", async () => {
+  const { baseURL, captured } = await replay("reasoning-and-text")
+  // MiMo counts whitespace-only assistant content as empty and rejects the
+  // continuation, so the filter has to trim before deciding.
+  const blank = assistantMessage("m0", [{ type: "text", text: "   \n  " }])
+  await collect(adapterFor(baseURL).stream(request({ messages: [blank, userMessage("m1", "hello")] })))
+
+  const sent = JSON.parse(captured.body!) as { messages: { role: string }[] }
+  deepStrictEqual(
+    sent.messages.map((message) => message.role),
+    ["user"],
+  )
+})
