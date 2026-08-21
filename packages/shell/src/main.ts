@@ -7,6 +7,7 @@
  * behavior belongs in dsh plugins (MIGRATION.md).
  */
 import { app, BrowserWindow, dialog } from "electron"
+import { mkdir } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { installBundledPlugins } from "./profile.ts"
@@ -37,20 +38,22 @@ const PROFILE = "web"
  * A packaged build reads them from `app.asar.unpacked`: the runtime is a real
  * child process and the plugin copy uses plain `fs`, so neither can see inside
  * an asar archive. `electron-builder.config.ts` unpacks exactly that subtree,
- * where the plugin sits under its package name. In development the same plugin
- * is the workspace directory, whose path has no scope in it.
+ * where a plugin would sit under its package name. In development the same
+ * plugin is a workspace directory, whose path has no scope in it.
+ *
+ * The plugin list is empty today: MiMo is served by dsh's own `llm-pi-ai`
+ * adapter through configuration alone (`mio.patch.yml`), so Mio ships no
+ * runtime plugin. `installBundledPlugins` stays because the next Mio surface —
+ * the client UI plugin carrying onboarding and branding — needs exactly this
+ * placement (MIGRATION.md, Phase 3 Stage 2).
  */
 function resources() {
   if (!app.isPackaged) {
     const workspace = path.join(PACKAGE_ROOT, "..")
-    return {
-      plugins: [{ name: "@mio/llm-mimo", source: path.join(workspace, "llm-mimo") }],
-      patch: path.join(workspace, "runtime", "mio.patch.yml"),
-    }
+    return { plugins: [], patch: path.join(workspace, "runtime", "mio.patch.yml") }
   }
-  const modules = path.join(process.resourcesPath, "app.asar.unpacked", "node_modules")
   return {
-    plugins: [{ name: "@mio/llm-mimo", source: path.join(modules, "@mio", "llm-mimo") }],
+    plugins: [],
     // Data, shipped as an extra resource rather than as part of the app bundle.
     patch: path.join(process.resourcesPath, "mio.patch.yml"),
   }
@@ -65,6 +68,12 @@ let runtime: RuntimeHandle | undefined
 async function start() {
   const home = dshHome()
   const { plugins, patch } = resources()
+  // Before anything reads or spawns against it. On a first launch nothing has
+  // created this yet, and it is the runtime child's cwd — a missing cwd makes
+  // `spawn` fail with a bare ENOENT that reads as "the binary is missing".
+  // Placing a bundled plugin used to create it as a side effect; with no Mio
+  // runtime plugin left to place, that no longer happens.
+  await mkdir(home, { recursive: true })
   const installed = await installBundledPlugins(home, PROFILE, plugins)
   if (installed.length > 0) console.log(`[shell] installed into the ${PROFILE} profile: ${installed.join(", ")}`)
 
@@ -78,7 +87,7 @@ async function start() {
     },
     dshHome: home,
     // The runtime's cwd is only a resolution base; every path it is given is
-    // absolute. $DSH_HOME is a directory that always exists and is writable.
+    // absolute. $DSH_HOME is writable and is created above if it did not exist.
     cwd: home,
     patch,
     onLog: (line) => console.log(`[runtime] ${line}`),

@@ -3,16 +3,22 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "description": "Mio agent runtime composed on DeepSeek Harness (dsh) — MiMo-first plugin composition",
+  "description": "Mio agent runtime composed on DeepSeek Harness (dsh) \u2014 MiMo served by dsh's own pi-ai adapter",
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
   },
   "scripts": {
-    "setup": "bun ./scripts/setup-profile.ts",
-    "dev": "bun ./scripts/setup-profile.ts && DSH_HOME=${DSH_HOME:-$PWD/.dsh} dsh web --patch ./mio.patch.yml"
+    "dev": "DSH_HOME=${DSH_HOME:-$PWD/.dsh} dsh web --patch ./mio.patch.yml",
+    "test": "node --test --experimental-strip-types test/*.test.ts",
+    "test:ci": "node --test --experimental-strip-types test/*.test.ts",
+    "typecheck": "tsgo --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@deepseek-ai/dsh": "0.1.1-rc.1",
-    "@mio/llm-mimo": "workspace:*"
+    "@deepseek-ai/dsh": "0.1.1-rc.1"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "typescript": "catalog:"
   }
 }
