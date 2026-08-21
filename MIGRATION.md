@@ -304,15 +304,28 @@ verified in the running UI, with both paths closed:
 Today the key can only arrive through `MIO_API_KEY` or the credentials store. Onboarding is
 therefore not polish; it is the missing half of a shippable product.
 
-### Stage 0 — no dependencies
+### Stage 0 — no dependencies — **done 2026-08-22**
 
-- [ ] **Set the desktop app icon.** The packaged app currently ships Electron's default icon
-      (`default Electron icon is used — application icon is not set` in every build log). A full
-      Mio icon set already exists at `archive/packages/desktop/icons/prod/` (`.icns`, `.ico`, all
-      Linux PNG sizes) generated from `favicon-v3.svg` — an orange `#FF8A00` MIO wordmark on a
-      `#1C1B1A` rounded field. Pure gap-filling, touching no dsh internals
-- [ ] Refresh CLAUDE.md: it still describes `packages/desktop` and the Solid tier as active, and
-      its test commands point into `archive/`
+- [x] **Desktop app icon set.** The packaged app shipped Electron's default icon until now
+      (`default Electron icon is used — application icon is not set` in every build log).
+      `icon.icns` / `icon.ico` / `icon.png` (1024px master) are adopted from the archived desktop
+      app into `packages/shell/resources/`, wired with absolute paths for the same reason as the
+      entitlements: this config loads with `--projectDir .package`.
+
+      The assets were checked before adopting rather than assumed good — the archive shipped a
+      dedicated guard (`scripts/check-mac-icon-geometry.ts`), which is a signal that icon geometry
+      had bitten someone. Extracting the `.icns` and re-running its core assertions confirms the
+      1024px master still matches Apple's system icon template exactly: opaque bounds
+      `104,104-919,919`, drop shadow unclipped at the canvas edge. Verified after packaging too —
+      the warning is gone, `CFBundleIconFile` resolves, the bundled `.icns` is byte-identical to
+      the source, and the rendered artwork is the Mio wordmark. The guard script itself is not
+      ported: it existed to catch regressions while the icon was being iterated on, and this is a
+      frozen asset
+- [x] **CLAUDE.md refreshed.** It described `packages/desktop` and the Solid tier as active, listed
+      a `dev:app` script that no longer exists, pointed its test commands into `archive/`, and
+      cited `packages/core/src/flag/flag.ts` for `MIO_*`. Also records the provider direction
+      change above. Note: CLAUDE.md and AGENTS.md are both in `.gitignore`, so that refresh is
+      local-only and does not travel with a clone — MIGRATION.md is the shared record
 
 ### Stage 1 — MiMo adapter hardening (the "native-level" half)
 
