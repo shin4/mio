@@ -27,12 +27,14 @@ dsh reaches Node's internal ESM loader one of two ways: the `--expose-internals`
 `node-addon-require-builtin` native addon. The addon *loads* fine under Electron — it is N-API, so
 the ABI is not the problem — but its lookup then fails with `Unsupported/no-realm (no compatible
 GetAlignedPointerFromEmbedderData)`: Electron runs JavaScript in its own V8 realm, and the addon
-cannot reach Node's internals from there. Without the flag, two things break — and only one of
-them is loud:
+cannot reach Node's internals from there. Without the flag the loader falls back to resolving
+plugin entries from its own location, so profile plugins (including `@mio/llm-mimo`) are not
+found, and the HMR service refuses to start.
 
-- the loader silently falls back to resolving plugin entries from its own location, so profile
-  plugins (including `@mio/llm-mimo`) are not found;
-- the HMR service refuses to start and takes the boot down with it.
+Both take the runtime down — but **after** it has printed its URL. dsh serves before the plugin
+tree finishes loading, so a late failure used to leave the shell holding a window pointed at a
+server that was already gone, with nothing shown to the user. `startRuntime` now keeps watching
+the child after it reports ready and surfaces an unexpected exit with the runtime's own output.
 
 ## How Mio's plugins reach the runtime
 

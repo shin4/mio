@@ -69,6 +69,13 @@ async function start() {
   if (installed.length > 0) console.log(`[shell] installed into the ${PROFILE} profile: ${installed.join(", ")}`)
 
   runtime = await startRuntime({
+    onUnexpectedExit: (exit) => {
+      // The window is already showing a server that no longer exists. Say so
+      // rather than leaving a blank frame, and take the app down with it.
+      runtime = undefined
+      const how = exit.signal ? `signal ${exit.signal}` : `code ${exit.code ?? "unknown"}`
+      showStartupFailure(new Error(`The Mio runtime stopped unexpectedly (${how}).\n\n${exit.output}`))
+    },
     dshHome: home,
     // The runtime's cwd is only a resolution base; every path it is given is
     // absolute. $DSH_HOME is a directory that always exists and is writable.

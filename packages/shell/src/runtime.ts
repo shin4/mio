@@ -23,6 +23,14 @@ export interface RuntimeHandle {
   stop(): Promise<void>
 }
 
+/** Why the runtime stopped on its own, with the tail of its output. */
+export interface RuntimeExit {
+  readonly code: number | null
+  readonly signal: NodeJS.Signals | null
+  /** The runtime's last lines — the only account of what went wrong. */
+  readonly output: string
+}
+
 export interface RuntimeOptions {
   /** `$DSH_HOME` — holds profiles, sessions, and settings. */
   readonly dshHome: string
@@ -32,6 +40,16 @@ export interface RuntimeOptions {
   readonly patch: string
   /** Receives runtime stdout/stderr lines for the shell's own logging. */
   readonly onLog?: (line: string) => void
+  /**
+   * The runtime died on its own, after it had already reported a URL.
+   *
+   * This is not hypothetical: dsh prints its URL before the plugin tree has
+   * finished loading, so a later failure — a plugin that will not resolve, a
+   * bad patch entry — leaves the shell holding a window pointed at a server
+   * that is already gone. Without this the user sees a blank window and no
+   * explanation. Not called for a {@link RuntimeHandle.stop}.
+   */
+  readonly onUnexpectedExit?: (exit: RuntimeExit) => void
 }
 
 /**
@@ -63,9 +81,10 @@ export function startRuntime(options: RuntimeOptions): Promise<RuntimeHandle> {
   // loader either through this flag or through the `node-addon-require-builtin`
   // native addon. The addon loads under Electron (it is N-API) but its lookup
   // fails — Electron runs JS in its own V8 realm, and the addon cannot reach
-  // Node's internals from there. Without the flag the loader silently falls back
-  // to resolving plugin entries from its own location (so profile plugins
-  // vanish) and the HMR service refuses to start.
+  // Node's internals from there. Without the flag the loader falls back to
+  // resolving plugin entries from its own location (so profile plugins vanish)
+  // and the HMR service refuses to start — both after the URL is already out,
+  // which is what `onUnexpectedExit` exists to catch.
   // `--no-open`: since rc.8 the runtime opens the Web UI in the system browser
   // by default. The shell already shows that UI in its own window, so a browser
   // tab on every launch would be a second, stray copy of the app.
@@ -79,6 +98,7 @@ export function startRuntime(options: RuntimeOptions): Promise<RuntimeHandle> {
   return new Promise<RuntimeHandle>((resolve, reject) => {
     const recent: string[] = []
     let settled = false
+    let stopping = false
 
     const finish = (outcome: () => void) => {
       if (settled) return
@@ -105,16 +125,31 @@ export function startRuntime(options: RuntimeOptions): Promise<RuntimeHandle> {
         if (recent.length > 40) recent.shift()
 
         const url = URL_LINE.exec(line)?.[1]
-        if (url) finish(() => resolve({ url, stop: () => stop(child) }))
+        if (url)
+          finish(() =>
+            resolve({
+              url,
+              stop: () => {
+                stopping = true
+                return stop(child)
+              },
+            }),
+          )
       }
     }
 
     child.stdout.on("data", read)
     child.stderr.on("data", read)
     child.on("error", (cause) => fail(`Failed to start the dsh runtime: ${cause.message}`))
-    child.on("exit", (code, signal) =>
-      fail(`The dsh runtime exited before it was ready (code ${code ?? "null"}, signal ${signal ?? "none"}).`),
-    )
+    child.on("exit", (code, signal) => {
+      if (!settled) {
+        fail(`The dsh runtime exited before it was ready (code ${code ?? "null"}, signal ${signal ?? "none"}).`)
+        return
+      }
+      // Already reported ready, so the window is up: this is the late-failure
+      // case the caller has to be told about.
+      if (!stopping) options.onUnexpectedExit?.({ code, signal, output: recent.join("\n") })
+    })
   })
 }
 

@@ -119,8 +119,8 @@ Other archived MiMo behavior, same audit:
       Two environment facts this cost real debugging, both documented in `packages/shell/README.md`:
       the runtime child **must** get `--expose-internals` (dsh otherwise needs the
       `node-addon-require-builtin` addon; it loads under Electron but cannot reach Node's
-      internals from Electron's own V8 realm — silently breaking plugin resolution and loudly
-      breaking HMR), and `@mio/llm-mimo` must live
+      internals from Electron's own V8 realm, which breaks plugin resolution and HMR), and
+      `@mio/llm-mimo` must live
       in the same `node_modules` tree as `@deepseek-ai/dsh` (a profile-local install is invisible
       on that fallback path), which is why it is a root dependency and what packaging must
       preserve
@@ -181,6 +181,12 @@ Other archived MiMo behavior, same audit:
       CI installs with `--minimum-release-age=0`: the gate in `bunfig.toml` guards *resolution*,
       and CI replays an already-reviewed lockfile — without it every dsh bump leaves CI red for
       days. This was not hypothetical; the rc.8 bump broke the existing jobs
+- [x] **The shell keeps watching the runtime after it reports ready (2026-08-21)** — dsh prints
+      its URL before the plugin tree finishes loading, so a late failure left the shell holding a
+      window pointed at a server that had already exited, with nothing shown. Verified by killing
+      the runtime mid-session: the shell now names the exit and shows the runtime's own output.
+      This also corrects a claim recorded here earlier: losing `--expose-internals` does not
+      silently degrade plugin resolution, it kills the runtime — the silence was the shell's
 - [ ] Signing, notarization, and an updater feed (the archived `workflows/release.yml` is the
       reference for what a release job has to cover)
 - [ ] Carry the still-missing shell services: auto-update, `mio://` deep links, native menus,
