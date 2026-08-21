@@ -32,7 +32,7 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
 | `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` builds the plugin and copies it into the repo-local `.dsh/` profile; `bun run dev:runtime` boots green |
 | `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 14 replay tests green over live-captured cassettes |
-| dsh pin | `0.1.0-rc.8`, bumped 2026-08-21. Note it is tagged `next`, not `latest` — Mio deliberately tracks ahead of upstream's promoted release |
+| dsh pin | `0.1.1-rc.1`, bumped 2026-08-21 (both `latest` and `next` upstream). Still a prerelease line — there is no stable `0.1.1` |
 | End-to-end | Verified 2026-08-19 against a live MiMo token-plan account: real answers, real tool use, real file writes through the dsh web UI |
 
 ## Phase 1 — MiMo provider adapter (dsh-native elsewhere)
@@ -187,6 +187,13 @@ Other archived MiMo behavior, same audit:
       the runtime mid-session: the shell now names the exit and shows the runtime's own output.
       This also corrects a claim recorded here earlier: losing `--expose-internals` does not
       silently degrade plugin resolution, it kills the runtime — the silence was the shell's
+- [x] **dsh rc.8 → 0.1.1-rc.1 (2026-08-21)** — third rehearsal, absorbed with no code change:
+      typecheck, 14 replay tests, a live MiMo request, runtime, shell, and a packaged build all
+      clean. Dependency surface identical to rc.8 (62 direct deps, none added or removed), so this
+      is an ordinary family bump. Note there is no stable `0.1.1`; `0.1.1-rc.1` is what upstream
+      tagged `latest`. It was **3 hours old** when installed — an order of magnitude inside
+      `bunfig.toml`'s 3-day gate, which exists for exactly that window. Bypassed knowingly with a
+      one-off `--minimum-release-age=0`; the policy is unchanged
 - [ ] Signing, notarization, and an updater feed (the archived `workflows/release.yml` is the
       reference for what a release job has to cover)
 - [ ] Carry the still-missing shell services: auto-update, `mio://` deep links, native menus,
