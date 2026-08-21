@@ -13,7 +13,7 @@
  * resolves its peer dependencies through that same farm. The copy may run before
  * the profile exists — dsh scaffolds around it and leaves it in place.
  */
-import { cp, mkdir, readFile, rm } from "node:fs/promises"
+import { cp, mkdir, rm } from "node:fs/promises"
 import path from "node:path"
 
 /** One plugin to place in the profile: a package directory to copy verbatim. */
@@ -24,23 +24,15 @@ export interface BundledPlugin {
   readonly source: string
 }
 
-/** Version already installed in the profile, or undefined when absent/unreadable. */
-async function installedVersion(target: string): Promise<string | undefined> {
-  const raw = await readFile(path.join(target, "package.json"), "utf8").catch(() => undefined)
-  if (raw === undefined) return undefined
-  const parsed: unknown = JSON.parse(raw)
-  if (typeof parsed !== "object" || parsed === null) return undefined
-  const version = (parsed as { version?: unknown }).version
-  return typeof version === "string" ? version : undefined
-}
-
 /**
- * Ensure every bundled plugin is present in the profile at the shipped version.
+ * Ensure every bundled plugin is present in the profile.
  *
- * Re-copies when the installed version differs, so an app update replaces the
- * plugin a previous version left behind. Copies are whole-directory replacements
- * rather than merges: a stale file from an older build would otherwise survive.
- * @returns the names actually written, for logging.
+ * The copy is unconditional. Comparing versions looks cheaper but is wrong here:
+ * a plugin's version does not move when its code does, so the check would copy
+ * once and then serve whatever the first install left behind — across app updates
+ * included. Copies are whole-directory replacements rather than merges, so a file
+ * an older build left behind cannot survive either.
+ * @returns the names written, for logging.
  */
 export async function installBundledPlugins(
   dshHome: string,
@@ -52,9 +44,6 @@ export async function installBundledPlugins(
 
   for (const plugin of plugins) {
     const target = path.join(root, ...plugin.name.split("/"))
-    const shipped = await installedVersion(plugin.source)
-    if (shipped !== undefined && shipped === (await installedVersion(target))) continue
-
     await rm(target, { recursive: true, force: true })
     await mkdir(target, { recursive: true })
     // Only what the package publishes. Copying the whole source directory would

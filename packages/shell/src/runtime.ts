@@ -116,8 +116,15 @@ export function startRuntime(options: RuntimeOptions): Promise<RuntimeHandle> {
 
     const timer = setTimeout(() => fail("dsh runtime did not report a URL in time."), READY_TIMEOUT_MS)
 
+    // The pipe splits wherever it likes, so the readiness announcement can arrive
+    // in two chunks. Hold the unterminated tail between reads — matching each chunk
+    // in isolation would miss the URL and kill a runtime that started fine.
+    let pending = ""
     const read = (chunk: Buffer) => {
-      for (const line of chunk.toString().split("\n")) {
+      pending += chunk.toString()
+      const lines = pending.split("\n")
+      pending = lines.pop() ?? ""
+      for (const line of lines) {
         if (!line.trim()) continue
         options.onLog?.(line)
         // Keep a bounded tail: enough to diagnose a failure, never a full log.

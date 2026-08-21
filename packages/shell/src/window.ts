@@ -19,11 +19,23 @@ interface Bounds {
   y?: number
 }
 
+/** Parse JSON, or `undefined` when the text is not valid JSON. */
+function parseJson(raw: string): unknown {
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return undefined
+  }
+}
+
 /** Remember window size and position across launches. */
 async function readBounds(file: string): Promise<Bounds> {
   const raw = await readFile(file, "utf8").catch(() => undefined)
   if (raw === undefined) return DEFAULT_BOUNDS
-  const parsed: unknown = JSON.parse(raw)
+  // A truncated write — quitting while the async save is in flight — leaves invalid
+  // JSON. Treat that exactly like a missing file: a window position nobody can read
+  // must never be the reason the app refuses to launch.
+  const parsed = parseJson(raw)
   if (typeof parsed !== "object" || parsed === null) return DEFAULT_BOUNDS
   const bounds = parsed as Partial<Bounds>
   if (typeof bounds.width !== "number" || typeof bounds.height !== "number") return DEFAULT_BOUNDS
@@ -47,13 +59,18 @@ export async function createWindow(url: string, stateDir: string): Promise<Brows
 
   window.once("ready-to-show", () => window.show())
 
-  // Anything that is not the local UI belongs in the user's own browser.
+  // Anything that is not the local UI belongs in the user's own browser. Compare
+  // parsed origins, never string prefixes: `http://127.0.0.1:53124@evil.example`
+  // starts with the runtime URL but its host is `evil.example`, so a prefix test
+  // would load an attacker's page inside the Mio window.
+  const origin = new URL(url).origin
   const external = (target: string) => {
-    if (!target.startsWith(url)) {
-      void shell.openExternal(target)
-      return true
-    }
-    return false
+    const parsed = URL.parse(target)
+    if (parsed?.origin === origin) return false
+    // An unparseable target is not the runtime; hand it to the OS, which will
+    // refuse anything it does not recognize.
+    void shell.openExternal(target)
+    return true
   }
   window.webContents.setWindowOpenHandler(({ url: target }) => {
     external(target)

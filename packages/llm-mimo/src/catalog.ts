@@ -18,14 +18,16 @@ export const DEFAULT_MAX_TOKENS = 128_000
 
 export const providerInfo: LlmProviderInfo = { id: PROVIDER, name: "MiMo" }
 
-// dsh's modality vocabulary is text|image today; MiMo v2.5 also takes
-// audio/video input, which needs a ModelModalityMap extension (Phase 1).
+// Declared capability must match what the adapter can serialize: `serializeMessage`
+// refuses image blocks, so no model advertises `image` yet. MiMo v2.5 accepts image,
+// audio, and video input — wiring that is Phase 1 (MIGRATION.md), and the modality
+// goes back on the model it works for at the same time.
 const MODELS: readonly { id: string; name: string; description: string; inputModalities: ModelModality[] }[] = [
   {
     id: "mimo-v2.5",
     name: "MiMo V2.5",
     description: "Multimodal flagship",
-    inputModalities: ["text", "image"],
+    inputModalities: ["text"],
   },
   {
     id: "mimo-v2.5-pro",
