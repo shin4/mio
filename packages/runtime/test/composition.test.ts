@@ -18,7 +18,7 @@ import assert from "node:assert/strict"
 import { spawn } from "node:child_process"
 import { createServer, type Server } from "node:http"
 import { createRequire } from "node:module"
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import path from "node:path"
 import { after, test } from "node:test"
@@ -27,6 +27,7 @@ import { fileURLToPath } from "node:url"
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const RUNTIME = path.resolve(HERE, "..")
 const PATCH = path.join(RUNTIME, "mio.patch.yml")
+const CLIENT_UI = path.resolve(RUNTIME, "..", "client-ui")
 const DSH_BIN = createRequire(import.meta.url).resolve("@deepseek-ai/dsh/lib/bin.js")
 
 interface Cassette {
@@ -91,9 +92,28 @@ after(async () => {
   for (const home of homes) await rm(home, { recursive: true, force: true })
 })
 
+/**
+ * Place Mio's plugins in the profile, exactly as the desktop shell does at
+ * startup (`packages/shell/src/profile.ts`).
+ *
+ * dsh resolves a plugin entry relative to the **profile directory**, so a row
+ * the patch layer names is unresolvable until its package is copied there — the
+ * tree then fails to load as a whole, taking the runtime with it. Skipping this
+ * is not a smaller test, it is a broken one.
+ */
+async function installPlugins(home: string, profile: string) {
+  const target = path.join(home, "profiles", profile, "node_modules", "@mio", "client-ui")
+  await mkdir(target, { recursive: true })
+  await cp(path.join(CLIENT_UI, "package.json"), path.join(target, "package.json"))
+  await cp(path.join(CLIENT_UI, "lib"), path.join(target, "lib"), { recursive: true, dereference: true }).catch(() => {
+    throw new Error("composition: @mio/client-ui is not built — run `bun run --cwd ../client-ui build`")
+  })
+}
+
 async function boot(cassette: string, prompt: string) {
   const home = await mkdtemp(path.join(tmpdir(), "mio-composition-"))
   homes.push(home)
+  await installPlugins(home, "headless")
   const { server, baseURL, calls } = await replayServer(cassette)
   const result = await runHeadless(await patchPointedAt(baseURL, home), home, prompt)
   await new Promise<void>((resolve) => server.close(() => resolve()))

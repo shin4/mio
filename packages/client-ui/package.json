@@ -1,0 +1,43 @@
+{
+  "name": "@mio/client-ui",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Mio's dsh client UI plugin \u2014 Mio brand presentation on dsh's own slots",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js"
+  ],
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "bun ./scripts/bundle.ts",
+    "typecheck": "tsgo --noEmit -p tsconfig.json",
+    "test": "bun run build && node --test --experimental-strip-types test/*.test.ts",
+    "test:ci": "bun run build && node --test --experimental-strip-types test/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "^19.2.2",
+    "@typescript/native-preview": "catalog:",
+    "typescript": "catalog:",
+    "@deepseek-ai/cordis": "4.0.1",
+    "@deepseek-ai/dsh-host-webserver": "0.1.1-rc.1"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "4.0.1",
+    "@deepseek-ai/dsh-host-webserver": "0.1.1-rc.1"
+  }
+}

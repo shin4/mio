@@ -56,6 +56,17 @@
               medium: medium
               high: high
 
+# Mio's own client UI plugin: brand presentation on dsh's declared slots.
+# `dsh-client-ui-brand-official`'s README names this as the supported path —
+# "alternative presentation belongs in another Cordis package occupying the
+# same slots" — so the official row is turned off rather than shadowed, and
+# nothing in the prebuilt web frontend is patched.
+- insert:
+    - id: mio-client-ui
+      name: '@mio/client-ui'
+- id: ui-brand-official
+  disabled: true
+
 # MiMo-first: default every new session to MiMo.
 - id: agent-default-model
   config:

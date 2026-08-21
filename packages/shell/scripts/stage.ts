@@ -13,14 +13,17 @@
  * app package into `.package/` and installs its production dependencies with
  * npm, which produces the ordinary layout electron-builder understands.
  *
- * Mio itself contributes no runtime package here: MiMo is served by dsh's own
- * `llm-pi-ai` adapter through `mio.patch.yml`, which ships as an extra resource.
+ * Mio contributes no *provider* package here — MiMo is served by dsh's own
+ * `llm-pi-ai` adapter through `mio.patch.yml`, which ships as an extra
+ * resource. It does contribute `@mio/client-ui`, whose browser half the client
+ * module system serves to the page, so that one is packed in.
  */
 import { $ } from "bun"
 import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
 
 const SHELL = path.resolve(import.meta.dir, "..")
+const CLIENT_UI = path.resolve(SHELL, "..", "client-ui")
 const STAGE = path.join(SHELL, ".package")
 const WORKSPACE = path.resolve(SHELL, "..", "..")
 
@@ -62,10 +65,17 @@ const shellPkg = await Bun.file(path.join(SHELL, "package.json")).json()
  */
 const appVersion = (process.env.MIO_VERSION ?? shellPkg.version).replace(/^v/, "")
 
+await $`bun run --cwd ${CLIENT_UI} build`
 await $`bun run --cwd ${SHELL} build`
 
 await rm(STAGE, { recursive: true, force: true })
 await mkdir(STAGE, { recursive: true })
+
+// `npm pack` honors the plugin's `files` field, so the staged copy carries its
+// published surface and nothing from the checkout.
+await $`npm pack --pack-destination ${STAGE} --silent`.cwd(CLIENT_UI).quiet()
+const tarball = (await readdir(STAGE)).find((entry) => entry.endsWith(".tgz"))
+if (!tarball) throw new Error("stage: npm pack produced no tarball")
 
 const pins = await pinnedVersions()
 if (pins["@deepseek-ai/dsh"] !== shellPkg.dependencies["@deepseek-ai/dsh"])
@@ -87,7 +97,7 @@ await writeFile(
       private: true,
       type: "module",
       main: "./lib/main.js",
-      dependencies: pins,
+      dependencies: { ...pins, "@mio/client-ui": `file:${tarball}` },
       // Also as overrides, so anything npm pulls in transitively collapses onto
       // the same versions instead of introducing a second copy.
       overrides: pins,
@@ -103,6 +113,7 @@ await writeFile(
 // three pending scripts are a source build koffi does not need, a protobufjs
 // warning, and a no-op echo. Do not blanket-approve them to silence the warning.
 await $`npm install --omit=dev --no-audit --no-fund`.cwd(STAGE)
+await rm(path.join(STAGE, tarball), { force: true })
 // `fs.cp` rather than a shell copy: this script runs on the Windows and Linux
 // CI runners too.
 await cp(path.join(SHELL, "lib"), path.join(STAGE, "lib"), { recursive: true })

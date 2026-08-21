@@ -377,23 +377,44 @@ Two things this stage found by running the packaged build rather than reasoning 
   onboarding — the sequencing this plan already required, arriving through a surface the plan had
   not predicted
 
-### Stage 2 — client UI plugin foundation (shared prerequisite)
+### Stage 2 — client UI plugin foundation — **done 2026-08-22**
 
-dsh client UI plugins are ordinary npm packages **loaded dynamically at runtime from the profile's
-cordis tree**, not bundled into the prebuilt frontend — verified end to end by hand-writing a probe
-package, installing it the way `@mio/llm-mimo` is installed, and watching it appear in
-`window.__DSH_BOOT__`, get served from `/plugins/<pkg>/client.js`, and render a new Settings page.
-Third parties can add UI without forking.
+Delivered together with Stage 4, deliberately: a foundation with no consumer cannot be verified,
+and branding is the smallest real one.
 
-- [ ] **Reproduce the client bundle wrapper.** The build preset that emits dsh's lazy-CJS bundle
-      format (`clientBundle` / `packages/client/tsdown.client.ts`) is **not published** — every
-      client package's build script is a bare `tsdown` with no shipped config. The loader contract
-      (`window.__ModuleLoader__.load({id, factory})`) is fully documented in `dsh-client-modules`'
-      README, and a hand-written bundle worked first try. Check the upstream GitHub repo for the
-      real plugin before writing our own
-- [ ] Ship `@mio/client-ui` as a workspace package, provisioned into the profile by the same
-      copy that `setup-profile.ts` and `shell/src/profile.ts` already do for the provider plugin
-      — the profile-relative resolution constraint from Phase 2 applies identically
+- [x] **`@mio/client-ui`**, a two-half dsh plugin. The Node half is a Loader seat (which is what
+      makes the client module system find and serve the browser half) plus the host-side brand
+      work below; the browser half occupies dsh's declared slots. dsh's own
+      `dsh-client-ui-brand-official` has exactly this shape, and its README names the path:
+      "alternative presentation belongs in another Cordis package occupying the same slots"
+- [x] **The bundle wrapper, reproduced rather than vendored.** A plugin bundle is a classic script
+      whose execution only *registers* a factory
+      (`window.__ModuleLoader__.load({id, factory})`), with externals resolved through an injected
+      `require`. Upstream builds its own client packages with
+      `packages/client/tsdown.client.ts`, which is **not** published and is not vendorable: ~590
+      lines wired into dsh's build faces (`DSH_BUILD_FACE`, the static-link roster, a bundle
+      purity gate, a lightningcss module-CSS pipeline) importing three repo-internal files.
+      Tracking it would break on every dsh bump to buy machinery Mio does not use. `scripts/`
+      `bundle.ts` reproduces only the artifact shape, in ~90 lines, and `test/` asserts that shape
+      so a loader-contract change fails there instead of as a blank page.
+
+      Two build hazards are guarded rather than discovered later: a harness package inlined into
+      the bundle (a second React or cordis is a broken page, not a size regression), and
+      `react/jsx-dev-runtime`, which builds cleanly and then fails at materialization because the
+      shell seeds the production runtime only
+- [x] Provisioned through the same profile copy Phase 2 built and Stage 1 left idle —
+      `installBundledPlugins` in the shell, `npm pack` into the staged tree for packaging. dsh
+      loads plugins **relative to the profile directory**, so this placement is what makes the row
+      resolvable at all. The composition test does the same placement, which CI had to teach:
+      adding the row to `mio.patch.yml` broke that test, and it was not re-run locally because the
+      change looked like it belonged to a different package. **The composition test reads
+      `mio.patch.yml` — any change to that file has to re-run it**
+- [x] **The plugin has no hard `inject`.** The Node half's web work needs `ctx.webServer`, but
+      declaring that at the entry level means the plugin cannot activate in a profile without a
+      web host — and a loader entry that never activates fails the whole boot rather than
+      degrading, which is how the headless composition test found it. The web work sits inside
+      `ctx.inject(["webServer"], …)` instead, so the entry always activates and contributes
+      nothing where there is no browser
 
 ### Stage 3 — onboarding and the MiMo provider card
 
@@ -420,43 +441,53 @@ Closes the gap above. dsh's onboarding chrome does not need rebuilding — only 
       `LOCALE_IDS = ["zh", "en"]`, so nothing is lost. CLAUDE.md's "19-locale i18n" is misleading
       for these strings specifically
 
-### Stage 4 — Mio branding
+### Stage 4 — Mio branding — **done 2026-08-22**
 
-Achievable entirely through supported seams, verified by building a brand plugin, booting the
-runtime, and driving it in a browser: the sidebar mark, sidebar wordmark, conversation hero, and
-the DeepSeek onboarding dialog were all replaced, and a full-page text sweep of the running app
-found zero visible "DeepSeek" strings, with the prebuilt dist untouched.
+Verified the way the plan asked for: a sweep of the *running* app, on a fresh profile, in both
+themes and in a packaged build. **Zero "DeepSeek" / "Harness" / "DSH" strings** survive in text
+nodes or accessible attributes, and the prebuilt `dsh-web-frontend` dist is not patched.
 
-One first-pass conclusion was **wrong and is corrected here**: "almost no branding lives in the
-dist" came from grepping the dist for `deepseek`, which cannot find branding that is artwork,
-colour, and copy. The whale artwork and wordmark *are* compiled into
-`dsh-web-frontend/dist/assets/index-*.js`, and `favicon.svg`, `manifest.webmanifest`, and
-`<title>` are dist files. They are reachable anyway — just by different seams.
+- [x] **Brand slots.** `sidebar.brand.mark`, `sidebar.brand.name`, and
+      `conversation.hero.brand.mark`, registered as one declaration-aware set through nested
+      `slots.inject()` so the package works whichever order the declarers activate in, and
+      withdraws cleanly. `mio.patch.yml` disables the `ui-brand-official` row rather than
+      out-prioritizing it
+- [x] **The mark is the `M`, not the wordmark — a fix the first attempt needed.** Rendering the
+      full "Mio" wordmark into these slots looked right in source and wrong on screen: the slots
+      are square (24px and 34px as the shell sizes them) and the wordmark is 37:18, so the letters
+      came out ~9px tall, illegible, *and* doubled against the wordmark the neighbouring name slot
+      already draws. The mark now carries the `M` alone, which is 16:18 and fills a square, on the
+      icon's dark field so it reads as the same product icon the dock shows. Caught by measuring
+      the rendered elements, not by reading the code
+- [x] **Document title**, the one brand surface no slot reaches:
+      `dsh-client-ui-renderer` hardcodes `productTitle = "DeepSeek Harness"` and writes it from a
+      hardcoded sibling of the root outlet, so no occupant can displace it and a bare `id` patch
+      cannot re-point the row. Fixed with `ctx.webServer.tapIndex()` for the served `<title>` plus
+      a `webserver/index-inject` head script that rewrites the product name at the `document.title`
+      property level. It **rewrites rather than pins**, so dsh's deliberate `<session> — <product>`
+      projection survives — verified live: `Refactor the parser — DeepSeek Harness` comes back as
+      `Refactor the parser — Mio`. That is why this is not done in the Electron shell with
+      `page-title-updated` + `preventDefault()`, which can only freeze the whole title and would
+      leave `bun run dev:runtime` wrong anyway.
 
-- [ ] Replace the brand slot occupants (`dsh-client-ui-brand-official`) by slot shadowing on
-      `priority`. dsh documents these slots for exactly this: "deployments may replace the shell's
-      fish fallback"
-- [ ] Shadow `/favicon.svg` and `/manifest.webmanifest` with named `kind: "exact"` routes, which
-      take precedence over the prebuilt dist with zero dist modification
-- [ ] **Window title.** `dsh-client-ui-renderer` hardcodes `const productTitle = "DeepSeek
-      Harness"` and writes it to `document.title` in a `useEffect`; it is the only occurrence in
-      ~200 packages, has no config field, and is not a slot, so it cannot be displaced by an
-      occupant. It is still solvable **without a fork** — a ~40-line host plugin using
-      `ctx.webServer.tapIndex()` plus the typed `webserver/index-inject` script row, both
-      documented, proven live (`document.title === "Mio"`, session-title projection preserved as
-      `Refactor the parser — Mio`). An earlier note here recommended solving it in Electron with
-      `page-title-updated` + `preventDefault()`; **that is strictly weaker** — it freezes the
-      native title, discarding dsh's deliberate `<session> — <product>` projection, and leaves
-      `document.title` wrong for `bun run dev:runtime`. Label the plugin a workaround for upstream
-      version skew: `dsh-client-web@0.1.1-rc.1` already ships a `DocumentTitle` that honours the
-      served `<title>`; the same-version prebuilt dist is simply stale relative to it, so a plain
-      `tapIndex` suffices once the dist catches up
-- [ ] **Do not miss `welcome-notice`.** Four of the "DeepSeek Harness" strings in
-      `dsh-client-ui-settings-models` belong to a second onboarding step (order `-100`) that is
-      **not** gated behind the `llm-deepseek` provider — disabling that plugin does not remove
-      them
-- [ ] Accepted as cosmetic: the design token ramp is named `--dsw-static-deepseek-*`. Values can
-      be overridden via `overrideTokens`; the names still leak into DOM inspection
+      **Label: workaround for upstream version skew, delete when it closes.**
+      `dsh-client-web@0.1.1-rc.1` already ships a `DocumentTitle` honouring the served `<title>`,
+      which the tap alone controls; the prebuilt dist pinned at the same version is simply stale
+      relative to it
+- [x] **`/favicon.svg` and `/manifest.webmanifest`**, both dist files, shadowed with named
+      `kind: "exact"` routes — matched before the fallback that serves the dist
+- [x] **`welcome-notice`, the piece the plan warned about.** It survives disabling `llm-deepseek`
+      because its only gate is a settings version flag, and it opens a first run of Mio with
+      "DeepSeek Harness 0.1 is in testing for Harness developers… welcome to the DSH plugin
+      ecosystem" — right for dsh, wrong product and wrong audience here. Retired by occupying its
+      cell (`settings.onboarding`, id `welcome-notice`) with a step that completes immediately,
+      which is the step contract rather than a way around it: dsh's own notice renders null while
+      it decides not to show.
+
+      dsh named the mechanism itself. Registering at the same priority is refused outright with
+      *"already has an entry with id welcome-notice at priority 0 — register at a different
+      priority to shadow it (lowest renders)"*, so Mio registers at −1
+- [x] Accepted as cosmetic: the design token ramp is still named `--dsw-static-deepseek-*`
 
 ### Stage 5 — re-enable the DeepSeek routes
 

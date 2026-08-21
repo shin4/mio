@@ -41,19 +41,22 @@ const PROFILE = "web"
  * where a plugin would sit under its package name. In development the same
  * plugin is a workspace directory, whose path has no scope in it.
  *
- * The plugin list is empty today: MiMo is served by dsh's own `llm-pi-ai`
- * adapter through configuration alone (`mio.patch.yml`), so Mio ships no
- * runtime plugin. `installBundledPlugins` stays because the next Mio surface —
- * the client UI plugin carrying onboarding and branding — needs exactly this
- * placement (MIGRATION.md, Phase 3 Stage 2).
+ * Mio ships no *runtime* plugin — MiMo is served by dsh's own `llm-pi-ai`
+ * adapter through configuration alone (`mio.patch.yml`). `@mio/client-ui` is a
+ * browser-half plugin, but it still needs a Loader row on the host side for the
+ * client module system to find it, so it is placed the same way.
  */
 function resources() {
   if (!app.isPackaged) {
     const workspace = path.join(PACKAGE_ROOT, "..")
-    return { plugins: [], patch: path.join(workspace, "runtime", "mio.patch.yml") }
+    return {
+      plugins: [{ name: "@mio/client-ui", source: path.join(workspace, "client-ui") }],
+      patch: path.join(workspace, "runtime", "mio.patch.yml"),
+    }
   }
+  const modules = path.join(process.resourcesPath, "app.asar.unpacked", "node_modules")
   return {
-    plugins: [],
+    plugins: [{ name: "@mio/client-ui", source: path.join(modules, "@mio", "client-ui") }],
     // Data, shipped as an extra resource rather than as part of the app bundle.
     patch: path.join(process.resourcesPath, "mio.patch.yml"),
   }
