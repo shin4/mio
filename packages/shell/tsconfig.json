@@ -13,5 +13,7 @@
     "isolatedModules": true,
     "erasableSyntaxOnly": true
   },
-  "include": ["src"]
+  // The packaging config carries real logic (DMG notarization), so it is
+  // typechecked with the source. `scripts/` stays out: it is Bun-only.
+  "include": ["src", "electron-builder.config.ts"]
 }
