@@ -31,7 +31,7 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `archive/packages/{app,ui,core,sdk}` | The Solid UI tier, archived 2026-08-19 once the shell replaced its only consumer. Still the reference for MiMo UX and the 19 locale files when Phase 3 builds dsh client plugins |
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
 | `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` builds the plugin and copies it into the repo-local `.dsh/` profile; `bun run dev:runtime` boots green |
-| `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 14 replay tests green over live-captured cassettes |
+| `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 18 replay tests green over live-captured cassettes |
 | dsh pin | `0.1.1-rc.1`, bumped 2026-08-21 (both `latest` and `next` upstream). Still a prerelease line — there is no stable `0.1.1` |
 | End-to-end | Verified 2026-08-19 against a live MiMo token-plan account: real answers, real tool use, real file writes through the dsh web UI |
 
@@ -120,10 +120,11 @@ Other archived MiMo behavior, same audit:
       the runtime child **must** get `--expose-internals` (dsh otherwise needs the
       `node-addon-require-builtin` addon; it loads under Electron but cannot reach Node's
       internals from Electron's own V8 realm, which breaks plugin resolution and HMR), and
-      `@mio/llm-mimo` must live
-      in the same `node_modules` tree as `@deepseek-ai/dsh` (a profile-local install is invisible
-      on that fallback path), which is why it is a root dependency and what packaging must
-      preserve
+      `@mio/llm-mimo` has to be reachable from the profile dsh actually loads it from. The
+      second fact was initially recorded here the wrong way round — as "must live in the same
+      `node_modules` tree as `@deepseek-ai/dsh`", which a root dependency appeared to satisfy.
+      The plugin-provisioning entry below has the corrected model: resolution is
+      profile-relative, and the root dependency is gone
 - [ ] Carry over the shell services worth keeping: auto-update, `mio://` deep links, native menus,
       window state, shell-env import, system CA / env-proxy propagation (from `main/sidecar.ts`);
       decide the desktop-pet window's fate
@@ -194,10 +195,40 @@ Other archived MiMo behavior, same audit:
       tagged `latest`. It was **3 hours old** when installed — an order of magnitude inside
       `bunfig.toml`'s 3-day gate, which exists for exactly that window. Bypassed knowingly with a
       one-off `--minimum-release-age=0`; the policy is unchanged
-- [ ] Signing, notarization, and an updater feed (the archived `workflows/release.yml` is the
-      reference for what a release job has to cover)
+- [x] **Signing, notarization, and a release job (2026-08-21).** Less new work than the open item
+      claimed: the macOS credentials were still configured in the repo from the old app, which
+      shipped signed + notarized four-platform releases through `v0.2.1`, and a local
+      `bun run package` was *already* producing a fully signed, hardened build — electron-builder
+      found the Developer ID in the keychain by itself, and `codesign --verify --deep --strict`
+      passed on all thirteen nested native binaries. What was actually missing was notarization
+      (`spctl` said `rejected, source=Unnotarized Developer ID`) and a job to perform it.
+
+      So the work was to make the implicit explicit and wire the release path:
+      `resources/entitlements.mac.plist` is checked in rather than inherited from
+      electron-builder's bundled template, with the three keys that build was already getting and
+      a record of the three the archived app had that are deliberately not carried over;
+      `hardenedRuntime`, `entitlements`, `entitlementsInherit`, `gatekeeperAssess`, and `notarize`
+      are stated in the config; and `.github/workflows/release.yml` builds the same four-platform
+      matrix as `build-check`, signs and notarizes the macOS jobs, and uploads to a draft release
+      that a final job publishes.
+
+      One hazard was caught before it shipped: electron-builder resolves the *Windows* signing
+      certificate from `WIN_CSC_LINK` falling back to `CSC_LINK`
+      (`windowsSignToolManager.cscInfo`), so the archived workflow's habit of passing the Apple
+      secrets to every runner would hand a macOS Developer ID certificate to signtool. They are
+      scoped to the macOS jobs. Windows signing is wired (`script/sign-windows.ps1`, which
+      survived the archiving unreferenced) but inert: the `AZURE_TRUSTED_SIGNING_*` secrets have
+      never been configured, so Windows installers are unsigned — as they were before.
+
+      Verified locally end to end: the packaged app carries our entitlements, all four helper apps
+      inherit them, `codesign --verify --deep --strict` passes, and the signed build boots, spawns
+      the runtime child, serves the dsh UI over HTTP 200, and quits with no orphan
 - [ ] Carry the still-missing shell services: auto-update, `mio://` deep links, native menus,
-      shell-env import, system CA / proxy propagation
+      shell-env import, system CA / proxy propagation. The updater is deferred deliberately, and
+      the release job is shaped around that: `publish` stays `null` and no `latest*.yml` is
+      emitted, because a feed with no consumer is worse than none — per-arch metadata clobbers
+      itself unless a merge step fixes it up (`archive/packages/desktop/scripts/`
+      `finalize-latest-yml.ts` is that step, unported). Both come back together
 - [ ] Parity audit against the Solid UI's feature areas: terminal (dsh-terminal + client UI),
       permissions/questions (dsh-user-approval / dsh-interaction), plan mode (dsh-plan-mode +
       client-ui-plan), attachments, model selection — explicit keep/cut list for the rest

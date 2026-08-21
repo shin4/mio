@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+      Hardened-runtime exceptions for the Mio shell. These three are what
+      electron-builder applies by default; checking them in makes the set a
+      decision rather than an upstream default that can shift under us.
+
+      allow-jit / allow-unsigned-executable-memory
+        V8. Required by Electron itself and by the dsh runtime child, which is
+        the same binary re-entered with ELECTRON_RUN_AS_NODE.
+
+      disable-library-validation
+        The runtime child loads native modules that are not signed by this
+        team: koffi (FFI), sharp/libvips, node-pty, @vscode/ripgrep, and
+        node-addon-require-builtin. electron-builder re-signs them with our
+        Developer ID during packaging, but the child resolves them from
+        app.asar.unpacked at runtime and library validation would still reject
+        anything it decides is foreign. This is the entitlement doing real work
+        here — the archived desktop app had two native modules, this shell has
+        thirteen.
+
+      Deliberately NOT carried over from the archived app
+      (archive/packages/desktop/resources/entitlements.plist):
+
+      - com.apple.security.cs.disable-executable-page-protection
+        A blunt instrument, and nothing here needs it: the packaged app runs
+        with hardened runtime today and boots the runtime, loads every native
+        module, and serves the UI.
+      - com.apple.security.cs.allow-dyld-environment-variables
+        The shell sets ELECTRON_RUN_AS_NODE, which is read by Electron, not by
+        dyld. No DYLD_* variable is set anywhere in packages/shell.
+      - com.apple.security.device.audio-input
+        For dictation, which is Phase 3 (MIGRATION.md). Add it back together
+        with NSMicrophoneUsageDescription when the ASR plugin lands — an
+        entitlement for a capability the app does not have is a review flag.
+    -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+</dict>
+</plist>

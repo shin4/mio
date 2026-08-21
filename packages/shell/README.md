@@ -105,7 +105,40 @@ Only the host architecture is verified. dsh depends on native modules (ripgrep, 
 step installs the ones for the machine it runs on. Producing Intel-Mac, Windows, or Linux
 artifacts needs a build on each platform — a CI matrix, not a flag.
 
+### Signing and notarization
+
+Credential-gated, so an unsigned build never fails: `CSC_LINK` (+ `CSC_KEY_PASSWORD`) signs, and
+`APPLE_TEAM_ID` (+ `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`) additionally notarizes. A team id
+without a certificate degrades to an unsigned build rather than erroring, because notarizing
+requires a signed app. `.github/workflows/release.yml` supplies all of them; `build-check.yml`
+sets `CSC_IDENTITY_AUTO_DISCOVERY=false` and supplies none.
+
+Three things about this setup are easy to get wrong:
+
+- **Signed is not notarized.** A local `bun run package` picks up whatever Developer ID sits in
+  the keychain through electron-builder's identity auto-discovery, so the result is signed and
+  hardened — and Gatekeeper still refuses it (`spctl: rejected, source=Unnotarized Developer ID`).
+  Notarization is a round trip to Apple and only happens in the release job.
+- **The entitlements are ours, not electron-builder's.** `resources/entitlements.mac.plist` is
+  checked in and wired explicitly, including as `entitlementsInherit` — left unset, nested
+  binaries get electron-builder's bundled template instead. The path in the config is absolute
+  because `codesign` receives it verbatim; electron-builder does not resolve it against the
+  project directory, and this config is loaded with `--projectDir .package` anyway.
+  `disable-library-validation` is the one doing real work: the runtime child is spawned from
+  `process.execPath` — the main app executable, so it inherits the app's entitlements — and loads
+  thirteen native modules out of `app.asar.unpacked`.
+- **The Apple secrets are scoped to the macOS runners.** electron-builder resolves the *Windows*
+  signing certificate from `WIN_CSC_LINK` falling back to `CSC_LINK`, so passing the macOS
+  Developer ID `.p12` to every job would feed it to signtool's certificate resolution.
+
+Windows signing goes through Azure Trusted Signing (`script/sign-windows.ps1`, wired as
+`win.signtoolOptions.sign`). The script exits 0 when the `AZURE_TRUSTED_SIGNING_*` variables are
+absent, which is the current state — Windows installers are unsigned, and users see a SmartScreen
+prompt. Adding the three secrets is all that is needed; no code change.
+
 ## Not built yet (MIGRATION.md, Phase 2)
 
-Auto-update, `mio://` deep links, native menus, shell-env import, and system CA / proxy
-propagation. Packaging (electron-builder) is not set up.
+The app-side updater (`electron-updater`), and with it the `latest*.yml` feed: the config sets
+`publish: null` on purpose, because a publish provider makes electron-builder emit updater
+metadata that nothing consumes, and per-arch metadata needs a merge step to be correct. Also
+`mio://` deep links, native menus, shell-env import, and system CA / proxy propagation.

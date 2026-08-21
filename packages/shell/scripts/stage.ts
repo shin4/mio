@@ -55,6 +55,13 @@ async function pinnedVersions(): Promise<Record<string, string>> {
 
 const shellPkg = await Bun.file(path.join(SHELL, "package.json")).json()
 
+/**
+ * The version electron-builder stamps into the app. `packages/shell` is private
+ * and never version-bumped, so a release supplies the number through the
+ * environment rather than through a commit that mutates a tracked file.
+ */
+const appVersion = (process.env.MIO_VERSION ?? shellPkg.version).replace(/^v/, "")
+
 await $`bun run --cwd ${PLUGIN} build`
 await $`bun run --cwd ${SHELL} build`
 
@@ -82,7 +89,7 @@ await writeFile(
       // `Application Support/@mio/shell`.
       name: "mio",
       productName: "Mio",
-      version: shellPkg.version,
+      version: appVersion,
       description: shellPkg.description,
       private: true,
       type: "module",
@@ -109,4 +116,4 @@ await rm(path.join(STAGE, tarball), { force: true })
 await cp(path.join(SHELL, "lib"), path.join(STAGE, "lib"), { recursive: true })
 
 const staged = (await readdir(path.join(STAGE, "node_modules", "@deepseek-ai"))).length
-console.log(`stage: app tree ready at ${STAGE} (${staged} dsh packages)`)
+console.log(`stage: app tree ready at ${STAGE} v${appVersion} (${staged} dsh packages)`)
