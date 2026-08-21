@@ -31,7 +31,11 @@ jobs:
       matrix:
         include:
           - { name: macOS arm64, os: macos-14 }
-          - { name: macOS x64, os: macos-13 }
+          # `macos-15-intel`, not `macos-13`: the macOS 13 images were retired in
+          # December 2025 and a job asking for them queues forever. This is the
+          # last x86_64 macOS image GitHub will offer — Actions drops the
+          # architecture when the macOS 15 image retires in 2027.
+          - { name: macOS x64, os: macos-15-intel }
           - { name: Windows x64, os: windows-latest }
           - { name: Linux x64, os: ubuntu-latest }
     env:
