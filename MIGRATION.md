@@ -270,24 +270,222 @@ Other archived MiMo behavior, same audit:
 
 ## Phase 3 — MiMo product surfaces and data
 
-- [ ] **MiMo provider card as a dsh client UI plugin** — verified gap: the Models page picks a
-      hand-written editor per provider family (`layoutOf()` in `dsh-client-ui-settings-models`
-      knows only `llm-deepseek` / `llm-pi-ai`), so third-party routes get a read-only card with
-      no API-key input. Until then the key comes from `MIO_API_KEY` / the credentials store.
-      Consider an upstream PR making that layout registry extensible
-- [ ] MiMo UI as dsh client plugins (React) — scoped by the dsh-native principle to what dsh
-      cannot show: the connection form (billing track / region / key) and MiMo quota/upsell
-      dialogs. Usage and cache figures come from dsh's own token-meter surfaces, so no custom
-      cache meter unless those prove insufficient. UX reference: the archived Solid components
-      (`mimo-connect-form.tsx`, `settings-mimo.tsx`)
-- [ ] TTS (9 voices + voicedesign/voiceclone) and dictation (`mimo-v2.5-asr`) as dsh runtime +
-      client-UI plugins (`archive/packages/agent/.../groups/tts.ts`, `dictation.ts`) — genuinely
-      MiMo-platform features with no dsh equivalent, but not mainline for this version
+Planned 2026-08-22 from a survey of the installed dsh 0.1.1-rc.1 tree and the archive. The load-
+bearing findings were re-checked adversarially, and several first-pass conclusions did not survive
+— where that happened, the correction is recorded with the item rather than quietly dropped.
+
+### Direction change — DeepSeek routes come back (decided 2026-08-22)
+
+`mio.patch.yml` disables `llm-deepseek` and `llm-pi-ai`, and CLAUDE.md states MiMo-first as
+settled. **That is superseded: Mio keeps dsh's native DeepSeek compatibility alongside native-level
+MiMo support.** This is a product decision, not a discovered constraint, so it is recorded here and
+in CLAUDE.md rather than applied as a silent config edit.
+
+Re-enabling is a two-line config change with no technical risk: `llm-deepseek` owns only the
+`deepseek-official` route, `llm-mimo` owns `mimo`, nothing collides, and `llm-pi-ai` registers no
+routes until settings supply profiles. The one real consequence is a product asymmetry —
+`deepseek-official` gets a fully editable Models card while MiMo cannot, for the `layoutOf()`
+reason below. **The MiMo card therefore has to land before the routes come back**, or Mio ships a
+UI where the competitor configures more easily than the product does.
+
+### The finding that reorders everything
+
+**A fresh Mio install has no in-app way to enter an API key.** Not a rough edge — a functional gap,
+verified in the running UI, with both paths closed:
+
+- dsh's Models page picks a hand-written editor per provider family. `layoutOf()` in
+  `dsh-client-ui-settings-models` knows only `llm-deepseek` and `llm-pi-ai`, so `llm-mimo` falls
+  to `layout === "unknown"`, which renders an advanced-settings hint paragraph **instead of** the
+  API-key input and disables the submit button.
+- dsh *does* ship a first-run coordinator (the `settings.onboarding` slot + `OnboardingSurface`),
+  but its only credential step is hard-wired to `llm-deepseek` — which Mio disables, so no
+  onboarding runs at all.
+
+Today the key can only arrive through `MIO_API_KEY` or the credentials store. Onboarding is
+therefore not polish; it is the missing half of a shippable product.
+
+### Stage 0 — no dependencies
+
+- [ ] **Set the desktop app icon.** The packaged app currently ships Electron's default icon
+      (`default Electron icon is used — application icon is not set` in every build log). A full
+      Mio icon set already exists at `archive/packages/desktop/icons/prod/` (`.icns`, `.ico`, all
+      Linux PNG sizes) generated from `favicon-v3.svg` — an orange `#FF8A00` MIO wordmark on a
+      `#1C1B1A` rounded field. Pure gap-filling, touching no dsh internals
+- [ ] Refresh CLAUDE.md: it still describes `packages/desktop` and the Solid tier as active, and
+      its test commands point into `archive/`
+
+### Stage 1 — MiMo adapter hardening (the "native-level" half)
+
+Highest priority: these are defects in shipping code, and they need no new infrastructure. Twelve
+gaps were confirmed by driving the real adapter against a local server, not by reading it. **Four
+report success while losing data:**
+
+- [ ] A **truncated stream is reported as a successful `stop`** with the partial text committed —
+      the adapter has no `[DONE]` discipline
+- [ ] A **final SSE event without a trailing newline is dropped outright**, losing model output
+      with no error
+- [ ] A **degenerate empty completion** becomes an empty assistant message instead of dsh's
+      retryable `EMPTY_RESPONSE`
+- [ ] An **image block in an assistant message is silently erased** from the wire body (the
+      user-role case is loudly refused; this one is not)
+
+Compounding them: MiMo never emits `TRANSPORT`, `TIMEOUT`, `QUOTA`, `CONTEXT_WINDOW_EXCEEDED`, or
+`MALFORMED_RESPONSE`, and `dsh-llm-retry` matches on exactly
+`[EMPTY_RESPONSE, RATE_LIMIT, SERVER, TIMEOUT, TRANSPORT]` — so a network blip is a failed turn,
+not a retried one.
+
+- [ ] Classify the missing failure codes; a 402 "Insufficient balance" currently surfaces as an
+      unclassified error although dsh ships both the code and the detector helper
+- [ ] Add a stream idle watchdog — a stalled MiMo stream currently hangs indefinitely
+- [ ] Parse `Retry-After` in HTTP-date form; it is dropped today on exactly the rate-limit
+      responses where it matters
+- [ ] Pass `GenerateOptions.sessionId` / `.purpose` through — compaction and session-title calls
+      run at full reasoning cost because they are ignored
+- [ ] Fall back to the last good settings snapshot instead of breaking every subsequent request,
+      and throw `LlmError` rather than a bare `Error` (code `UNKNOWN`)
+- [ ] Decide the Anthropic path: `protocol` is hardcoded to `"openai"` at the one call site, so
+      the four `/anthropic` URLs in the endpoint table are dead constants. Either wire it or
+      delete them
+
+Three items assumed to be gaps are **not**, because dsh has no such concept: monetary cost/pricing,
+structured output, and model discovery (`llm-deepseek` does not implement it either). Prompt
+caching is already at parity. Recording this so the list is not re-derived later.
+
+### Stage 2 — client UI plugin foundation (shared prerequisite)
+
+dsh client UI plugins are ordinary npm packages **loaded dynamically at runtime from the profile's
+cordis tree**, not bundled into the prebuilt frontend — verified end to end by hand-writing a probe
+package, installing it the way `@mio/llm-mimo` is installed, and watching it appear in
+`window.__DSH_BOOT__`, get served from `/plugins/<pkg>/client.js`, and render a new Settings page.
+Third parties can add UI without forking.
+
+- [ ] **Reproduce the client bundle wrapper.** The build preset that emits dsh's lazy-CJS bundle
+      format (`clientBundle` / `packages/client/tsdown.client.ts`) is **not published** — every
+      client package's build script is a bare `tsdown` with no shipped config. The loader contract
+      (`window.__ModuleLoader__.load({id, factory})`) is fully documented in `dsh-client-modules`'
+      README, and a hand-written bundle worked first try. Check the upstream GitHub repo for the
+      real plugin before writing our own
+- [ ] Ship `@mio/client-ui` as a workspace package, provisioned into the profile by the same
+      copy that `setup-profile.ts` and `shell/src/profile.ts` already do for the provider plugin
+      — the profile-relative resolution constraint from Phase 2 applies identically
+
+### Stage 3 — onboarding and the MiMo provider card
+
+Closes the gap above. dsh's onboarding chrome does not need rebuilding — only its steps.
+
+- [ ] **First-run wizard** registering into `settings.onboarding`. The archived flow is the UX
+      reference: two steps (`welcome` → `configure`) over one shared 392-line component
+      (`archive/packages/app/src/components/onboarding/`, `mimo-connect-form.tsx`), gated on the
+      derived "does provider `mimo` have a key", inescapable. It collects billing track, region
+      (only when token-plan), key, protocol, and default model — exactly what
+      `resolveConnection()` needs
+- [ ] **Validate the key before accepting it.** The archived form does **not**: no test request,
+      no server check, only a non-blocking `sk-` / `tp-` prefix hint. Do not inherit that
+- [ ] **MiMo provider card as its own `settings.section` page** (decided 2026-08-22: option (a),
+      not an upstream PR). Writes the key through `api.credentials.set`, the same call dsh's own
+      card makes. Accepted trade-off: a Mio settings page coexists with dsh's Models page. An
+      upstream PR making `layoutOf()` extensible stays on the table but is not the plan — dsh is a
+      days-old preview and the patch would have to survive fast churn
+- [ ] Note the surface's limit: the onboarding gate is `sessions ready && (no current session ||
+      current session blank)`, so it can take over only from the empty state — a user who loses
+      their key mid-session cannot be re-prompted there. The settings page is the answer for that
+- [ ] i18n: the archive has 18 locales, but **only `en` and `zh` carry any of the 8 `onboarding.*`
+      or 45 `provider.mimo.*` keys** — the other 16 silently fall back to English. dsh ships
+      `LOCALE_IDS = ["zh", "en"]`, so nothing is lost. CLAUDE.md's "19-locale i18n" is misleading
+      for these strings specifically
+
+### Stage 4 — Mio branding
+
+Achievable entirely through supported seams, verified by building a brand plugin, booting the
+runtime, and driving it in a browser: the sidebar mark, sidebar wordmark, conversation hero, and
+the DeepSeek onboarding dialog were all replaced, and a full-page text sweep of the running app
+found zero visible "DeepSeek" strings, with the prebuilt dist untouched.
+
+One first-pass conclusion was **wrong and is corrected here**: "almost no branding lives in the
+dist" came from grepping the dist for `deepseek`, which cannot find branding that is artwork,
+colour, and copy. The whale artwork and wordmark *are* compiled into
+`dsh-web-frontend/dist/assets/index-*.js`, and `favicon.svg`, `manifest.webmanifest`, and
+`<title>` are dist files. They are reachable anyway — just by different seams.
+
+- [ ] Replace the brand slot occupants (`dsh-client-ui-brand-official`) by slot shadowing on
+      `priority`. dsh documents these slots for exactly this: "deployments may replace the shell's
+      fish fallback"
+- [ ] Shadow `/favicon.svg` and `/manifest.webmanifest` with named `kind: "exact"` routes, which
+      take precedence over the prebuilt dist with zero dist modification
+- [ ] **Window title.** `dsh-client-ui-renderer` hardcodes `const productTitle = "DeepSeek
+      Harness"` and writes it to `document.title` in a `useEffect`; it is the only occurrence in
+      ~200 packages, has no config field, and is not a slot, so it cannot be displaced by an
+      occupant. It is still solvable **without a fork** — a ~40-line host plugin using
+      `ctx.webServer.tapIndex()` plus the typed `webserver/index-inject` script row, both
+      documented, proven live (`document.title === "Mio"`, session-title projection preserved as
+      `Refactor the parser — Mio`). An earlier note here recommended solving it in Electron with
+      `page-title-updated` + `preventDefault()`; **that is strictly weaker** — it freezes the
+      native title, discarding dsh's deliberate `<session> — <product>` projection, and leaves
+      `document.title` wrong for `bun run dev:runtime`. Label the plugin a workaround for upstream
+      version skew: `dsh-client-web@0.1.1-rc.1` already ships a `DocumentTitle` that honours the
+      served `<title>`; the same-version prebuilt dist is simply stale relative to it, so a plain
+      `tapIndex` suffices once the dist catches up
+- [ ] **Do not miss `welcome-notice`.** Four of the "DeepSeek Harness" strings in
+      `dsh-client-ui-settings-models` belong to a second onboarding step (order `-100`) that is
+      **not** gated behind the `llm-deepseek` provider — disabling that plugin does not remove
+      them
+- [ ] Accepted as cosmetic: the design token ramp is named `--dsw-static-deepseek-*`. Values can
+      be overridden via `overrideTokens`; the names still leak into DOM inspection
+
+### Stage 5 — re-enable the DeepSeek routes
+
+- [ ] Drop the `disabled: true` rows for `llm-deepseek` and `llm-pi-ai` from `mio.patch.yml`,
+      after Stage 3 lands. Update CLAUDE.md's "MiMo-first" wording to match the decision above
+
+### Stage 6 — MiMo ASR and TTS as standalone dsh plugins
+
+**dsh 0.1.1-rc.1 has zero audio capability**: no ASR, no TTS, no audio content block, no audio
+attachment kind, no client capture. Its modality vocabulary is `text | image`, its attachment store
+is a raster-image store, and the browser wire's prompt part union is a closed `text | image`. This
+is net-new surface, not a port.
+
+Scope decided 2026-08-22: **dictation-as-text and TTS-as-playback, shipped as standalone dsh
+plugins.** Both deliberately avoid the two hard walls:
+
+1. An out-of-repo plugin must **not** append its own session-event types — persistence refuses to
+   read such a log.
+2. True multimodal audio *input to the model* needs upstream changes to dsh's `ContentBlockMap`,
+   `ModelModalityMap`, attachment store, and the `/api` prompt schema.
+
+Dictation that transcribes in the plugin and writes the transcript into the composer draft, and TTS
+that synthesizes host-side and plays in the browser, clear both.
+
+The runtime half is cheap: MiMo's ASR and TTS are **both ordinary `POST {baseURL}/chat/completions`
+calls** with the same `api-key` `@mio/llm-mimo` already resolves — no new transport. The archive
+carries ~500 lines of runtime code, 260 lines of DSP helpers with existing unit tests, and ~900
+lines of Solid UI.
+
+- [ ] **TTS plugin.** Three fixed models (`mimo-v2.5-tts`, `-voicedesign`, `-voiceclone`) selected
+      by a `mode` field; text to speak carried in an assistant message; base64 audio read back from
+      `choices[0].message.audio.data`. Nine preset voices, a `(唱歌)` singing mode with a
+      documented quirk (a leading empty user message is mandatory), voicedesign via natural
+      language plus `optimize_text_preview`, and voiceclone passing the reference clip's data URL
+      as `audio.voice`
+- [ ] **Dictation plugin.** `mimo-v2.5-asr` with an `input_audio` content part plus MiMo's
+      `asr_options.language`; capture via `getUserMedia` + PCM16 mono WAV encoding, gated by a
+      shared VAD (2s minimum, RMS/peak/active-ms thresholds) that runs on both client and server,
+      one data URL per utterance under a 60s / 10MB cap
+- [ ] Reuse rather than re-derive: WAV encode/decode, the VAD, the recorder lifecycle, the
+      singleton read-aloud player, transcript insertion. MiMo-specific are the model ids, wire
+      shapes, singing/audio-tag/design/clone semantics, `asr_options`, the `reasoning_content`
+      transcript fallback, and the caps
+
+### Unscheduled (unchanged)
+
 - [ ] Session data: migrate Drizzle/SQLite sessions into dsh's session log, or ship a read-only
       history viewer over the old DB
 - [ ] Config bridge: `mio.json(c)` / `.mio/` → cordis.yml patch layers; `MIO_*` env respected
-      (`.mimo` legacy stays read-only)
+      (`.mimo` legacy stays read-only). Note the residual from PR #7's closure: dsh loads `.env`
+      from the working directory, so opening an untrusted repo carries its `.env` into the runtime
+      environment
 - [ ] MCP parity check (`dsh-mcp-client`) against the archived 8-endpoint MCP surface
+- [ ] Minor: `@deepseek-ai/dsh-brand` is a devDependency of `packages/llm-mimo` and is imported
+      nowhere — `attributionHeaders` comes from `dsh-llm`
 
 ## Phase 4 — cleanup
 
