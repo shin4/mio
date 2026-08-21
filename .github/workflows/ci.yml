@@ -1,6 +1,9 @@
 name: ci
 
 on:
+  # Run on demand: this work lands on pushed feature branches with no PR,
+  # which neither trigger below covers.
+  workflow_dispatch:
   pull_request:
   push:
     branches:
