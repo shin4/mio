@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Mio mark "鲸尾·深潜 / The Sounding" — whale fluke + tail stock, drawn 2026-08-22.
+       Single source for every raster asset; see assets/brand/README.md. -->
+  <path fill="#FF6900" d="M 150 430 C 324 376, 464 430, 512 548 C 560 430, 700 376, 874 430 C 800 520, 700 570, 598 588 C 586 640, 590 700, 612 758 C 576 788, 448 788, 412 758 C 434 700, 438 640, 426 588 C 324 570, 224 520, 150 430 Z"/>
+</svg>

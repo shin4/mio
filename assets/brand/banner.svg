@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF8A1F"/>
+      <stop offset="1" stop-color="#FF5400"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="320" fill="url(#bg)"/>
+  <g transform="translate(890,-119)">
+    <path fill="#FFFFFF" opacity="0.96" transform="scale(0.48)" d="M 150 430 C 324 376, 464 430, 512 548 C 560 430, 700 376, 874 430 C 800 520, 700 570, 598 588 C 586 640, 590 700, 612 758 C 576 788, 448 788, 412 758 C 434 700, 438 640, 426 588 C 324 570, 224 520, 150 430 Z"/>
+  </g>
+  <text x="96" y="166" font-family="-apple-system, 'SF Pro Rounded', 'Segoe UI', system-ui, sans-serif" font-size="92" font-weight="700" fill="#FFFFFF" letter-spacing="-1">Mio</text>
+  <text x="98" y="222" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" font-size="30" fill="#FFFFFF" fill-opacity="0.92">MiMo 原生桌面编码智能体 · powered by dsh</text>
+</svg>

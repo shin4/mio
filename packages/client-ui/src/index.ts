@@ -36,12 +36,13 @@ const MIO_PRODUCT = "Mio"
 /**
  * The Mio mark, as the browser tab icon and installed-app icon.
  *
- * The same ten-rectangle wordmark the app icon and the sidebar brand draw,
- * kept in sync by hand rather than shared: this half runs in Node and the other
- * in the browser, and one small SVG duplicated is cheaper than a build-time
- * asset pipeline for a brand that changes about never.
+ * The same fluke tile the app icon and the sidebar brand draw
+ * (`assets/brand/mio-icon.svg` is the master), kept in sync by hand rather
+ * than shared: this half runs in Node and the other in the browser, and one
+ * small SVG duplicated is cheaper than a build-time asset pipeline for a brand
+ * that changes about never.
  */
-const FAVICON = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none"><rect width="512" height="512" rx="96" fill="#1C1B1A"/><g transform="translate(64,162.5) scale(10.38)" fill="#FF8A00"><rect width="16" height="3" rx="0.8"/><rect y="3" width="4" height="15" rx="0.8"/><rect x="7" y="3" width="2" height="5" rx="0.8"/><rect x="12" y="3" width="4" height="15" rx="0.8"/><rect x="19" width="3" height="3" rx="0.8"/><rect x="19" y="5" width="3" height="13" rx="0.8"/><rect x="25" y="5" width="12" height="3" rx="0.8"/><rect x="25" y="15" width="12" height="3" rx="0.8"/><rect x="25" y="8" width="3" height="7" rx="0.8"/><rect x="34" y="8" width="3" height="7" rx="0.8"/></g></svg>`
+const FAVICON = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="115" fill="#FF6900"/><path transform="translate(20.5 -11.7) scale(0.46)" fill="#FFFFFF" d="M 150 430 C 324 376, 464 430, 512 548 C 560 430, 700 376, 874 430 C 800 520, 700 570, 598 588 C 586 640, 590 700, 612 758 C 576 788, 448 788, 412 758 C 434 700, 438 640, 426 588 C 324 570, 224 520, 150 430 Z"/></svg>`
 
 /**
  * Styling for Mio's onboarding step.
@@ -101,9 +102,9 @@ const ONBOARDING_CSS = `
 }
 .mio-onboarding__actions button:disabled { opacity: 0.5; cursor: default; }
 .mio-onboarding__primary {
-  background: #ff8a00;
-  border-color: #ff8a00;
-  color: #1c1b1a;
+  background: #ff6900;
+  border-color: #ff6900;
+  color: #ffffff;
   font-weight: 600;
 }
 .mio-onboarding__quiet { border-color: transparent; opacity: 0.7; }

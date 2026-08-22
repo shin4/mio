@@ -1,32 +1,34 @@
 /**
  * Mio's brand marks, drawn rather than imported.
  *
- * The glyph is the ten-rectangle "Mio" wordmark from the app icon
- * (`archive/packages/app/public/favicon-v3.svg`, the same artwork
- * `packages/shell/resources/icon.icns` is generated from), transcribed here so
- * the bundle carries no asset request: the client module system serves one
+ * The mark is the fluke — 「鲸尾·深潜 / The Sounding」, a whale's fluke and tail
+ * stock, the last thing above water before a deep dive — adopted 2026-08-22.
+ * `assets/brand/mio-icon.svg` is the tile master the app icon
+ * (`packages/shell/resources/icon.icns`) is generated from, and
+ * `assets/brand/README.md` records that pipeline. The path is transcribed here
+ * so the bundle carries no asset request: the client module system serves one
  * JavaScript file per plugin, and an `<img src>` would need a second route.
  *
- * Two presentations, and they are not the same glyph — which is the point.
- *
  * `sidebar.brand.mark` and `conversation.hero.brand.mark` are **square** slots
- * (24px and 34px as the shell renders them). The full "Mio" wordmark is 37:18,
- * so fitting it into a square leaves the letters about 9px tall: illegible, and
- * doubled up against the wordmark the neighbouring name slot already draws. The
- * mark therefore carries the `M` alone, which is 16:18 and fills a square
- * properly, on the icon's dark rounded field so it reads as the same product
- * icon the dock shows.
+ * (24px and 34px as the shell renders them), and the fluke tile is square by
+ * construction — the same orange field and white fluke the dock icon shows, so
+ * the in-app brand and the installed app read as the same product.
  *
- * The name slot draws the full wordmark with no field, painted in
- * `currentColor` so it inherits the sidebar's text colour and follows the
- * light/dark theme rather than pinning a brand colour against a background
- * that moves.
+ * The name slot still draws the ten-rectangle "Mio" wordmark in `currentColor`,
+ * following the sidebar's text colour rather than pinning a brand colour
+ * against a background that moves. The wordmark is a typography pass of its
+ * own and deliberately did not ride along with the mark swap.
  */
 
-/** Brand orange, matching the app icon. */
-const MIO_ORANGE = "#FF8A00"
-/** Icon field, matching the app icon. */
-const MIO_FIELD = "#1C1B1A"
+/** Brand orange — Xiaomi's #FF6900, matching the app icon field. */
+const MIO_ORANGE = "#FF6900"
+
+/** The fluke, on the icon master's 1024-unit grid. */
+const FLUKE =
+  "M 150 430 C 324 376, 464 430, 512 548 C 560 430, 700 376, 874 430 " +
+  "C 800 520, 700 570, 598 588 C 586 640, 590 700, 612 758 " +
+  "C 576 788, 448 788, 412 758 C 434 700, 438 640, 426 588 " +
+  "C 324 570, 224 520, 150 430 Z"
 
 interface Rect {
   readonly x?: number
@@ -35,17 +37,12 @@ interface Rect {
   readonly height: number
 }
 
-/** The "M", 16×18 in the glyph's own coordinate space. */
-const MONOGRAM: readonly Rect[] = [
+/** The "Mio" wordmark, 37×18 in the glyph's own coordinate space. */
+const WORDMARK: readonly Rect[] = [
   { width: 16, height: 3 },
   { y: 3, width: 4, height: 15 },
   { x: 7, y: 3, width: 2, height: 5 },
   { x: 12, y: 3, width: 4, height: 15 },
-]
-
-/** The "io" that follows it, completing the 37×18 wordmark. */
-const WORDMARK: readonly Rect[] = [
-  ...MONOGRAM,
   { x: 19, width: 3, height: 3 },
   { x: 19, y: 5, width: 3, height: 13 },
   { x: 25, y: 5, width: 12, height: 3 },
@@ -65,7 +62,7 @@ function Glyph({ rects, fill }: { rects: readonly Rect[]; fill: string }) {
 }
 
 /**
- * The product icon: the `M` monogram on the icon's rounded field.
+ * The product icon: the white fluke on the orange rounded field.
  * @param props - presentation requested by the host surface.
  */
 export function MioBrandMark({ size, className }: { size?: number | string; className?: string }) {
@@ -79,11 +76,9 @@ export function MioBrandMark({ size, className }: { size?: number | string; clas
       role="img"
       aria-label="Mio"
     >
-      <rect width="512" height="512" rx="96" fill={MIO_FIELD} />
-      {/* 16×18 scaled to 190×214 and centred on the 512 field. */}
-      <g transform="translate(161,148.5) scale(11.9)">
-        <Glyph rects={MONOGRAM} fill={MIO_ORANGE} />
-      </g>
+      <rect width="512" height="512" rx="115" fill={MIO_ORANGE} />
+      {/* The 1024-grid fluke centred on the 512 field at 65% width. */}
+      <path transform="translate(20.5 -11.7) scale(0.46)" fill="#FFFFFF" d={FLUKE} />
     </svg>
   )
 }

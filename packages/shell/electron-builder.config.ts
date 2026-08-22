@@ -21,12 +21,12 @@ const entitlements = path.join(shellDir, "resources", "entitlements.mac.plist")
  * config is loaded with `--projectDir .package`, so a relative path would
  * resolve against the staged tree.
  *
- * Copied from the archived desktop app, which generated them to Apple's system
- * icon template — the 1024px master's opaque bounds are exactly 104,104-919,919
- * with an unclipped shadow, checked before adopting them
- * (`archive/packages/desktop/scripts/check-mac-icon-geometry.ts` is the original
- * guard). Source artwork is `favicon-v3.svg`: an orange #FF8A00 MIO wordmark on
- * a #1C1B1A rounded field.
+ * Regenerated 2026-08-22 from `assets/brand/mio-icon.svg` — the fluke mark
+ * (「鲸尾·深潜」, white on an orange #FF8A1F→#FF5E00 squircle): an 824px
+ * squircle centred on the 1024px canvas, opaque bounds exactly 100,100-923,923,
+ * no baked shadow, matching Apple's system icon template grid. The 16/32px
+ * icns slots come from `mio-icon-small.svg` (same mark at a larger optical
+ * scale); `assets/brand/README.md` records the export recipe.
  */
 const icon = (file: string) => path.join(shellDir, "resources", file)
 
