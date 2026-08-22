@@ -29,9 +29,10 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 |---|---|
 | `archive/packages/{agent,llm,plugin,http-recorder}` | Frozen reference, out of workspace, excluded from lint/CI |
 | `archive/packages/{app,ui,core,sdk}` | The Solid UI tier, archived 2026-08-19 once the shell replaced its only consumer. Still the reference for MiMo UX and the 19 locale files when Phase 3 builds dsh client plugins |
+| `archive/packages/llm-mimo` | Mio's own MiMo adapter, archived 2026-08-22 in Stage 1 once `dsh-llm-pi-ai` was measured to serve MiMo. Still the reference for the endpoint/billing/region tables and for the recorded cassettes the composition test replays |
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
-| `packages/runtime` (`@mio/runtime`) | dsh composition: `mio.patch.yml` over the `web` profile; `scripts/setup-profile.ts` builds the plugin and copies it into the repo-local `.dsh/` profile; `bun run dev:runtime` boots green |
-| `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin on `ctx.llm` for the `mimo` route: endpoint/billing/region tables, `api-key` auth, per-request settings + credentials resolution, configurable-provider registration, OpenAI-chat SSE → StreamChunk translation, catalog. Typechecks clean; 18 replay tests green over live-captured cassettes |
+| `packages/runtime` (`@mio/runtime`) | dsh composition, and no code: `mio.patch.yml` over the `web` profile — `dsh-llm-pi-ai` serves MiMo, `@mio/client-ui` is inserted, `ui-brand-official` is off, new sessions default to `mimo-v2.5`. `bun run dev:runtime` boots green; 2 composition tests replay a cassette through the real headless profile |
+| `packages/client-ui` (`@mio/client-ui`) | Mio's dsh client UI plugin, added 2026-08-22 in Stage 2: a Node half holding a Loader seat (`tapIndex` for the document title, exact routes shadowing `/favicon.svg` and the manifest) and a browser half (brand slots, the `mio-connect` onboarding step, `zh`/`en` copy). Bundled by `scripts/bundle.ts`; 10 tests green |
 | dsh pin | `0.1.1-rc.1`, bumped 2026-08-21 (both `latest` and `next` upstream). Still a prerelease line — there is no stable `0.1.1` |
 | End-to-end | Verified 2026-08-19 against a live MiMo token-plan account: real answers, real tool use, real file writes through the dsh web UI |
 
@@ -325,6 +326,13 @@ therefore not polish; it is the missing half of a shippable product.
       the source, and the rendered artwork is the Mio wordmark. The guard script itself is not
       ported: it existed to catch regressions while the icon was being iterated on, and this is a
       frozen asset
+
+      **The artwork is superseded 2026-08-22 by the fluke mark — see Stage 4.** What this bullet
+      established stands: the wiring, the absolute paths, and the geometry check as the thing to
+      re-run after any icon change. What no longer ships is the artwork it adopted — the wordmark
+      on `#1C1B1A` with an unclipped shadow and bounds `104,104-919,919`. "Frozen asset" was the
+      one wrong call here, and it is why the geometry assertions were re-run by hand rather than
+      by a script
 - [x] **CLAUDE.md refreshed.** It described `packages/desktop` and the Solid tier as active, listed
       a `dev:app` script that no longer exists, pointed its test commands into `archive/`, and
       cited `packages/core/src/flag/flag.ts` for `MIO_*`. Also records the provider direction
@@ -490,7 +498,33 @@ nodes or accessible attributes, and the prebuilt `dsh-web-frontend` dist is not 
       came out ~9px tall, illegible, *and* doubled against the wordmark the neighbouring name slot
       already draws. The mark now carries the `M` alone, which is 16:18 and fills a square, on the
       icon's dark field so it reads as the same product icon the dock shows. Caught by measuring
-      the rendered elements, not by reading the code
+      the rendered elements, not by reading the code.
+
+      **Superseded 2026-08-22 by the bullet below**, which removes the fitting problem rather than
+      working around it: the fluke tile is square by construction, so there is no monogram to fall
+      back to. The measurement still governs the name slot, which keeps the wordmark
+- [x] **The mark became the fluke (2026-08-22).** 「鲸尾·深潜 / The Sounding」 — a whale's fluke and
+      tail stock, the last thing above water before a deep dive — white on Xiaomi's brand orange
+      `#FF6900`, replacing both the wordmark-on-`#1C1B1A` app icon Stage 0 adopted and the `M`
+      monogram in the slots. The subject nods at DeepSeek's whale, since dsh is what Mio runs on;
+      the colour and geometry are Xiaomi's; the artwork is drawn from scratch and reuses neither
+      company's registered trademark. One mark now covers the dock icon, `sidebar.brand.mark`,
+      `conversation.hero.brand.mark`, the `FAVICON` constant, and the landing page.
+
+      `assets/brand/` joins the repo as the master set, because the mark had more than one
+      consumer and they were being kept in sync by eye. Its README carries the export recipe and
+      the list of consumers to update together, deliberately as a recipe rather than a build step:
+      rasterizing goes through macOS's own NSImage (qlmanage flattens alpha onto white, headless
+      Chrome screenshots race the render) and that is not worth wiring into CI for artwork that
+      changes about never.
+
+      Verified after export rather than assumed, which is the check Stage 0 called frozen: both
+      1024px PNGs carry opaque bounds of exactly `100,100-923,923` on a 1024 canvas — Apple's
+      template grid, no baked shadow — and the icns holds all ten slots. The 16/32px slots come
+      from `mio-icon-small.svg`, the same fluke at a larger optical scale, because at tile size the
+      centre notch that makes the shape read as a fluke closes up. The wordmark stays in
+      `sidebar.brand.name`: retypesetting it is a pass of its own and deliberately did not ride
+      along
 - [x] **Document title**, the one brand surface no slot reaches:
       `dsh-client-ui-renderer` hardcodes `productTitle = "DeepSeek Harness"` and writes it from a
       hardcoded sibling of the root outlet, so no occupant can displace it and a bare `id` patch
@@ -563,9 +597,11 @@ Dictation that transcribes in the plugin and writes the transcript into the comp
 that synthesizes host-side and plays in the browser, clear both.
 
 The runtime half is cheap: MiMo's ASR and TTS are **both ordinary `POST {baseURL}/chat/completions`
-calls** with the same `api-key` `@mio/llm-mimo` already resolves — no new transport. The archive
-carries ~500 lines of runtime code, 260 lines of DSP helpers with existing unit tests, and ~900
-lines of Solid UI.
+calls** against the same endpoint and key the `mimo` route already carries — no new transport. Note
+what Stage 1 moved under this sentence: that key now lives in `llm-pi-ai`'s credential namespace,
+written by the Models page or seeded from `MIO_API_KEY`, so these plugins resolve it there rather
+than from a Mio adapter that no longer exists. The archive carries ~500 lines of runtime code, 260
+lines of DSP helpers with existing unit tests, and ~900 lines of Solid UI.
 
 - [ ] **TTS plugin.** Three fixed models (`mimo-v2.5-tts`, `-voicedesign`, `-voiceclone`) selected
       by a `mode` field; text to speak carried in an assistant message; base64 audio read back from
@@ -582,7 +618,7 @@ lines of Solid UI.
       shapes, singing/audio-tag/design/clone semantics, `asr_options`, the `reasoning_content`
       transcript fallback, and the caps
 
-### Unscheduled (unchanged)
+### Unscheduled
 
 - [ ] Session data: migrate Drizzle/SQLite sessions into dsh's session log, or ship a read-only
       history viewer over the old DB
@@ -591,8 +627,9 @@ lines of Solid UI.
       from the working directory, so opening an untrusted repo carries its `.env` into the runtime
       environment
 - [ ] MCP parity check (`dsh-mcp-client`) against the archived 8-endpoint MCP surface
-- [ ] Minor: `@deepseek-ai/dsh-brand` is a devDependency of `packages/llm-mimo` and is imported
-      nowhere — `attributionHeaders` comes from `dsh-llm`
+- [x] Minor, closed 2026-08-22 by Stage 1 rather than by fixing it: the unused
+      `@deepseek-ai/dsh-brand` devDependency went to `archive/` with `packages/llm-mimo`. Mio ships
+      no provider code, so there is no `attributionHeaders` consumer left to get wrong
 
 ## Phase 4 — cleanup
 
