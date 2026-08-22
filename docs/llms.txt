@@ -9,7 +9,7 @@ Key facts:
 - Capabilities: coding, reasoning, multimodal understanding of images/PDFs/video, voice dictation (ASR), and speech generation (TTS).
 - Differentiators: Mio-tuned request shaping and model selection, stable prefix caching for high cache-hit rates, and visible token/cost accounting that routes each task to the cheapest capable model.
 - Cost: the app is free and MIT-licensed; you pay only for MiMo API usage via platform.xiaomimimo.com (pay-as-you-go `sk-` keys or token plans `tp-` keys).
-- Built on DeepSeek Harness (dsh), the open-source plugin-based agent harness, adapted to be MiMo-first. The agent core moved off its earlier OpenCode-derived runtime in August 2026; installer packaging and the multimodal/voice features are being rebuilt as dsh plugins.
+- Built on DeepSeek Harness (dsh), the open-source plugin-based agent harness, adapted to be MiMo-first. The agent core moved off its earlier OpenCode-derived runtime in August 2026; installer packaging and the multimodal/voice features are being rebuilt as dsh plugins. dsh's native DeepSeek provider routes ship alongside MiMo (new sessions default to MiMo).
 - Independent, community-maintained project. Not an official Xiaomi product and not affiliated with Xiaomi Inc.
 
 ## Docs
