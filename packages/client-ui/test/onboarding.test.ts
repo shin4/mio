@@ -64,7 +64,16 @@ test("the onboarding registration keeps the properties the surface depends on", 
   // - `locale` is the framework seat that synthesizes the `t` prop.
   const source = await readFile(path.join(ROOT, "src", "client", "index.tsx"), "utf8")
   assert.match(source, /id: "welcome-notice", order: -100, priority: -1/)
+  assert.match(source, /id: "deepseek-official", order: 0, priority: -1/)
   assert.match(source, /id: "mio-connect"/)
   assert.match(source, /order: -50/)
   assert.match(source, /locale: MIO_NS/)
+})
+
+test("the composition ships DeepSeek's routes rather than disabling them", async () => {
+  // Mio keeps dsh's native DeepSeek compatibility (MIGRATION.md, Phase 3). The
+  // routes were disabled only until Mio owned first-run onboarding, so a
+  // reintroduced `disabled` row would silently drop a supported provider.
+  const patch = await readFile(path.resolve(ROOT, "..", "runtime", "mio.patch.yml"), "utf8")
+  assert.doesNotMatch(patch, /llm-deepseek/)
 })

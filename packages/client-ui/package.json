@@ -28,8 +28,8 @@
   "scripts": {
     "build": "bun ./scripts/bundle.ts",
     "typecheck": "tsgo --noEmit -p tsconfig.json",
-    "test": "bun run build && node --test --experimental-strip-types test/*.test.ts",
-    "test:ci": "bun run build && node --test --experimental-strip-types test/*.test.ts"
+    "test": "node --test --experimental-strip-types test/*.test.ts",
+    "test:ci": "node --test --experimental-strip-types test/*.test.ts"
   },
   "devDependencies": {
     "@types/node": "catalog:",
