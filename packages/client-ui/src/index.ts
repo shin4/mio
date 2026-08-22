@@ -43,6 +43,72 @@ const MIO_PRODUCT = "Mio"
  */
 const FAVICON = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none"><rect width="512" height="512" rx="96" fill="#1C1B1A"/><g transform="translate(64,162.5) scale(10.38)" fill="#FF8A00"><rect width="16" height="3" rx="0.8"/><rect y="3" width="4" height="15" rx="0.8"/><rect x="7" y="3" width="2" height="5" rx="0.8"/><rect x="12" y="3" width="4" height="15" rx="0.8"/><rect x="19" width="3" height="3" rx="0.8"/><rect x="19" y="5" width="3" height="13" rx="0.8"/><rect x="25" y="5" width="12" height="3" rx="0.8"/><rect x="25" y="15" width="12" height="3" rx="0.8"/><rect x="25" y="8" width="3" height="7" rx="0.8"/><rect x="34" y="8" width="3" height="7" rx="0.8"/></g></svg>`
 
+/**
+ * Styling for Mio's onboarding step.
+ *
+ * Shipped as a `style` injection row rather than through a CSS pipeline: dsh's
+ * own client preset compiles module CSS with lightningcss, which Mio does not
+ * reproduce (`packages/client-ui/scripts/bundle.ts` explains why the upstream
+ * preset is not vendored). One `<style>` row is a documented index injection,
+ * and it keeps the browser bundle a single JavaScript file with no second
+ * route to serve.
+ *
+ * Values come from dsh's own token ramp so the step follows the active theme
+ * instead of pinning colours that only work in the dark one.
+ */
+const ONBOARDING_CSS = `
+.mio-onboarding {
+  /* The surface's stage is a centering flex row that stretches its child, so
+     the card sizes itself on the cross axis instead of filling the viewport. */
+  align-self: center;
+  box-sizing: border-box;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(420px, calc(100vw - 48px));
+  padding: 32px;
+  border-radius: 16px;
+  background: var(--dsw-color-background-elevated, #1c1b1a);
+  color: var(--dsw-color-text-strong, #f5f5f4);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 35%);
+}
+.mio-onboarding h1 { margin: 0; font-size: 22px; font-weight: 700; }
+.mio-onboarding p { margin: 0; font-size: 14px; color: var(--dsw-color-text-weak, #a8a29e); }
+.mio-onboarding__lead { font-size: 15px; }
+.mio-onboarding__field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.mio-onboarding__field input,
+.mio-onboarding__field select {
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--dsw-color-border-default, #44403c);
+  background: var(--dsw-color-background-base, #0c0a09);
+  color: inherit;
+  font: inherit;
+}
+.mio-onboarding__field small { color: var(--dsw-color-text-weak, #a8a29e); }
+.mio-onboarding__error { color: var(--dsw-color-text-danger, #f87171); }
+.mio-onboarding__actions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.mio-onboarding__actions button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--dsw-color-border-default, #44403c);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.mio-onboarding__actions button:disabled { opacity: 0.5; cursor: default; }
+.mio-onboarding__primary {
+  background: #ff8a00;
+  border-color: #ff8a00;
+  color: #1c1b1a;
+  font-weight: 600;
+}
+.mio-onboarding__quiet { border-color: transparent; opacity: 0.7; }
+`
+
 /** dsh's manifest with Mio's identity; the shape is otherwise unchanged. */
 const MANIFEST = JSON.stringify(
   {
@@ -128,5 +194,6 @@ function applyWebBrand(ctx: Context): void {
   // by the time React first writes a title.
   ctx.on("webserver/index-inject", (table) => {
     table.push({ kind: "script", placement: "head", text: TITLE_GUARD })
+    table.push({ kind: "style", text: ONBOARDING_CSS })
   })
 }

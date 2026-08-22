@@ -416,30 +416,62 @@ and branding is the smallest real one.
       `ctx.inject(["webServer"], …)` instead, so the entry always activates and contributes
       nothing where there is no browser
 
-### Stage 3 — onboarding and the MiMo provider card
+### Stage 3 — onboarding — **done 2026-08-22**
 
-Closes the gap above. dsh's onboarding chrome does not need rebuilding — only its steps.
+Closes the gap this plan was reordered around. dsh's onboarding coordinator is reused; only the
+steps are Mio's.
 
-- [ ] **First-run wizard** registering into `settings.onboarding`. The archived flow is the UX
-      reference: two steps (`welcome` → `configure`) over one shared 392-line component
-      (`archive/packages/app/src/components/onboarding/`, `mimo-connect-form.tsx`), gated on the
-      derived "does provider `mimo` have a key", inescapable. It collects billing track, region
-      (only when token-plan), key, protocol, and default model — exactly what
-      `resolveConnection()` needs
-- [ ] **Validate the key before accepting it.** The archived form does **not**: no test request,
-      no server check, only a non-blocking `sk-` / `tp-` prefix hint. Do not inherit that
-- [x] ~~**MiMo provider card as its own `settings.section` page.**~~ **Superseded by Stage 1**:
-      riding `llm-pi-ai` gives MiMo dsh's own pi-ai card — API key, base URL, protocol, and an
-      editable model catalog — so there is nothing left to hand-build, and the decision to avoid an
-      upstream `layoutOf()` PR is moot. Revisit only if MiMo needs a field that card cannot express
-      (a billing-track/region picker on top of the raw base URL is the likely candidate)
-- [ ] Note the surface's limit: the onboarding gate is `sessions ready && (no current session ||
-      current session blank)`, so it can take over only from the empty state — a user who loses
-      their key mid-session cannot be re-prompted there. The settings page is the answer for that
-- [ ] i18n: the archive has 18 locales, but **only `en` and `zh` carry any of the 8 `onboarding.*`
-      or 45 `provider.mimo.*` keys** — the other 16 silently fall back to English. dsh ships
-      `LOCALE_IDS = ["zh", "en"]`, so nothing is lost. CLAUDE.md's "19-locale i18n" is misleading
-      for these strings specifically
+- [x] **`mio-connect`, a `settings.onboarding` step.** Reads `credentials.describe` on mount and
+      completes silently when a key is already configured — or when the launching environment
+      supplies `MIO_API_KEY` read-only, where a form could only offer a write the credential
+      service refuses. Otherwise: a Mio welcome, then the key form
+- [x] **The key decides the endpoint, not the user.** MiMo's prefixes name the billing track
+      (`tp-` token plan, `sk-` pay-as-you-go), so the step asks for the key first and derives the
+      track, and only a token plan is asked for a region. The archived Solid form asked for the
+      track *first* and then accepted any key under it — the one mismatch this ordering makes
+      impossible. The prefix stays a hint, never a gate: an unrecognized shape falls through to
+      pay-as-you-go and the live check decides
+- [x] **The key is proven before it is stored** — the thing the archived form never did (it had no
+      test request at all, only a non-blocking prefix hint). `llm.discoverModels` carries the
+      endpoint and a one-shot credential the harness never persists, so a rejected key never
+      reaches the credential store. Verified by submitting a fabricated `tp-` key: MiMo rejects
+      it, the step says so, and `$DSH_HOME` holds no credential file afterwards.
+
+      **`provider` is deliberately not sent.** Naming a route lets the adapter answer from its own
+      model list with no network call, which would "succeed" for any key at all. It is only safe
+      to omit because `mimo` is not one of pi-ai's built-in catalog ids — pi-ai 0.82.1 ships
+      `xiaomi` and `xiaomi-token-plan-*`, so renaming Mio's route onto one of those would silently
+      turn the validator into a no-op
+- [x] **`GET /v1/models` confirmed against the live platform** before depending on it: MiMo answers
+      200 with a standard OpenAI listing, and 401 `Invalid API Key` for a bad key. Without that
+      check the validator would have been a false-negative generator for every good key
+- [x] **An escape hatch.** The archived onboarding was inescapable. Mio's has "set this up later",
+      because a step with no way out traps a user who cannot reach their key right now, and the
+      Models page can do the same job afterwards. It reappears on reload while no key is stored,
+      which is correct: the app cannot work without one
+- [x] **Both locales.** dsh ships exactly `zh` and `en` and `locale.register` takes them together.
+      The copy comes from the archived flow with one correction: those strings predate the product
+      rename and say "Welcome to MiMo". **Mio** is the product, **MiMo** is the model family and
+      the platform issuing the key
+- [x] Verified in the dev runtime and in a **packaged build cold-started with no `$DSH_HOME`**,
+      in both locales: fresh launch opens on Mio's welcome, prefix inference reveals the region
+      picker, a bad key is refused with a readable reason, and "later" releases the surface
+
+Three couplings to dsh that this rests on, each verified against the running host rather than
+assumed — `credentials.describe/set` and `settings.describe/mutate` answer the exact shapes the
+step reads, including the revision bump on a write, and a `set` moves a reference from
+`{configured: false, writable: true}` to `{configured: true, source: "file", writable: true}`.
+
+Two surface rules the step obeys because breaking either is silent: **only `complete()` advances**
+(a step that renders null stalls the sequence — there is no null-detection or timeout), and **the
+mask is the step's job** (the coordinator paints no chrome, so a visible step wraps itself in
+`OnboardingSurface`). A render-time throw would abdicate the entry and hand the cell back to
+DeepSeek's notice, so rendering stays total.
+
+Also fixed here, from an audit of Stage 4's occupant: `MioSkipWelcome` now guards completion with a
+ref and a braced effect body, matching dsh's own `WelcomeNotice`. The coordinator recreates
+`complete` inline on every render, and the unbraced arrow was handing its return value to React as
+a cleanup function.
 
 ### Stage 4 — Mio branding — **done 2026-08-22**
 

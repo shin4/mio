@@ -1,23 +1,35 @@
 /**
  * Mio's client UI plugin, browser half.
  *
- * Occupies the three brand slots dsh declares. This is the documented way to
- * rebrand: `dsh-client-ui-brand-official`'s own README says "alternative
- * presentation belongs in another Cordis package occupying the same slots".
- * Nothing in the prebuilt `dsh-web-frontend` dist is patched — Mio's row simply
- * replaces the official one, which `mio.patch.yml` disables.
+ * Two things live here, both on slots dsh declares for exactly this purpose.
  *
- * The registrations nest through `slots.inject()` as one declaration-aware set,
- * mirroring the official plugin: the package then works whether its row
- * activates before or after the sidebar and conversation declarers, withdraws
- * every occupant when either declaration collapses, and never leaves a partial
- * brand mix behind during HMR.
+ * **Brand.** `dsh-client-ui-brand-official`'s own README says "alternative
+ * presentation belongs in another Cordis package occupying the same slots", so
+ * Mio occupies them and `mio.patch.yml` disables the official row. Nothing in
+ * the prebuilt `dsh-web-frontend` dist is patched.
+ *
+ * **First run.** dsh's onboarding coordinator is reused; only its steps are
+ * Mio's. One retires DeepSeek's beta notice, the other connects a MiMo account
+ * — which a fresh install otherwise has no in-app way to do, since dsh's only
+ * credential step is hard-wired to the `deepseek-official` route.
+ *
+ * The brand registrations nest through `slots.inject()` as one
+ * declaration-aware set, mirroring the official plugin: the package then works
+ * whether its row activates before or after the sidebar and conversation
+ * declarers, withdraws every occupant when either declaration collapses, and
+ * never leaves a partial brand mix behind during HMR.
  */
-import { useEffect } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { MioBrandMark, MioBrandName } from "./Brand.tsx"
+import { MioConnect, type ConnectApi } from "./Connect.tsx"
+import { MIO_LOCALES, MIO_NS } from "./locale.ts"
 
-/** Required service: the UI slot registry. */
-export const inject = ["slots"]
+/**
+ * Services this half needs. `slots` carries the registrations, `connection`
+ * carries the wire API the connect step reads and writes through, and `locale`
+ * carries the string tables the framework `t` seat resolves against.
+ */
+export const inject = ["slots", "connection", "locale"]
 
 /**
  * Retire dsh's first-run notice by occupying its cell and completing at once.
@@ -28,26 +40,57 @@ export const inject = ["slots"]
  * the one piece of DeepSeek copy that survives disabling `llm-deepseek`,
  * because its only gate is a settings version flag.
  *
- * Completing immediately is the step contract rather than a way around it: an
- * onboarding step receives `complete` and may render null, which is exactly
- * what dsh's own notice does while it decides not to show. Mio's own welcome,
- * if it ever wants one, replaces this body (MIGRATION.md, Phase 3 Stage 3).
+ * Completing immediately is the step contract rather than a way around it: a
+ * step receives `complete` and may render null, which is what dsh's own notice
+ * does while it decides not to show. The ref guard and the braced effect body
+ * both matter: the coordinator recreates `complete` inline on every render, and
+ * an unbraced arrow would hand `complete()`'s return value to React as a
+ * cleanup function. This is the shape dsh's own `WelcomeNotice` uses.
  */
 function MioSkipWelcome({ complete }: { complete: () => void }) {
-  useEffect(() => complete(), [complete])
+  const finished = useRef(false)
+  const finish = useCallback(() => {
+    if (finished.current) return
+    finished.current = true
+    complete()
+  }, [complete])
+  useEffect(() => {
+    finish()
+  }, [finish])
   return null
+}
+
+interface SlotDescriptor {
+  name: string
+  id?: string
+  order?: number
+  priority?: number
+  locale?: string
+  inject?: () => Record<string, unknown>
 }
 
 interface SlotRegistry {
   inject(name: string, body: () => unknown): unknown
-  register(descriptor: { name: string; id?: string; order?: number; priority?: number }, component: unknown): unknown
+  register(descriptor: SlotDescriptor, component: unknown): unknown
+}
+
+interface LocaleRuntime {
+  register(ns: string, dicts: Record<string, Record<string, string>>): () => void
+}
+
+interface ClientContext {
+  slots: SlotRegistry
+  connection: { api: ConnectApi }
+  locale: LocaleRuntime
 }
 
 /**
- * Fill every brand slot as one declaration-aware registration set.
+ * Register Mio's brand occupants and onboarding steps.
  * @param ctx - client root context.
  */
-export function apply(ctx: { slots: SlotRegistry }): void {
+export function apply(ctx: ClientContext): void {
+  ctx.locale.register(MIO_NS, MIO_LOCALES)
+
   ctx.slots.inject("sidebar.brand.mark", () =>
     ctx.slots.inject("sidebar.brand.name", () =>
       ctx.slots.inject("conversation.hero.brand.mark", function* () {
@@ -58,14 +101,33 @@ export function apply(ctx: { slots: SlotRegistry }): void {
     ),
   )
 
-  // Same slot and cell id as the notice it retires, one step ahead of it in
-  // priority. dsh registers that cell at priority 0 and elects the *lowest*
-  // priority as the winner — registering at the same one is refused outright
-  // with a message naming this exact fix, rather than silently picking one.
-  ctx.slots.inject("settings.onboarding", () =>
-    ctx.slots.register(
+  ctx.slots.inject("settings.onboarding", function* () {
+    // Same slot and cell id as the notice it retires, one step ahead of it in
+    // priority. dsh registers that cell at priority 0 and elects the *lowest*
+    // priority as the winner — registering at the same one is refused outright
+    // with a message naming this exact fix, rather than silently picking one.
+    yield ctx.slots.register(
       { name: "settings.onboarding", id: "welcome-notice", order: -100, priority: -1 },
       MioSkipWelcome,
-    ),
-  )
+    )
+    // Its own cell, sequenced after the retired notice and before dsh's
+    // DeepSeek step, which self-completes while that provider is disabled.
+    yield ctx.slots.register(
+      {
+        name: "settings.onboarding",
+        id: "mio-connect",
+        order: -50,
+        locale: MIO_NS,
+        // Props the surface does not supply. `openLink` goes through
+        // `window.open`, which the Electron shell already routes to the system
+        // browser (`packages/shell/src/window.ts`) and which is an ordinary new
+        // tab in a plain browser.
+        inject: () => ({
+          api: ctx.connection.api,
+          openLink: (url: string) => void window.open(url, "_blank", "noopener,noreferrer"),
+        }),
+      },
+      MioConnect,
+    )
+  })
 }

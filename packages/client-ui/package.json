@@ -18,7 +18,10 @@
       "platform": "web",
       "inject": [
         "@deepseek-ai/dsh-client-ui-sidebar",
-        "@deepseek-ai/dsh-client-ui-conversation"
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-settings-general",
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-locale"
       ]
     }
   },
@@ -30,14 +33,16 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@types/react": "^19.2.2",
+    "@types/react": "^18.3.12",
     "@typescript/native-preview": "catalog:",
     "typescript": "catalog:",
     "@deepseek-ai/cordis": "4.0.1",
-    "@deepseek-ai/dsh-host-webserver": "0.1.1-rc.1"
+    "@deepseek-ai/dsh-host-webserver": "0.1.1-rc.1",
+    "@deepseek-ai/dsh-client-ui-primitives": "0.1.1-rc.1"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "4.0.1",
-    "@deepseek-ai/dsh-host-webserver": "0.1.1-rc.1"
+    "@deepseek-ai/dsh-host-webserver": "0.1.1-rc.1",
+    "@deepseek-ai/dsh-client-ui-primitives": "0.1.1-rc.1"
   }
 }
