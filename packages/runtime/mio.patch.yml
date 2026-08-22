@@ -72,14 +72,3 @@
   config:
     provider: mimo
     model: mimo-v2.5
-
-# DeepSeek's own routes stay off until Mio owns first-run onboarding.
-#
-# Enabling them is a two-line change with no technical risk — no route collides
-# with `mimo` — but `llm-deepseek` also contributes dsh's onboarding credential
-# step, and with it enabled a first launch of *Mio* opens with "添加一个 API Key
-# 开始使用 / 配置 DeepSeek 官方模型". Observed on a packaged build, not reasoned
-# about. Deleting these two rows is Phase 3 Stage 5, after the Mio onboarding
-# plugin can shadow that step (MIGRATION.md).
-- id: llm-deepseek
-  disabled: true

@@ -32,13 +32,21 @@ import { MIO_LOCALES, MIO_NS } from "./locale.ts"
 export const inject = ["slots", "connection", "locale"]
 
 /**
- * Retire dsh's first-run notice by occupying its cell and completing at once.
+ * Retire one of dsh's own onboarding steps by occupying its cell and completing
+ * at once.
  *
- * The notice is not Mio's to show: it announces that *DeepSeek Harness 0.1* is
- * in testing for *Harness developers* and invites them into the DSH plugin
- * ecosystem. Correct for dsh, wrong product and wrong audience here — and it is
- * the one piece of DeepSeek copy that survives disabling `llm-deepseek`,
- * because its only gate is a settings version flag.
+ * Two steps need this, for the same reason and with different content:
+ *
+ * - `welcome-notice` announces that *DeepSeek Harness 0.1* is in testing for
+ *   *Harness developers* and invites them into the DSH plugin ecosystem.
+ *   Correct for dsh, wrong product and wrong audience here — and it survives
+ *   disabling `llm-deepseek`, because its only gate is a settings version flag.
+ * - `deepseek-official` asks for a **DeepSeek** API key. Mio ships DeepSeek as a
+ *   fully supported provider and it configures normally on the Models page; what
+ *   it must not do is open a first run of Mio by asking for a key to a provider
+ *   the user did not come here for. Reading `onboardingReadiness` suggests this
+ *   step self-completes when DeepSeek is unconfigured — driving it proves the
+ *   opposite: with no key stored it renders and waits.
  *
  * Completing immediately is the step contract rather than a way around it: a
  * step receives `complete` and may render null, which is what dsh's own notice
@@ -47,7 +55,7 @@ export const inject = ["slots", "connection", "locale"]
  * an unbraced arrow would hand `complete()`'s return value to React as a
  * cleanup function. This is the shape dsh's own `WelcomeNotice` uses.
  */
-function MioSkipWelcome({ complete }: { complete: () => void }) {
+function MioSkipStep({ complete }: { complete: () => void }) {
   const finished = useRef(false)
   const finish = useCallback(() => {
     if (finished.current) return
@@ -102,16 +110,19 @@ export function apply(ctx: ClientContext): void {
   )
 
   ctx.slots.inject("settings.onboarding", function* () {
-    // Same slot and cell id as the notice it retires, one step ahead of it in
-    // priority. dsh registers that cell at priority 0 and elects the *lowest*
+    // Same slot and cell ids as the steps they retire, one step ahead of each in
+    // priority. dsh registers those cells at priority 0 and elects the *lowest*
     // priority as the winner — registering at the same one is refused outright
     // with a message naming this exact fix, rather than silently picking one.
     yield ctx.slots.register(
       { name: "settings.onboarding", id: "welcome-notice", order: -100, priority: -1 },
-      MioSkipWelcome,
+      MioSkipStep,
     )
-    // Its own cell, sequenced after the retired notice and before dsh's
-    // DeepSeek step, which self-completes while that provider is disabled.
+    yield ctx.slots.register(
+      { name: "settings.onboarding", id: "deepseek-official", order: 0, priority: -1 },
+      MioSkipStep,
+    )
+    // Its own cell, sequenced between the two retired steps.
     yield ctx.slots.register(
       {
         name: "settings.onboarding",

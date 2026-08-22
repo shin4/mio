@@ -521,16 +521,28 @@ nodes or accessible attributes, and the prebuilt `dsh-web-frontend` dist is not 
       priority to shadow it (lowest renders)"*, so Mio registers at −1
 - [x] Accepted as cosmetic: the design token ramp is still named `--dsw-static-deepseek-*`
 
-### Stage 5 — re-enable the DeepSeek routes
+### Stage 5 — DeepSeek's routes come back — **done 2026-08-22**
 
-`llm-pi-ai` is already enabled — it is what serves MiMo (Stage 1). What remains is DeepSeek's own
-routes.
+The direction change recorded at the top of this phase, now applied. Mio ships dsh's native
+DeepSeek compatibility alongside MiMo: `deepseek-official` appears on the Models page with a full
+API-key editor, beside MiMo's own.
 
-- [ ] Drop the `disabled: true` row for `llm-deepseek`, after Stage 3 lands. The blocker is
-      concrete and was observed rather than predicted: `llm-deepseek` contributes dsh's onboarding
-      credential step, so enabling it makes a first launch of Mio ask for a **DeepSeek** key.
-      Mio's onboarding step has to shadow it first
-- [ ] Update CLAUDE.md's "MiMo-first" wording to match the decision above
+- [x] The `disabled: true` row for `llm-deepseek` is gone from `mio.patch.yml`
+- [x] **Its onboarding step is retired, which reading the code says is unnecessary and driving it
+      proves is not.** `DeepSeekOnboardingDialog` self-completes on an `onboardingReadiness` of
+      `adapter-absent` / `provider-ready` / `unavailable`, which reads like "an unconfigured
+      DeepSeek skips itself". It does not: with the routes enabled and no DeepSeek key stored,
+      readiness resolves to `credential-missing` and the step **renders and waits** — a first run
+      of Mio opened on "添加一个 API Key 开始使用 / 配置 DeepSeek 官方模型" even after Mio's own
+      step had completed.
+
+      Mio therefore occupies that cell too (`deepseek-official`, order 0, priority −1) with the
+      same immediate-completion step that already retires `welcome-notice`. The provider stays
+      fully supported; what it must not do is open a first run by asking for a key to a provider
+      the user did not come here for. Configuring DeepSeek is the Models page's job
+- [x] Verified live: with both routes enabled, a fresh profile opens on Mio's welcome, completing
+      it lands straight in the app with no DeepSeek prompt, and the Models page lists **both**
+      providers with real editors
 
 ### Stage 6 — MiMo ASR and TTS as standalone dsh plugins
 
