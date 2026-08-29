@@ -32,7 +32,7 @@
       "url": "https://shin4.github.io/mio/",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Windows, macOS",
-      "downloadUrl": "https://github.com/shin4/mio/releases/latest",
+      "downloadUrl": "https://github.com/shin4/mio/releases",
       "softwareHelp": "https://github.com/shin4/mio",
       "license": "https://opensource.org/licenses/MIT",
       "isAccessibleForFree": true,
@@ -544,11 +544,11 @@
       <p class="hero-sub reveal" data-d="1" data-i18n="hero.sub">A native desktop coding agent for MiMo — its heart is the open-source DeepSeek Harness runtime; its body is MiMo seeing, hearing, speaking, and coding.</p>
       <div class="hero-download hero-cta reveal" data-d="2">
         <div class="dl-buttons">
-          <a class="btn btn-primary" id="dl-primary" href="https://github.com/shin4/mio/releases/latest">
+          <a class="btn btn-primary" id="dl-primary" href="https://github.com/shin4/mio/releases">
             <svg class="glyph" id="dl-icon" aria-hidden="true"><use href="#download"/></svg>
             <span id="dl-text">Download</span>
           </a>
-          <a class="btn btn-secondary" href="https://github.com/shin4/mio/releases/latest">
+          <a class="btn btn-secondary" href="https://github.com/shin4/mio/releases">
             <span data-i18n="download.all">All Downloads</span>
             <svg class="glyph" aria-hidden="true"><use href="#arrow"/></svg>
           </a>
@@ -636,7 +636,7 @@
         </div>
         <div class="pg-foot">
           <span class="pg-honesty" data-i18n="playground.chip">Recorded real MiMo output</span>
-          <a class="btn btn-brand" href="https://github.com/shin4/mio/releases/latest" data-i18n="playground.cta">Want to try your own? Download Mio →</a>
+          <a class="btn btn-brand" href="https://github.com/shin4/mio/releases" data-i18n="playground.cta">Want to try your own? Download Mio →</a>
         </div>
         <p class="pg-note" data-i18n="playground.note">These are real, pre-captured MiMo responses replayed here — free uploads run in the desktop app.</p>
       </div>
@@ -1110,9 +1110,17 @@
   if (dlPrimary && detectedOS !== 'other' && dlIconUse)
     dlIconUse.setAttribute('href', detectedOS === 'mac' ? '#apple' : detectedOS === 'win' ? '#windows' : '#download');
 
-  fetch('https://api.github.com/repos/' + REPO + '/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
+  /* `/releases`, not `/releases/latest`: the latter is defined as the newest
+     release that is *not* a prerelease, and Mio's 0.3 line is release
+     candidates. While that is true, `latest` either answers with a much older
+     stable build or, once none is published, 404s. Listing and taking the
+     newest published entry follows the actual release train. */
+  fetch('https://api.github.com/repos/' + REPO + '/releases?per_page=10', { headers: { Accept: 'application/vnd.github+json' } })
     .then(r => r.ok ? r.json() : null)
-    .then(d => {
+    .then(list => {
+      /* Drafts are visible here to anyone holding a token and are half-uploaded
+         by definition, so they are never offered. The API returns newest first. */
+      const d = Array.isArray(list) ? list.find(r => r && !r.draft) : null;
       if (!d) return;
       if (d.tag_name) {
         document.getElementById('dl-version-num').textContent = d.tag_name;

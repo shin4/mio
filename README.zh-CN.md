@@ -75,7 +75,7 @@ MiMo 为先。它把编程、推理、多模态理解（图像、PDF、视频）
 
 ## 下载
 
-前往 [Releases](https://github.com/shin4/mio/releases/latest) 页面下载最新的 Windows 与 macOS 安装包，也可从源码构建：
+前往 [Releases](https://github.com/shin4/mio/releases) 页面下载最新的 Windows 与 macOS 安装包，也可从源码构建：
 
 ```bash
 bun install
@@ -119,7 +119,7 @@ Mio 以 Electron 桌面应用形式提供 Windows 与 macOS 版本。Linux 可�
 ### 它的费用如何？如何开始使用？
 
 Mio 应用本身免费且采用 MIT 许可证，你只需为 MiMo API 用量付费。前往
-[Releases](https://github.com/shin4/mio/releases/latest) 下载最新的 Windows 或 macOS 安装包，然后在
+[Releases](https://github.com/shin4/mio/releases) 下载最新的 Windows 或 macOS 安装包，然后在
 应用中填入来自 [platform.xiaomimimo.com](https://platform.xiaomimimo.com) 的 API Key——按量付费（`sk-…`）
 或订阅套餐（`tp-…`）。
 

@@ -79,7 +79,7 @@ The intro voice on the **[landing page](https://shin4.github.io/mio/#capabilitie
 ## Download
 
 Grab the latest Windows and macOS builds from the
-[Releases](https://github.com/shin4/mio/releases/latest) page — or build from source:
+[Releases](https://github.com/shin4/mio/releases) page — or build from source:
 
 ```bash
 bun install
@@ -129,7 +129,7 @@ cheapest capable model.
 ### How much does it cost, and how do I get started?
 
 The Mio app is free and MIT-licensed; you pay only for MiMo API usage. Download the latest
-Windows or macOS build from the [Releases](https://github.com/shin4/mio/releases/latest) page,
+Windows or macOS build from the [Releases](https://github.com/shin4/mio/releases) page,
 then add a MiMo API key from [platform.xiaomimimo.com](https://platform.xiaomimimo.com) — pay-as-you-go
 (`sk-…`) or a token plan (`tp-…`) — in the app.
 
