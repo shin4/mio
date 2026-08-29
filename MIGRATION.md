@@ -207,11 +207,22 @@ Other archived MiMo behavior, same audit:
       The runtime boots and serves on the rc.2 tree with no console errors, and every Mio surface
       survives it: the document title, the shadowed `/favicon.svg` and `/manifest.webmanifest`
       routes, the brand mark, and Mio's onboarding step standing in for DeepSeek's two.
-      Still pending: a *successful* live MiMo answer and the Electron shell. The live path was
-      exercised as far as the credential allows — the composition resolved `MIO_API_KEY`, reached
-      `token-plan-cn`, and classified the reply as `AUTH: 401`, which is the failure the
-      `auth-error` cassette replays, now confirmed against the real endpoint. The archived
-      token-plan key in `~/.local/share/mimo/auth.json` no longer authenticates.
+      Verified live against a real token-plan account on the `cn` endpoint: MiMo answered
+      through the rc.2 composition, then drove a real tool round-trip — `read` on a seeded file,
+      `write` of a new one with the right contents. A stale key first produced `AUTH: 401`, which
+      is the failure the `auth-error` cassette replays, so the error path is now confirmed against
+      the real endpoint too.
+      The `read_image` route gate behaves as rc.2 documents on a text-only route: `cannot read
+      "tiny.png" as an image: model "mimo-v2.5" does not declare image input; switch to an
+      image-capable model to read images` — a clean refusal that leaves the session usable rather
+      than breaking the turn.
+      The Electron shell boots on the new tree, spawns its runtime as the documented
+      `--expose-internals` re-exec of Electron's own binary, serves the complete Mio UI from the
+      port it reports back, and takes the runtime child with it on quit, leaving no orphan.
+      Note for a future live check: `mio.patch.yml` ships the pay-as-you-go `baseURL`, so a `tp-`
+      key needs `https://token-plan-<region>.xiaomimimo.com/v1`, which onboarding derives from the
+      key prefix and the region picker. A headless check has to supply it through a patch
+      overlay.
       Dependency surface identical: the dsh closure is 170 packages before and after with none
       added or removed, every third-party range is unchanged (`@earendil-works/pi-ai@0.82.1`,
       `sharp@0.35.3`), and `bun.lock` is a pure 177-line version swap with the entry count
