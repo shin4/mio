@@ -201,8 +201,17 @@ Other archived MiMo behavior, same audit:
       `--minimum-release-age=0`. All three previous bumps needed the bypass; the gate finally did
       the job it was written for rather than being stepped around.
       Absorbed with no code change. Static gates green — typecheck 3/3, lint 0 errors, 10
-      `@mio/client-ui` tests and 2 composition replays that boot the real headless tree. A live
-      MiMo request, the shell, and a packaged build are **still pending** on this entry.
+      `@mio/client-ui` tests and 2 composition replays that boot the real headless tree. CI is
+      green on both workflows, and `build-check` packaged the app on all four runners (macOS
+      arm64, macOS x64, Windows x64, Linux x64), so the packaging path is verified cross-platform.
+      The runtime boots and serves on the rc.2 tree with no console errors, and every Mio surface
+      survives it: the document title, the shadowed `/favicon.svg` and `/manifest.webmanifest`
+      routes, the brand mark, and Mio's onboarding step standing in for DeepSeek's two.
+      Still pending: a *successful* live MiMo answer and the Electron shell. The live path was
+      exercised as far as the credential allows — the composition resolved `MIO_API_KEY`, reached
+      `token-plan-cn`, and classified the reply as `AUTH: 401`, which is the failure the
+      `auth-error` cassette replays, now confirmed against the real endpoint. The archived
+      token-plan key in `~/.local/share/mimo/auth.json` no longer authenticates.
       Dependency surface identical: the dsh closure is 170 packages before and after with none
       added or removed, every third-party range is unchanged (`@earendil-works/pi-ai@0.82.1`,
       `sharp@0.35.3`), and `bun.lock` is a pure 177-line version swap with the entry count
