@@ -28,32 +28,108 @@ const STAGE = path.join(SHELL, ".package")
 const WORKSPACE = path.resolve(SHELL, "..", "..")
 
 /**
- * Every dsh package the workspace installed, at the exact version it installed.
+ * Every package the app's own dependency closure resolved, at the exact
+ * version the workspace resolved it to.
  *
- * Both halves matter. The versions are carried over because dsh pins its own
- * siblings with `^` ranges: npm would resolve them to whatever is newest, so a
- * build would ship dsh rc.6 with rc.7 internals — a combination nothing here
- * was tested against. Bun stops at the tested set because `bunfig.toml`'s
- * `minimumReleaseAge` gates newer releases; npm has no such gate.
+ * The source is `bun.lock`, not the installed tree. Three separate reasons
+ * make the lockfile the only honest input:
  *
- * The whole set is then declared explicitly rather than left to npm's
- * resolution, because dsh's packages depend on each other largely through
- * peerDependencies — `dsh-app-boot` imports `cordis-plugin-group` at runtime
- * and declares it only as a peer, which `npm install --omit=dev` does not
- * materialize. Shipping the resolved set is also simply the honest thing: it is
- * the set the replay suite and the shell were verified against.
+ * - **`node_modules/.bun/node_modules` is a lossy view.** It holds one
+ *   directory per package *name*, so a name the tree legitimately resolves at
+ *   two versions shows up as whichever one Bun hoisted, and pinning from it
+ *   silently collapses the other.
+ * - **It is also not pruned.** Bun leaves entries there from previous
+ *   installs — a long-lived checkout accumulates packages no current
+ *   dependency asks for. Reading it made packaging depend on the machine's
+ *   install history: a stale directory was enough to pin, and ship, a version
+ *   the lockfile never mentions. CI never saw this; only developer machines
+ *   did.
+ * - **`@deepseek-ai/*` was never the whole risk.** dsh reaches native and wire
+ *   libraries through `^` ranges of its own — `sharp` decides the bytes
+ *   `dsh-attachment-local` produces, and `@earendil-works/pi-ai` is the wire
+ *   library that actually serves MiMo. npm resolves those to whatever is
+ *   newest, so the app shipped libraries the replay suite never ran against.
+ *
+ * Scoped to the closure reachable from `@deepseek-ai/dsh` so the workspace's
+ * own tooling never leaks into the app's pin set. A name the closure resolves
+ * at more than one version is deliberately left unpinned rather than flattened
+ * — one pin cannot express two versions, and quietly picking either is the bug
+ * this function was rewritten to stop. Those are returned so the caller can
+ * say so out loud.
  */
-async function pinnedVersions(): Promise<Record<string, string>> {
-  const store = path.join(WORKSPACE, "node_modules", ".bun", "node_modules", "@deepseek-ai")
-  const entries = await readdir(store)
-  const pins: Record<string, string> = {}
-  for (const entry of entries) {
-    const raw = await readFile(path.join(store, entry, "package.json"), "utf8").catch(() => undefined)
-    if (raw === undefined) continue
-    const version = (JSON.parse(raw) as { version?: string }).version
-    if (version) pins[`@deepseek-ai/${entry}`] = version
+async function pinnedVersions(): Promise<{ pins: Record<string, string>; ambiguous: string[] }> {
+  // bun.lock is JSONC: line comments and trailing commas, neither of which
+  // JSON.parse accepts. The file has no block comments, and its only `//` is
+  // inside quoted values this never splits on.
+  const raw = await readFile(path.join(WORKSPACE, "bun.lock"), "utf8")
+  const lock = JSON.parse(raw.replace(/^\s*\/\/.*$/gm, "").replace(/,(\s*[}\]])/g, "$1")) as {
+    packages?: Record<string, unknown[]>
   }
-  return pins
+
+  const versions = new Map<string, Set<string>>()
+  const edges = new Map<string, Set<string>>()
+  for (const entry of Object.values(lock.packages ?? {})) {
+    const spec = entry[0]
+    if (typeof spec !== "string") continue
+    const at = spec.lastIndexOf("@")
+    if (at <= 0) continue
+    const version = spec.slice(at + 1)
+    // A workspace member resolves to `workspace:packages/...` and is packed
+    // separately; it carries no registry version to pin.
+    if (version.startsWith("workspace:") || version.startsWith("file:")) continue
+    const name = spec.slice(0, at)
+    versions.set(name, (versions.get(name) ?? new Set()).add(version))
+
+    const info = entry.find((field): field is Record<string, unknown> => typeof field === "object" && field !== null)
+    const declared = [info?.["dependencies"], info?.["peerDependencies"]]
+      .filter((table): table is Record<string, string> => typeof table === "object" && table !== null)
+      .flatMap((table) => Object.keys(table))
+    edges.set(name, new Set([...(edges.get(name) ?? []), ...declared]))
+  }
+
+  // Walk by name, not by lockfile key: keys are resolution *paths*, so a
+  // nested copy lives under a different key and a path walk would miss it.
+  const reachable = new Set<string>()
+  const visit = (name: string) => {
+    if (reachable.has(name)) return
+    reachable.add(name)
+    for (const dep of edges.get(name) ?? []) visit(dep)
+  }
+  visit("@deepseek-ai/dsh")
+
+  const resolved = [...reachable].flatMap((name) => {
+    const found = versions.get(name)
+    if (found === undefined) return []
+    return [[name, [...found]] as const]
+  })
+  return {
+    pins: Object.fromEntries(resolved.filter(([, found]) => found.length === 1).map(([name, found]) => [name, found[0]])),
+    ambiguous: resolved
+      .filter(([, found]) => found.length > 1)
+      .map(([name, found]) => `${name} (${[...found].sort().join(", ")})`)
+      .sort(),
+  }
+}
+
+/**
+ * Refuse to package a dsh family that is not internally consistent.
+ *
+ * dsh pins its own siblings with `^` ranges and several of its packages are
+ * reachable only as peerDependencies, which Bun resolves once and then holds
+ * across bumps. The drift is silent: `bun install` succeeds, the gates pass,
+ * and the tree carries a mix of releases — eighteen packages sat six releases
+ * behind the pin through four consecutive bumps before anyone looked. A
+ * release is the worst place to find that out, so it is checked here as well
+ * as in `packages/runtime/test/tree.test.ts`.
+ */
+function assertOneDshFamily(pins: Record<string, string>, expected: string) {
+  const strays = Object.entries(pins)
+    .filter(([name, version]) => name.startsWith("@deepseek-ai/dsh") && version !== expected)
+    .map(([name, version]) => `${name}@${version}`)
+  if (strays.length > 0)
+    throw new Error(
+      `stage: ${strays.length} dsh package(s) disagree with the ${expected} pin: ${strays.join(", ")}; run bun install`,
+    )
 }
 
 const shellPkg = await Bun.file(path.join(SHELL, "package.json")).json()
@@ -77,11 +153,25 @@ await $`npm pack --pack-destination ${STAGE} --silent`.cwd(CLIENT_UI).quiet()
 const tarball = (await readdir(STAGE)).find((entry) => entry.endsWith(".tgz"))
 if (!tarball) throw new Error("stage: npm pack produced no tarball")
 
-const pins = await pinnedVersions()
+const { pins, ambiguous } = await pinnedVersions()
+// Never a silent truncation: a name the closure resolves at several versions
+// is left to npm, and saying which ones keeps that visible in the build log.
+if (ambiguous.length > 0) console.log(`stage: ${ambiguous.length} package(s) left unpinned (multi-version): ${ambiguous.join(", ")}`)
 if (pins["@deepseek-ai/dsh"] !== shellPkg.dependencies["@deepseek-ai/dsh"])
   throw new Error(
     `stage: workspace has dsh ${pins["@deepseek-ai/dsh"]} but package.json pins ${shellPkg.dependencies["@deepseek-ai/dsh"]}; run bun install`,
   )
+assertOneDshFamily(pins, shellPkg.dependencies["@deepseek-ai/dsh"])
+
+/**
+ * The dsh family, which the app must install outright.
+ *
+ * Only this subset becomes `dependencies`: it is the set whose peers npm will
+ * not materialize on its own. Everything else the workspace resolved rides in
+ * `overrides` below, where it constrains what npm pulls in transitively
+ * without adding the workspace's own tooling to the app tree.
+ */
+const dshPins = Object.fromEntries(Object.entries(pins).filter(([name]) => name.startsWith("@deepseek-ai/")))
 
 await writeFile(
   path.join(STAGE, "package.json"),
@@ -97,9 +187,12 @@ await writeFile(
       private: true,
       type: "module",
       main: "./lib/main.js",
-      dependencies: { ...pins, "@mio/client-ui": `file:${tarball}` },
-      // Also as overrides, so anything npm pulls in transitively collapses onto
-      // the same versions instead of introducing a second copy.
+      dependencies: { ...dshPins, "@mio/client-ui": `file:${tarball}` },
+      // Every resolved version as an override, so anything npm pulls in
+      // transitively collapses onto the verified one instead of introducing a
+      // second copy or drifting to a newer release. An override for a package
+      // the app tree never requests is inert, which is why this can be the
+      // whole lockfile rather than a hand-picked list that goes stale.
       overrides: pins,
     },
     null,

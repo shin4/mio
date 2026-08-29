@@ -223,19 +223,45 @@ Other archived MiMo behavior, same audit:
       README.
       **`dsh-web-frontend`'s dist is byte-identical to rc.1**, so the `TITLE_GUARD` workaround in
       `packages/client-ui/src/index.ts` is still load-bearing. The skew it waits on has not closed
-- [ ] **22 dsh packages are frozen behind the family bump** — found while verifying the rc.2 bump,
-      pre-existing, and deliberately not fixed there. 171 packages moved to `0.1.1-rc.2`; 17 stayed
-      at `0.1.0-rc.6` (including `dsh-invariants`, which **190 packages in the tree peer-require at
-      `^0.1.1-rc.2`**), 4 at `0.1.0-rc.7`, and `dsh-authorization` at `0.1.1-rc.1` while
-      `dsh-llm-pi-ai` asks for `^0.1.1-rc.2`. They are peer-only — nothing declares them as an
-      ordinary dependency — so Bun resolved them once and the lockfile has held them since rc.6.
+- [x] **The dsh family is pinned as one release, and packaging ships what was verified
+      (2026-08-29).** Found while verifying the rc.2 bump; two symptoms, one cause.
+      Eighteen dsh packages were frozen behind the pin — seventeen at `0.1.0-rc.6` and
+      `dsh-authorization` at `0.1.1-rc.1` — through four consecutive bumps. All eighteen are
+      reachable *only* as peerDependencies, with zero hard dependents anywhere in the tree, and
+      Bun resolves an auto-installed peer once and then holds it. Eight of them sat at a version
+      that satisfied **no** declared range in the tree at all: `dsh-fs`, `dsh-compaction`,
+      `dsh-scope`, `dsh-workflow`, `dsh-code-runtime`, `dsh-spill`, `dsh-atomic-write`, and
+      `dsh-authorization` are each required at `^0.1.1-rc.2` and nothing else.
+      Their own stale ranges then dragged in a second private copy of twenty-three core packages
+      at `0.1.0-rc.8` — `dsh-llm`, `dsh-session`, `dsh-agent`, `dsh-settings`, `dsh-attachment`,
+      `dsh-system-prompt`, `dsh-tools` among them, 85 lockfile entries in all. Fixing the eighteen
+      roots collapsed every one of them; the tree is now 189 dsh names at a single version.
+      **The lever matters.** Bun's `overrides` do *not* reach auto-installed peers — verified
+      against this exact tree, including with `--force`: the lockfile recorded the overrides and
+      changed no resolution. `bun update <names>` is worse than useless, because those
+      subpackages' npm `latest` tag points at ancient `0.0.1-rc.x` (only `next` tracks the 0.1.1
+      line), so it resolves *backwards* and promotes them to root direct dependencies. What works
+      is declaring them as ordinary dependencies of `packages/runtime`, which is the package whose
+      whole job is the dsh composition. `packages/runtime/test/tree.test.ts` keeps them honest —
+      it reads `bun.lock`, fails when any dsh package disagrees with the pin or resolves twice,
+      and was proved to go red by regressing one pin.
+      **Packaging read the wrong thing.** `stage.ts`'s pin set came from
+      `node_modules/.bun/node_modules`, which is both lossy and unpruned: one directory per
+      package *name*, so a legitimate two-version resolution was silently flattened, and entries
+      survive from previous installs, so a long-lived checkout pinned — and shipped — versions the
+      lockfile never mentions. Wiping `node_modules` here dropped the store from 3191 entries to
+      899; `@ai-sdk/*` packages were present with zero lockfile references, left over from the
+      archived OpenCode tier. It also pinned only `@deepseek-ai/*`, so `sharp` (which decides the
+      bytes `dsh-attachment-local` produces) and `@earendil-works/pi-ai` (the wire library that
+      actually serves MiMo) floated to npm's newest — 0.35.4 and **0.84.4**, against a suite that
+      ran 0.35.3 and 0.82.1.
+      Both now come from `bun.lock`, scoped to the closure reachable from `@deepseek-ai/dsh`: 198
+      dsh packages as `dependencies` and the 416-name verified closure as `overrides`. The 21
+      names the closure genuinely resolves at several versions are left unpinned and **named in
+      the build log** rather than flattened. A staged tree now carries `sharp@0.35.3` and
+      `pi-ai@0.82.1`, and `stage.ts` refuses outright to package a mixed dsh family.
       This qualifies the "dependency surface identical" claim recorded in the rc.8 and rc.2
-      entries: it is true of the direct list and false of the resolved tree, and
-      `packages/shell/scripts/stage.ts` copies the whole store into the app, so releases ship the
-      mix its own doc comment exists to prevent.
-      `bun update <names>` is the wrong tool and was tried and reverted: those subpackages' npm
-      `latest` tag points at ancient `0.0.1-rc.x` (only `next` tracks the 0.1.1 line), so it
-      resolves backwards and promotes them to root direct dependencies
+      entries above: it was true of the direct dependency list and false of the resolved tree
 - [x] **Signing, notarization, and a release job (2026-08-21).** Less new work than the open item
       claimed: the macOS credentials were still configured in the repo from the old app, which
       shipped signed + notarized four-platform releases through `v0.2.1`, and a local
