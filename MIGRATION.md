@@ -34,7 +34,79 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `packages/runtime` (`@mio/runtime`) | dsh composition, and no code: `mio.patch.yml` over the `web` profile — `dsh-llm-pi-ai` serves MiMo, `@mio/client-ui` is inserted, `ui-brand-official` is off, new sessions default to `mimo-v2.5`. `bun run dev:runtime` boots green; 2 composition tests replay a cassette through the real headless profile |
 | `packages/client-ui` (`@mio/client-ui`) | Mio's dsh client UI plugin, added 2026-08-22 in Stage 2: a Node half holding a Loader seat (`tapIndex` for the document title, exact routes shadowing `/favicon.svg` and the manifest) and a browser half (brand slots, the `mio-connect` onboarding step, `zh`/`en` copy). Bundled by `scripts/bundle.ts`; 10 tests green |
 | dsh pin | `0.1.1-rc.2`, bumped 2026-08-29 (both `latest` and `next` upstream). Still a prerelease line — there is no stable `0.1.1`. Upstream has tagged `v0.1.2-alpha.1` on GitHub (2026-08-27) but has **not published it to npm**, so it is not installable and not adopted |
-| End-to-end | Verified 2026-08-19 against a live MiMo token-plan account: real answers, real tool use, real file writes through the dsh web UI |
+| End-to-end | Re-verified 2026-08-29 on the rc.2 tree against a live MiMo token-plan account: a real answer, a real `read`/`write` tool round-trip, and a clean `read_image` refusal on the text-only route. The Electron shell boots, serves the UI, and leaves no orphan runtime on quit |
+
+## Release and supply chain
+
+Standing decisions, recorded because each was re-derived at least once before it
+was written down.
+
+**dsh comes from npm, never from source (decided 2026-08-29).** The question was
+live: upstream tagged `dsh-v0.1.2-alpha.1` on GitHub on 2026-08-27 and, as of
+2026-08-29, had not published it to npm — so the newest dsh a `bun install` can
+reach is a release behind what exists. Building from the tag was evaluated and
+rejected on three grounds. It is a different order of work: the dsh root uses
+pnpm 11.7.0 across 247 leaf packages with a `tsc -b` + `tsdown` chain and more
+than a hundred `verify-*` / `gen-*` gates, none of which a Bun workspace
+consumes. The npm packages are upstream's own verified artifact rather than a
+convenience — `release:pack`, `release:verify-packed-install`,
+`verify-built-package-invariants`, and `publint` exist precisely to gate them,
+so consuming source means stepping around upstream's own release checks. And
+every discipline in this repo rests on versioned npm publishes: `bunfig.toml`'s
+three-day `minimumReleaseAge`, the exact pins, `bun.lock` as a reviewable
+record, `stage.ts` pinning from that lockfile, and
+`packages/runtime/test/tree.test.ts`. Source consumption has no version, no
+gate, and no lockfile to pin, which would bring the drift documented above back
+in a form that is harder to see. Waiting costs a few weeks of an `alpha.1`.
+
+**Offline is a runtime property Mio already has; source would not add it
+(measured 2026-08-29).** The runtime holds exactly one socket — its own loopback
+listener — at startup and after serving a page; there are no outbound
+connections. Telemetry is off unless asked for: the composed profile resolves
+`mode` to `process.env.DSH_TELEMETRY_MODE || 'DISABLED'`, so the
+`harness-telemetry.deepseeksvc.com` exporter never runs by default. The
+prebuilt web dist is self-contained, with 59 local font files and no CDN or
+Google Fonts reference. The packaged app carries its whole dependency tree
+(`asarUnpack: ["node_modules/**"]`, ~299 MB), so installing it needs no
+registry. The one thing that genuinely needs the network is the model endpoint,
+which is inherent to a coding agent rather than a property of dsh: an air-gapped
+deployment points `baseURL` at an OpenAI-compatible server on its own network,
+which the `api: openai-completions` route already speaks.
+Offline *building* is a separate problem and the only one still open: it needs a
+warmed Bun and npm cache or an internal registry mirror. Shipping the signed
+installer avoids it entirely, which is the recommended answer for an air-gapped
+consumer.
+
+**Releases follow the rc train, and pre-rebuild builds are off the shelf
+(2026-08-29).** GitHub defines `latest` as the newest release that is *not* a
+prerelease. Mio's 0.3 line is release candidates, so for eight days every
+Download button on the site resolved to `v0.2.1` from June — the OpenCode-era
+build, six PRs (#19–#24) before Mio had its own mark or a MiMo connect flow.
+Worse, the
+artifact names had changed underneath (`mio-desktop-*` → `mio-*`), so the links
+were one release promotion away from 404ing for every visitor.
+Both halves are fixed in `docs/index.html`: the page lists `/releases` and takes
+the newest published entry, skipping drafts, and it resolves the download URL by
+matching the platform's *extension* against that release's own asset list rather
+than by a hardcoded filename. The extension is the stable part, because the
+platform requires it; the filename is not, and has already changed once.
+All eleven pre-rebuild releases — `v0.1.0`–`v0.1.7`, `v0.2.0`, `v0.2.1`, and
+`v0.3.0-rc.2` — were converted to drafts, not deleted: each keeps its tag name
+and its assets (124 files in total), and the git tags are untouched, so any of
+them can be republished. `v0.3.0-rc.3` is the first published release carrying
+Mio's identity on the dsh core.
+Two consequences worth knowing. The `/releases/latest` **API** now returns 404,
+because no non-prerelease is published; the `/releases/latest` **web page**
+still answers 200 and redirects to `/releases`, so external links survive. And
+the repo sidebar shows no version badge at all, which is the intended outcome —
+better nothing than a June build labelled "Latest".
+
+**Windows installers ship unsigned.** `release.yml` wires Azure Trusted Signing,
+but its three secrets are unset, and `script/sign-windows.ps1` is written to
+`exit 0` in exactly that case. macOS is fully signed, notarized, and stapled;
+Linux AppImages are unsigned by convention. Windows users therefore meet
+SmartScreen. Configuring the three secrets is all that is needed — no code
+change.
 
 ## Phase 1 — MiMo provider adapter (dsh-native elsewhere)
 
