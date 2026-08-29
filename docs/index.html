@@ -1061,8 +1061,36 @@
 
   /* ---- download CTA: platform detection + latest version ---- */
   const REPO = 'shin4/mio';
-  const ASSET = { mac:'mio-desktop-mac-arm64.dmg', win:'mio-desktop-win-x64.exe', linux:'mio-desktop-linux-x86_64.AppImage' };
+  /* Artifacts are matched by extension against the release's own asset list,
+     never by filename. The names have already changed once — v0.2.1 shipped
+     `mio-desktop-mac-arm64.dmg`, v0.3.0-rc.2 ships `mio-mac-arm64.dmg` — and a
+     hardcoded name does not fail loudly when that happens, it just 404s every
+     visitor who clicks Download. The extension is the part that is actually
+     stable, because it is what the platform requires. */
+  const SUFFIX = { mac:'.dmg', win:'.exe', linux:'.AppImage' };
+  /* Which build to prefer when a platform ships more than one. A wrong guess
+     stays recoverable: the "All Downloads" button beside this one lists every
+     asset, so nobody is stranded on the wrong architecture. */
+  const ARCH_RANK = { mac:['arm64','x64'], win:['x64','arm64'], linux:['x86_64','x64','arm64'] };
   const DL_KEY = { mac:'download.mac', win:'download.win', linux:'download.linux', other:'download.generic' };
+
+  /* The download URL for one platform, or null when the release carries no
+     artifact for it — a real case while a platform's build is broken or a
+     release is still uploading, and the reason the caller leaves the button
+     pointing at the releases page instead of inventing a URL. */
+  function assetUrlFor(assets, os) {
+    const suffix = SUFFIX[os];
+    if (!suffix || !assets) return null;
+    /* `.blockmap` and `.zip` siblings fall out here: only the installer itself
+       ends with the platform's own extension. */
+    const matching = assets.filter(a => a && typeof a.name === 'string' && a.name.endsWith(suffix));
+    if (matching.length === 0) return null;
+    for (const arch of (ARCH_RANK[os] || [])) {
+      const hit = matching.find(a => a.name.indexOf(arch) !== -1);
+      if (hit) return hit.browser_download_url;
+    }
+    return matching[0].browser_download_url;
+  }
   function detectOS(){
     const s = (((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '') + ' ' + (navigator.userAgent || '')).toLowerCase();
     if (/android/.test(s) || /iphone|ipad|ipod/.test(s)) return 'other'; // mobile can't run the desktop app
@@ -1074,16 +1102,29 @@
   const detectedOS = detectOS();
   const dlPrimary = document.getElementById('dl-primary');
   const dlIconUse = document.querySelector('#dl-icon use');
-  if (dlPrimary && detectedOS !== 'other') {
-    dlPrimary.href = 'https://github.com/' + REPO + '/releases/latest/download/' + ASSET[detectedOS];
-    if (dlIconUse) dlIconUse.setAttribute('href', detectedOS === 'mac' ? '#apple' : detectedOS === 'win' ? '#windows' : '#download');
-  }
+  /* The icon is safe to set now — it depends only on the visitor's platform.
+     The href is not: it stays on the markup's releases-page default until the
+     release actually names an artifact, so a blocked request, a rate-limited
+     API, or a release without this platform's build all degrade to a page that
+     works rather than to a broken download. */
+  if (dlPrimary && detectedOS !== 'other' && dlIconUse)
+    dlIconUse.setAttribute('href', detectedOS === 'mac' ? '#apple' : detectedOS === 'win' ? '#windows' : '#download');
+
   fetch('https://api.github.com/repos/' + REPO + '/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
     .then(r => r.ok ? r.json() : null)
-    .then(d => { if (d && d.tag_name) {
-      document.getElementById('dl-version-num').textContent = d.tag_name;
-      document.getElementById('dl-version').hidden = false;
-    }})
+    .then(d => {
+      if (!d) return;
+      if (d.tag_name) {
+        document.getElementById('dl-version-num').textContent = d.tag_name;
+        document.getElementById('dl-version').hidden = false;
+      }
+      /* `browser_download_url` from the release we just read, rather than a
+         `/releases/latest/download/<name>` URL assembled here: the assembled
+         form re-resolves "latest" on click and can land on a different release
+         than the version label above it. */
+      const url = detectedOS === 'other' ? null : assetUrlFor(d.assets, detectedOS);
+      if (url && dlPrimary) dlPrimary.href = url;
+    })
     .catch(()=>{});
 
   /* ---- pick initial language: saved choice > ?lang= > browser language > English ---- */
