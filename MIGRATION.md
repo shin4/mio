@@ -33,7 +33,7 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
 | `packages/runtime` (`@mio/runtime`) | dsh composition, and no code: `mio.patch.yml` over the `web` profile — `dsh-llm-pi-ai` serves MiMo, `@mio/client-ui` is inserted, `ui-brand-official` is off, new sessions default to `mimo-v2.5`. `bun run dev:runtime` boots green; 2 composition tests replay a cassette through the real headless profile |
 | `packages/client-ui` (`@mio/client-ui`) | Mio's dsh client UI plugin, added 2026-08-22 in Stage 2: a Node half holding a Loader seat (`tapIndex` for the document title, exact routes shadowing `/favicon.svg` and the manifest) and a browser half (brand slots, the `mio-connect` onboarding step, `zh`/`en` copy). Bundled by `scripts/bundle.ts`; 10 tests green |
-| dsh pin | `0.1.1-rc.1`, bumped 2026-08-21 (both `latest` and `next` upstream). Still a prerelease line — there is no stable `0.1.1` |
+| dsh pin | `0.1.1-rc.2`, bumped 2026-08-29 (both `latest` and `next` upstream). Still a prerelease line — there is no stable `0.1.1`. Upstream has tagged `v0.1.2-alpha.1` on GitHub (2026-08-27) but has **not published it to npm**, so it is not installable and not adopted |
 | End-to-end | Verified 2026-08-19 against a live MiMo token-plan account: real answers, real tool use, real file writes through the dsh web UI |
 
 ## Phase 1 — MiMo provider adapter (dsh-native elsewhere)
@@ -196,6 +196,46 @@ Other archived MiMo behavior, same audit:
       tagged `latest`. It was **3 hours old** when installed — an order of magnitude inside
       `bunfig.toml`'s 3-day gate, which exists for exactly that window. Bypassed knowingly with a
       one-off `--minimum-release-age=0`; the policy is unchanged
+- [x] **dsh 0.1.1-rc.1 → rc.2 (2026-08-29)** — fourth rehearsal, and the first one to clear
+      `bunfig.toml`'s 3-day gate on its own: rc.2 was **8 days old** when installed, so no
+      `--minimum-release-age=0`. All three previous bumps needed the bypass; the gate finally did
+      the job it was written for rather than being stepped around.
+      Absorbed with no code change. Static gates green — typecheck 3/3, lint 0 errors, 10
+      `@mio/client-ui` tests and 2 composition replays that boot the real headless tree. A live
+      MiMo request, the shell, and a packaged build are **still pending** on this entry.
+      Dependency surface identical: the dsh closure is 170 packages before and after with none
+      added or removed, every third-party range is unchanged (`@earendil-works/pi-ai@0.82.1`,
+      `sharp@0.35.3`), and `bun.lock` is a pure 177-line version swap with the entry count
+      unmoved at 285.
+      What rc.2 actually changes is the image and attachment pipeline: `dsh-llm` puts `ImageBlock`
+      in the core content union and adds `PreparedAdapterCall`; `dsh-llm-pi-ai` — the adapter that
+      serves MiMo — gains two optional route budgets (`requestImagePixelBudget`,
+      `requestImageMaxBytes`) that `mio.patch.yml` does not need to set; `dsh-attachment-local`
+      rewrites normalization on sharp; and `dsh-llm-deepseek` grows a DeepSeek Files API that
+      uploads images and deletes the oldest `dsh-` files under quota pressure. That last one
+      reaches Mio users, since Mio ships DeepSeek's routes beside MiMo, and wants a product
+      decision rather than a silent adoption.
+      Two facts worth keeping so the next reader does not rediscover them:
+      **`dsh-permission-presets`' README is wrong.** It states its Settings namespace and command
+      renamed `permission` → `permissionPresets`. The built `lib/index.js` still uses
+      `"permission"` and `"permission/preset"`, and `dsh-client-ui-permission-presets` still reads
+      `permission`. No `settings.yaml` or session-log migration is needed; do not act on that
+      README.
+      **`dsh-web-frontend`'s dist is byte-identical to rc.1**, so the `TITLE_GUARD` workaround in
+      `packages/client-ui/src/index.ts` is still load-bearing. The skew it waits on has not closed
+- [ ] **22 dsh packages are frozen behind the family bump** — found while verifying the rc.2 bump,
+      pre-existing, and deliberately not fixed there. 171 packages moved to `0.1.1-rc.2`; 17 stayed
+      at `0.1.0-rc.6` (including `dsh-invariants`, which **190 packages in the tree peer-require at
+      `^0.1.1-rc.2`**), 4 at `0.1.0-rc.7`, and `dsh-authorization` at `0.1.1-rc.1` while
+      `dsh-llm-pi-ai` asks for `^0.1.1-rc.2`. They are peer-only — nothing declares them as an
+      ordinary dependency — so Bun resolved them once and the lockfile has held them since rc.6.
+      This qualifies the "dependency surface identical" claim recorded in the rc.8 and rc.2
+      entries: it is true of the direct list and false of the resolved tree, and
+      `packages/shell/scripts/stage.ts` copies the whole store into the app, so releases ship the
+      mix its own doc comment exists to prevent.
+      `bun update <names>` is the wrong tool and was tried and reverted: those subpackages' npm
+      `latest` tag points at ancient `0.0.1-rc.x` (only `next` tracks the 0.1.1 line), so it
+      resolves backwards and promotes them to root direct dependencies
 - [x] **Signing, notarization, and a release job (2026-08-21).** Less new work than the open item
       claimed: the macOS credentials were still configured in the repo from the old app, which
       shipped signed + notarized four-platform releases through `v0.2.1`, and a local

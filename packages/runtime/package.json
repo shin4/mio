@@ -14,7 +14,7 @@
     "typecheck": "tsgo --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@deepseek-ai/dsh": "0.1.1-rc.1"
+    "@deepseek-ai/dsh": "0.1.1-rc.2"
   },
   "devDependencies": {
     "@types/node": "catalog:",
