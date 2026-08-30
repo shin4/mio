@@ -40,8 +40,6 @@ logs/
 tsconfig.tsbuildinfo
 
 # Project-internal docs and local editor/agent state (not for public release)
-# Root-anchored so nested packages/**/AGENTS.md contributor guides stay tracked.
-/AGENTS.md
 /specs/
 /.zed/
 /docs/superpowers/
