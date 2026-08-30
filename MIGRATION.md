@@ -33,7 +33,7 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
 | `packages/runtime` (`@mio/runtime`) | dsh composition, and no code: `mio.patch.yml` over the `web` profile — `dsh-llm-pi-ai` serves MiMo, `@mio/client-ui` is inserted, `ui-brand-official` is off, new sessions default to `mimo-v2.5`. `bun run dev:runtime` boots green; 2 composition tests replay a cassette through the real headless profile |
 | `packages/client-ui` (`@mio/client-ui`) | Mio's dsh client UI plugin, added 2026-08-22 in Stage 2: a Node half holding a Loader seat (`tapIndex` for the document title, exact routes shadowing `/favicon.svg` and the manifest) and a browser half (brand slots, the `mio-connect` onboarding step, `zh`/`en` copy). Bundled by `scripts/bundle.ts`; 10 tests green |
-| dsh pin | `0.1.1-rc.2`, bumped 2026-08-29 (both `latest` and `next` upstream). Still a prerelease line — there is no stable `0.1.1`. Upstream has tagged `v0.1.2-alpha.1` on GitHub (2026-08-27) but has **not published it to npm**, so it is not installable and not adopted |
+| dsh pin | `0.1.1-rc.2`, bumped 2026-08-29 (both `latest` and `next` upstream). Still a prerelease line — there is no stable `0.1.1`. Upstream has tagged `v0.1.2-alpha.1` on GitHub (2026-08-27) but has **not published it to npm**, so it is not installable and not adopted. Re-checked 2026-08-30: npm `latest` and `next` are both still `0.1.1-rc.2` (published 2026-08-21). What the tag holds for the shell is surveyed at the end of Phase 2 |
 | End-to-end | Re-verified 2026-08-29 on the rc.2 tree against a live MiMo token-plan account: a real answer, a real `read`/`write` tool round-trip, and a clean `read_image` refusal on the text-only route. The Electron shell boots, serves the UI, and leaves no orphan runtime on quit |
 
 ## Release and supply chain
@@ -216,8 +216,10 @@ Other archived MiMo behavior, same audit:
       `profiles/web/node_modules/@mio/llm-mimo`, which dsh scaffolds around and preserves.
       `setup-profile.ts` and the shell's `src/profile.ts` now do exactly that — no pnpm, no
       tarball, no network. The root `@mio/llm-mimo` dependency added on the earlier (wrong)
-      diagnosis is removed. Verified from an empty profile on both paths, and from a
-      `$DSH_HOME` outside the repo entirely
+      diagnosis is removed. (The plugin provisioned this way is now `@mio/client-ui`:
+      `@mio/llm-mimo` was deleted in Phase 3 Stage 1 and the mechanism carried over unchanged,
+      which is why Stage 1 had to make the shell create `$DSH_HOME` explicitly.) Verified from an
+      empty profile on both paths, and from a `$DSH_HOME` outside the repo entirely
 - [x] **Packaging — electron-builder, verified by launching the result (2026-08-19).** An
       unsigned macOS build starts, provisions a profile in a fresh `$DSH_HOME`, boots the runtime,
       serves the UI, shows MiMo as configured, and leaves no orphan on quit. Seven distinct
@@ -426,6 +428,82 @@ Other archived MiMo behavior, same audit:
       client-ui-plan), attachments, model selection — explicit keep/cut list for the rest
       (session revert, worktrees, share, PTY tickets, …)
 - [ ] Verify zh locale coverage in real use (dsh ships `LOCALE_IDS = ["zh", "en"]`)
+- [ ] **When dsh 0.1.2 reaches npm, re-verify the shell against browser-session authentication.**
+      The tag carries an authentication layer rc.2 does not have (surveyed below). Mio's URL parse
+      survives it — `runtime.ts`'s `/dsh web:\s*(http:\/\/\S+)/` captures the `?token=` query — but
+      the window session has to persist the cookie the token is traded for, and any reload that
+      navigates to a bare origin instead of the announced URL will meet a 401
+
+### The shell stays on Electron — Tauri evaluated and rejected (2026-08-30)
+
+Recorded because the size argument sounds decisive right up until it is measured.
+
+The shipped build is 428 MB (`packages/shell/dist/mac-arm64/Mio.app`; DMG 140 MB), of which
+`Contents/Frameworks` is 262 MB and `Resources/app.asar.unpacked` — the dsh runtime and its
+dependency tree — is 156 MB. Tauri deletes the first number, cannot touch the second, and then
+adds a Node runtime back: dsh is a Node ≥22.19 application that the shell launches through
+Electron's own Node (`ELECTRON_RUN_AS_NODE` plus `--expose-internals`), and a Tauri shell has no
+bundled Node, so it ships one (115 MB for the Node 24 arm64 binary) or requires the user to have
+one. The saving is about a third of the app, not the two orders of magnitude the pitch implies.
+
+Against that saving, the window would stop being the engine dsh tests. Upstream's web unit lane
+runs jsdom, and its only real-engine end-to-end (`apps/web/tests/smoke-real.e2e.ts`) drives "a real
+chromium". Electron *is* that engine; Tauri is WKWebView / WebKitGTK / WebView2, of which only the
+Windows one is Chromium. The frontend is not conservative about engine surface either — across
+dsh's client packages, `:has()` 15×, container queries 4×, `color-mix()` 35×, `backdrop-filter` 6×,
+`scrollbar-gutter` 5× — and dsh is a fast-moving preview, so each bump can add more. Mio would be
+the only party finding those regressions, on a surface upstream has no reason to fix. Two smaller
+costs: the signing/notarization pipeline, the staging script, and the deferred updater are all
+electron-builder-shaped and would be rebuilt; and the child-process supervision in `runtime.ts`
+(spawn, line-buffered URL parse, exit classification, orphan prevention) is Node code that would
+move to Rust.
+
+Revisit if resident memory becomes the top user complaint, if the Mac App Store or a stricter
+sandbox posture is required, if Chromium CVE churn makes the release cadence painful, or if the
+product stops rendering dsh's own frontend. That last one deletes the engine argument outright,
+and it is exactly what the current UI plan — client UI plugins, never a dist fork — rules out.
+
+### Upstream's desktop story, and what 0.1.2-alpha.1 holds for the shell (surveyed 2026-08-30)
+
+Read from the `dsh-v0.1.2-alpha.1` tag (`cd5ef8148`, master head; 1079 commits and 6421 files past
+rc.2) rather than from the npm packages, because the load-bearing documents are not published.
+
+**There is no upstream desktop application and none is scheduled.** `apps/` holds `cli` and `web`
+only, and no package in the tree names Electron or Tauri. What exists is a design reservation, in
+`.agents/notes/archived/architecture/2026-07-19-gui-layering-and-rpc-protocol.md`: more clients are
+expected ("Web (server), Electron, and others"), "a future Electron application reuses the same web
+client packages over an IPC fetch carrier", and the carrier-subclass table lists the IPC bridge as
+a "hypothetical example — no such shell exists". `dsh-host-webserver` states the same boundary from
+the other side, in identical words at rc.2 and at this tag: it serves browsers only, and "Electron
+loads dist over `file://` and carries fetch over an IPC bridge" — meaning an Electron deployment
+does not use it at all. Mio's shell is therefore not working against upstream; it occupies a
+surface upstream described and has not built.
+
+Three seams carry that promise, and the webworker note names them as owned by the product packages
+rather than by the experiment: the index injection table, `__DSH_TRANSPORT__`, and the `/plugins`
+bundle bytes. `packages/experimental/webworker-runtime` is the first real non-HTTP carrier riding
+them (a postMessage tunnel for the browser worker preview), which is what makes the seam more than
+a comment in a README.
+
+Three deltas in the tag that reach Mio at the next bump:
+
+- **Browser-session authentication.** Each process mints a launch token; `dsh web:` now prints
+  `authenticatedUrl()` with `?token=…`, the index exchange trades the token for a cookie and
+  redirects to a clean `/`, everything else answers 401, and the cookie secret is an owner-scoped
+  credential record in `$DSH_HOME/.credentials.yaml`. Upstream's own wording: "there is no
+  method-specific loopback tier" — the rc.2 posture, where being loopback was itself the
+  authorization for the privileged methods, is gone. The checklist item above carries the shell's
+  exposure.
+- **`ClientTransportHooks` changed shape.** rc.2 asked a shell for `{ createApiClient, fetch,
+  loadBundle? }`; the tag asks for `{ fetch, openStream?, loadBundle?, ownsHost? }`. A shell now
+  supplies a fetch rather than a whole API client, so the `file://` route got cheaper, not dearer.
+- **`ownsHost` closes what made a `file://` shell second-class.** A shell that assembles its own
+  transport can declare that the page owns the Host, and `ctx.connection.isLoopback` then reports
+  the privileged surface regardless of page authority. Under `file://` the page origin is not a
+  loopback authority, so before this flag such a shell lost directory picking, native open, and
+  the whole settings plane. Worth knowing it exists; it is not a reason to take that route, which
+  stays a contingency (no listening port, offline packaging, or a sandbox forbidding the loopback
+  server) rather than a plan.
 
 ## Phase 3 — MiMo product surfaces and data
 
