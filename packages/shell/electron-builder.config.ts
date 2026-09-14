@@ -119,12 +119,12 @@ async function notarizeAndStaple(dmg: string, credentials: { args: string[]; pas
 /**
  * Packaging for the Mio desktop shell.
  *
- * Two things must survive packaging intact, and both are why so much is
- * unpacked from the asar archive:
+ * The app ships as ordinary files so its Node child and profile provisioning
+ * can read the same dependency tree:
  *
  * - The dsh runtime is spawned as a real child process. It reads its own
  *   modules with plain `fs`, which cannot see inside an asar archive.
- * - The shell copies `@mio/llm-mimo` into the user's dsh profile at startup,
+ * - The shell copies `@mio/client-ui` into the user's dsh profile at startup,
  *   also with plain `fs`.
  *
  * `mio.patch.yml` — Mio's composition over the dsh `web` profile — ships as an
@@ -150,11 +150,10 @@ const config: Configuration = {
 
   files: ["lib/**/*", "package.json", "!**/*.map", "!**/*.tsbuildinfo"],
 
-  // The whole dependency tree, not just the scoped parts of it. The runtime
-  // child resolves imports from inside `app.asar.unpacked`, so a package left
-  // in the archive is simply absent from its search path — `js-yaml` was the
-  // first to prove it. Only the shell's own `lib/` stays archived.
-  asarUnpack: ["node_modules/**"],
+  // node-pty unconditionally replaces "app.asar" in its helper path, turning
+  // an already-unpacked path into app.asar.unpacked.unpacked. Ordinary files
+  // avoid patching upstream code and keep one tree shared with the Node child.
+  asar: false,
 
   extraResources: [{ from: "../../runtime/mio.patch.yml", to: "mio.patch.yml" }],
 

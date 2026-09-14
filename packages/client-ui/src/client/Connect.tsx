@@ -3,9 +3,8 @@
  *
  * This exists because dsh's own onboarding cannot serve Mio. Its only
  * credential step is hard-wired to the `deepseek-official` route
- * (`DeepSeekOnboardingDialog` in `dsh-client-ui-settings-models`), and Mio
- * disables that provider — so without this step a fresh install has no in-app
- * way to enter a key at all.
+ * (`DeepSeekOnboardingDialog` in `dsh-client-ui-settings-models`), so Mio supplies
+ * its own MiMo-first step while keeping DeepSeek available on the Models page.
  *
  * Three rules the surface imposes, all load-bearing here:
  *
@@ -20,37 +19,24 @@
  *    and handing the cell to the next survivor. Rendering stays total.
  */
 import { useCallback, useEffect, useRef, useState } from "react"
+import type { ClientRemote, RemoteResult } from "@deepseek-ai/dsh-api-remotes/client"
 import { OnboardingSurface } from "@deepseek-ai/dsh-client-ui-primitives"
 import { MioBrandMark } from "./Brand.tsx"
 import type { MioMessageKey } from "./locale.ts"
-import { BASE_URL_PATH, endpointFor, isTokenPlan, KEY_REF, PLATFORM_URL, PROTOCOL, REGIONS, SETTINGS_NS, type Region } from "./mimo.ts"
+import {
+  BASE_URL_PATH,
+  endpointFor,
+  isTokenPlan,
+  KEY_REF,
+  PLATFORM_URL,
+  PROTOCOL,
+  REGIONS,
+  SETTINGS_NS,
+  type Region,
+} from "./mimo.ts"
 
-/** The slice of dsh's wire API this step uses. */
-export interface ConnectApi {
-  credentials: {
-    describe(payload: { refs: string[] }): Promise<Envelope<{ credentials: Record<string, CredentialRecord | undefined> }>>
-    set(payload: { ref: string; value: string }): Promise<Envelope<unknown>>
-  }
-  llm: {
-    discoverModels(payload: { settingsNs: string; baseURL: string; api: string; apiKey: string }): Promise<Envelope<unknown>>
-  }
-  settings: {
-    describe(payload: Record<string, never>): Promise<Envelope<{ namespaces: { ns: string; revision: number }[] }>>
-    mutate(payload: {
-      ns: string
-      ops: { op: "set"; path: string[]; value: unknown }[]
-      expectedRevision: number
-    }): Promise<Envelope<unknown>>
-  }
-}
-
-type Envelope<T> = { result: { ok: true; value: T } | { ok: false; error: { code?: string; message: string } } }
-
-interface CredentialRecord {
-  configured: boolean
-  writable: boolean
-  source?: string
-}
+/** Use the shipped Remote types so protocol changes fail typechecking. */
+export type ConnectApi = Pick<ClientRemote, "credentials" | "llm" | "settings">
 
 export interface ConnectProps {
   /** Advances the onboarding sequence. Supplied by the surface. */
@@ -65,7 +51,7 @@ export interface ConnectProps {
 
 type Phase = "checking" | "welcome" | "connect"
 
-const failureOf = (envelope: Envelope<unknown>) => (envelope.result.ok ? undefined : envelope.result.error.message)
+const failureOf = (response: RemoteResult<unknown>) => (response.ok ? undefined : response.error.message)
 
 export function MioConnect({ complete, t, api, openLink }: ConnectProps) {
   // dsh's own step guards completion this way: the shell recreates `complete`
@@ -86,9 +72,9 @@ export function MioConnect({ complete, t, api, openLink }: ConnectProps) {
   useEffect(() => {
     let live = true
     void (async () => {
-      const described = await api.credentials.describe({ refs: [KEY_REF] }).catch(() => undefined)
+      const described = await api.credentials.describe([KEY_REF]).catch(() => undefined)
       if (!live) return
-      const record = described?.result.ok === true ? described.result.value.credentials[KEY_REF] : undefined
+      const record = described?.ok === true ? described.value[KEY_REF] : undefined
       // Already connected, or supplied read-only by the launching environment
       // (`MIO_API_KEY` in the shell), where a form could only offer a write that
       // the credential service refuses. Either way there is nothing to ask.
@@ -116,20 +102,20 @@ export function MioConnect({ complete, t, api, openLink }: ConnectProps) {
     // a route lets the adapter answer from its own model list without a network
     // call, which would "succeed" for any key at all.
     const discovered = await api.llm
-      .discoverModels({ settingsNs: SETTINGS_NS, baseURL, api: PROTOCOL, apiKey: value })
+      .discoverModels(SETTINGS_NS, { baseURL, api: PROTOCOL, apiKey: value })
       .catch(() => undefined)
     if (discovered === undefined) {
       setBusy(false)
       setError(t("error.unreachable"))
       return
     }
-    if (!discovered.result.ok) {
+    if (!discovered.ok) {
       setBusy(false)
       setError(t("error.rejected"))
       return
     }
 
-    const stored = await api.credentials.set({ ref: KEY_REF, value }).catch(() => undefined)
+    const stored = await api.credentials.set(KEY_REF, value).catch(() => undefined)
     const storeFailure = stored === undefined ? t("error.unreachable") : failureOf(stored)
     if (storeFailure !== undefined) {
       setBusy(false)
@@ -143,16 +129,16 @@ export function MioConnect({ complete, t, api, openLink }: ConnectProps) {
       // Read the revision here rather than at mount: a write is refused outright
       // on a stale one, so the shortest possible window between reading it and
       // using it is the one least likely to lose a race with another surface.
-      const described = await api.settings.describe({}).catch(() => undefined)
+      const described = await api.settings.describe().catch(() => undefined)
       const revision =
-        described?.result.ok === true
-          ? described.result.value.namespaces.find((entry) => entry.ns === SETTINGS_NS)?.revision
+        described?.ok === true
+          ? described.value.namespaces.find((entry) => entry.ns === SETTINGS_NS)?.revision
           : undefined
       const written =
         revision === undefined
           ? undefined
           : await api.settings
-              .mutate({ ns: SETTINGS_NS, ops: [{ op: "set", path: BASE_URL_PATH, value: baseURL }], expectedRevision: revision })
+              .mutate(SETTINGS_NS, [{ op: "set", path: BASE_URL_PATH, value: baseURL }], revision)
               .catch(() => undefined)
       const endpointFailure = written === undefined ? t("error.unreachable") : failureOf(written)
       if (endpointFailure !== undefined) {

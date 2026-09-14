@@ -51,13 +51,11 @@ const WORKSPACE = path.resolve(SHELL, "..", "..")
  *   newest, so the app shipped libraries the replay suite never ran against.
  *
  * Scoped to the closure reachable from `@deepseek-ai/dsh` so the workspace's
- * own tooling never leaks into the app's pin set. A name the closure resolves
- * at more than one version is deliberately left unpinned rather than flattened
- * — one pin cannot express two versions, and quietly picking either is the bug
- * this function was rewritten to stop. Those are returned so the caller can
- * say so out loud.
+ * own tooling never leaks into the app's pin set. Multiple versions are pinned
+ * per parent using Bun's resolution paths, never flattened or left floating.
+ * The installed npm lock is checked against these versions before packaging.
  */
-async function pinnedVersions(): Promise<{ pins: Record<string, string>; ambiguous: string[] }> {
+async function pinnedVersions() {
   // bun.lock is JSONC: line comments and trailing commas, neither of which
   // JSON.parse accepts. The file has no block comments, and its only `//` is
   // inside quoted values this never splits on.
@@ -102,13 +100,73 @@ async function pinnedVersions(): Promise<{ pins: Record<string, string>; ambiguo
     if (found === undefined) return []
     return [[name, [...found]] as const]
   })
-  return {
-    pins: Object.fromEntries(resolved.filter(([, found]) => found.length === 1).map(([name, found]) => [name, found[0]])),
-    ambiguous: resolved
-      .filter(([, found]) => found.length > 1)
-      .map(([name, found]) => `${name} (${[...found].sort().join(", ")})`)
-      .sort(),
+  const pins = Object.fromEntries(
+    resolved.filter(([, found]) => found.length === 1).map(([name, found]) => [name, found[0]]),
+  )
+  const overrides: Record<string, string | Record<string, string>> = { ...pins }
+  const multi = new Set(resolved.filter(([, found]) => found.length > 1).map(([name]) => name))
+  // Preserve each parent's actual Bun resolution. A single global pin cannot
+  // represent multiple versions, and leaving these edges floating let npm
+  // install negotiator 1.1.0 even though only 1.0.0 and 0.6.4 were tested.
+  for (const [key, entry] of Object.entries(lock.packages ?? {})) {
+    const spec = entry[0]
+    if (typeof spec !== "string") continue
+    const at = spec.lastIndexOf("@")
+    const parent = spec.slice(0, at)
+    if (!reachable.has(parent)) continue
+    const info = entry.find((field): field is Record<string, unknown> => typeof field === "object" && field !== null)
+    const deps = [info?.dependencies, info?.optionalDependencies, info?.peerDependencies]
+      .filter((value): value is Record<string, string> => typeof value === "object" && value !== null)
+      .flatMap((value) => Object.keys(value))
+    for (const dep of deps.filter((name) => multi.has(name))) {
+      const ancestors = key.match(/(?:@[^/]+\/)?[^/]+/g) ?? []
+      const candidates = Array.from({ length: ancestors.length + 1 }, (_, index) =>
+        [...ancestors.slice(0, ancestors.length - index), dep].join("/"),
+      )
+      const target = candidates
+        .map((candidate) => lock.packages?.[candidate]?.[0])
+        .find((value) => typeof value === "string")
+      if (typeof target !== "string") throw new Error(`stage: cannot resolve ${key} -> ${dep}`)
+      const version = target.slice(target.lastIndexOf("@") + 1)
+      const scope = pins[parent] ? parent : spec
+      const current = overrides[scope]
+      const children = typeof current === "string" ? { ".": current } : (current ?? {})
+      if (children[dep] && children[dep] !== version)
+        throw new Error(`stage: ${scope} has context-dependent ${dep} versions; cannot flatten its resolution`)
+      children[dep] = version
+      overrides[scope] = children
+    }
   }
+  // npm replaces a child's override context when its parent pins that child.
+  // Carry the child's own scoped overrides along (e.g. chokidar -> readdirp).
+  type OverrideTree = { [name: string]: string | OverrideTree }
+  const pinChild = (name: string, version: string, ancestors = new Set<string>()): string | OverrideTree => {
+    const key = `${name}@${version}`
+    const selected = overrides[key] ?? overrides[name]
+    if (typeof selected !== "object" || ancestors.has(key)) return version
+    return {
+      ".": version,
+      ...Object.fromEntries(
+        Object.entries(selected)
+          .filter(([child]) => child !== ".")
+          .map(([child, value]) => [child, pinChild(child, value, new Set([...ancestors, key]))]),
+      ),
+    }
+  }
+  const scopedOverrides = Object.fromEntries(
+    Object.entries(overrides).map(([name, value]) => [
+      name,
+      typeof value === "string"
+        ? value
+        : Object.fromEntries(
+            Object.entries(value).map(([child, version]) => [
+              child,
+              child === "." ? version : pinChild(child, version),
+            ]),
+          ),
+    ]),
+  )
+  return { pins, overrides: scopedOverrides, versions, multi: [...multi].sort() }
 }
 
 /**
@@ -153,10 +211,8 @@ await $`npm pack --pack-destination ${STAGE} --silent`.cwd(CLIENT_UI).quiet()
 const tarball = (await readdir(STAGE)).find((entry) => entry.endsWith(".tgz"))
 if (!tarball) throw new Error("stage: npm pack produced no tarball")
 
-const { pins, ambiguous } = await pinnedVersions()
-// Never a silent truncation: a name the closure resolves at several versions
-// is left to npm, and saying which ones keeps that visible in the build log.
-if (ambiguous.length > 0) console.log(`stage: ${ambiguous.length} package(s) left unpinned (multi-version): ${ambiguous.join(", ")}`)
+const { pins, overrides, versions, multi } = await pinnedVersions()
+console.log(`stage: ${multi.length} multi-version dependencies pinned per parent`)
 if (pins["@deepseek-ai/dsh"] !== shellPkg.dependencies["@deepseek-ai/dsh"])
   throw new Error(
     `stage: workspace has dsh ${pins["@deepseek-ai/dsh"]} but package.json pins ${shellPkg.dependencies["@deepseek-ai/dsh"]}; run bun install`,
@@ -193,19 +249,32 @@ await writeFile(
       // second copy or drifting to a newer release. An override for a package
       // the app tree never requests is inert, which is why this can be the
       // whole lockfile rather than a hand-picked list that goes stale.
-      overrides: pins,
+      overrides,
     },
     null,
     2,
   )}\n`,
 )
 
-// npm 11 blocks install scripts unless approved, and they stay blocked here:
-// every native binary dsh needs arrives prebuilt in a platform package
-// (@koromix/koffi-*, @vscode/ripgrep-*, node-addon-require-builtin-*), so the
-// three pending scripts are a source build koffi does not need, a protobufjs
-// warning, and a no-op echo. Do not blanket-approve them to silence the warning.
-await $`npm install --omit=dev --no-audit --no-fund`.cwd(STAGE)
+// Keep dependency lifecycle scripts disabled. Native binaries arrive prebuilt;
+// the one required dsh postinstall only restores node-pty's helper executable
+// bit. Run that audited script explicitly, without enabling unrelated scripts.
+await $`npm install --omit=dev --ignore-scripts --no-audit --no-fund`.cwd(STAGE)
+await $`node node_modules/@deepseek-ai/dsh-subprocess-local/scripts/ensure-spawn-helper.mjs`.cwd(STAGE)
+// Audit the tree npm actually resolved before allowing it into an installer.
+const installed: { packages: Record<string, { version?: string; dev?: boolean }> } = await Bun.file(
+  path.join(STAGE, "package-lock.json"),
+).json()
+const drift = Object.entries(installed.packages)
+  .filter(
+    ([key, value]) => key.startsWith("node_modules/") && !value.dev && !key.endsWith("node_modules/@mio/client-ui"),
+  )
+  .flatMap(([key, value]) => {
+    const name = key.split("node_modules/").at(-1)!
+    return value.version && versions.get(name)?.has(value.version) ? [] : [`${name}@${value.version ?? "missing"}`]
+  })
+if (drift.length) throw new Error(`stage: npm resolved packages outside bun.lock: ${drift.join(", ")}`)
+
 await rm(path.join(STAGE, tarball), { force: true })
 // `fs.cp` rather than a shell copy: this script runs on the Windows and Linux
 // CI runners too.

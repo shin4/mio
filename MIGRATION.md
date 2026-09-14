@@ -31,9 +31,9 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 | `archive/packages/{app,ui,core,sdk}` | The Solid UI tier, archived 2026-08-19 once the shell replaced its only consumer. Still the reference for MiMo UX and the 19 locale files when Phase 3 builds dsh client plugins |
 | `archive/packages/llm-mimo` | Mio's own MiMo adapter, archived 2026-08-22 in Stage 1 once `dsh-llm-pi-ai` was measured to serve MiMo. Still the reference for the endpoint/billing/region tables, and the origin of the cassettes copied into `packages/runtime/test/fixtures` |
 | `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
-| `packages/runtime` (`@mio/runtime`) | dsh composition, and no code: `mio.patch.yml` over the `web` profile — `dsh-llm-pi-ai` serves MiMo, `@mio/client-ui` is inserted, `ui-brand-official` is off, new sessions default to `mimo-v2.5`. `bun run dev:runtime` boots green; 2 composition tests replay a cassette through the real headless profile |
+| `packages/runtime` (`@mio/runtime`) | dsh composition, and no code: `mio.patch.yml` over the `web` profile — `dsh-llm-pi-ai` serves MiMo, `@mio/client-ui` is inserted, `ui-brand-official` is off, new sessions default to `mimo-v2.5`. `bun run dev:runtime` boots green; 4 composition tests replay live cassettes through the real headless profile, plus 3 dependency-tree checks |
 | `packages/client-ui` (`@mio/client-ui`) | Mio's dsh client UI plugin, added 2026-08-22 in Stage 2: a Node half holding a Loader seat (`tapIndex` for the document title, exact routes shadowing `/favicon.svg` and the manifest) and a browser half (brand slots, the `mio-connect` onboarding step, `zh`/`en` copy). Bundled by `scripts/bundle.ts`; 10 tests green |
-| dsh pin | `0.1.1-rc.2`, bumped 2026-08-29 (both `latest` and `next` upstream). Still a prerelease line — there is no stable `0.1.1`. Upstream has tagged `v0.1.2-alpha.1` on GitHub (2026-08-27) but has **not published it to npm**, so it is not installable and not adopted. Re-checked 2026-08-30: npm `latest` and `next` are both still `0.1.1-rc.2` (published 2026-08-21). What the tag holds for the shell is surveyed at the end of Phase 2 |
+| dsh pin | `0.1.5-rc.2`, upgraded 2026-09-14 from npm `next` (published September 10; three-day gate satisfied). Remote API adaptation, browser authentication and V3 history migration are covered in [the upgrade record](docs/dsh-upgrade-0.1.5.md). Older subagent histories can be refused by the upstream migrator; retain a full pre-upgrade backup |
 | End-to-end | Re-verified 2026-08-29 on the rc.2 tree against a live MiMo token-plan account: a real answer, a real `read`/`write` tool round-trip, and a clean `read_image` refusal on the text-only route. The Electron shell boots, serves the UI, and leaves no orphan runtime on quit |
 
 ## Release and supply chain
@@ -428,11 +428,11 @@ Other archived MiMo behavior, same audit:
       client-ui-plan), attachments, model selection — explicit keep/cut list for the rest
       (session revert, worktrees, share, PTY tickets, …)
 - [ ] Verify zh locale coverage in real use (dsh ships `LOCALE_IDS = ["zh", "en"]`)
-- [ ] **When dsh 0.1.2 reaches npm, re-verify the shell against browser-session authentication.**
-      The tag carries an authentication layer rc.2 does not have (surveyed below). Mio's URL parse
-      survives it — `runtime.ts`'s `/dsh web:\s*(http:\/\/\S+)/` captures the `?token=` query — but
-      the window session has to persist the cookie the token is traded for, and any reload that
-      navigates to a bare origin instead of the announced URL will meet a 401
+- [x] **Browser-session authentication verified with dsh 0.1.5-rc.2 (2026-09-14).**
+      The shell preserves the launch token for the window, redacts it from logs,
+      and accepts the 303 cookie exchange. The real-runtime shell integration test
+      checks unauthenticated refusal, cookie-backed reload, brand resources and
+      listener shutdown. See [upgrade validation and rollback](docs/dsh-upgrade-0.1.5.md).
 
 ### The shell stays on Electron — Tauri evaluated and rejected (2026-08-30)
 

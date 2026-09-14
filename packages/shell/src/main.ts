@@ -11,7 +11,7 @@ import { mkdir } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { installBundledPlugins } from "./profile.ts"
-import { startRuntime, type RuntimeHandle } from "./runtime.ts"
+import { redactLaunchTokens, startRuntime, type RuntimeHandle } from "./runtime.ts"
 import { createWindow } from "./window.ts"
 
 const PACKAGE_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
@@ -35,10 +35,8 @@ const PROFILE = "web"
 /**
  * Where app-owned files live, and where the two layouts differ.
  *
- * A packaged build reads them from `app.asar.unpacked`: the runtime is a real
- * child process and the plugin copy uses plain `fs`, so neither can see inside
- * an asar archive. `electron-builder.config.ts` unpacks exactly that subtree,
- * where a plugin would sit under its package name. In development the same
+ * A packaged build reads them from the ordinary Resources/app tree: the runtime
+ * is a real Node child and the plugin copy uses plain `fs`. In development the same
  * plugin is a workspace directory, whose path has no scope in it.
  *
  * Mio ships no *runtime* plugin — MiMo is served by dsh's own `llm-pi-ai`
@@ -54,7 +52,7 @@ function resources() {
       patch: path.join(workspace, "runtime", "mio.patch.yml"),
     }
   }
-  const modules = path.join(process.resourcesPath, "app.asar.unpacked", "node_modules")
+  const modules = path.join(PACKAGE_ROOT, "node_modules")
   return {
     plugins: [{ name: "@mio/client-ui", source: path.join(modules, "@mio", "client-ui") }],
     // Data, shipped as an extra resource rather than as part of the app bundle.
@@ -137,7 +135,7 @@ app.on("before-quit", (event) => {
  * outlive the app that spawned it.
  */
 function showStartupFailure(cause: unknown) {
-  const detail = cause instanceof Error ? cause.message : String(cause)
+  const detail = redactLaunchTokens(cause instanceof Error ? cause.message : String(cause))
   console.error(detail)
   const stopping = runtime?.stop() ?? Promise.resolve()
   runtime = undefined

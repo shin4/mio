@@ -23,6 +23,11 @@ export interface RuntimeHandle {
   stop(): Promise<void>
 }
 
+/** Launch URLs carry browser credentials, including inside Electron errors. */
+export function redactLaunchTokens(text: string): string {
+  return text.replace(/([?&]token=)[^\s&)"'<>]+/g, "$1[redacted]")
+}
+
 /** Why the runtime stopped on its own, with the tail of its output. */
 export interface RuntimeExit {
   readonly code: number | null
@@ -55,14 +60,13 @@ export interface RuntimeOptions {
 /**
  * Resolve dsh's CLI entry from this package's dependency, not from $PATH.
  *
- * In a packaged build `require.resolve` lands inside `app.asar`, which the
- * spawned child cannot read as ordinary files; the real tree is the unpacked
- * twin beside it, so the path is redirected there.
+ * Packaged builds use ordinary Resources/app files, so the shell and its Node
+ * child resolve the same tree without an asar path translation.
  */
 function dshBin(): string {
   const require = createRequire(import.meta.url)
   const pkg = path.dirname(require.resolve("@deepseek-ai/dsh/package.json"))
-  return path.join(pkg.replace(`${path.sep}app.asar${path.sep}`, `${path.sep}app.asar.unpacked${path.sep}`), "lib", "bin.js")
+  return path.join(pkg, "lib", "bin.js")
 }
 
 /**
@@ -137,9 +141,11 @@ export function startRuntime(options: RuntimeOptions): Promise<RuntimeHandle> {
 
     const read = (line: string) => {
       if (!line.trim()) return
-      options.onLog?.(line)
+      // The launch URL is a credential; only the window receives its token.
+      const safeLine = redactLaunchTokens(line)
+      options.onLog?.(safeLine)
       // Keep a bounded tail: enough to diagnose a failure, never a full log.
-      recent.push(line)
+      recent.push(safeLine)
       if (recent.length > 40) recent.shift()
 
       const url = URL_LINE.exec(line)?.[1]

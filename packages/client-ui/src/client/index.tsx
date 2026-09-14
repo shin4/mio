@@ -25,11 +25,11 @@ import { MioConnect, type ConnectApi } from "./Connect.tsx"
 import { MIO_LOCALES, MIO_NS } from "./locale.ts"
 
 /**
- * Services this half needs. `slots` carries the registrations, `connection`
+ * Services this half needs. `slots` carries the registrations, `remote`
  * carries the wire API the connect step reads and writes through, and `locale`
  * carries the string tables the framework `t` seat resolves against.
  */
-export const inject = ["slots", "connection", "locale"]
+export const inject = ["slots", "remote", "remote.credentials", "remote.llm", "remote.settings", "locale"]
 
 /**
  * Retire one of dsh's own onboarding steps by occupying its cell and completing
@@ -88,7 +88,7 @@ interface LocaleRuntime {
 
 interface ClientContext {
   slots: SlotRegistry
-  connection: { api: ConnectApi }
+  remote: ConnectApi
   locale: LocaleRuntime
 }
 
@@ -134,7 +134,7 @@ export function apply(ctx: ClientContext): void {
         // browser (`packages/shell/src/window.ts`) and which is an ordinary new
         // tab in a plain browser.
         inject: () => ({
-          api: ctx.connection.api,
+          api: ctx.remote,
           openLink: (url: string) => void window.open(url, "_blank", "noopener,noreferrer"),
         }),
       },

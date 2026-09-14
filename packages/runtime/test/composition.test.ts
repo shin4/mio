@@ -16,7 +16,7 @@
  */
 import assert from "node:assert/strict"
 import { spawn } from "node:child_process"
-import { createServer, type Server } from "node:http"
+import { createServer } from "node:http"
 import { createRequire } from "node:module"
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
@@ -35,22 +35,27 @@ interface Cassette {
 }
 
 /**
- * Serve one cassette's recorded response to every chat-completions request.
- *
- * Every request, not just the first: a turn is not always one model call — dsh
- * may also title the session — and a server that answered once would hang the
- * second call rather than fail it.
+ * Replay the supplied responses in order, retaining requests to check the
+ * actual tool-result continuation. Extra requests repeat the last response.
  */
-async function replayServer(cassette: string): Promise<{ server: Server; baseURL: string; calls: () => number }> {
-  const raw = JSON.parse(await readFile(path.join(HERE, "fixtures", `${cassette}.json`), "utf8")) as Cassette
-  const recorded = raw.interactions[0]?.response
-  assert.ok(recorded, `${cassette}: cassette has no recorded response`)
-
-  let calls = 0
+async function replayServer(cassette: string | string[]) {
+  const recordings = await Promise.all(
+    (Array.isArray(cassette) ? cassette : [cassette]).map(async (name) => {
+      const raw = JSON.parse(await readFile(path.join(HERE, "fixtures", `${name}.json`), "utf8")) as Cassette
+      const recorded = raw.interactions[0]?.response
+      assert.ok(recorded, `${name}: cassette has no recorded response`)
+      return recorded
+    }),
+  )
+  const requests: { messages?: { role: string; content?: string; tool_call_id?: string }[] }[] = []
   const server = createServer((request, response) => {
-    calls += 1
-    request.resume()
+    let body = ""
+    request.on("data", (chunk: Buffer) => {
+      body += chunk.toString()
+    })
     request.on("end", () => {
+      requests.push(JSON.parse(body))
+      const recorded = recordings[Math.min(requests.length - 1, recordings.length - 1)]
       response.writeHead(recorded.status, recorded.headers)
       response.end(recorded.body)
     })
@@ -58,7 +63,7 @@ async function replayServer(cassette: string): Promise<{ server: Server; baseURL
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve))
   const address = server.address()
   assert.ok(address && typeof address === "object", "server did not bind a port")
-  return { server, baseURL: `http://127.0.0.1:${address.port}/v1`, calls: () => calls }
+  return { server, baseURL: `http://127.0.0.1:${address.port}/v1`, calls: () => requests.length, requests }
 }
 
 /** The real patch layer with only its endpoint redirected at the replay server. */
@@ -67,7 +72,8 @@ async function patchPointedAt(baseURL: string, dir: string): Promise<string> {
   const redirected = original.replace(/baseURL: https:\/\/\S+/, `baseURL: ${baseURL}`)
   assert.notEqual(redirected, original, "patch layer no longer carries a baseURL to redirect")
   const file = path.join(dir, "mio.test.patch.yml")
-  await writeFile(file, redirected)
+  // Title generation is a separate model call, outside these turn cassettes.
+  await writeFile(file, `${redirected}\n- id: session-title-llm\n  disabled: true\n`)
   return file
 }
 
@@ -76,10 +82,14 @@ function runHeadless(patch: string, home: string, prompt: string): Promise<{ cod
   return new Promise((resolve) => {
     // `--expose-internals`: dsh reaches Node's internal ESM loader through it,
     // the same flag the desktop shell passes (packages/shell/README.md).
-    const child = spawn(process.execPath, ["--expose-internals", DSH_BIN, "--profile", "headless", "--patch", patch, prompt], {
-      cwd: home,
-      env: { ...process.env, DSH_HOME: home, MIO_API_KEY: "replay-server-ignores-this" },
-    })
+    const child = spawn(
+      process.execPath,
+      ["--expose-internals", DSH_BIN, "--profile", "headless", "--patch", patch, prompt],
+      {
+        cwd: home,
+        env: { ...process.env, DSH_HOME: home, MIO_API_KEY: "replay-server-ignores-this" },
+      },
+    )
     let out = ""
     child.stdout.on("data", (chunk: Buffer) => (out += chunk.toString()))
     child.stderr.on("data", (chunk: Buffer) => (out += chunk.toString()))
@@ -110,14 +120,28 @@ async function installPlugins(home: string, profile: string) {
   })
 }
 
-async function boot(cassette: string, prompt: string) {
+async function boot(cassette: string | string[], prompt: string) {
   const home = await mkdtemp(path.join(tmpdir(), "mio-composition-"))
   homes.push(home)
   await installPlugins(home, "headless")
-  const { server, baseURL, calls } = await replayServer(cassette)
-  const result = await runHeadless(await patchPointedAt(baseURL, home), home, prompt)
+  const { server, baseURL, calls, requests } = await replayServer(cassette)
+  const patch = await patchPointedAt(baseURL, home)
+  if (Array.isArray(cassette)) {
+    const plugin = path.join(home, "profiles", "headless", "node_modules", "mio-replay-weather")
+    await mkdir(plugin, { recursive: true })
+    await writeFile(
+      path.join(plugin, "package.json"),
+      JSON.stringify({ name: "mio-replay-weather", type: "module", main: "index.js" }),
+    )
+    await cp(path.join(HERE, "fixtures", "weather-plugin.js"), path.join(plugin, "index.js"))
+    await writeFile(
+      patch,
+      `${await readFile(patch, "utf8")}\n- insert:\n    - id: replay-weather\n      name: mio-replay-weather\n`,
+    )
+  }
+  const result = await runHeadless(patch, home, prompt)
   await new Promise<void>((resolve) => server.close(() => resolve()))
-  return { ...result, calls: calls() }
+  return { ...result, calls: calls(), requests }
 }
 
 test("the composition answers from a recorded MiMo stream", { timeout: 180_000 }, async () => {
@@ -135,4 +159,26 @@ test("a recorded MiMo error surfaces as a failure, not as an answer", { timeout:
   const { code, out } = await boot("auth-error", "hello")
 
   assert.notEqual(code, 0, `an auth failure must not exit 0:\n${out}`)
+})
+
+void test("MiMo tool fragments execute and the result reaches the continuation", { timeout: 180_000 }, async () => {
+  const result = await boot(["tool-call", "tool-result-continuation"], "What is the weather in Paris? Use get_weather.")
+  assert.equal(result.code, 0, result.out)
+  assert.match(result.out, /22°C/)
+  const tool = result.requests.flatMap((request) => request.messages ?? []).find((message) => message.role === "tool")
+  assert.equal(
+    tool?.tool_call_id,
+    "call_614ea9cedb504d5aa2155799",
+    "the live cassette's first-fragment ID must survive",
+  )
+  assert.ok(tool)
+  assert.match(tool.content ?? "", /22/)
+  assert.match(tool.content ?? "", /sunny/)
+})
+
+void test("a length-truncated MiMo stream terminates without executing a tool", { timeout: 180_000 }, async () => {
+  const result = await boot("max-tokens-truncation", "Explain transformers in detail.")
+  assert.equal(result.calls, 1, result.out)
+  assert.ok(result.requests.every((request) => (request.messages ?? []).every((message) => message.role !== "tool")))
+  assert.doesNotMatch(result.out, /TypeError|SyntaxError/)
 })

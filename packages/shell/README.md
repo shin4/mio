@@ -89,13 +89,18 @@ warning and then failed at runtime:
 `directories.app` alone does **not** redirect the build; electron-builder silently keeps packaging
 the workspace. `--projectDir` is what works, and the config path must then be absolute.
 
-Two things must be real files rather than asar entries, because the runtime child process and the
-startup plugin copy both read them with plain `fs`:
+The app now ships with `asar: false`, as an ordinary `Resources/app` tree shared
+by the shell and its Node child. DSH 0.1.5 brings node-pty, whose helper resolver
+unconditionally replaces `app.asar` with `app.asar.unpacked`; the former unpacked
+layout therefore became `app.asar.unpacked.unpacked` and terminal startup failed.
+The ordinary tree avoids a dependency fork and needs no path rewriting.
 
-- the whole of `node_modules/**` is `asarUnpack`ed, not just the scoped parts: the child resolves
-  imports from inside `app.asar.unpacked`, so anything left in the archive is simply absent from
-  its search path (`js-yaml` proved it)
-- `dshBin()` rewrites its resolved path from `app.asar` to `app.asar.unpacked`
+Staging pins multi-version dependencies per parent rather than letting npm
+resolve them again. This matters in practice: the old policy installed
+`negotiator@1.1.0` instead of the tested `1.0.0`, and the packaged web server crashed
+on `Accept-Encoding`. The final npm lock is checked against `bun.lock` and any
+unreviewed version fails staging. Dependency lifecycle scripts remain disabled;
+only dsh's audited helper-permission repair script is run explicitly.
 
 `mio.patch.yml` ships as an extra resource — it is product data the runtime reads, not app code.
 
@@ -134,7 +139,7 @@ Three things about this setup are easy to get wrong:
   project directory, and this config is loaded with `--projectDir .package` anyway.
   `disable-library-validation` is the one doing real work: the runtime child is spawned from
   `process.execPath` — the main app executable, so it inherits the app's entitlements — and loads
-  thirteen native modules out of `app.asar.unpacked`.
+  native modules in the ordinary app tree.
 - **The Apple secrets are scoped to the macOS runners.** electron-builder resolves the *Windows*
   signing certificate from `WIN_CSC_LINK` falling back to `CSC_LINK`, so passing the macOS
   Developer ID `.p12` to every job would feed it to signtool's certificate resolution.

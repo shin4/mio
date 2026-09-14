@@ -15,5 +15,5 @@
   },
   // The packaging config carries real logic (DMG notarization), so it is
   // typechecked with the source. `scripts/` stays out: it is Bun-only.
-  "include": ["src", "electron-builder.config.ts"]
+  "include": ["src", "test", "electron-builder.config.ts"]
 }
