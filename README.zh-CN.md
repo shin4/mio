@@ -11,9 +11,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-ff6900.svg)](./LICENSE)
 ![Desktop: Windows · macOS](https://img.shields.io/badge/desktop-Windows%20%C2%B7%20macOS-121317.svg)
 
-<img src="docs/assets/welcome.zh-CN.png" alt="Mio 欢迎界面" width="760" />
+<img src="docs/assets/welcome.zh-CN.png?v=0.3.1" alt="Mio 0.3.1 欢迎界面" width="640" />
 
-<img src="docs/assets/read-aloud.zh-CN.png" alt="Mio 朗读设置" width="760" />
+<img src="docs/assets/session.zh-CN.png?v=0.3.1" alt="Mio 0.3.1 — MiMo 工具调用、文件改动与用量" width="960" />
+
+<sub>Mio 0.3.1 实际运行截图：MiMo V2.5 读取演示 README 并生成发布检查清单。</sub>
 
 </div>
 
@@ -26,10 +28,9 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（dsh）组合而成，并以
 MiMo 为先。它把编程、推理、多模态理解（图像、PDF、视频）、语音听写（ASR）与语音生成（TTS）整合在同一个桌面应用中。
 
-> **状态说明——智能体内核正在重建。** Mio 的运行时已从原先派生自 OpenCode 的内核迁移到 dsh
-> （`MIGRATION.md` 是计划的唯一依据，旧内核冻结在 `archive/`）。下方发布页中的安装包由旧架构构建。
-> 当前 `main` 分支上，MiMo 对话、工具调用与桌面壳已完整跑通；安装包打包与多模态 / 语音能力
-> 正在以 dsh 插件的形式重建。
+> **当前版本：0.3.1，基于 DeepSeek Harness 0.1.5-rc.2。** MiMo 对话、工具调用和桌面安装包已验证；
+> 提供 macOS（Apple Silicon / Intel）、Windows x64 和 Linux x64 安装包。多模态与语音能力仍在迁移中，
+> 不属于本次截图展示的已验证功能。升级前请参阅[数据备份与迁移说明](./docs/dsh-upgrade-0.1.5.md)。
 
 ## 🔊 听一段
 
@@ -48,14 +49,6 @@ MiMo 为先。它把编程、推理、多模态理解（图像、PDF、视频）
 - **多模态** — 原生的图像、PDF、视频理解，以及语音听写（ASR）与语音生成（TTS），支持 MiMo 全系列模型。
 - **成本可控** — 稳定的前缀缓存输入带来高命中率，token 与成本清晰可见，并为每个任务选用最具性价比的可用模型。
 - **桌面应用** — 基于 Electron 的 Windows 与 macOS 应用。**不计划提供终端界面（TUI）。**
-
-<div align="center">
-
-<img src="docs/assets/statusbar.zh-CN.svg" alt="Mio 应用内状态栏 —— 缓存命中率、前缀稳定性、上下文窗口、用量与吞吐" width="780" />
-
-<sub>应用内状态栏让成本与上下文始终在线 —— 缓存命中率、前缀稳定性、上下文窗口、用量与吞吐，一眼可见。</sub>
-
-</div>
 
 ## 能做什么
 

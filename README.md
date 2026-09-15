@@ -11,9 +11,11 @@ English | [简体中文](./README.zh-CN.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-ff6900.svg)](./LICENSE)
 ![Desktop: Windows · macOS](https://img.shields.io/badge/desktop-Windows%20%C2%B7%20macOS-121317.svg)
 
-<img src="docs/assets/welcome.png" alt="Mio — Welcome screen" width="760" />
+<img src="docs/assets/welcome.png?v=0.3.1" alt="Mio 0.3.1 — Welcome screen" width="640" />
 
-<img src="docs/assets/read-aloud.png" alt="Mio — Read-aloud settings" width="760" />
+<img src="docs/assets/session.png?v=0.3.1" alt="Mio 0.3.1 — MiMo tool calls, file changes and usage" width="960" />
+
+<sub>Captured in Mio 0.3.1: MiMo V2.5 reads a demo README and writes a release checklist.</sub>
 
 </div>
 
@@ -28,11 +30,10 @@ a first-class participant in the agent runtime — composed on
 MiMo-first. It brings coding, reasoning, multimodal understanding (image, PDF, and video), voice
 dictation (ASR), and speech generation (TTS) together in a single desktop app.
 
-> **Status — the agent core is being rebuilt.** Mio's runtime has moved off its
-> OpenCode-derived core onto dsh (`MIGRATION.md` is the plan of record; the old core is frozen
-> under `archive/`). The published releases below were built from the previous architecture. On
-> `main` today, MiMo chat, tool use, and the desktop shell work end to end; installer packaging
-> and the multimodal / voice features are being rebuilt as dsh plugins.
+> **Current release: 0.3.1, built on DeepSeek Harness 0.1.5-rc.2.** MiMo chat, tool use and desktop
+> packaging are verified, with installers for macOS (Apple Silicon / Intel), Windows x64 and Linux x64.
+> Multimodal and voice capabilities are still being migrated and are not demonstrated by these screenshots.
+> Before upgrading, read the [backup and migration guide](./docs/dsh-upgrade-0.1.5.md).
 
 ## 🔊 Hear it
 
@@ -51,14 +52,6 @@ The intro voice on the **[landing page](https://shin4.github.io/mio/#capabilitie
 - **Multimodal** — native image, PDF, and video understanding, plus voice dictation (ASR) and speech generation (TTS), powered by the full MiMo model lineup.
 - **Cost-aware** — stable prefix-cache inputs for high cache-hit rates, visible token & cost accounting, and selection of the cheapest capable model for each task.
 - **Desktop apps** — Windows & macOS, built on Electron. **No TUI planned.**
-
-<div align="center">
-
-<img src="docs/assets/statusbar.svg" alt="Mio in-app status bar — cache hit rate, prefix stability, context window, spend, and throughput" width="780" />
-
-<sub>The in-app status bar keeps cost & context in view — cache hit rate, prefix stability, context window, spend, and throughput, all at a glance.</sub>
-
-</div>
 
 ## What you can do
 
