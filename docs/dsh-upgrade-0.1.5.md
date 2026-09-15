@@ -89,9 +89,18 @@ credential persistence, configure-later, Models page, cookie-backed reload, and 
 The generated macOS arm64 app must also boot from `Resources/app` and run its bundled
 runtime; a successful packaging command alone is insufficient.
 
-Release gates still requiring external evidence: successful live MiMo answer and
-read/write round-trip with a valid credential, and the existing four-platform
-build-check matrix. Local cassette replay is not a substitute for either gate.
+Live verification on 2026-09-15 passed against the CN Token Plan endpoint using
+the packaged application's actual MiMo onboarding. The credential persisted across
+reload; MiMo V2.5 read a temporary workspace's README and wrote
+`RELEASE_CHECKLIST.md`, then returned a final answer (2 tool calls, 3 steps).
+The generated file was checked on disk. Only synthetic demonstration content was
+sent to the model. Fresh Chinese and English welcome screenshots were captured
+from this packaged build for the website and READMEs.
+
+The [four-platform build-check matrix](https://github.com/shin4/mio/actions/runs/34923896259)
+passed on 2026-09-15 for macOS arm64/x64, Windows x64 and Linux x64;
+the release workflow separately signs/notarizes macOS and publishes only after all
+four installer jobs succeed. Local cassette replay is not a substitute for either gate.
 
 ## Upstream references
 

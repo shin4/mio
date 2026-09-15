@@ -582,7 +582,7 @@
           <div class="actions reveal" data-d="3"><a class="btn btn-secondary" href="https://github.com/shin4/mio" data-i18n="feat1.action">Read the architecture</a></div>
         </div>
         <div class="visual reveal" data-d="1">
-          <div class="window"><div class="bar"><i></i><i></i><i></i><span class="bar-title">Mio</span></div><img src="./assets/welcome.png" alt="Mio welcome screen — connect your MiMo account" loading="lazy" /></div>
+          <div class="window"><div class="bar"><i></i><i></i><i></i><span class="bar-title">Mio</span></div><img id="welcome-screenshot" src="./assets/welcome.png?v=0.3.1" alt="Mio 0.3.1 welcome screen — connect your MiMo account" width="640" height="520" loading="lazy" /></div>
         </div>
       </div>
     </div>
@@ -1037,6 +1037,9 @@
     if (!I18N[lang]) lang = 'en';
     const d = I18N[lang];
     document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    const welcomeScreenshot = document.getElementById('welcome-screenshot');
+    welcomeScreenshot.src = lang === 'zh' ? './assets/welcome.zh-CN.png?v=0.3.1' : './assets/welcome.png?v=0.3.1';
+    welcomeScreenshot.alt = lang === 'zh' ? 'Mio 0.3.1 欢迎界面 — 连接 MiMo 账户' : 'Mio 0.3.1 welcome screen — connect your MiMo account';
     document.title = d['meta.title'];
     const md = document.querySelector('meta[name="description"]');
     if (md) md.setAttribute('content', d['meta.desc']);
