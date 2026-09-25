@@ -474,13 +474,13 @@ index 62f4fcb..b1239cf 100644
        () => notarizeMacOS({ appPath, ...resolveMacOSNotarizationEnvironment(environment) }), undefined, undefined, proxyEvent)
    } else {
 diff --git a/apps/desktop/scripts/smoke-packaged-runtime.ts b/apps/desktop/scripts/smoke-packaged-runtime.ts
-index 106830b..df54106 100644
+index 106830b..b30e6ed 100644
 --- a/apps/desktop/scripts/smoke-packaged-runtime.ts
 +++ b/apps/desktop/scripts/smoke-packaged-runtime.ts
 @@ -1,5 +1,7 @@
  /** Validate the assembled application, including native Office conversion outside ASAR. */
  import { join } from 'node:path'
-+import { cp, mkdtemp, rm } from 'node:fs/promises'
++import { cp, mkdtemp, realpath, rm } from 'node:fs/promises'
 +import { tmpdir } from 'node:os'
  import { parseArgs } from 'node:util'
  import { resolveDesktopBuildTarget, resolveDesktopTargetBuildPaths } from './desktop-build-paths.mjs'
@@ -505,7 +505,7 @@ index 106830b..df54106 100644
 +  // Native Office resources can exceed Windows path limits inside the nested CI output tree.
 +  // Retry the identical assembled payload in a normal-length directory; never skip its checks.
 +  console.error('Packaged smoke failed in the build directory; verifying an identical relocated payload:', error)
-+  const temporary = await mkdtemp(join(tmpdir(), 'mio-smoke-'))
++  const temporary = await realpath(await mkdtemp(join(tmpdir(), 'mio-smoke-')))
 +  try {
 +    const relocated = join(temporary, 'Mio')
 +    await cp(application, relocated, { recursive: true })
@@ -517,17 +517,45 @@ index 106830b..df54106 100644
 +  }
 +}
 diff --git a/apps/desktop/scripts/smoke-runtime.ts b/apps/desktop/scripts/smoke-runtime.ts
-index f15f10a..ac7fbd5 100644
+index f15f10a..8af75b8 100644
 --- a/apps/desktop/scripts/smoke-runtime.ts
 +++ b/apps/desktop/scripts/smoke-runtime.ts
-@@ -110,7 +110,10 @@ export function apply(ctx) {
+@@ -1,6 +1,6 @@
+ /** Boot the materialized target runtime without access to a user's Harness profile. */
+ 
+-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
++import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+ import { tmpdir } from 'node:os'
+ import { join } from 'node:path'
+ import { execFile } from 'node:child_process'
+@@ -23,7 +23,8 @@ import type { DesktopRuntimeDescriptor } from '../src/runtime-tree.ts'
+ export async function smokeDesktopRuntime(
+   root: string, node: string, runtime: DesktopRuntimeDescriptor, environment: NodeJS.ProcessEnv, resourcesRuntime: string,
+ ): Promise<void> {
+-  const home = mkdtempSync(join(tmpdir(), 'dsh-desktop-smoke-'))
++  // Canonicalize Windows TEMP aliases before creating the external plugin profile.
++  const home = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-desktop-smoke-')))
+   const profile = join(home, 'profiles', 'desktop')
+   const host = new DesktopHostProcess(node, root, profile, undefined, { ...environment, DSH_HOME: home },
+     undefined, join(resourcesRuntime, 'primary-runtime'),
+@@ -110,7 +111,20 @@ export function apply(ctx) {
        throw new Error('desktop runtime: packaged frontend smoke failed')
      }
      const pluginResponse = await fetch(new URL('/desktop-smoke', ready.url), { headers: { cookie } })
 -    if (await pluginResponse.text() !== 'plugin route ready') throw new Error('desktop runtime: plugin HTTP route failed')
 +    const pluginBody = await pluginResponse.text()
 +    if (pluginBody !== 'plugin route ready') {
-+      throw new Error(`desktop runtime: plugin HTTP route failed (${pluginResponse.status}): ${pluginBody.slice(0, 2048)}`)
++      // Emit only fixed diagnostic categories, never arbitrary plugin stderr or credentials.
++      const diagnostic = String(Reflect.get(host, 'stderr'))
++      const flags = {
++        testBundleSkipped: diagnostic.includes('skipping profile bundle "desktop-runtime-smoke-plugin"'),
++        bundleMissing: diagnostic.includes('cannot resolve profile bundle'),
++        moduleMissing: diagnostic.includes('Cannot find module') || diagnostic.includes('ERR_MODULE_NOT_FOUND'),
++        fileMissing: diagnostic.includes('ENOENT'),
++        incompatiblePeer: diagnostic.includes('is incompatible with dsh'),
++        duplicateCordis: diagnostic.includes('external plugin loaded another Cordis instance'),
++      }
++      throw new Error(`desktop runtime: plugin HTTP route failed (${pluginResponse.status}); ${JSON.stringify(flags)}`)
 +    }
      for (const { extension } of inputs) {
        const converted = await fetch(new URL(`/desktop-smoke-office/${extension}`, ready.url), {

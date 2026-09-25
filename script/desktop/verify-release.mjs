@@ -3,7 +3,7 @@ import assert from "node:assert/strict"
 import { execFileSync } from "node:child_process"
 import { createHash } from "node:crypto"
 import { createRequire } from "node:module"
-import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises"
+import { cp, mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { pathToFileURL } from "node:url"
@@ -33,17 +33,32 @@ function checkManifest(resources) {
 const names = windows
   ? [`mio-${product.version}-win-x64-unsigned.exe`]
   : [`mio-${product.version}-${target}.dmg`, `mio-${product.version}-${target}.zip`]
-const temporary = await mkdtemp(join(tmpdir(), "mio-installer-verify-"))
+const temporary = await realpath(await mkdtemp(join(tmpdir(), "mio-installer-verify-")))
 try {
   if (windows) {
+    const signature = execFileSync("powershell.exe", [
+      "-NoProfile", "-NonInteractive", "-Command",
+      "(Get-AuthenticodeSignature -LiteralPath $env:MIO_VERIFY_INSTALLER).Status.ToString()",
+    ], {
+      env: { ...process.env, MIO_VERIFY_INSTALLER: join(directory, names[0]) },
+      encoding: "utf8",
+      timeout: 30_000,
+    }).trim()
+    assert.equal(signature, "NotSigned", "Windows installer must be explicitly unsigned")
     const installed = join(temporary, "installed")
     execFileSync(join(directory, names[0]), ["/S", `/D=${installed}`], { timeout: 180_000, stdio: "inherit" })
     checkManifest(join(installed, "resources"))
     assert.ok((await readdir(installed)).includes("Mio.exe"))
-    const { smokePreparedRuntime } = await import(
-      pathToFileURL(join(upstream, "apps/desktop/scripts/smoke-prepared-runtime.ts"))
+    // Official packaging scripts use non-erasable TypeScript; use their pinned tsx loader.
+    const { tsImport } = await import(pathToFileURL(require.resolve("tsx/esm/api")))
+    const { smokePreparedRuntime } = await tsImport(
+      pathToFileURL(join(upstream, "apps/desktop/scripts/smoke-prepared-runtime.ts")).href,
+      import.meta.url,
     )
-    const { readDesktopRuntime } = await import(pathToFileURL(join(upstream, "apps/desktop/src/runtime-tree.ts")))
+    const { readDesktopRuntime } = await tsImport(
+      pathToFileURL(join(upstream, "apps/desktop/src/runtime-tree.ts")).href,
+      import.meta.url,
+    )
     const descriptor = readDesktopRuntime(join(upstream, "apps/desktop/.desktop-build/targets", target, "dsh"))
     await smokePreparedRuntime(
       join(installed, "resources/app.asar/dsh"),
