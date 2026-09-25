@@ -36,15 +36,11 @@ const names = windows
 const temporary = await realpath(await mkdtemp(join(tmpdir(), "mio-qa-")))
 try {
   if (windows) {
-    const signature = execFileSync("pwsh.exe", [
-      "-NoProfile", "-NonInteractive", "-Command",
-      "(Get-AuthenticodeSignature -LiteralPath $env:MIO_VERIFY_INSTALLER).Status.ToString()",
-    ], {
-      env: { ...process.env, MIO_VERIFY_INSTALLER: join(directory, names[0]) },
-      encoding: "utf8",
-      timeout: 30_000,
-    }).trim()
-    assert.equal(signature, "NotSigned", "Windows installer must be explicitly unsigned")
+    const { inspectWindowsRuntimeSignature } = await import(
+      pathToFileURL(join(upstream, "apps/desktop/scripts/windows-runtime-signature.mjs"))
+    )
+    const signature = await inspectWindowsRuntimeSignature(join(directory, names[0]))
+    assert.equal(signature.status, "NotSigned", "Windows installer must be explicitly unsigned")
     const installed = join(temporary, product.name)
     execFileSync(join(directory, names[0]), ["/S", `/D=${installed}`], { timeout: 180_000, stdio: "inherit" })
     checkManifest(join(installed, "resources"))
