@@ -1,0 +1,167 @@
+{
+  "date": "2026-09-25T11:23:16.914Z",
+  "endpoint": "https://token-plan-cn.xiaomimimo.com/v1",
+  "results": [
+    {
+      "model": "mimo-v2.6-flash",
+      "effort": "off",
+      "finish": {
+        "kind": "stop"
+      },
+      "milliseconds": 1265,
+      "text": "MIO_OK",
+      "reasoning": false,
+      "toolCalls": [],
+      "usage": {
+        "inputTokens": 16,
+        "outputTokens": 4,
+        "totalTokens": 20
+      }
+    },
+    {
+      "model": "mimo-v2.6-pro",
+      "effort": "off",
+      "finish": {
+        "kind": "stop"
+      },
+      "milliseconds": 1427,
+      "text": "MIO_OK",
+      "reasoning": false,
+      "toolCalls": [],
+      "usage": {
+        "inputTokens": 16,
+        "outputTokens": 4,
+        "totalTokens": 20
+      }
+    },
+    {
+      "model": "mimo-v2.6-flash",
+      "effort": "high",
+      "finish": {
+        "kind": "stop"
+      },
+      "milliseconds": 3333,
+      "text": "9.8",
+      "reasoning": true,
+      "toolCalls": [],
+      "usage": {
+        "inputTokens": 28,
+        "outputTokens": 15,
+        "totalTokens": 43
+      }
+    },
+    {
+      "model": "mimo-v2.6-pro",
+      "effort": "high",
+      "finish": {
+        "kind": "stop"
+      },
+      "milliseconds": 1541,
+      "text": "9.8",
+      "reasoning": true,
+      "toolCalls": [],
+      "usage": {
+        "inputTokens": 28,
+        "outputTokens": 18,
+        "totalTokens": 46
+      }
+    },
+    {
+      "model": "mimo-v2.6-flash",
+      "effort": "high",
+      "finish": {
+        "kind": "tool-calls"
+      },
+      "milliseconds": 2891,
+      "text": "",
+      "reasoning": true,
+      "toolCalls": [
+        {
+          "name": "get_weather",
+          "arguments": "{\"city\":\"Paris\"}"
+        }
+      ],
+      "usage": {
+        "inputTokens": 41,
+        "outputTokens": 28,
+        "totalTokens": 133,
+        "cacheReadTokens": 64
+      }
+    },
+    {
+      "model": "mimo-v2.6-flash",
+      "effort": "high",
+      "finish": {
+        "kind": "stop"
+      },
+      "milliseconds": 1095,
+      "text": "Paris: **Sunny, 22°C**.",
+      "reasoning": true,
+      "toolCalls": [],
+      "usage": {
+        "inputTokens": 147,
+        "outputTokens": 17,
+        "totalTokens": 164
+      }
+    }
+  ],
+  "requests": [
+    {
+      "model": "mimo-v2.6-flash",
+      "thinking": {
+        "type": "disabled"
+      },
+      "hasReasoningEffort": false,
+      "toolContinuation": false,
+      "assistantReasoningPreserved": false
+    },
+    {
+      "model": "mimo-v2.6-pro",
+      "thinking": {
+        "type": "disabled"
+      },
+      "hasReasoningEffort": false,
+      "toolContinuation": false,
+      "assistantReasoningPreserved": false
+    },
+    {
+      "model": "mimo-v2.6-flash",
+      "thinking": {
+        "type": "enabled"
+      },
+      "hasReasoningEffort": false,
+      "toolContinuation": false,
+      "assistantReasoningPreserved": false
+    },
+    {
+      "model": "mimo-v2.6-pro",
+      "thinking": {
+        "type": "enabled"
+      },
+      "hasReasoningEffort": false,
+      "toolContinuation": false,
+      "assistantReasoningPreserved": false
+    },
+    {
+      "model": "mimo-v2.6-flash",
+      "thinking": {
+        "type": "enabled"
+      },
+      "hasReasoningEffort": false,
+      "toolContinuation": false,
+      "assistantReasoningPreserved": false
+    },
+    {
+      "model": "mimo-v2.6-flash",
+      "thinking": {
+        "type": "enabled"
+      },
+      "hasReasoningEffort": false,
+      "toolContinuation": true,
+      "assistantReasoningPreserved": true
+    }
+  ],
+  "welcomeSave": true,
+  "credentialPersisted": true,
+  "passed": true
+}

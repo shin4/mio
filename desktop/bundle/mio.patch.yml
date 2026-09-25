@@ -1,0 +1,35 @@
+# MiMo is configured through the upstream adapter, never a fork of its request path.
+- id: llm-pi-ai
+  config:
+    providers:
+      mimo:
+        displayName: MiMo
+        apiKeyEnv: MIO_API_KEY
+        api: openai-completions
+        baseURL: https://api.xiaomimimo.com/v1
+        compat:
+          thinkingFormat: deepseek
+          supportsReasoningEffort: false
+          maxTokensField: max_completion_tokens
+          requiresReasoningContentOnAssistantMessages: true
+        # Conservative app budgets; these are not claims about the model's maximum capacity.
+        defaultContextWindow: 262144
+        defaultMaxTokens: 32768
+        models:
+          - id: mimo-v2.6-flash
+            name: MiMo V2.6 Flash
+            reasoningEfforts: { off: none, high: high }
+          - id: mimo-v2.6-pro
+            name: MiMo V2.6 Pro
+            reasoningEfforts: { off: none, high: high }
+        # mio:optional-models
+- id: agent-default-model
+  config:
+    provider: mimo
+    model: mimo-v2.6-flash
+    reasoningEffort: high
+- id: ui-brand-official
+  disabled: true
+- insert:
+    - id: mio-desktop-brand
+      name: "@mio/brand"

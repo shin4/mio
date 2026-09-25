@@ -1,4 +1,5 @@
-name: release
+# Legacy shell only. Official Desktop releases require the new signing qualification.
+name: legacy-shell-release
 
 # Cut a release by pushing a `v*` tag, or from the Actions tab supplying the
 # version. One job per platform+arch — the same structural constraint as
@@ -12,8 +13,6 @@ name: release
 # artifact, which is what a fork or a credential-less run gets.
 
 on:
-  push:
-    tags: ["v*"]
   workflow_dispatch:
     inputs:
       version:
@@ -100,10 +99,8 @@ jobs:
         with:
           node-version: 24
 
-      # `--minimum-release-age=0`: bunfig.toml's gate guards *resolution*, and
-      # this replays an already-reviewed lockfile. See build-check.yml.
       - name: Install workspace
-        run: bun install --frozen-lockfile --minimum-release-age=0
+        run: bun install --frozen-lockfile
 
       - name: Package
         working-directory: packages/shell

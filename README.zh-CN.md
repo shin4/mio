@@ -21,6 +21,12 @@
 
 ---
 
+> **开发分支更新（2026-09-25）：** `dev:desktop` 已切换到官方 dsh Desktop
+> **0.1.7-rc.2**，接入 Mio 品牌与 MiMo V2.6 默认配置。需要 Node 24 和 pnpm 11.7.0。
+> 新数据目录启动，不做数据迁移；首版 macOS / Windows，Linux 后补。
+> 下方截图与下载描述的是旧发行版。参见 [Desktop 开发说明](desktop/README.md)。
+
+
 ## Mio 是什么？
 
 Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能体，支持 Windows 与 macOS。它不把 MiMo

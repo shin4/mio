@@ -16,7 +16,7 @@ These outrank stylistic preferences.
 - **Verify against the real thing, not against the old code.** Every MiMo capability in this repo
   was settled by probing the live API or reading dsh's shipped source — not by copying what the
   archived runtime did. MIGRATION.md records which archived behavior was audited and rejected.
-- **New capabilities are new Cordis plugins** added to `packages/runtime/mio.patch.yml`, never
+- **New capabilities are new Cordis plugins** added to `desktop/bundle/mio.patch.yml` (legacy: `packages/runtime/mio.patch.yml`), never
   forks of dsh internals. Patch semantics: a bare `id` merges config into an existing row,
   `insert:` appends new rows.
 - **Deployment-varying choices are validated `Config` fields**, never hardcoded. A user's billing
@@ -33,9 +33,15 @@ These outrank stylistic preferences.
 
 | Package | Tier | Runs on |
 |---|---|---|
-| `packages/runtime` (`@mio/runtime`) | dsh composition (`mio.patch.yml` + profile setup) | Node ≥22.19 |
-| `packages/llm-mimo` (`@mio/llm-mimo`) | Cordis plugin: the MiMo provider adapter | Node ≥22.19 |
-| `packages/shell` (`@mio/shell`) | Electron desktop shell | Electron (bundled Node) |
+| `desktop/bundle` (`@mio/desktop`) | Official Desktop product composition | Node ≥22.19 |
+| `desktop/brand` (`@mio/brand`) | Cordis brand slots and theme tokens | Official client |
+| `script/desktop` | Pinned upstream preparation and build wrappers | Node 24 / pnpm 11.7.0 |
+| `packages/{runtime,client-ui,shell}` | Legacy release implementation and regression checks | Node / Electron |
+
+The default `dev:desktop` uses official dsh **0.1.7-rc.2**. Source edits belong in reviewed
+`desktop/patches`, never only in generated `.desktop-build/upstream`. Keep runtime internals
+upstream-native. No data migration. Linux is outside the first release. Follow upstream's own
+build scripts for its generated workspace; the rules for Mio's Node source below still apply.
 
 ## Language and Runtime
 
@@ -176,9 +182,9 @@ invoke `tsc` — typechecking uses `tsgo` (TypeScript native preview).
 
 ## Dependencies
 
-- dsh packages are pinned **exact** and gated by `bunfig.toml`'s `minimumReleaseAge` (3 days). dsh
-  is a developer preview that warns of breaking changes: bump the pin deliberately, then re-run
-  the replay suite and boot the shell.
+- dsh packages and the official Desktop source are pinned **exact**. There is no release-age
+  delay (removed by user decision 2026-09-25). Bump deliberately, then run the replay suite
+  and boot the packaged Desktop. Preserve reviewed lockfiles and upstream build checks.
 - A plugin's dsh packages belong in `peerDependencies` (plus `devDependencies` for local checks)
   so an installed plugin resolves the host's copies. Two copies of `dsh-llm` means two
   `LlmAdapter` classes and silently divergent `instanceof` behavior.

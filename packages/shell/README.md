@@ -80,8 +80,8 @@ warning and then failed at runtime:
   shipped 183 of dsh's packages and was missing 52.
 - dsh pins its own siblings with `^` ranges. npm resolves those to whatever is newest, so a naive
   staging step shipped dsh rc.6 with rc.7 internals. The stage script carries the workspace's
-  resolved versions over as explicit dependencies and `overrides`, because Bun stops at the tested
-  set (`bunfig.toml`'s `minimumReleaseAge`) and npm has no such gate.
+  resolved versions over as explicit dependencies and `overrides`, preserving the tested lockfile
+  set across package managers. Release-age restrictions were removed on 2026-09-25.
 - dsh's packages reference each other largely through `peerDependencies` — `dsh-app-boot` imports
   `@deepseek-ai/cordis-plugin-group` at runtime and declares it only as a peer, which
   `npm install --omit=dev` does not materialize. Declaring the whole resolved set covers this.

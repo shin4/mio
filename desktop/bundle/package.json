@@ -1,0 +1,19 @@
+{
+  "name": "@mio/desktop",
+  "version": "0.1.7-rc.2",
+  "private": true,
+  "description": "Mio composition and brand over the official dsh Desktop",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "mio.patch.yml"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "mio.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@mio/brand": "workspace:*"
+  }
+}
