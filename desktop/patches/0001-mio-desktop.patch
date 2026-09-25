@@ -384,7 +384,7 @@ index c1a2cb5..f7173aa 100644
      for (const [output, filename] of artifacts) {
        const file = join(output, filename)
 diff --git a/apps/desktop/scripts/package-target.ts b/apps/desktop/scripts/package-target.ts
-index 62f4fcb..b1239cf 100644
+index 62f4fcb..f4e4fbb 100644
 --- a/apps/desktop/scripts/package-target.ts
 +++ b/apps/desktop/scripts/package-target.ts
 @@ -1,3 +1,4 @@
@@ -447,16 +447,17 @@ index 62f4fcb..b1239cf 100644
    await execute(['run', 'release:pack', '--family', 'dsh', '--out', buildPaths.packedDsh, ...packArguments], buildEnv, REPOSITORY_ROOT)
    await execute([
      '--dir',
-@@ -456,6 +456,8 @@ export async function packageTarget(
+@@ -456,6 +456,9 @@ export async function packageTarget(
      '--pack-destination',
      buildPaths.packedDsh,
    ], buildEnv, REPOSITORY_ROOT)
 +  await execute(['--dir', 'mio/desktop', 'pack', '--pack-destination', buildPaths.packedDsh], buildEnv, REPOSITORY_ROOT)
 +  await execute(['--dir', 'mio/brand', 'pack', '--pack-destination', buildPaths.packedDsh], buildEnv, REPOSITORY_ROOT)
++  await execute(['--dir', 'mio/asr', 'pack', '--pack-destination', buildPaths.packedDsh], buildEnv, REPOSITORY_ROOT)
    await execute(['run', 'release:pack', '--family', 'vendor', '--out', buildPaths.packedVendor, ...packArguments], buildEnv, REPOSITORY_ROOT)
    rmSync(buildPaths.packedLandlock, { recursive: true, force: true })
    mkdirSync(buildPaths.packedLandlock, { recursive: true })
-@@ -482,14 +484,14 @@ export async function packageTarget(
+@@ -482,14 +485,14 @@ export async function packageTarget(
      await withMacOSNotarizationProxy(mac?.notarizationProxy, () => packageMacOSArtifacts({
        arch: target.arch,
        // electron-builder named these artifacts after the published version, so locating them uses the same identifier.
@@ -899,7 +900,7 @@ index e9ec1aa..44065de 100644
  }
  contextBridge.exposeInMainWorld('dshWelcome', api)
 diff --git a/apps/desktop/src/project-manager.ts b/apps/desktop/src/project-manager.ts
-index 270d87d..0a069fe 100644
+index 270d87d..80979e6 100644
 --- a/apps/desktop/src/project-manager.ts
 +++ b/apps/desktop/src/project-manager.ts
 @@ -29,7 +29,7 @@ import {
@@ -907,7 +908,7 @@ index 270d87d..0a069fe 100644
  const DSH_PACKAGE = '@deepseek-ai/dsh'
  const CORE_BUILD_PACKAGE = '@deepseek-ai/dsh-subprocess-local'
 -const WEB_PROFILE = PROFILE_TEMPLATES.web as ProfileTemplate
-+const WEB_PROFILE: ProfileTemplate = { ...PROFILE_TEMPLATES.web, bundles: [...(PROFILE_TEMPLATES.web as ProfileTemplate).bundles, '@mio/desktop'] }
++const WEB_PROFILE: ProfileTemplate = { ...PROFILE_TEMPLATES.web, bundles: [...(PROFILE_TEMPLATES.web as ProfileTemplate).bundles, '@deepseek-ai/dsh-experimental-voice-input-bundle', '@mio/desktop'] }
  const WORKSPACE_SETTINGS = 'nodeLinker: hoisted\nautoInstallPeers: false\n'
  function writeJson(path: string, value: unknown): void {
    writeFileSync(path, `${JSON.stringify(value, undefined, 2)}\n`, { mode: 0o600 })
@@ -1027,8 +1028,80 @@ index a32e1f1..a2feacf 100644
    })
    ipcMain.handle(WELCOME_IPC.skip, async (event) => {
      assertSender(event)
+diff --git a/packages/experimental/voice-input-bundle/cordis.patch.yml b/packages/experimental/voice-input-bundle/cordis.patch.yml
+index 255734d..82cb4a2 100644
+--- a/packages/experimental/voice-input-bundle/cordis.patch.yml
++++ b/packages/experimental/voice-input-bundle/cordis.patch.yml
+@@ -1,13 +1,14 @@
++# Mio: voice input transcribes with MiMo ASR through the account the MiMo route already uses.
+ - insert:
+     - id: speech-to-text
+       name: '@deepseek-ai/dsh-experimental-speech-to-text'
+       config:
+-        defaultProvider: sensevoice-local
+-    - id: speech-to-text-sensevoice
+-      name: '@deepseek-ai/dsh-experimental-speech-to-text-sensevoice'
+-      config:
+-        dataRoot: !!js dshHomePath('speech-to-text', 'sensevoice')
++        defaultProvider: mio-asr
++    - id: mio-asr
++      name: '@mio/asr'
+     - id: api-speech-to-text
+       name: '@deepseek-ai/dsh-experimental-api-speech-to-text'
++      config:
++        maxDurationSeconds: 60
+     - id: ui-voice-input
+       name: '@deepseek-ai/dsh-experimental-client-ui-voice-input'
+diff --git a/packages/experimental/voice-input-bundle/locale/en.json b/packages/experimental/voice-input-bundle/locale/en.json
+index 8d48bbe..197918e 100644
+--- a/packages/experimental/voice-input-bundle/locale/en.json
++++ b/packages/experimental/voice-input-bundle/locale/en.json
+@@ -1,6 +1,6 @@
+ {
+   "meta": {
+     "title": "Voice input",
+-    "description": "Transcribe recordings locally with SenseVoice; first use requires installing dependencies"
++    "description": "Transcribe recordings with MiMo ASR using your MiMo account; audio is sent to the MiMo API"
+   }
+ }
+diff --git a/packages/experimental/voice-input-bundle/locale/zh.json b/packages/experimental/voice-input-bundle/locale/zh.json
+index 43b2e83..9aa8c9a 100644
+--- a/packages/experimental/voice-input-bundle/locale/zh.json
++++ b/packages/experimental/voice-input-bundle/locale/zh.json
+@@ -1,6 +1,6 @@
+ {
+   "meta": {
+     "title": "语音输入",
+-    "description": "在本机使用 SenseVoice 转写录音；首次使用需安装依赖"
++    "description": "使用 MiMo ASR 和你的 MiMo 账号转写录音；音频会发送至 MiMo API"
+   }
+ }
+diff --git a/packages/experimental/voice-input-bundle/package.json b/packages/experimental/voice-input-bundle/package.json
+index 7c63262..3a39f46 100644
+--- a/packages/experimental/voice-input-bundle/package.json
++++ b/packages/experimental/voice-input-bundle/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@deepseek-ai/dsh-experimental-voice-input-bundle",
+-  "description": "Experimental voice input with local SenseVoice; downloads its runtime on first use",
++  "description": "Voice input transcribed by MiMo ASR",
+   "version": "0.1.7-rc.2",
+   "icon": "./icon.svg",
+   "publishConfig": {
+@@ -34,9 +34,9 @@
+   "license": "MIT",
+   "dependencies": {
+     "@deepseek-ai/dsh-experimental-speech-to-text": "workspace:*",
+-    "@deepseek-ai/dsh-experimental-speech-to-text-sensevoice": "workspace:*",
+     "@deepseek-ai/dsh-experimental-api-speech-to-text": "workspace:*",
+-    "@deepseek-ai/dsh-experimental-client-ui-voice-input": "workspace:*"
++    "@deepseek-ai/dsh-experimental-client-ui-voice-input": "workspace:*",
++    "@mio/asr": "workspace:*"
+   },
+   "peerDependencies": {
+     "@deepseek-ai/cordis": "workspace:~"
 diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
-index 36dc050..c848dcd 100644
+index 36dc050..2dbd462 100644
 --- a/pnpm-lock.yaml
 +++ b/pnpm-lock.yaml
 @@ -726,6 +726,9 @@ importers:
@@ -1041,10 +1114,25 @@ index 36dc050..c848dcd 100644
  
    apps/web:
      devDependencies:
-@@ -931,6 +934,18 @@ importers:
+@@ -931,6 +934,33 @@ importers:
          specifier: ^1.49.0
          version: 1.61.1
  
++  mio/asr:
++    dependencies:
++      '@deepseek-ai/cordis':
++        specifier: workspace:~
++        version: link:../../vendor/cordis
++      '@deepseek-ai/dsh-credentials':
++        specifier: workspace:*
++        version: link:../../packages/credentials/credentials
++      '@deepseek-ai/dsh-experimental-speech-to-text':
++        specifier: workspace:*
++        version: link:../../packages/experimental/speech-to-text
++      '@deepseek-ai/schemastery':
++        specifier: link:../../vendor/schemastery
++        version: link:../../vendor/schemastery
++
 +  mio/brand:
 +    dependencies:
 +      '@deepseek-ai/cordis':
@@ -1060,6 +1148,18 @@ index 36dc050..c848dcd 100644
    native/system:
      devDependencies:
        '@deepseek-ai/node-addon-system':
+@@ -7897,9 +7927,9 @@ importers:
+       '@deepseek-ai/dsh-experimental-speech-to-text':
+         specifier: workspace:*
+         version: link:../speech-to-text
+-      '@deepseek-ai/dsh-experimental-speech-to-text-sensevoice':
++      '@mio/asr':
+         specifier: workspace:*
+-        version: link:../speech-to-text-sensevoice
++        version: link:../../../mio/asr
+     devDependencies:
+       '@deepseek-ai/cordis':
+         specifier: workspace:~
 diff --git a/pnpm-workspace.yaml b/pnpm-workspace.yaml
 index 4782ad5..dcbf496 100644
 --- a/pnpm-workspace.yaml

@@ -1,11 +1,13 @@
 import assert from "node:assert/strict"
 import { mkdir, mkdtemp, rm, writeFile, symlink, readFile } from "node:fs/promises"
+import { createServer } from "node:http"
 import { createRequire } from "node:module"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { pathToFileURL } from "node:url"
 import { composeModels } from "../../script/desktop/models.mjs"
 import { root, upstream } from "../../script/desktop/prepare.mjs"
+import { clips, recording } from "./recording.mjs"
 
 const require = createRequire(join(upstream, "apps/desktop-host/package.json"))
 const { loadProfileDirectory, loadLayeredEnv } = await import(
@@ -15,6 +17,66 @@ const { runProfile } = await import(pathToFileURL(require.resolve("@deepseek-ai/
 const { connectDesktopWelcome } = await import(
   pathToFileURL(join(upstream, "apps/desktop/lib/types/welcome-backend.js")).href
 )
+/** Voice input resolves to MiMo ASR on the endpoint and key welcome stores for the MiMo route. */
+async function verifyAsr(ctx) {
+  const snapshot = ctx.speechToText.snapshot()
+  assert.deepEqual(
+    snapshot.providers.map((provider) => [provider.id, provider.name, provider.location, provider.languages]),
+    [["mio-asr", "MiMo ASR", "cloud", ["auto", "zh", "en"]]],
+  )
+  assert.equal(snapshot.selection.providerId, "mio-asr")
+  assert.equal(ctx.speechController.catalog().maxDurationSeconds, 60)
+  const transcript = clips.zh
+  const requests = []
+  const server = createServer((request, response) => {
+    let body = ""
+    request.on("data", (chunk) => (body += chunk))
+    request.on("end", () => {
+      requests.push({ url: request.url, authorization: request.headers.authorization, body: JSON.parse(body) })
+      response.writeHead(200, { "content-type": "application/json" })
+      response.end(
+        JSON.stringify({
+          object: "chat.completion",
+          model: "mimo-v2.5-asr",
+          choices: [{ index: 0, message: { role: "assistant", content: ` ${transcript} ` }, finish_reason: "stop" }],
+        }),
+      )
+    })
+  })
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve))
+  try {
+    // The same two writes the native welcome performs for a Token Plan key.
+    await ctx.settings.mutate("llm-pi-ai", [
+      { op: "set", path: ["providers", "mimo", "baseURL"], value: `http://127.0.0.1:${server.address().port}/v1/` },
+    ])
+    await ctx.credentials.set("MIO_API_KEY", "tp-replay")
+    const audio = await recording("zh")
+    const result = await ctx.speechController.transcribe(
+      { audioBase64: audio.toString("base64"), language: "zh" },
+      new AbortController().signal,
+    )
+    assert.equal(result.text, transcript)
+    assert.equal(result.audioSeconds, (audio.length - 44) / 32000)
+    assert.equal(requests.length, 1)
+    const [sent] = requests
+    assert.equal(sent.url, "/v1/chat/completions")
+    assert.equal(sent.authorization, "Bearer tp-replay")
+    assert.deepEqual(sent.body, {
+      model: "mimo-v2.5-asr",
+      messages: [
+        {
+          role: "user",
+          content: [{ type: "input_audio", input_audio: { data: `data:audio/wav;base64,${audio.toString("base64")}` } }],
+        },
+      ],
+      asr_options: { language: "zh" },
+      stream: false,
+    })
+  } finally {
+    server.close()
+  }
+}
+
 const home = await mkdtemp(join(tmpdir(), "mio-desktop-web-"))
 process.env.DSH_HOME = home
 delete process.env.MIO_API_KEY
@@ -25,7 +87,16 @@ await writeFile(
   JSON.stringify({
     name: "mio-web-test",
     private: true,
-    dsh: { profile: { bundles: ["@deepseek-ai/dsh-base", "@deepseek-ai/dsh-web-app", "@mio/desktop"] } },
+    dsh: {
+      profile: {
+        bundles: [
+          "@deepseek-ai/dsh-base",
+          "@deepseek-ai/dsh-web-app",
+          "@deepseek-ai/dsh-experimental-voice-input-bundle",
+          "@mio/desktop",
+        ],
+      },
+    },
   }),
 )
 await writeFile(join(directory, "cordis.yml"), "[]\n")
@@ -99,6 +170,7 @@ try {
   assert.equal(state.hasApiKey, false)
   assert.deepEqual(await backend.save("not-a-key", "invalid-region"), { ok: false })
   assert.deepEqual(await backend.save("contains whitespace"), { ok: false })
+  await verifyAsr(running.ctx)
   console.log("Mio web composition verified")
 } finally {
   await running.shutdown.shutdown(0)

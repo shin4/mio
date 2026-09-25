@@ -59,6 +59,7 @@ const files = [
     .map((name) => `desktop/patches/${name}`),
   ...(await readdir(join(root, "desktop/bundle"))).map((name) => `desktop/bundle/${name}`),
   ...(await readdir(join(root, "desktop/brand"))).map((name) => `desktop/brand/${name}`),
+  ...(await readdir(join(root, "desktop/asr"))).map((name) => `desktop/asr/${name}`),
   ...(await readdir(join(root, "script/desktop"))).map((name) => `script/desktop/${name}`),
   "assets/brand/mio-icon.svg",
   "packages/shell/resources/icon.png",

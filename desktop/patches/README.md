@@ -10,6 +10,8 @@ Base: `dsh-v0.1.7-rc.2`, `477b4f420553e8a52c2fbccc464d7561b239c443`.
 - Ephemeral loopback port, so another dsh instance does not collide with Mio.
 - Official packaging integration, Mio artifact names, disabled updater, and installer text.
 - Workspace package declarations and the matching pnpm lockfile delta.
+- Voice input: the official voice-input bundle recomposed around `@mio/asr` (MiMo ASR, no
+  local SenseVoice), shipped enabled in new Desktop profiles, and packed with the product.
 
 No agent, session format, permissions or provider adapter internals are changed.
 Generated product constants, plugin packages and icons are copied by `prepare.mjs`;
