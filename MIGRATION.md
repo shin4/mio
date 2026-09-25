@@ -861,6 +861,11 @@ lines of DSP helpers with existing unit tests, and ~900 lines of Solid UI.
       documented quirk (a leading empty user message is mandatory), voicedesign via natural
       language plus `optimize_text_preview`, and voiceclone passing the reference clip's data URL
       as `audio.voice`
+      — **Read-aloud slice done 2026-09-26 as `@mio/tts`** (`desktop/tts`): preset voices only,
+      one action per finalized reply in `conversation.chat.assistant-actions`, text taken from the
+      Chat projection the copy action uses and synthesized behind an authenticated
+      `/api/mio/tts` Fetch route. Singing, voicedesign and voiceclone remain open, as does a voice
+      picker (the volatile `voice` field is not surfaced by any settings page yet).
 - [x] **Dictation plugin.** `mimo-v2.5-asr` with an `input_audio` content part plus MiMo's
       `asr_options.language`; capture via `getUserMedia` + PCM16 mono WAV encoding, gated by a
       shared VAD (2s minimum, RMS/peak/active-ms thresholds) that runs on both client and server,

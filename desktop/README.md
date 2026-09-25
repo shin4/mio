@@ -41,7 +41,9 @@ of record. The prepare script stops on a wrong checkout or an incompatible patch
 `@mio/desktop` is a composition bundle; its separate `@mio/brand` dependency owns browser
 slots and accent tokens. `@mio/asr` (`desktop/asr`) registers MiMo ASR as the cloud recognizer
 of the official voice-input bundle, reading the MiMo route's live `baseURL` and `MIO_API_KEY`.
-New profiles ship voice input enabled; profiles created by 0.4.0 enable it under Plugins. This separation is required by upstream bundle resolution. Neither
+New profiles ship voice input enabled; profiles created by 0.4.0 enable it under Plugins.
+`@mio/tts` (`desktop/tts`) adds a read-aloud action to every finalized reply; it serves
+`POST /api/mio/tts` behind browser authentication and synthesizes with MiMo TTS on the same route. This separation is required by upstream bundle resolution. Neither
 ships a fork of the model adapter. Shared framework peers resolve to the upstream workspace.
 
 ## Product and release boundaries

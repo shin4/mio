@@ -17,6 +17,76 @@ const { runProfile } = await import(pathToFileURL(require.resolve("@deepseek-ai/
 const { connectDesktopWelcome } = await import(
   pathToFileURL(join(upstream, "apps/desktop/lib/types/welcome-backend.js")).href
 )
+/**
+ * Answer MiMo completions with one fixed body, pointing the MiMo route at it through the same two
+ * writes the native welcome performs for a Token Plan key.
+ */
+async function connectReplay(ctx, answer) {
+  const requests = []
+  const server = createServer((request, response) => {
+    let body = ""
+    request.on("data", (chunk) => (body += chunk))
+    request.on("end", () => {
+      requests.push({ url: request.url, authorization: request.headers.authorization, body: JSON.parse(body) })
+      response.writeHead(200, { "content-type": "application/json" })
+      response.end(JSON.stringify(answer))
+    })
+  })
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve))
+  await ctx.settings.mutate("llm-pi-ai", [
+    { op: "set", path: ["providers", "mimo", "baseURL"], value: `http://127.0.0.1:${server.address().port}/v1/` },
+  ])
+  await ctx.credentials.set("MIO_API_KEY", "tp-replay")
+  return { server, requests }
+}
+
+/** Read aloud goes through the authenticated Host route to MiMo TTS and plays back its WAV bytes. */
+async function verifyTts(ctx, send, origin) {
+  assert.ok(
+    ctx.clientModules.graph().entries.some((entry) => entry.id === "@mio/tts"),
+    "The product bundle must mount the read-aloud browser action",
+  )
+  const wave = await recording("en")
+  const { server, requests } = await connectReplay(ctx, {
+    object: "chat.completion",
+    model: "mimo-v2.5-tts",
+    choices: [{ index: 0, message: { role: "assistant", content: "", audio: { data: wave.toString("base64") } } }],
+  })
+  const speak = (text) =>
+    send(`${origin}/api/mio/tts`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ text }),
+    })
+  try {
+    const reply = "## Done\n\nI made **fetchUser** async:\n\n```ts\nawait fetch(url)\n```\n\nSee [the docs](https://x.invalid)."
+    const response = await speak(reply)
+    assert.equal(response.status, 200, await response.clone().text())
+    assert.equal(response.headers.get("content-type"), "audio/wav")
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), wave)
+    assert.equal(requests.length, 1)
+    const [sent] = requests
+    assert.equal(sent.url, "/v1/chat/completions")
+    assert.equal(sent.authorization, "Bearer tp-replay")
+    assert.deepEqual(sent.body, {
+      model: "mimo-v2.5-tts",
+      messages: [{ role: "assistant", content: "Done\nI made fetchUser async:\nSee the docs." }],
+      audio: { format: "wav", voice: "mimo_default" },
+      stream: false,
+    })
+    assert.equal((await speak("```\nonly code\n```")).status, 422)
+    assert.equal(requests.length, 1, "A reply with nothing speakable must not reach MiMo")
+    const anonymous = await fetch(`${origin}/api/mio/tts`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ text: "hello" }),
+    })
+    assert.equal(anonymous.status, 401, "The route must sit behind browser authentication")
+  } finally {
+    server.close()
+  }
+}
+
 /** Voice input resolves to MiMo ASR on the endpoint and key welcome stores for the MiMo route. */
 async function verifyAsr(ctx) {
   const snapshot = ctx.speechToText.snapshot()
@@ -27,29 +97,12 @@ async function verifyAsr(ctx) {
   assert.equal(snapshot.selection.providerId, "mio-asr")
   assert.equal(ctx.speechController.catalog().maxDurationSeconds, 60)
   const transcript = clips.zh
-  const requests = []
-  const server = createServer((request, response) => {
-    let body = ""
-    request.on("data", (chunk) => (body += chunk))
-    request.on("end", () => {
-      requests.push({ url: request.url, authorization: request.headers.authorization, body: JSON.parse(body) })
-      response.writeHead(200, { "content-type": "application/json" })
-      response.end(
-        JSON.stringify({
-          object: "chat.completion",
-          model: "mimo-v2.5-asr",
-          choices: [{ index: 0, message: { role: "assistant", content: ` ${transcript} ` }, finish_reason: "stop" }],
-        }),
-      )
-    })
+  const { server, requests } = await connectReplay(ctx, {
+    object: "chat.completion",
+    model: "mimo-v2.5-asr",
+    choices: [{ index: 0, message: { role: "assistant", content: ` ${transcript} ` }, finish_reason: "stop" }],
   })
-  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve))
   try {
-    // The same two writes the native welcome performs for a Token Plan key.
-    await ctx.settings.mutate("llm-pi-ai", [
-      { op: "set", path: ["providers", "mimo", "baseURL"], value: `http://127.0.0.1:${server.address().port}/v1/` },
-    ])
-    await ctx.credentials.set("MIO_API_KEY", "tp-replay")
     const audio = await recording("zh")
     const result = await ctx.speechController.transcribe(
       { audioBase64: audio.toString("base64"), language: "zh" },
@@ -109,11 +162,13 @@ await writeFile(
   join(bundle, "mio.patch.yml"),
   composeModels(await readFile(join(root, "desktop/bundle/mio.patch.yml"), "utf8"), { enableUltraSpeed }),
 )
-await symlink(
-  join(upstream, "mio/brand"),
-  join(directory, "node_modules/@mio/brand"),
-  process.platform === "win32" ? "junction" : "dir",
-)
+for (const name of ["brand", "tts"]) {
+  await symlink(
+    join(upstream, "mio", name),
+    join(directory, "node_modules/@mio", name),
+    process.platform === "win32" ? "junction" : "dir",
+  )
+}
 const installAnchor = join(upstream, "apps/cli/package.json")
 const profile = loadProfileDirectory("dsh", directory, installAnchor)
 assert.deepEqual(profile.skippedBundles, [])
@@ -171,6 +226,7 @@ try {
   assert.deepEqual(await backend.save("not-a-key", "invalid-region"), { ok: false })
   assert.deepEqual(await backend.save("contains whitespace"), { ok: false })
   await verifyAsr(running.ctx)
+  await verifyTts(running.ctx, send, `http://127.0.0.1:${running.ctx.webServer.port}`)
   console.log("Mio web composition verified")
 } finally {
   await running.shutdown.shutdown(0)

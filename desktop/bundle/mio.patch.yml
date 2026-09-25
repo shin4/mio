@@ -33,3 +33,5 @@
 - insert:
     - id: mio-desktop-brand
       name: "@mio/brand"
+    - id: mio-tts
+      name: "@mio/tts"

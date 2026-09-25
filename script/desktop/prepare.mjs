@@ -57,6 +57,7 @@ export async function prepare() {
     ...(await readdir(join(root, "desktop/bundle"))).map((name) => `mio/desktop/${name}`),
     ...(await readdir(join(root, "desktop/brand"))).map((name) => `mio/brand/${name}`),
     ...(await readdir(join(root, "desktop/asr"))).map((name) => `mio/asr/${name}`),
+    ...(await readdir(join(root, "desktop/tts"))).map((name) => `mio/tts/${name}`),
   ])
   const product = JSON.parse(await readFile(join(root, "desktop/product.json"), "utf8"))
   if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-rc\.[1-9]\d*)?$/.test(product.version)) {
@@ -74,6 +75,7 @@ export async function prepare() {
   await writeFile(join(upstream, "mio/desktop/mio.patch.yml"), modelPatch)
   await cp(join(root, "desktop/brand"), join(upstream, "mio/brand"), { recursive: true })
   await cp(join(root, "desktop/asr"), join(upstream, "mio/asr"), { recursive: true })
+  await cp(join(root, "desktop/tts"), join(upstream, "mio/tts"), { recursive: true })
   for (const [target, suffix] of [
     ["src/mio-product.ts", " as const"],
     ["scripts/mio-product.mjs", ""],
