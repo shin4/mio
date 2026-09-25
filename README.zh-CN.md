@@ -8,39 +8,90 @@
 
 [English](./README.md) | 简体中文
 
+[![Release](https://img.shields.io/github/v/release/shin4/mio?color=ff6900&label=release)](https://github.com/shin4/mio/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-ff6900.svg)](./LICENSE)
-![Desktop: Windows · macOS](https://img.shields.io/badge/desktop-Windows%20%C2%B7%20macOS-121317.svg)
+![Desktop: macOS · Windows](https://img.shields.io/badge/desktop-macOS%20%C2%B7%20Windows-121317.svg)
+![dsh Desktop 0.1.7-rc.2](https://img.shields.io/badge/dsh%20Desktop-0.1.7--rc.2-0E1B2E.svg)
 
-<img src="docs/assets/welcome.zh-CN.png?v=0.3.1" alt="Mio 0.3.1 欢迎界面" width="640" />
+<img src="docs/assets/welcome.zh-CN.png?v=0.4.0" alt="Mio 0.4.0 欢迎界面：连接 MiMo" width="480" />
 
-<img src="docs/assets/session.zh-CN.png?v=0.3.1" alt="Mio 0.3.1 — MiMo 工具调用、文件改动与用量" width="960" />
+<img src="docs/assets/workspace.zh-CN.png?v=0.4.0" alt="Mio 0.4.0 工作区，默认选中 MiMo V2.6 Flash" width="960" />
 
-<sub>Mio 0.3.1 实际运行截图：MiMo V2.5 读取演示 README 并生成发布检查清单。</sub>
+<sub>Mio 0.4.0：原生欢迎界面与工作区，默认 MiMo V2.6 Flash、推理开启。</sub>
 
 </div>
 
 ---
 
-> **开发分支更新（2026-09-25）：** `dev:desktop` 已切换到官方 dsh Desktop
-> **0.1.7-rc.2**，接入 Mio 品牌与 MiMo V2.6 默认配置。需要 Node 24 和 pnpm 11.7.0。
-> 新数据目录启动，不做数据迁移；首版 macOS / Windows，Linux 后补。
-> 下方截图与下载描述的是旧发行版。参见 [Desktop 开发说明](desktop/README.md)。
-
-
 ## Mio 是什么？
 
-Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能体，支持 Windows 与 macOS。它不把 MiMo
-当作通用的 OpenAI 兼容提供商，而是让它成为智能体运行时中的一等公民——基于
-[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（dsh）组合而成，并以
-MiMo 为先。它把编程、推理、多模态理解（图像、PDF、视频）、语音听写（ASR）与语音生成（TTS）整合在同一个桌面应用中。
+Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能体，支持 macOS 与 Windows。自 0.4.0 起，它直接采用官方
+[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（dsh）**Desktop**——工作区、设置、工具与会话模型
+保持上游原样——再叠加 Mio 的品牌与 MiMo 优先的配置。Mio 不 fork 模型适配器：MiMo 通过 dsh 自带的 provider 配置接入，
+产品层是一组经过审阅的补丁，存放在 [`desktop/`](desktop/README.md)。
 
-> **当前版本：0.3.1，基于 DeepSeek Harness 0.1.5-rc.2。** MiMo 对话、工具调用和桌面安装包已验证；
-> 提供 macOS（Apple Silicon / Intel）、Windows x64 和 Linux x64 安装包。多模态与语音能力仍在迁移中，
-> 不属于本次截图展示的已验证功能。升级前请参阅[数据备份与迁移说明](./docs/dsh-upgrade-0.1.5.md)。
+## 0.4.0 新变化
+
+- **基于官方 dsh Desktop 0.1.7-rc.2** — 原生工作区、设置与工具，与上游一致。
+- **默认 MiMo V2.6** — 新会话默认 **MiMo V2.6 Flash** 并开启推理；**V2.6 Pro** 一键切换，推理可按会话关闭。
+- **原生 MiMo 账号接入** — 在欢迎页粘贴 API Key 即可：Key 前缀决定计费方式，订阅套餐可选地域（CN / SGP / AMS）。
+- **Mio 品牌** — 全应用使用 Mio 图标、主题与标识，支持中文与英文。
+- **经过验证的安装包** — macOS 安装包已 Developer ID 签名并公证；所有安装包附带 SHA-256 校验和与验证记录。
+
+完整说明见 [Mio v0.4.0 发行说明](https://github.com/shin4/mio/releases/tag/v0.4.0)。
+
+## 下载
+
+前往 [Releases](https://github.com/shin4/mio/releases/latest) 获取最新安装包：
+
+| 平台 | 文件 | 签名 |
+| --- | --- | --- |
+| macOS · Apple Silicon | `mio-0.4.0-mac-arm64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
+| macOS · Intel | `mio-0.4.0-mac-x64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
+| Windows x64 | `mio-0.4.0-win-x64-unsigned.exe` | **未签名** — 安装时会出现 SmartScreen / 未知发布者提示 |
+
+可用 `SHA256SUMS.txt` 校验下载；`mio-0.4.0-qualification.json` 记录了每个安装包的源码提交、哈希与签名状态。
+0.4.0 不包含 Linux 版本，后续单独提供。
+
+### 从 0.3.x 升级
+
+- **手动安装** — 本版未启用自动更新。
+- **全新数据目录** — 0.4.0 不迁移旧的会话、工作区、设置或 API Key，请在欢迎页重新连接 MiMo 账号。
+
+## 连接 MiMo
+
+前往 [platform.xiaomimimo.com](https://platform.xiaomimimo.com) 获取 API Key，首次启动时在 **连接 MiMo** 中粘贴
+（也可以稍后在模型页填写）：
+
+- **按量付费**（`sk-…`）— 无需选择地域。
+- **订阅套餐**（`tp-…`）— 选择套餐所在地域：CN、SGP 或 AMS。
+
+| 模型 | 定位 | 推理 |
+| --- | --- | --- |
+| MiMo V2.6 Flash | 新会话默认 | Off / High（默认开启） |
+| MiMo V2.6 Pro | 更难的任务 | Off / High |
+
+`Off` 与 `High` 对应 MiMo 的 `thinking` 开关（关闭 / 开启），不存在分级的推理强度。`mimo-v2.6-pro-ultraspeed`
+不包含在发行版中——如账号支持，参见[可选的 UltraSpeed 模型](desktop/README.md#optional-ultraspeed-model)。
+
+## 从源码构建
+
+需要 **Node 24**、**pnpm 11.7.0** 以及上游要求的原生工具链（macOS 上为 Xcode 命令行工具）。在仓库根目录执行：
+
+```bash
+bun install
+bun run dev:desktop
+```
+
+`dev:desktop` 会准备锁定版本的上游源码、应用经过审阅的 Mio 补丁层，然后构建并启动应用。`build:desktop`、
+`start:desktop` 与 `package:desktop <mac-arm64|mac-x64|win-x64>` 可分步执行。验证、真实接口校验与发布流程见
+[desktop/README.md](desktop/README.md)；0.4.0 之前的 Electron 壳仍可通过 `bun run dev:legacy` 运行。
+完整开发环境请见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
 ## 🔊 听一段
 
-**[入口页](https://shin4.github.io/mio/#capabilities)** 上的这段介绍语音，是 Mio 用自己内置的 TTS 生成的——产品在演示自己的多模态能力，而不是请人配音。**[▶ 去听 →](https://shin4.github.io/mio/#capabilities)** · 英文音色 *Chloe*，中文音色 *冰糖*。
+**[入口页](https://shin4.github.io/mio/#capabilities)** 上的介绍语音由 MiMo TTS 合成，而不是请人配音。英文音色 *Chloe*，
+中文音色 *冰糖*。语音听写与朗读尚未进入 0.4.0 桌面版——它们正作为 dsh 插件重建。
 
 <details>
 <summary>文稿</summary>
@@ -49,78 +100,39 @@ MiMo 为先。它把编程、推理、多模态理解（图像、PDF、视频）
 
 </details>
 
-## 亮点
-
-- **MiMo 原生** — 请求构造、模型选择与上下文打包都为 MiMo 调优，而非通用提供商的套壳。
-- **多模态** — 原生的图像、PDF、视频理解，以及语音听写（ASR）与语音生成（TTS），支持 MiMo 全系列模型。
-- **成本可控** — 稳定的前缀缓存输入带来高命中率，token 与成本清晰可见，并为每个任务选用最具性价比的可用模型。
-- **桌面应用** — 基于 Electron 的 Windows 与 macOS 应用。**不计划提供终端界面（TUI）。**
-
-## 能做什么
-
-- **带完整多模态上下文编程** — 直接拖入截图、PDF 或视频，让 MiMo 在编辑代码的同时对它们进行推理。
-- **用语音驱动编码** — 通过内置语音识别（ASR）口述提示，并让回答通过语音合成（TTS）朗读出来。
-- **让花费可预期** — 每个任务都会被路由到最具性价比的可用 MiMo 模型，token 与成本实时可见。
-- **与上游 OpenCode 并存** — 项目状态隔离在 `mio.json` 与 `.mio/` 中，本地配置互不混用。
-
-## 与通用方案的区别
-
-|  | 通用 OpenAI 兼容客户端 | Mio |
-| --- | --- | --- |
-| 请求构造与模型选择 | 一刀切的提供商套壳 | 针对 MiMo 全系列模型按任务调优 |
-| 多模态与语音 | 仅文本，或事后拼接 | 原生图像 / PDF / 视频理解 + ASR + TTS |
-| 成本控制 | 通常不透明 | 稳定前缀缓存、可见的 token 与成本核算、按任务选用最便宜可用模型 |
-| 体验 | 通用聊天界面 | 为 Windows 与 macOS 打造的专用桌面应用 |
-
-## 下载
-
-前往 [Releases](https://github.com/shin4/mio/releases) 页面下载最新的 Windows 与 macOS 安装包，也可从源码构建：
-
-```bash
-bun install
-bun run dev:desktop
-```
-
-`bun run dev:runtime` 可单独启动运行时，在浏览器中打开 dsh 的 Web UI。
-新桌面壳的安装包打包尚未接入（见 MIGRATION.md 第 2 阶段）。完整开发环境请见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
-
-## 连接 MiMo
-
-前往 [platform.xiaomimimo.com](https://platform.xiaomimimo.com) 获取 API Key——按量付费（`sk-…`）
-或订阅套餐（`tp-…`）——并在应用中填入。
-
 ## 常见问题
 
 ### 什么是 Mio？
 
-Mio 是一款面向 MiMo 模型家族的免费开源原生桌面代码智能体，支持 Windows 与 macOS。它让 MiMo 模型成为
-智能体运行时中的一等公民——编程、推理、多模态理解、语音听写与语音合成——而不是通用 OpenAI 兼容提供商的套壳。
+Mio 是一款免费、采用 MIT 许可证的原生桌面代码智能体，面向 MiMo 模型家族，支持 macOS 与 Windows。自 0.4.0 起，
+它就是带有 Mio 品牌与 MiMo 默认配置的官方 DeepSeek Harness Desktop——沿用上游的工作区、工具与设置，而非重新实现。
 
-### 它支持哪些 MiMo 模型与能力？
+### 为什么基于 DeepSeek Harness？
 
-它支持文本编程与推理、对图像 / PDF / 视频的原生多模态理解、语音听写（ASR）以及语音生成（TTS），由 MiMo
-全系列模型驱动。
+桌面智能体最难的部分——工具循环、会话持久化、模型路由、工作区界面——dsh 都已具备，而且开源。Mio 选择组合而不是 fork：
+锁定版本的上游源码、经过审阅的补丁层，以及通过 dsh 自带 provider 完成的 MiMo 配置。上游的改进只需移动版本锁即可获得。
+
+### 支持哪些 MiMo 模型？
+
+MiMo V2.6 Flash（默认）与 MiMo V2.6 Pro，均可开启或关闭推理。UltraSpeed 是面向支持该模型账号的可选构建开关。
 
 ### Mio 能在哪些平台运行？
 
-Mio 以 Electron 桌面应用形式提供 Windows 与 macOS 版本。Linux 可从源码构建，且不计划提供终端界面（TUI）。
+macOS（Apple Silicon 与 Intel，已签名并公证）与 Windows x64（0.4.0 为未签名版本）。Linux 后续单独提供，不计划提供终端界面（TUI）。
+
+### 0.3.x 的会话和设置会保留吗？
+
+不会。0.4.0 使用全新的数据目录，不导入此前的会话、工作区、设置或 Key。请在欢迎页重新连接 MiMo 账号。
 
 ### Mio 是小米官方产品吗？
 
 不是。Mio 是一个独立的、由社区维护的项目，与小米公司（Xiaomi Inc.）无附属、赞助或背书关系，仅作为
 第三方客户端连接 MiMo 模型平台。
 
-### 它与通用 OpenAI 兼容客户端有什么不同？
+### 费用如何？
 
-不同于通用的提供商套壳，Mio 专门针对 MiMo 调优请求构造、模型选择与上下文打包。它带来原生的多模态与语音
-能力、用于提升缓存命中率的稳定前缀缓存，以及把每个任务路由到最便宜可用模型的可见 token 与成本核算。
-
-### 它的费用如何？如何开始使用？
-
-Mio 应用本身免费且采用 MIT 许可证，你只需为 MiMo API 用量付费。前往
-[Releases](https://github.com/shin4/mio/releases) 下载最新的 Windows 或 macOS 安装包，然后在
-应用中填入来自 [platform.xiaomimimo.com](https://platform.xiaomimimo.com) 的 API Key——按量付费（`sk-…`）
-或订阅套餐（`tp-…`）。
+应用本身免费且采用 MIT 许可证，你只需为 [platform.xiaomimimo.com](https://platform.xiaomimimo.com) 上的
+MiMo API 用量付费——按量付费（`sk-…`）或订阅套餐（`tp-…`）。
 
 ## 许可证
 
