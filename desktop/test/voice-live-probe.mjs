@@ -1,4 +1,4 @@
-/** Opt-in live check of voice input against the real MiMo ASR endpoint the welcome flow selects. */
+/** Opt-in live check of voice input and read-aloud against the real MiMo endpoint the welcome flow selects. */
 import assert from "node:assert/strict"
 import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises"
 import { createRequire } from "node:module"
@@ -6,7 +6,7 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { pathToFileURL } from "node:url"
 import { root, upstream } from "../../script/desktop/prepare.mjs"
-import { clips, recording } from "./recording.mjs"
+import { canonical, clips, recording } from "./recording.mjs"
 
 const require = createRequire(join(upstream, "apps/desktop-host/package.json"))
 const { loadProfileDirectory, loadLayeredEnv } = await import(
@@ -86,18 +86,43 @@ try {
   const entry = running.ctx.settings.describe().find((descriptor) => descriptor.ns === "llm-pi-ai")
   report.endpoint = entry.value.providers.mimo.baseURL
   report.results = []
-  for (const [language, expected] of Object.entries(clips)) {
-    const audio = await recording(language)
+  for (const [clip, expected] of Object.entries(clips)) {
+    const audio = await recording(clip)
+    const language = clip === "zh" ? "zh" : "auto"
     const result = await running.ctx.speechController.transcribe(
       { audioBase64: audio.toString("base64"), language },
       new AbortController().signal,
     )
-    report.results.push({ language, expected, ...result })
-    assert.ok(result.text.length > 0, `${language}: MiMo ASR returned no transcript`)
+    report.results.push({ clip, language, expected, ...result })
+    assert.ok(result.text.length > 0, `${clip}: MiMo ASR returned no transcript`)
   }
+  // Read aloud through the authenticated route, then hear it back through voice input.
+  const spoken = "把这个函数改成异步的，并且等待网络请求返回。"
+  const origin = `http://127.0.0.1:${running.ctx.webServer.port}`
+  const response = await send(`${origin}/api/mio/tts`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ text: `**${spoken}**\n\n\`\`\`js\nawait fetch(url)\n\`\`\`` }),
+  })
+  assert.equal(response.status, 200, await response.clone().text())
+  assert.equal(response.headers.get("content-type"), "audio/wav")
+  const speech = Buffer.from(await response.arrayBuffer())
+  await writeFile(join(root, ".desktop-build/tts-live.wav"), speech)
+  const heard = await running.ctx.speechController.transcribe(
+    { audioBase64: canonical(speech).toString("base64"), language: "zh" },
+    new AbortController().signal,
+  )
+  report.tts = {
+    spoken,
+    bytes: speech.length,
+    sampleRate: speech.readUInt32LE(24),
+    heardBack: heard.text,
+    seconds: heard.audioSeconds,
+  }
+  assert.ok(heard.text.length > 0, "MiMo ASR heard nothing in the MiMo TTS output")
   console.log(JSON.stringify(report, undefined, 2))
-  await writeFile(join(root, ".desktop-build/asr-live-validation.json"), `${JSON.stringify(report, undefined, 2)}\n`)
-  console.log("Mio live ASR verified")
+  await writeFile(join(root, ".desktop-build/voice-live-validation.json"), `${JSON.stringify(report, undefined, 2)}\n`)
+  console.log("Mio live voice verified")
 } finally {
   await running.shutdown.shutdown(0)
   await rm(home, { recursive: true, force: true })

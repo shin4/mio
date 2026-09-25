@@ -79,6 +79,11 @@ requests, removes temporary credentials, and writes sanitized results to
 `.desktop-build/live-validation.json`. It is excluded from the automatic test glob.
 See `VALIDATION.md` for scope and `live-validation.json` for the latest evidence.
 
+Voice uses the same opt-in shape: `MIMO_API_KEY` (or `MIO_API_KEY`) plus `MIO_REGION` for a Token Plan
+key, then `node --expose-internals test/voice-live-probe.mjs`. It saves the key through the native
+welcome backend, transcribes the landing-page clips, reads a reply aloud through `/api/mio/tts`, and
+hears that speech back through voice input. Sanitized evidence: `voice-live-validation.json`.
+
 ## Optional UltraSpeed model
 
 `desktop/product.json` contains `"enableUltraSpeed": false` by default. Set it to `true`

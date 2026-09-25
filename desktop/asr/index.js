@@ -6,8 +6,12 @@ import { validateWave } from "@deepseek-ai/dsh-experimental-speech-to-text/wave"
 export const name = "mio-asr"
 export const inject = ["speechToText", "credentials", "settings"]
 
-/** MiMo's own `asr_options.language` values; the voice input offers exactly these. */
-const LANGUAGES = ["auto", "zh", "en"]
+/**
+ * MiMo `asr_options.language` values offered to voice input. `en` is withheld: on 2026-09-26 the
+ * Token Plan endpoint prefixed English transcripts hinted `en` with stray tokens ("10.", "think>")
+ * that `auto` did not produce for the same audio, so English is recognized through `auto`.
+ */
+const LANGUAGES = ["auto", "zh"]
 
 export const Config = z.object({
   providerId: z.string().min(1).default("mio-asr"),

@@ -92,7 +92,7 @@ async function verifyAsr(ctx) {
   const snapshot = ctx.speechToText.snapshot()
   assert.deepEqual(
     snapshot.providers.map((provider) => [provider.id, provider.name, provider.location, provider.languages]),
-    [["mio-asr", "MiMo ASR", "cloud", ["auto", "zh", "en"]]],
+    [["mio-asr", "MiMo ASR", "cloud", ["auto", "zh"]]],
   )
   assert.equal(snapshot.selection.providerId, "mio-asr")
   assert.equal(ctx.speechController.catalog().maxDurationSeconds, 60)
