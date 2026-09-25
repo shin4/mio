@@ -33,10 +33,10 @@ function checkManifest(resources) {
 const names = windows
   ? [`mio-${product.version}-win-x64-unsigned.exe`]
   : [`mio-${product.version}-${target}.dmg`, `mio-${product.version}-${target}.zip`]
-const temporary = await realpath(await mkdtemp(join(tmpdir(), "mio-installer-verify-")))
+const temporary = await realpath(await mkdtemp(join(tmpdir(), "mio-qa-")))
 try {
   if (windows) {
-    const signature = execFileSync("powershell.exe", [
+    const signature = execFileSync("pwsh.exe", [
       "-NoProfile", "-NonInteractive", "-Command",
       "(Get-AuthenticodeSignature -LiteralPath $env:MIO_VERIFY_INSTALLER).Status.ToString()",
     ], {
@@ -45,7 +45,7 @@ try {
       timeout: 30_000,
     }).trim()
     assert.equal(signature, "NotSigned", "Windows installer must be explicitly unsigned")
-    const installed = join(temporary, "installed")
+    const installed = join(temporary, product.name)
     execFileSync(join(directory, names[0]), ["/S", `/D=${installed}`], { timeout: 180_000, stdio: "inherit" })
     checkManifest(join(installed, "resources"))
     assert.ok((await readdir(installed)).includes("Mio.exe"))
