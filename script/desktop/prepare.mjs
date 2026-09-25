@@ -7,6 +7,7 @@ import { resolve, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { composeModels } from "./models.mjs"
+import { verifyCheckout } from "./verify-checkout.mjs"
 
 export const root = fileURLToPath(new URL("../../", import.meta.url))
 export const upstream = join(root, ".desktop-build", "upstream")
@@ -32,13 +33,30 @@ export async function prepare() {
     throw new Error("Upstream pnpm lockfile checksum differs from the reviewed input.")
   }
   const patchDir = join(root, "desktop/patches")
-  for (const name of (await readdir(patchDir)).filter((name) => name.endsWith(".patch")).sort()) {
-    const patch = join(patchDir, name)
+  const patches = (await readdir(patchDir))
+    .filter((name) => name.endsWith(".patch"))
+    .sort()
+    .map((name) => join(patchDir, name))
+  for (const patch of patches) {
     const applied = spawnSync("git", ["apply", "--reverse", "--check", patch], { cwd: upstream })
     if (applied.status === 0) continue
     git(["apply", "--check", patch])
     git(["apply", patch])
   }
+  // These exact outputs are regenerated from reviewed inputs before compilation.
+  // Do not allow whole directories: an extra source file must fail this gate.
+  await verifyCheckout(upstream, patches, [
+    "apps/desktop/src/mio-product.ts",
+    "apps/desktop/scripts/mio-product.mjs",
+    ...["icon.png", "icon-macos.png", "icon-windows.png", "tray-windows.ico", "mio.icns"].map(
+      (name) => `apps/desktop/resources/${name}`,
+    ),
+    ...["brand", "brand-2x", "brand-dark", "brand-dark-2x", "uninstaller-sidebar"].map(
+      (name) => `apps/desktop/installer/assets/${name}.png`,
+    ),
+    ...(await readdir(join(root, "desktop/bundle"))).map((name) => `mio/desktop/${name}`),
+    ...(await readdir(join(root, "desktop/brand"))).map((name) => `mio/brand/${name}`),
+  ])
   const product = JSON.parse(await readFile(join(root, "desktop/product.json"), "utf8"))
   if (
     !/^[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(product.appId) ||

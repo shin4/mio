@@ -66,3 +66,13 @@ Both switch states are exercised against fresh real Desktop Web profiles. The de
 configuration excludes UltraSpeed; enabling includes it with off/high metadata. Both retain
 Flash as the default and pass native welcome RPC checks. This does not claim a successful
 UltraSpeed API call on the previously tested account.
+
+## PR review regressions
+
+- A private Git index reconstructs HEAD plus reviewed patches. Actual source edits inside or
+  outside patched files and unexpected untracked source files are rejected without changing the
+  checkout's real index. Only exact regenerated output paths are exempt; installer dimensions
+  come from the pinned Git blobs.
+- Feed-disabled macOS arm64/x64 packaging skips update configuration, verification and update
+  artifact requirements. Filesystem orchestration fixtures verify ZIP/DMG promotion without
+  update metadata; they do not qualify Apple signing or notarization. All ten tests pass locally.

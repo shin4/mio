@@ -1,5 +1,6 @@
 /** Rasterize Mio's SVG mark for the official Windows installer dimensions. */
 import { createRequire } from "node:module"
+import { execFileSync } from "node:child_process"
 import { readFile, rename } from "node:fs/promises"
 import { join } from "node:path"
 import { root, upstream } from "./prepare.mjs"
@@ -10,7 +11,10 @@ export async function renderResources() {
   const directory = join(upstream, "apps/desktop/installer/assets")
   for (const name of ["brand", "brand-2x", "brand-dark", "brand-dark-2x", "uninstaller-sidebar"]) {
     const target = join(directory, `${name}.png`)
-    const { width, height } = await sharp(target).metadata()
+    // Dimensions must come from the pinned source, not an editable generated image.
+    const { width, height } = await sharp(
+      execFileSync("git", ["show", `HEAD:apps/desktop/installer/assets/${name}.png`], { cwd: upstream }),
+    ).metadata()
     const dark = name.includes("dark")
     const size = Math.round(Math.min(width * 0.22, height * 0.4))
     const background = dark ? "#151517" : "#FFFFFF"
