@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Active Desktop development (2026-09-25)
+
+`dev:desktop` now runs the official dsh 0.1.7-rc.2 source distribution. Read
+`desktop/README.md` and `docs/mio-desktop-plan.md`. Product composition lives in
+`desktop/bundle`, brand slots in `desktop/brand`, reviewed source overlays in
+`desktop/patches`; `.desktop-build` is generated. M2 improves the official UI.
+M3 data migration is cancelled. Release-age delay is removed. First platforms:
+macOS arm64/x64 and Windows x64. Existing `packages/*` below describe the legacy
+release implementation; `dev:legacy` is its explicit entry.
+
 ## What this is
 
 Mio is a native desktop coding agent for the MiMo model family. Its agent core is being rebuilt on
@@ -146,7 +156,7 @@ Mio deliberately runs beside upstream OpenCode without sharing local state. When
   `packages/runtime` boots the real headless composition against a local server replaying real
   MiMo cassettes (`test/fixtures`, captured from the live API) and asserts the answer a user
   would see (`node --test`, type-stripped) — no stubbed clients.
-- dsh dependencies are pinned **exact** and gated by `bunfig.toml`'s `minimumReleaseAge` (3 days).
+- dsh dependencies and Desktop source are pinned **exact**; there is no release-age delay.
 - Commits and PR titles use conventional `type(scope): summary` — types `feat`/`fix`/`docs`/`chore`/
   `refactor`/`test`; scopes are package names (`runtime`, `client-ui`, `shell`, `app`, `desktop`,
   `core`, `ui`, `sdk`). The default branch is `main`.

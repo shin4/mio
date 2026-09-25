@@ -13,6 +13,16 @@ by a thin Electron shell. No BFF and no renderer port. The Solid UI tier was arc
 2026-08-19 once the shell replaced its only consumer; MiMo product UX is rebuilt as dsh client
 UI plugins (React).
 
+**Desktop implementation (2026-09-25):** the development entry now builds official dsh
+Desktop **0.1.7-rc.2** with a reviewed Mio overlay. M2 optimizes the official UI (brand,
+accent tokens, native MiMo setup, Chinese/English copy); it does not replace its layout.
+**M3 data migration is cancelled**: new Desktop starts with a fresh data directory. The
+three-day release-age rule is removed by user direction. macOS arm64/x64 and Windows x64
+are the first release targets; Linux follows later. See [implementation and remaining gates](docs/mio-desktop-plan.md).
+The old shell remains a manual legacy implementation, with no automatic tag publication;
+new installers and an update feed have not been released. Earlier npm-only/age rules below
+are historical and superseded for this distribution.
+
 **Scope principle (2026-08-19): dsh-native is the mainline.** This version ships dsh's own
 behavior wherever dsh has an answer. MiMo-specific code is added only where dsh structurally
 cannot serve MiMo (the provider adapter and its wire shaping) — not because the archived runtime
@@ -23,14 +33,19 @@ dsh's current design, not against the old core.
 **Risk accepted:** dsh is a days-old developer preview (`0.1.0-rc.x`, pinned exact) that warns of
 compatibility-breaking changes. Expect churn; keep the pin exact and bump deliberately.
 
-## Current state
+## Desktop development state
+
+The active source-based Desktop is described above and in `desktop/README.md`. The table
+below records the **legacy released implementation**, not the new development dependency pin.
+
+## Legacy shipped state
 
 | Area | State |
 |---|---|
 | `archive/packages/{agent,llm,plugin,http-recorder}` | Frozen reference, out of workspace, excluded from lint/CI |
 | `archive/packages/{app,ui,core,sdk}` | The Solid UI tier, archived 2026-08-19 once the shell replaced its only consumer. Still the reference for MiMo UX and the 19 locale files when Phase 3 builds dsh client plugins |
 | `archive/packages/llm-mimo` | Mio's own MiMo adapter, archived 2026-08-22 in Stage 1 once `dsh-llm-pi-ai` was measured to serve MiMo. Still the reference for the endpoint/billing/region tables, and the origin of the cassettes copied into `packages/runtime/test/fixtures` |
-| `packages/shell` (`@mio/shell`) | The desktop app: spawns the dsh runtime and hosts its web UI. Written from scratch; the OpenCode-derived `packages/desktop` is archived |
+| `packages/shell` (`@mio/shell`) | Current shipped desktop: spawns the dsh runtime and hosts its web UI. Written from scratch; retained until the [official Desktop migration](docs/mio-desktop-plan.md) passes its gates. New native services belong to that migration |
 | `packages/runtime` (`@mio/runtime`) | dsh composition, and no code: `mio.patch.yml` over the `web` profile — `dsh-llm-pi-ai` serves MiMo, `@mio/client-ui` is inserted, `ui-brand-official` is off, new sessions default to `mimo-v2.5`. `bun run dev:runtime` boots green; 4 composition tests replay live cassettes through the real headless profile, plus 3 dependency-tree checks |
 | `packages/client-ui` (`@mio/client-ui`) | Mio's dsh client UI plugin, added 2026-08-22 in Stage 2: a Node half holding a Loader seat (`tapIndex` for the document title, exact routes shadowing `/favicon.svg` and the manifest) and a browser half (brand slots, the `mio-connect` onboarding step, `zh`/`en` copy). Bundled by `scripts/bundle.ts`; 10 tests green |
 | dsh pin | `0.1.5-rc.2`, upgraded 2026-09-14 from npm `next` (published September 10; three-day gate satisfied). Remote API adaptation, browser authentication and V3 history migration are covered in [the upgrade record](docs/dsh-upgrade-0.1.5.md). Older subagent histories can be refused by the upstream migrator; retain a full pre-upgrade backup |
@@ -41,23 +56,20 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 Standing decisions, recorded because each was re-derived at least once before it
 was written down.
 
-**dsh comes from npm, never from source (decided 2026-08-29).** The question was
-live: upstream tagged `dsh-v0.1.2-alpha.1` on GitHub on 2026-08-27 and, as of
-2026-08-29, had not published it to npm — so the newest dsh a `bun install` can
-reach is a release behind what exists. Building from the tag was evaluated and
-rejected on three grounds. It is a different order of work: the dsh root uses
-pnpm 11.7.0 across 247 leaf packages with a `tsc -b` + `tsdown` chain and more
-than a hundred `verify-*` / `gen-*` gates, none of which a Bun workspace
-consumes. The npm packages are upstream's own verified artifact rather than a
-convenience — `release:pack`, `release:verify-packed-install`,
-`verify-built-package-invariants`, and `publint` exist precisely to gate them,
-so consuming source means stepping around upstream's own release checks. And
-every discipline in this repo rests on versioned npm publishes: `bunfig.toml`'s
-three-day `minimumReleaseAge`, the exact pins, `bun.lock` as a reviewable
-record, `stage.ts` pinning from that lockfile, and
-`packages/runtime/test/tree.test.ts`. Source consumption has no version, no
-gate, and no lockfile to pin, which would bring the drift documented above back
-in a form that is harder to see. Waiting costs a few weeks of an `alpha.1`.
+**Official Desktop source is the active development baseline (2026-09-25).**
+`desktop/upstream.lock.json` fixes `dsh-v0.1.7-rc.2` at
+`477b4f420553e8a52c2fbccc464d7561b239c443` with the original pnpm lockfile checksum.
+`desktop/patches` carries reviewed product integration and lockfile changes; builds use
+frozen resolution. There is no release-age delay. `desktop/bundle` configures MiMo V2.6 on
+upstream `llm-pi-ai`; `desktop/brand` occupies the official UI slots. Old Bun packages keep
+their previous dependency tree for legacy regression only. No new shell/old runtime mixing.
+
+**Historical npm-only decision (2026-08-29; superseded for the new Desktop).** Source builds
+were rejected when they only offered earlier access to an unpublished CLI/Web tag and would
+have added an unmaintained pnpm build chain to the Bun consumer. Official Desktop now supplies
+the desktop implementation and its build/release checks, making a controlled source distribution
+useful. The existing `packages/shell` continues using its exact npm pins and staging checks
+until the replacement is qualified; this planning change does not modify its dependency tree.
 
 **Offline is a runtime property Mio already has; source would not add it
 (measured 2026-08-29).** The runtime holds exactly one socket — its own loopback
@@ -198,9 +210,10 @@ Other archived MiMo behavior, same audit:
       `node_modules` tree as `@deepseek-ai/dsh`", which a root dependency appeared to satisfy.
       The plugin-provisioning entry below has the corrected model: resolution is
       profile-relative, and the root dependency is gone
-- [ ] Carry over the shell services worth keeping: auto-update, `mio://` deep links, native menus,
-      window state, shell-env import, system CA / env-proxy propagation (from `main/sidecar.ts`);
-      decide the desktop-pet window's fate
+- [ ] **Redirected to the official Desktop migration (2026-09-25):** qualify upstream update,
+      deep-link, menu, window and environment behavior through the
+      [Desktop plan](docs/mio-desktop-plan.md). Do not implement these afresh in the old shell;
+      the desktop pet remains outside the first release
 - [x] **Archived the old desktop app (2026-08-19)** — `packages/desktop` → `archive/packages/`,
       taking `server-stub.ts` and the utilityProcess sidecar path with it. Its packaging CI
       (`build-check.yml`, `release.yml`) and `docs/releasing.md` moved to `archive/workflows/`,
@@ -417,12 +430,10 @@ Other archived MiMo behavior, same audit:
       does not appear in the failure message. The packaging config is now covered by
       `bun typecheck`, which it was not when it held no logic
 
-- [ ] Carry the still-missing shell services: auto-update, `mio://` deep links, native menus,
-      shell-env import, system CA / proxy propagation. The updater is deferred deliberately, and
-      the release job is shaped around that: `publish` stays `null` and no `latest*.yml` is
-      emitted, because a feed with no consumer is worse than none — per-arch metadata clobbers
-      itself unless a merge step fixes it up (`archive/packages/desktop/scripts/`
-      `finalize-latest-yml.ts` is that step, unported). Both come back together
+- [ ] **Superseded implementation path (2026-09-25):** the missing shell services now belong to
+      the [official Desktop migration](docs/mio-desktop-plan.md). The current release job still
+      has `publish: null`; the replacement must qualify its own updater and feed together,
+      including separate architecture metadata, before the old path is retired
 - [ ] Parity audit against the Solid UI's feature areas: terminal (dsh-terminal + client UI),
       permissions/questions (dsh-user-approval / dsh-interaction), plan mode (dsh-plan-mode +
       client-ui-plan), attachments, model selection — explicit keep/cut list for the rest
@@ -465,11 +476,16 @@ and it is exactly what the current UI plan — client UI plugins, never a dist f
 
 ### Upstream's desktop story, and what 0.1.2-alpha.1 holds for the shell (surveyed 2026-08-30)
 
+**Historical survey, superseded 2026-09-25.** Official `apps/desktop` now exists. The selected
+`0.1.7-rc.2` source uses Electron, a private Desktop Host, packaged Web assets, and a reserved
+`desktop` profile. It is the target of [the new migration plan](docs/mio-desktop-plan.md).
+The following describes only the older tag and is not the current architecture recommendation.
+
 Read from the `dsh-v0.1.2-alpha.1` tag (`cd5ef8148`, master head; 1079 commits and 6421 files past
 rc.2) rather than from the npm packages, because the load-bearing documents are not published.
 
-**There is no upstream desktop application and none is scheduled.** `apps/` holds `cli` and `web`
-only, and no package in the tree names Electron or Tauri. What exists is a design reservation, in
+**At that surveyed tag, no upstream desktop application was present.** `apps/` held `cli` and `web`
+only, and no package in that tree named Electron or Tauri. The survey found a design reservation, in
 `.agents/notes/archived/architecture/2026-07-19-gui-layering-and-rpc-protocol.md`: more clients are
 expected ("Web (server), Electron, and others"), "a future Electron application reuses the same web
 client packages over an IPC fetch carrier", and the carrier-subclass table lists the IPC bridge as
@@ -477,7 +493,7 @@ a "hypothetical example — no such shell exists". `dsh-host-webserver` states t
 the other side, in identical words at rc.2 and at this tag: it serves browsers only, and "Electron
 loads dist over `file://` and carries fetch over an IPC bridge" — meaning an Electron deployment
 does not use it at all. Mio's shell is therefore not working against upstream; it occupies a
-surface upstream described and has not built.
+surface upstream had described but had not yet built at that tag.
 
 Three seams carry that promise, and the webworker note names them as owned by the product packages
 rather than by the experiment: the index injection table, `__DSH_TRANSPORT__`, and the `/plugins`

@@ -1,0 +1,3 @@
+# Upstream enforces LF; preserve patch context bytes on Windows checkouts too.
+# A blank unified-diff context line contains one required space.
+desktop/patches/*.patch text eol=lf whitespace=-blank-at-eol

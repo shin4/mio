@@ -1,0 +1,10 @@
+{
+  "name": "Mio",
+  "appId": "io.github.shin4.mio.desktop",
+  "protocol": "mio",
+  "dataDirectory": "dsh-desktop",
+  "provider": "mimo",
+  "credentialRef": "MIO_API_KEY",
+  "updateOrigin": null,
+  "enableUltraSpeed": false
+}

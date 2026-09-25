@@ -1,5 +1,6 @@
 .DS_Store
 node_modules
+.desktop-build/
 .worktrees
 .sst
 .env
@@ -47,3 +48,5 @@ tsconfig.tsbuildinfo
 
 # Superpowers brainstorming visual companion
 .superpowers/
+
+.pnpm-store/

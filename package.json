@@ -6,12 +6,17 @@
   "type": "module",
   "packageManager": "bun@1.3.14",
   "scripts": {
-    "dev:desktop": "bun --cwd packages/shell dev",
+    "dev:desktop": "node script/desktop/run.mjs dev",
     "dev:runtime": "bun --cwd packages/runtime dev",
     "lint": "oxlint",
     "typecheck": "bun turbo typecheck",
     "prepare": "husky",
-    "test": "echo 'do not run tests from root' && exit 1"
+    "test": "echo 'do not run tests from root' && exit 1",
+    "prepare:desktop": "node script/desktop/prepare.mjs",
+    "build:desktop": "node script/desktop/run.mjs build",
+    "start:desktop": "node script/desktop/run.mjs start",
+    "package:desktop": "node script/desktop/run.mjs package",
+    "dev:legacy": "bun --cwd packages/shell dev"
   },
   "workspaces": {
     "packages": [

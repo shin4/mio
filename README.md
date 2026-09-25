@@ -21,6 +21,12 @@ English | [简体中文](./README.zh-CN.md)
 
 ---
 
+> **Development update (2026-09-25):** `dev:desktop` now builds official dsh Desktop
+> **0.1.7-rc.2** with Mio branding and MiMo V2.6 defaults. Requires Node 24 and pnpm 11.7.0.
+> Starts with fresh data; no migration. macOS/Windows first; Linux later.
+> The screenshots/downloads below describe the older release. See [Desktop setup](desktop/README.md).
+
+
 ## What is Mio?
 
 Mio is a free, open-source **native desktop coding agent for the MiMo model family**, available
