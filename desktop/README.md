@@ -97,3 +97,10 @@ Artifacts contain `qualification.json` with source commit, hashes and explicit s
 The workflow does not publish automatically. Publish the exact qualified artifacts as v0.4.0
 after all three jobs pass; never substitute artifacts from another source commit. Signing
 inputs exist only on their macOS runner and are cleaned after the job.
+
+After merging the qualified source, dispatch `publish-qualified-desktop` on `main` with the
+successful qualification run ID. It requires an exact Git tree match, all three qualified
+artifacts, matching source/version/signing records, and correct byte counts and SHA-256 hashes.
+It then creates a new version tag and draft release, uploads those installers plus checksums
+and evidence, and publishes the release only after confirming every upload. Existing version
+tags are never overwritten. Release notes live in `desktop/releases/v<version>.md`.
