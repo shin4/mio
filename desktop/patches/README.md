@@ -15,6 +15,10 @@ No agent, session format, permissions or provider adapter internals are changed.
 Generated product constants, plugin packages and icons are copied by `prepare.mjs`;
 installer bitmaps are rendered by `resources.mjs`. Keep these generated files out of patches.
 
+The root `.gitattributes` pins patch files to LF, including Windows checkouts with
+`core.autocrlf=true`. Upstream also enforces LF; a CRLF patch fails exact context matching.
+Blank context lines retain the single space required by unified-diff syntax.
+
 Upgrade procedure: change the exact upstream lock deliberately, review each patch hunk against
 the new source, update the lockfile delta, build all three targets, replay requests and boot
 Electron. Remove an overlay hunk when upstream supplies a configurable equivalent. Never
