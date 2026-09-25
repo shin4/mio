@@ -516,6 +516,22 @@ index 106830b..df54106 100644
 +    await rm(temporary, { recursive: true, force: true })
 +  }
 +}
+diff --git a/apps/desktop/scripts/smoke-runtime.ts b/apps/desktop/scripts/smoke-runtime.ts
+index f15f10a..ac7fbd5 100644
+--- a/apps/desktop/scripts/smoke-runtime.ts
++++ b/apps/desktop/scripts/smoke-runtime.ts
+@@ -110,7 +110,10 @@ export function apply(ctx) {
+       throw new Error('desktop runtime: packaged frontend smoke failed')
+     }
+     const pluginResponse = await fetch(new URL('/desktop-smoke', ready.url), { headers: { cookie } })
+-    if (await pluginResponse.text() !== 'plugin route ready') throw new Error('desktop runtime: plugin HTTP route failed')
++    const pluginBody = await pluginResponse.text()
++    if (pluginBody !== 'plugin route ready') {
++      throw new Error(`desktop runtime: plugin HTTP route failed (${pluginResponse.status}): ${pluginBody.slice(0, 2048)}`)
++    }
+     for (const { extension } of inputs) {
+       const converted = await fetch(new URL(`/desktop-smoke-office/${extension}`, ready.url), {
+         headers: { cookie }, signal: AbortSignal.timeout(120_000),
 diff --git a/apps/desktop/src/client/WelcomePage.tsx b/apps/desktop/src/client/WelcomePage.tsx
 index 8fcde77..5cae541 100644
 --- a/apps/desktop/src/client/WelcomePage.tsx

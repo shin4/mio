@@ -57,6 +57,9 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 7
+      - name: Diagnose actual Windows installation after packaged smoke failure
+        if: failure() && !matrix.apple
+        run: node script/desktop/verify-release.mjs win-x64
       - name: Remove signing inputs
         if: always()
         shell: bash
