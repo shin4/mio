@@ -50,14 +50,14 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
 - The packaged home is `userData/dsh-desktop`, separate from the old `userData/dsh`.
 - Icons reuse existing Mio assets. Windows installer bitmaps are generated during the build.
 - `product.json` disables updates. Both packaging and runtime reject DeepSeek's feed for Mio.
-- No installer has been published. This preview retains the upstream internal version; Mio
-  release numbering, signing and an update feed require the remaining release qualification.
+- Mio installers use `product.json` version `0.4.0`; the bundled dsh runtime remains pinned
+  to `0.1.7-rc.2`. Automatic updates remain disabled.
 
 Packaging delegates to upstream: `bun run package:desktop mac-arm64`, `mac-x64`, or `win-x64`.
 Only Windows supports `--unsigned`. Prepare the upstream platform-local `.env.macos` or
 `.env.windows`; its app ID must equal `product.json`. macOS requires signing/notarization
-credentials. Existing Azure Windows signing integration has **not** been ported to the
-upstream certificate/token signing path. Never run the upstream `upload:*` commands for Mio.
+credentials. The approved v0.4.0 Windows distribution is explicitly unsigned and uses the `-unsigned`
+filename suffix. Never run the upstream `upload:*` commands for Mio.
 
 See [the current plan](../docs/mio-desktop-plan.md) for completion evidence and remaining gates.
 
@@ -84,3 +84,23 @@ rebuild to exclude it. This is a build configuration switch, not a runtime setti
 It does not change the default Flash model or grant model access to the account. The tested
 CN Token Plan account rejects UltraSpeed; enable it only for an endpoint/account supporting it.
 The preparation step validates that the setting is a JSON boolean.
+
+## Release qualification
+
+The manual `official-desktop-release` workflow builds macOS arm64/x64 with the repository's
+Developer ID and Apple notarization credentials, and Windows x64 with `--unsigned`. It
+uploads installers only after bundled-runtime smoke checks, application version/identity
+checks, and regression tests pass. macOS DMG/ZIP signatures, stapled tickets and Gatekeeper
+acceptance are verified; Windows runs a silent installation and tests its installed runtime.
+
+Artifacts contain `qualification.json` with source commit, hashes and explicit signing state.
+The workflow does not publish automatically. Publish the exact qualified artifacts as v0.4.0
+after all three jobs pass; never substitute artifacts from another source commit. Signing
+inputs exist only on their macOS runner and are cleaned after the job.
+
+After merging the qualified source, dispatch `publish-qualified-desktop` on `main` with the
+successful qualification run ID. It requires an exact Git tree match, all three qualified
+artifacts, matching source/version/signing records, and correct byte counts and SHA-256 hashes.
+It then creates a new version tag and draft release, uploads those installers plus checksums
+and evidence, and publishes the release only after confirming every upload. Existing version
+tags are never overwritten. Release notes live in `desktop/releases/v<version>.md`.

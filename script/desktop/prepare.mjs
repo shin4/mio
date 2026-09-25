@@ -58,6 +58,9 @@ export async function prepare() {
     ...(await readdir(join(root, "desktop/brand"))).map((name) => `mio/brand/${name}`),
   ])
   const product = JSON.parse(await readFile(join(root, "desktop/product.json"), "utf8"))
+  if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-rc\.[1-9]\d*)?$/.test(product.version)) {
+    throw new Error("Invalid Mio release version")
+  }
   if (
     !/^[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(product.appId) ||
     !/^[a-z][a-z0-9-]*$/.test(product.protocol) ||
