@@ -76,6 +76,26 @@ async function verifyTts(ctx, send, origin) {
     })
     assert.equal((await speak("```\nonly code\n```")).status, 422)
     assert.equal(requests.length, 1, "A reply with nothing speakable must not reach MiMo")
+    // The General settings row: read the choices, reject an unknown voice, save one that sticks.
+    const voiceRoute = `${origin}/api/mio/tts/voice`
+    const put = (voice) =>
+      send(voiceRoute, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ voice }) })
+    const initial = await (await send(voiceRoute)).json()
+    assert.equal(initial.voice, "mimo_default")
+    assert.equal(initial.voices.length, 9)
+    assert.equal((await put("not-a-voice")).status, 400)
+    assert.deepEqual((await (await put("冰糖")).json()).voice, "冰糖")
+    assert.equal((await (await send(voiceRoute)).json()).voice, "冰糖")
+    assert.equal((await speak("Saved voice.")).status, 200)
+    assert.equal(requests.at(-1).body.audio.voice, "冰糖", "Replies must be read in the saved voice")
+    const preview = await send(`${origin}/api/mio/tts`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ text: "Preview.", voice: "Mia" }),
+    })
+    assert.equal(preview.status, 200)
+    assert.equal(requests.at(-1).body.audio.voice, "Mia", "A preview names its own voice")
+    assert.equal((await (await send(voiceRoute)).json()).voice, "冰糖", "A preview must not change the saved voice")
     const anonymous = await fetch(`${origin}/api/mio/tts`, {
       method: "POST",
       headers: { "content-type": "application/json" },

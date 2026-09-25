@@ -43,7 +43,9 @@ slots and accent tokens. `@mio/asr` (`desktop/asr`) registers MiMo ASR as the cl
 of the official voice-input bundle, reading the MiMo route's live `baseURL` and `MIO_API_KEY`.
 New profiles ship voice input enabled; profiles created by 0.4.0 enable it under Plugins.
 `@mio/tts` (`desktop/tts`) adds a read-aloud action to every finalized reply; it serves
-`POST /api/mio/tts` behind browser authentication and synthesizes with MiMo TTS on the same route. This separation is required by upstream bundle resolution. Neither
+`POST /api/mio/tts` behind browser authentication and synthesizes with MiMo TTS on the same route.
+Its voice is chosen and previewed under Settings → General (`GET`/`PUT /api/mio/tts/voice`) and
+saved into the profile patch. This separation is required by upstream bundle resolution. Neither
 ships a fork of the model adapter. Shared framework peers resolve to the upstream workspace.
 
 ## Product and release boundaries

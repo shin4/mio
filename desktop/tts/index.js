@@ -58,14 +58,14 @@ export function speakable(markdown) {
  * The synthesis request MiMo documents for a preset voice: the text is the assistant turn.
  * @param config - validated configuration.
  * @param text - speakable text.
+ * @param voice - preset voice.
  * @returns request body.
  */
-export function synthesisBody(config, text) {
+export function synthesisBody(config, text, voice) {
   return {
     model: config.model,
     messages: [{ role: "assistant", content: text }],
-    // Volatile, so a voice chosen in settings reaches the next request without a remount.
-    audio: { format: "wav", voice: config.voice.get() },
+    audio: { format: "wav", voice },
     stream: false,
   }
 }
@@ -73,8 +73,11 @@ export function synthesisBody(config, text) {
 const failure = (status, message) =>
   new Response(JSON.stringify({ error: message }), { status, headers: { "content-type": "application/json" } })
 
+const json = (value) => new Response(JSON.stringify(value), { headers: { "content-type": "application/json" } })
+
 /**
- * Serve `POST /api/mio/tts` with `{ text }`, answering WAV bytes.
+ * Serve `POST /api/mio/tts` with `{ text, voice? }`, answering WAV bytes, and the voice preference
+ * at `GET`/`PUT /api/mio/tts/voice`.
  * @param ctx - Host context.
  * @param config - validated configuration.
  */
@@ -87,6 +90,10 @@ export function apply(ctx, config) {
     async fetch(request) {
       const body = await request.json().catch(() => undefined)
       if (typeof body?.text !== "string") return failure(400, "text is required")
+      // A preview names its voice; a reply is read in the saved one, which is volatile, so a
+      // choice made in settings reaches the next request without a remount.
+      const voice = body.voice ?? config.voice.get()
+      if (!VOICES.includes(voice)) return failure(400, "unknown voice")
       const text = speakable(body.text)
       if (text.length === 0) return failure(422, "nothing to read aloud")
       if (text.length > config.maxCharacters) return failure(413, `longer than ${config.maxCharacters} characters`)
@@ -96,7 +103,7 @@ export function apply(ctx, config) {
         method: "POST",
         signal: request.signal,
         headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
-        body: JSON.stringify(synthesisBody(config, text)),
+        body: JSON.stringify(synthesisBody(config, text, voice)),
       })
       if (!response.ok) {
         return failure(502, `MiMo TTS HTTP ${response.status}: ${(await response.text()).slice(0, 300)}`)
@@ -106,6 +113,19 @@ export function apply(ctx, config) {
       return new Response(Buffer.from(audio, "base64"), {
         headers: { "content-type": "audio/wav", "cache-control": "no-store" },
       })
+    },
+  })
+  ctx.connection.fetch.register({
+    path: "/api/mio/tts/voice",
+    methods: ["GET", "PUT"],
+    requestBody: "buffered",
+    async fetch(request) {
+      if (request.method === "GET") return json({ voice: config.voice.get(), voices: VOICES })
+      const voice = (await request.json().catch(() => undefined))?.voice
+      if (!VOICES.includes(voice)) return failure(400, "unknown voice")
+      // Persisted in this entry's profile config; the Loader updates the volatile field in place.
+      await ctx.settings.update(ctx.fiber.entry?.options.id ?? name, { voice })
+      return json({ voice: config.voice.get(), voices: VOICES })
     },
   })
 }

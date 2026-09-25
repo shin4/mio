@@ -12,9 +12,49 @@ window.__ModuleLoader__.load({
 .mio-tts-action svg { width: calc(15px + var(--dsh-content-font-delta, 0px)); height: calc(15px + var(--dsh-content-font-delta, 0px)); }
 .mio-tts-action:hover, .mio-tts-action[aria-pressed="true"] { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-secondary); }
 .mio-tts-action[data-mio-tts="loading"] { opacity: 0.6; cursor: progress; }
-.mio-tts-action[data-error] { color: var(--dsw-alias-state-error-primary, #d4380d); }`
-    const zh = { read: "朗读", stop: "停止朗读", loading: "正在合成语音…", failed: "朗读失败：{reason}" }
-    const en = { read: "Read aloud", stop: "Stop reading", loading: "Synthesizing speech…", failed: "Read aloud failed: {reason}" }
+.mio-tts-action[data-error] { color: var(--dsw-alias-state-error-primary, #d4380d); }
+.mio-tts-row { display: flex; align-items: center; gap: 8px; padding: 16px 0; border-bottom: .5px solid var(--dsw-alias-border-l2); }
+.mio-tts-row-text { display: flex; flex: 1 1 0%; flex-direction: column; gap: 4px; min-width: 0; padding-right: 48px; }
+.mio-tts-row-title { color: var(--dsw-alias-label-primary); font-size: 14px; line-height: 22px; }
+.mio-tts-row-desc { color: var(--dsw-alias-label-tertiary); font-size: 12px; line-height: 18px; }
+.mio-tts-row-desc[data-error] { color: var(--dsw-alias-state-error-primary, #d4380d); }
+.mio-tts-row-control { display: inline-flex; align-items: center; gap: 8px; }
+.mio-tts-select, .mio-tts-preview { height: 36px; border: none; border-radius: var(--dsw-radius-md);
+  background: var(--dsw-alias-bg-module-platform); color: var(--dsw-alias-label-primary); font: inherit; font-size: 14px; cursor: pointer; }
+.mio-tts-select { appearance: none; padding: 0 34px 0 14px; background-repeat: no-repeat; background-position: right 12px center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L7.3 9.3a1 1 0 0 0 1.4 0L12 6' stroke='%23999'/%3E%3C/svg%3E"); }
+.mio-tts-preview { padding: 0 14px; }
+.mio-tts-select:hover, .mio-tts-preview:hover { background-color: var(--dsw-alias-interactive-bg-hover); }
+.mio-tts-select:disabled, .mio-tts-preview:disabled { opacity: 0.5; cursor: default; }`
+    const zh = {
+      read: "朗读",
+      stop: "停止朗读",
+      loading: "正在合成语音…",
+      failed: "朗读失败：{reason}",
+      "voice.title": "朗读音色",
+      "voice.desc": "使用 MiMo TTS 朗读助手回复时所用的音色",
+      "voice.default": "默认",
+      "voice.preview": "试听",
+      "voice.previewStop": "停止",
+      "voice.saveFailed": "保存失败：{reason}",
+    }
+    const en = {
+      read: "Read aloud",
+      stop: "Stop reading",
+      loading: "Synthesizing speech…",
+      failed: "Read aloud failed: {reason}",
+      "voice.title": "Read-aloud voice",
+      "voice.desc": "Voice MiMo TTS uses to read assistant replies aloud",
+      "voice.default": "Default",
+      "voice.preview": "Preview",
+      "voice.previewStop": "Stop",
+      "voice.saveFailed": "Could not save: {reason}",
+    }
+    // Preview lines follow the voice's own language, not the interface's.
+    const ENGLISH_VOICES = ["Mia", "Chloe", "Milo", "Dean"]
+    const sample = (voice) =>
+      ENGLISH_VOICES.includes(voice) ? "Hello, this is a MiMo voice preview." : "你好，这是一段 MiMo 语音试听。"
+    const PREVIEW = "mio-tts/preview"
 
     /** The reply text of one durable assistant message, as the copy action sees it. */
     const replyText = (snapshot, messageId) => {
@@ -41,14 +81,14 @@ window.__ModuleLoader__.load({
     const stop = (messageId) => {
       if (playing?.messageId === messageId) publish(undefined)
     }
-    const start = async (messageId, text, onError) => {
+    const start = async (messageId, text, onError, voice) => {
       const current = { messageId, controller: new AbortController(), phase: "loading" }
       publish(current)
       const response = await fetch("/api/mio/tts", {
         method: "POST",
         credentials: "same-origin",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify(voice === undefined ? { text } : { text, voice }),
         signal: current.controller.signal,
       }).catch((error) => ({ ok: false, aborted: current.controller.signal.aborted, error }))
       if (playing !== current) return
@@ -130,6 +170,77 @@ window.__ModuleLoader__.load({
       )
     }
 
+    const VoiceRow = ({ t }) => {
+      const [state, setState] = useState({ voices: [], voice: undefined })
+      const [error, setError] = useState(null)
+      const phase = usePlayback(PREVIEW)
+      useEffect(() => {
+        const controller = new AbortController()
+        fetch("/api/mio/tts/voice", { credentials: "same-origin", signal: controller.signal })
+          .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
+          .then(setState, (reason) => controller.signal.aborted || setError(String(reason?.message ?? reason)))
+        return () => controller.abort()
+      }, [])
+      const choose = (voice) => {
+        const previous = state.voice
+        setError(null)
+        setState({ ...state, voice })
+        fetch("/api/mio/tts/voice", {
+          method: "PUT",
+          credentials: "same-origin",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ voice }),
+        })
+          .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
+          .then(setState, (reason) => {
+            setState((current) => ({ ...current, voice: previous }))
+            setError(t("voice.saveFailed", { reason: String(reason?.message ?? reason) }))
+          })
+      }
+      const option = (voice) =>
+        createElement("option", { key: voice, value: voice }, voice === "mimo_default" ? t("voice.default") : voice)
+      return createElement(
+        "div",
+        { className: "mio-tts-row", "data-mio-tts-voice": "" },
+        createElement(
+          "div",
+          { className: "mio-tts-row-text" },
+          createElement("div", { className: "mio-tts-row-title" }, t("voice.title")),
+          createElement("div", { className: "mio-tts-row-desc", "data-error": error ? "" : undefined }, error ?? t("voice.desc")),
+        ),
+        createElement(
+          "div",
+          { className: "mio-tts-row-control" },
+          createElement(
+            "select",
+            {
+              className: "mio-tts-select",
+              "aria-label": t("voice.title"),
+              value: state.voice ?? "",
+              disabled: state.voice === undefined,
+              onChange: (event) => choose(event.target.value),
+            },
+            state.voices.map(option),
+          ),
+          createElement(
+            "button",
+            {
+              type: "button",
+              className: "mio-tts-preview",
+              "data-mio-tts-preview": phase,
+              disabled: state.voice === undefined || phase === "loading",
+              onClick: () => {
+                setError(null)
+                if (phase !== "idle") return stop(PREVIEW)
+                void start(PREVIEW, sample(state.voice), (reason) => setError(t("failed", { reason })), state.voice)
+              },
+            },
+            phase === "playing" ? t("voice.previewStop") : t("voice.preview"),
+          ),
+        ),
+      )
+    }
+
     return {
       inject: ["slots", "locale"],
       apply(ctx) {
@@ -147,6 +258,9 @@ window.__ModuleLoader__.load({
             { name: "conversation.chat.assistant-actions", id: "mio-tts", order: 5, locale: NS },
             ReadAloud,
           ),
+        )
+        ctx.slots.inject("settings.general.item", () =>
+          ctx.slots.register({ name: "settings.general.item", id: "mio-tts-voice", order: 60, locale: NS }, VoiceRow),
         )
       },
     }
