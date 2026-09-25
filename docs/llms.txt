@@ -1,24 +1,26 @@
 # Mio
 
-> Mio is a free, open-source native desktop coding agent for the MiMo model family, available for Windows and macOS. It makes MiMo models first-class participants in the agent runtime — coding, reasoning, multimodal understanding (image, PDF, video), voice dictation (ASR), and speech generation (TTS) — rather than a generic OpenAI-compatible provider skin.
-> Mio 是一款面向 MiMo 模型家族的免费开源原生桌面代码智能体，支持 Windows 与 macOS，将编程、推理、多模态理解、语音听写与语音合成作为一等运行时能力。
+> Mio is a free, open-source native desktop coding agent for the MiMo model family, for macOS and Windows. Since 0.4.0 it is the official DeepSeek Harness (dsh) Desktop with Mio's identity and a MiMo-first configuration.
+> Mio 是一款面向 MiMo 模型家族的免费开源原生桌面代码智能体，支持 macOS 与 Windows；自 0.4.0 起基于官方 DeepSeek Harness Desktop，叠加 Mio 品牌与 MiMo 优先的配置。
 
 Key facts:
 - Category: native desktop coding agent (AI pair programmer) for the MiMo model family.
-- Platforms: Windows and macOS (Electron). Linux is buildable from source; no terminal/TUI version is planned.
-- Capabilities: coding, reasoning, multimodal understanding of images/PDFs/video, voice dictation (ASR), and speech generation (TTS).
-- Differentiators: Mio-tuned request shaping and model selection, stable prefix caching for high cache-hit rates, and visible token/cost accounting that routes each task to the cheapest capable model.
-- Cost: the app is free and MIT-licensed; you pay only for MiMo API usage via platform.xiaomimimo.com (pay-as-you-go `sk-` keys or token plans `tp-` keys).
-- Built on DeepSeek Harness (dsh), the open-source plugin-based agent harness, adapted to be MiMo-first. The agent core moved off its earlier OpenCode-derived runtime in August 2026; installer packaging and the multimodal/voice features are being rebuilt as dsh plugins. dsh's native DeepSeek provider routes ship alongside MiMo (new sessions default to MiMo).
-- Independent, community-maintained project. Not an official Xiaomi product and not affiliated with Xiaomi Inc.
+- Current release: 0.4.0 (2026-09-25), built on the official dsh Desktop 0.1.7-rc.2 — upstream's workspace, settings, tools and sessions, plus a reviewed Mio overlay. No fork of the model adapter: MiMo is configured through dsh's own provider.
+- Models: MiMo V2.6 Flash (default for new sessions, thinking on) and MiMo V2.6 Pro. Thinking is Off/High, mapped to MiMo's thinking switch. UltraSpeed is an opt-in build flag.
+- Setup: paste a MiMo API key on the welcome screen. `sk-` keys are pay-as-you-go; `tp-` keys are token plans with a CN, SGP or AMS region.
+- Platforms: macOS Apple Silicon and Intel (Developer ID signed and notarized) and Windows x64 (unsigned in 0.4.0). Linux will follow separately; no terminal/TUI version is planned.
+- Upgrading: 0.4.0 installs manually (no auto-update) and starts with a fresh data directory; earlier sessions, settings and keys are not migrated.
+- Voice dictation and speech (TTS) are not part of the 0.4.0 desktop; they are being rebuilt as dsh plugins.
+- Cost: the app is free and MIT-licensed; you pay only for MiMo API usage via platform.xiaomimimo.com.
+- Independent, community-maintained project. Not an official Xiaomi product and not affiliated with Xiaomi Inc.; not a DeepSeek product.
 
 ## Docs
-- [README (English)](https://github.com/shin4/mio/blob/main/README.md): Overview, highlights, comparison, install, and FAQ.
-- [README (简体中文)](https://github.com/shin4/mio/blob/main/README.zh-CN.md): 中文版概览、特性、对比、安装与常见问题。
+- [README (English)](https://github.com/shin4/mio/blob/main/README.md): Overview, what is new in 0.4.0, downloads, setup, build from source, and FAQ.
+- [README (简体中文)](https://github.com/shin4/mio/blob/main/README.zh-CN.md): 中文版概览、0.4.0 新变化、下载、接入、源码构建与常见问题。
 - [Landing page](https://shin4.github.io/mio/): Product overview, features, FAQ, and download.
 
 ## Download
-- [Releases](https://github.com/shin4/mio/releases/latest): Latest signed Windows and macOS installers.
+- [Releases](https://github.com/shin4/mio/releases/latest): Latest installers: signed and notarized macOS (arm64/x64), unsigned Windows x64, with SHA-256 checksums.
 
 ## Reference
 - [MiMo platform](https://platform.xiaomimimo.com): Get a MiMo API key (pay-as-you-go `sk-` or token plan `tp-`).

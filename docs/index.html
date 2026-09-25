@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Mio — A native desktop coding agent for MiMo</title>
-<meta name="description" content="Mio is a native desktop coding agent for the MiMo model family — coding, reasoning, multimodal understanding, dictation, and speech, as first-class runtime capabilities." />
+<meta name="description" content="Mio is a free, open-source native desktop coding agent for the MiMo model family, built on the official DeepSeek Harness Desktop. For macOS and Windows." />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%23FF6900'/%3E%3Cpath transform='translate(20.5 -11.7) scale(0.46)' fill='%23FFFFFF' d='M 150 430 C 324 376, 464 430, 512 548 C 560 430, 700 376, 874 430 C 800 520, 700 570, 598 588 C 586 640, 590 700, 612 758 C 576 788, 448 788, 412 758 C 434 700, 438 640, 426 588 C 324 570, 224 520, 150 430 Z'/%3E%3C/svg%3E" />
 <link rel="canonical" href="https://shin4.github.io/mio/" />
 <meta name="author" content="Mio maintainers" />
-<meta name="theme-color" content="#FF6900" />
+<meta name="theme-color" content="#03070D" />
 <meta property="og:title" content="Mio — A native desktop coding agent for MiMo" />
-<meta property="og:description" content="A free, open-source native desktop coding agent for the MiMo model family — coding, reasoning, multimodal understanding, dictation, and speech, on Windows and macOS." />
+<meta property="og:description" content="A free, open-source desktop coding agent for the MiMo model family, built on the official DeepSeek Harness Desktop. For macOS and Windows." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://shin4.github.io/mio/" />
 <meta property="og:site_name" content="Mio" />
@@ -19,7 +19,7 @@
 <meta property="og:locale:alternate" content="zh_CN" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Mio — A native desktop coding agent for MiMo" />
-<meta name="twitter:description" content="A free, open-source native desktop coding agent for the MiMo model family — multimodal coding, voice dictation, and speech on Windows and macOS." />
+<meta name="twitter:description" content="A free, open-source desktop coding agent for the MiMo model family, built on the official DeepSeek Harness Desktop. For macOS and Windows." />
 <meta name="twitter:image" content="https://shin4.github.io/mio/assets/icon.png" />
 <script type="application/ld+json">
 {
@@ -28,10 +28,11 @@
     {
       "@type": "SoftwareApplication",
       "name": "Mio",
-      "description": "Mio is a free, open-source native desktop coding agent for the MiMo model family, available for Windows and macOS. It makes MiMo models first-class participants in the agent runtime — coding, reasoning, multimodal understanding, voice dictation (ASR), and speech generation (TTS).",
+      "softwareVersion": "0.4.0",
+      "description": "Mio is a free, open-source native desktop coding agent for the MiMo model family, for macOS and Windows. It is the official DeepSeek Harness Desktop with Mio's identity and MiMo defaults: MiMo V2.6 Flash for new sessions, V2.6 Pro one click away, and native MiMo account setup.",
       "url": "https://shin4.github.io/mio/",
       "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Windows, macOS",
+      "operatingSystem": "macOS, Windows",
       "downloadUrl": "https://github.com/shin4/mio/releases",
       "softwareHelp": "https://github.com/shin4/mio",
       "license": "https://opensource.org/licenses/MIT",
@@ -45,17 +46,17 @@
         {
           "@type": "Question",
           "name": "What is Mio?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Mio is a free, open-source native desktop coding agent for the MiMo model family, available for Windows and macOS. It makes MiMo models first-class participants in the agent runtime — coding, reasoning, multimodal understanding, voice dictation, and speech — rather than a generic OpenAI-compatible provider skin." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Mio is a free, MIT-licensed native desktop coding agent for the MiMo model family, for macOS and Windows. Since 0.4.0 it is the official DeepSeek Harness Desktop with Mio's identity and MiMo defaults." }
         },
         {
           "@type": "Question",
-          "name": "Which MiMo models and capabilities does it support?",
-          "acceptedAnswer": { "@type": "Answer", "text": "It supports text coding and reasoning, native multimodal understanding of images, PDFs, and video, voice dictation (ASR), and speech generation (TTS), powered by the full MiMo model lineup." }
+          "name": "Which MiMo models does it support?",
+          "acceptedAnswer": { "@type": "Answer", "text": "MiMo V2.6 Flash, the default for new sessions, and MiMo V2.6 Pro. Thinking can be switched on or off per session." }
         },
         {
           "@type": "Question",
           "name": "Which platforms does Mio run on?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Mio ships as Electron desktop apps for Windows and macOS. Linux is buildable from source, and there is no terminal (TUI) version planned." }
+          "acceptedAnswer": { "@type": "Answer", "text": "macOS on Apple Silicon and Intel, signed and notarized, and Windows x64, unsigned in 0.4.0. Linux will follow separately." }
         },
         {
           "@type": "Question",
@@ -64,13 +65,8 @@
         },
         {
           "@type": "Question",
-          "name": "How is Mio different from a generic OpenAI-compatible client?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Unlike a generic provider skin, Mio tunes request shaping, model selection, and context packaging specifically for MiMo. It adds native multimodal and voice capabilities, stable prefix caching for high cache-hit rates, and visible token and cost accounting that routes each task to the cheapest capable model." }
-        },
-        {
-          "@type": "Question",
           "name": "How much does Mio cost, and how do I get started?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The Mio app is free and MIT-licensed; you pay only for MiMo API usage. Download the latest Windows or macOS build from the GitHub Releases page, then add a MiMo API key from platform.xiaomimimo.com — pay-as-you-go (sk-) or a token plan (tp-) — in the app." }
+          "acceptedAnswer": { "@type": "Answer", "text": "The app is free and MIT-licensed; you pay only for MiMo API usage. Download the installer from GitHub Releases, then paste a MiMo API key from platform.xiaomimimo.com on the welcome screen: sk- keys are pay-as-you-go, tp- keys are token plans with a CN, SGP or AMS region." }
         }
       ]
     }
@@ -79,742 +75,625 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;900&family=Noto+Sans+SC:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="modulepreload" href="./assets/vendor/three.module.min.js" />
 <style>
-  /* ============================================================
-     Mio homepage — direction C “深潜叙事 / The Sounding”.
-     Two registers on one page: warm paper above the waterline
-     (MiMo Code’s ink-and-paper voice), deep sea below it
-     (DeepSeek Harness’s abyss voice). Scroll = the dive.
-     ============================================================ */
-  :root{
-    /* paper register */
-    --paper:#F7F4EE;
-    --paper-2:#EFE9DF;
-    --paper-card:#FCFAF5;
-    --ink:#211D18;
-    --ink-btn:#17140F;
-    --muted:#6B6257;
-    --faint:#B9AE9D;
-    --line:#E7E0D2;
-    --chipline:#E0D8C8;
-    /* the whale orange */
-    --orange:#FF6900;
-    --orange-press:#F25E00;
-    --orange-grad:linear-gradient(180deg,#FF8A1F 0%,#FF5E00 100%);
-    /* deep-sea register */
-    --deep-0:#071019;
-    --deep-1:#0A1220;
-    --deep-2:#0E1B2E;
-    --deep-3:#1C3252;
-    --dtext:#E9EEF5;
-    --dmuted:#93A5BC;
-    --dfaint:#55677F;
-    --dline:rgba(255,255,255,.09);
-    --dcard:rgba(255,255,255,.04);
-    --ok:#4ADE80;
-    /* type */
-    --serif:"Noto Serif SC","Songti SC","STSong",Georgia,serif;
-    --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    --disp:"Space Grotesk","Noto Sans SC",sans-serif;
-    --ease:cubic-bezier(.86,0,.07,1);
-    --ease-out:cubic-bezier(.16,1,.3,1);
-    --ease-spring:cubic-bezier(.34,1.56,.64,1);
-    --maxw:1200px;
-    font-synthesis:none;
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    margin:0;background:var(--paper);color:var(--ink);
-    font-family:var(--sans);
-    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-    line-height:1.5;overflow-x:hidden;
-  }
-  a{color:inherit;text-decoration:none}
-  .container{max-width:var(--maxw);margin:0 auto;padding:0 28px}
-  .mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
-  /* paper grain over everything (decorative) */
-  body::after{content:"";position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.05;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-  /* scroll progress hairline */
-  .scroll-progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:60;
-    background:linear-gradient(90deg,#FF8A1F,var(--orange));
-    transform:scaleX(0);transform-origin:0 50%}
+:root{
+  color-scheme:dark;
+  --abyss:#03070D; --deep:#071019; --trench:#0A1220; --slate:#1C3252;
+  --ink:#EAF1F8; --mute:#93A9C2; --dim:#5F768F;
+  --line:rgba(147,169,194,.16); --line-hi:rgba(147,169,194,.32);
+  --glass:rgba(8,16,28,.56); --glass-hi:rgba(14,27,46,.72);
+  --whale:#FF6900; --whale-hi:#FF8A1F; --whale-glow:rgba(255,105,0,.35);
+  --bio:#62E3E8; --ok:#58D39A; --warn:#F2C14E;
+  --f-zh:"Noto Serif SC","Songti SC","STSong",serif;
+  --f-en:"Instrument Serif","Times New Roman",serif;
+  --f-body:"Noto Sans SC","PingFang SC","Hiragino Sans GB",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --gutter:clamp(16px,4vw,56px);
+  --hud-w:0px;
+}
+@media (min-width:1100px){ :root{ --hud-w:150px; } }
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--abyss);color:var(--ink);font:400 16px/1.7 var(--f-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+::selection{background:var(--whale);color:#fff}
+:focus-visible{outline:2px solid var(--whale-hi);outline-offset:3px;border-radius:6px}
+[hidden]{display:none!important}
 
-  /* the mono “eyebrow” voice shared by both registers */
-  .kicker{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:12px;font-weight:500;
-    letter-spacing:.22em;color:var(--orange);text-transform:uppercase}
+#ocean{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;background:radial-gradient(120% 80% at 30% 0%,#0B3A50 0%,#06121E 45%,var(--abyss) 100%)}
+.wrap{position:relative;z-index:2;padding-inline:var(--gutter);padding-right:calc(var(--gutter) + var(--hud-w))}
+.inner{max-width:1160px;margin-inline:auto}
 
-  /* ---------- nav ---------- */
-  .nav{
-    position:fixed;top:0;left:0;right:0;height:56px;z-index:50;
-    display:flex;align-items:center;
-    background:rgba(247,244,238,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-    transition:box-shadow .3s var(--ease);
-  }
-  .nav.scrolled{box-shadow:0 1px 0 var(--line)}
-  .nav .container{display:flex;align-items:center;gap:28px;width:100%}
-  .brand{display:flex;align-items:center;gap:9px;font-family:var(--disp);font-weight:700;font-size:17px;
-    letter-spacing:.01em;white-space:nowrap}
-  .brand svg{width:24px;height:24px;display:block}
-  .nav-links{display:flex;gap:26px;margin-left:10px}
-  .nav-links a{color:var(--muted);font-size:14px;font-weight:500;transition:color .2s var(--ease)}
-  .nav-links a:hover{color:var(--ink)}
-  .nav-cta{margin-left:auto;display:flex;gap:12px;align-items:center}
+/* Display faces follow the language: Noto Serif SC for Chinese, Instrument Serif for English. */
+.display{font-family:var(--f-zh);font-weight:900;letter-spacing:-.01em}
+html[lang="en"] .display{font-family:var(--f-en);font-weight:400;letter-spacing:-.015em}
+.echo{font:italic 400 clamp(20px,2.4vw,30px)/1.25 var(--f-en);color:var(--mute);margin:10px 0 0}
+html[lang="en"] .echo{font:600 clamp(16px,1.8vw,22px)/1.4 var(--f-zh);letter-spacing:.02em}
 
-  /* ---------- language toggle ---------- */
-  .lang-toggle{display:inline-flex;align-items:center;gap:2px;padding:2px;border:1px solid var(--chipline);
-    border-radius:9999px;background:rgba(252,250,245,.7)}
-  .lang-toggle button{appearance:none;border:0;background:none;cursor:pointer;font:inherit;
-    font-size:12.5px;font-weight:600;color:var(--muted);padding:5px 11px;border-radius:9999px;line-height:1;
-    transition:background .2s var(--ease),color .2s var(--ease)}
-  .lang-toggle button:hover{color:var(--ink)}
-  .lang-toggle button.active{background:var(--ink-btn);color:var(--paper)}
+/* Nav */
+.nav{position:fixed;z-index:20;top:0;left:0;right:0;display:flex;align-items:center;gap:24px;padding:calc(14px + env(safe-area-inset-top,0px)) var(--gutter) 14px;backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);background:linear-gradient(to bottom,rgba(3,7,13,.6),rgba(3,7,13,0))}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:700 18px/1 var(--f-body);letter-spacing:.01em}
+.brand svg{width:26px;height:26px}
+.nav-links{display:flex;gap:22px;margin-left:auto;font:500 13px/1 var(--f-body);color:var(--mute)}
+.nav-links a{text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-tools{display:flex;gap:10px;align-items:center}
+.lang{display:inline-flex;border:1px solid var(--line-hi);border-radius:999px;padding:3px}
+.lang button{appearance:none;border:0;background:none;color:var(--mute);font:600 11px/1 var(--f-mono);padding:6px 9px;border-radius:999px;cursor:pointer}
+.lang button.active{background:rgba(234,241,248,.12);color:var(--ink)}
+.gh{display:inline-flex;align-items:center;gap:8px;font:600 12px/1 var(--f-body);text-decoration:none;padding:9px 14px;border-radius:999px;background:rgba(234,241,248,.08);border:1px solid var(--line-hi)}
+.gh svg{width:14px;height:14px}
+@media (max-width:900px){ .nav-links{display:none} .nav-tools{margin-left:auto} }
+@media (max-width:420px){ .gh span{display:none} }
 
-  /* ---------- buttons (pills) ---------- */
-  .btn{
-    display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:1px solid transparent;
-    border-radius:9999px;font-size:14.5px;font-weight:500;padding:10px 20px;line-height:1;
-    transition:transform .25s var(--ease-out),background .25s var(--ease),box-shadow .25s var(--ease),
-      color .2s,border-color .2s;
-    white-space:nowrap;
-  }
-  .btn svg{width:15px;height:15px}
-  .btn-primary{background:var(--ink-btn);color:var(--paper)}
-  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 28px -12px rgba(23,20,15,.55)}
-  .btn-secondary{background:transparent;color:var(--ink);border-color:var(--chipline)}
-  .btn-secondary:hover{border-color:var(--muted);transform:translateY(-1px)}
-  .btn-brand{background:var(--orange-grad);color:#fff}
-  .btn-brand:hover{transform:translateY(-1px);box-shadow:0 12px 30px -10px rgba(255,105,0,.5)}
-  .hero-download{margin:0 auto;display:inline-block}
-  .dl-version{font-size:13px;color:var(--muted);margin:14px 0 0;font-weight:500;text-align:center}
-  .dl-version .num{font-family:'JetBrains Mono',monospace;color:var(--ink)}
-  .dl-buttons{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap}
+/* HUD depth gauge */
+.hud{position:fixed;z-index:15;right:0;top:0;bottom:0;width:150px;display:none;pointer-events:none;font-family:var(--f-mono)}
+@media (min-width:1100px){ .hud{display:block} }
+.hud-read{position:absolute;right:28px;top:96px;text-align:right}
+.hud-m{font:500 30px/1 var(--f-mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.hud-m small{font-size:13px;color:var(--mute);margin-left:4px}
+.hud-zone{margin-top:8px;font-size:11px;letter-spacing:.14em;color:var(--whale-hi);text-transform:uppercase}
+.hud-local{font:500 13px/1.4 var(--f-body);color:var(--ink);margin-top:2px}
+.hud-env{margin-top:14px;display:grid;gap:4px;font-size:11px;color:var(--mute);font-variant-numeric:tabular-nums}
+.hud-env b{color:var(--ink);font-weight:500}
+.ruler{position:absolute;right:30px;top:260px;bottom:60px;width:1px;background:linear-gradient(var(--line-hi),var(--line))}
+.tick{position:absolute;right:0;transform:translateY(-50%);display:flex;align-items:center;gap:8px;font-size:10px;color:var(--dim);white-space:nowrap;pointer-events:auto}
+.tick::after{content:"";width:9px;height:1px;background:var(--line-hi)}
+.tick a{text-decoration:none;transition:color .2s}
+.tick a:hover,.tick.on a{color:var(--ink)}
+.marker{position:absolute;right:-5px;width:11px;height:11px;border-radius:50%;background:var(--whale);box-shadow:0 0 0 4px rgba(255,105,0,.18),0 0 18px var(--whale-glow);transform:translateY(-50%)}
+.mhud{position:fixed;z-index:15;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font:500 11px/1 var(--f-mono);letter-spacing:.06em;padding:9px 14px;border-radius:999px;background:var(--glass-hi);border:1px solid var(--line-hi);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);white-space:nowrap;font-variant-numeric:tabular-nums}
+.mhud span{color:var(--whale-hi)}
+@media (min-width:1100px){ .mhud{display:none} }
 
-  /* ---------- hero (sea level) ---------- */
-  .hero{position:relative;padding:150px 0 64px;text-align:center;overflow:hidden}
-  .hero .container{position:relative;z-index:1}
-  .hero .kicker{display:block;margin-bottom:22px}
-  h1.hero-title{
-    position:relative;font-family:var(--serif);font-weight:900;
-    font-size:clamp(36px,5.6vw,64px);line-height:1.32;letter-spacing:.02em;
-    margin:0 auto;max-width:24ch;text-align:center;
-    /* titles carry their own \n break point (typed via textContent) */
-    white-space:pre-line;
-  }
-  /* ghost holds the full final text to reserve the box height/width up front,
-     so the typewriter never shifts the elements below it while wrapping */
-  .hero-title .ghost{visibility:hidden}
-  .hero-title .live{position:absolute;inset:0}
-  .caret{display:inline-block;width:3px;height:.9em;vertical-align:-.08em;margin-left:.06em;
-    background:var(--orange);border-radius:2px;animation:blink 1s steps(1) infinite}
-  @keyframes blink{50%{opacity:0}}
-  .hero-sub{max-width:56ch;margin:26px auto 0;color:var(--muted);font-size:clamp(15px,1.6vw,18px);line-height:1.85}
-  .hero-cta{margin-top:34px}
-  .hero-chips{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:36px}
-  .hero-chips span{font-size:12px;color:var(--muted);border:1px solid var(--chipline);
-    border-radius:9999px;padding:6px 14px;letter-spacing:.04em}
+/* Shared type */
+.depth-tag{display:inline-flex;align-items:center;gap:10px;font:500 11px/1.4 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.depth-tag i{font-style:normal;color:var(--whale-hi);white-space:nowrap}
+.depth-tag::before{content:"";width:28px;height:1px;background:var(--whale);flex:none}
+h2.display{font-size:clamp(34px,5.2vw,68px);line-height:1.12;margin:18px 0 0;text-wrap:balance}
+html[lang="en"] h2.display{font-size:clamp(40px,6vw,80px);line-height:1.02}
+.lead{max-width:36em;color:var(--mute);font-size:17px;margin:22px 0 0}
+section{position:relative}
+.zone{padding-block:clamp(110px,16vh,190px)}
+@supports (animation-timeline: view()){
+  .rise{animation:rise linear both;animation-timeline:view();animation-range:entry 0% entry 55%}
+  @keyframes rise{from{opacity:0;transform:translateY(48px)}}
+}
 
-  /* ---------- feature rows (paper) ---------- */
-  section.feature{padding:76px 0}
-  .feature .grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
-  .feature.reverse .grid > .copy{order:2}
-  .eyebrow{display:inline-flex;align-items:center;gap:9px;margin-bottom:16px;
-    font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:500;
-    color:var(--orange);text-transform:uppercase;letter-spacing:.2em}
-  .eyebrow::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--orange)}
-  h2.feature-title{font-family:var(--serif);font-size:clamp(28px,3.6vw,42px);line-height:1.35;
-    font-weight:700;letter-spacing:.02em;margin:0 0 20px}
-  .feature-desc{color:var(--muted);font-size:17px;line-height:1.85;max-width:46ch}
-  .feature .actions{margin-top:28px}
+/* Hero */
+.hero{min-height:max(720px,100svh);display:flex;align-items:center;padding-block:120px 90px}
+.hero .inner{width:100%}
+.hero-copy{max-width:820px}
+.chip{display:inline-flex;align-items:center;gap:10px;font:500 12px/1.3 var(--f-mono);padding:8px 12px 8px 8px;border-radius:999px;background:var(--glass);border:1px solid var(--line-hi);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);text-decoration:none;max-width:100%}
+.chip em{font-style:normal;background:var(--whale);color:#fff;border-radius:999px;padding:4px 8px;font-weight:700;flex:none}
+.chip span{color:var(--mute)}
+h1{margin:26px 0 0;font-size:clamp(50px,7.6vw,108px);line-height:1.04;letter-spacing:-.025em}
+html[lang="en"] h1{font-size:clamp(54px,8.4vw,122px);line-height:.98;letter-spacing:-.02em}
+h1 .ln{display:block;overflow:hidden;padding-bottom:.06em}
+h1 .ln>span{display:inline-block;animation:lineUp 1.2s cubic-bezier(.2,.8,.1,1) both}
+h1 .ln:nth-child(2)>span{animation-delay:.14s}
+.mimo{background:linear-gradient(100deg,var(--whale-hi),var(--whale) 60%,#FF4D00);-webkit-background-clip:text;background-clip:text;color:transparent}
+html[lang="en"] .mimo{font-style:italic;padding-right:.06em}
+@keyframes lineUp{from{transform:translateY(105%)}}
+.hero .echo{font-size:clamp(22px,2.6vw,34px);margin-top:14px;animation:fade 1.4s .5s both}
+html[lang="en"] .hero .echo{font-size:clamp(18px,2vw,26px)}
+.hero-sub{max-width:31em;margin:26px 0 0;color:var(--mute);font-size:17px;animation:fade 1.4s .7s both}
+.hero-sub b{color:var(--ink);font-weight:500}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px;animation:fade 1.4s .9s both}
+.btn{display:inline-flex;align-items:center;gap:10px;font:600 15px/1 var(--f-body);text-decoration:none;padding:16px 22px;border-radius:14px;border:1px solid transparent;cursor:pointer;transition:transform .25s,box-shadow .25s,background .25s}
+.btn-whale{background:linear-gradient(180deg,var(--whale-hi),var(--whale));color:#fff;box-shadow:0 10px 40px -8px var(--whale-glow),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-whale:hover{transform:translateY(-2px);box-shadow:0 18px 50px -8px rgba(255,105,0,.55),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-ghost{background:var(--glass);border-color:var(--line-hi);color:var(--ink);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.btn-ghost:hover{background:var(--glass-hi)}
+.btn small{font:500 11px/1 var(--f-mono);opacity:.8}
+.btn svg{width:16px;height:16px;flex:none}
+.hero-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin-top:22px;font:400 12px/1.5 var(--f-mono);color:var(--dim);animation:fade 1.4s 1.1s both}
+.hero-meta a{color:var(--mute)}
+.voice{display:inline-flex;align-items:center;gap:10px;margin-top:26px;padding:8px 16px 8px 8px;border-radius:999px;border:1px solid var(--line-hi);background:var(--glass);color:var(--ink);font:500 13px/1.3 var(--f-body);cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fade 1.4s 1.2s both;scroll-margin-top:120px;text-align:left}
+.voice:hover{border-color:var(--whale)}
+.voice .vp{width:30px;height:30px;border-radius:50%;background:var(--whale);display:grid;place-items:center;flex:none}
+.voice .vp svg{width:11px;height:11px;color:#fff}
+.voice .bars{display:inline-flex;gap:2px;align-items:center;height:14px}
+.voice .bars i{width:2px;height:4px;background:var(--whale-hi);border-radius:1px}
+.voice.playing .bars i{animation:eq .9s ease-in-out infinite}
+.voice.playing .bars i:nth-child(2){animation-delay:.15s}.voice.playing .bars i:nth-child(3){animation-delay:.3s}.voice.playing .bars i:nth-child(4){animation-delay:.45s}
+@keyframes eq{50%{height:14px}}
+.voice small{color:var(--dim);font:400 11px/1 var(--f-mono)}
+.dive-cue{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;font:500 11px/1 var(--f-mono);letter-spacing:.2em;color:var(--mute);text-decoration:none;text-transform:uppercase}
+.dive-cue i{width:1px;height:46px;background:linear-gradient(var(--whale),transparent);animation:cue 2.2s ease-in-out infinite}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@media (max-width:760px){ .dive-cue{display:none} }
 
-  /* product window mock */
-  .window{border-radius:14px;overflow:hidden;background:var(--paper-card);border:1px solid var(--line);
-    box-shadow:0 30px 70px -30px rgba(33,29,24,.4)}
-  .window .bar{height:36px;display:flex;align-items:center;gap:7px;padding:0 14px;background:var(--ink-btn)}
-  .window .bar i{width:11px;height:11px;border-radius:50%;display:block}
-  .window .bar i:nth-child(1){background:#FF5F57}.window .bar i:nth-child(2){background:#FEBC2E}.window .bar i:nth-child(3){background:#28C840}
-  .window .bar .bar-title{margin-left:6px;font-family:"JetBrains Mono",monospace;font-size:10px;color:#7A7264}
-  .window img{display:block;width:100%;height:auto}
+/* 200 m — what's new */
+.news-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,6vw,90px);align-items:start}
+.news-head{position:sticky;top:120px}
+.news-list{display:grid;gap:16px}
+.ping{position:relative;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;padding:24px 26px;border-radius:20px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:border-color .3s,transform .4s}
+.ping:hover{border-color:var(--line-hi);transform:translateX(-4px)}
+.ping:nth-child(2){margin-left:clamp(0px,4vw,48px)}
+.ping:nth-child(3){margin-left:clamp(0px,2vw,24px)}
+.ping:nth-child(4){margin-left:clamp(0px,6vw,72px)}
+.ping-dot{grid-row:span 3;position:relative;width:14px;height:14px;margin-top:6px}
+.ping-dot::before,.ping-dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--whale)}
+.ping-dot::after{background:none;border:1px solid var(--whale);animation:sonar 2.6s ease-out infinite}
+.ping:nth-child(2) .ping-dot::after{animation-delay:.6s}.ping:nth-child(3) .ping-dot::after{animation-delay:1.2s}.ping:nth-child(4) .ping-dot::after{animation-delay:1.8s}
+@keyframes sonar{from{transform:scale(1);opacity:.9}to{transform:scale(3.4);opacity:0}}
+.ping-k{font:500 11px/1.6 var(--f-mono);letter-spacing:.12em;color:var(--whale-hi);text-transform:uppercase}
+.ping h3{margin:0;font:700 20px/1.35 var(--f-body)}
+.ping p{margin:4px 0 0;color:var(--mute);font-size:15px}
+.ping code,.notes code{font:500 13px/1 var(--f-mono);color:var(--ink);background:rgba(234,241,248,.07);padding:3px 6px;border-radius:6px}
+@media (max-width:860px){ .news-grid{grid-template-columns:minmax(0,1fr)} .news-head{position:static} .ping{margin-left:0!important} }
 
-  /* voice demo card */
-  .voice-demo{width:100%;max-width:440px;background:var(--paper-card);border:1px solid var(--line);border-radius:16px;
-    padding:24px 24px 20px;box-shadow:0 24px 60px -36px rgba(33,29,24,.45)}
-  .voice-demo .vd-head{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;
-    color:var(--orange);letter-spacing:.01em;margin-bottom:18px}
-  .voice-demo .vd-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);
-    box-shadow:0 0 0 4px rgba(255,105,0,.14)}
-  .voice-demo .vd-row{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-  .voice-demo .vd-meta{display:flex;align-items:center;gap:9px}
-  .voice-demo .vd-lang{font-size:11px;font-weight:700;color:var(--paper);background:var(--ink-btn);
-    border-radius:6px;padding:2px 8px;line-height:1.6}
-  .voice-demo .vd-voice{font-size:12px;color:var(--muted)}
-  .voice-demo audio{width:100%;height:38px}
-  .voice-demo .vd-note{font-size:12px;color:var(--muted);line-height:1.6;margin:4px 0 0}
+/* 1,000 m — film */
+.film-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:24px}
+.film-head .lead{max-width:26em;margin:0}
+.film-stage{perspective:1600px;margin-top:48px}
+.player{position:relative;border-radius:22px;overflow:hidden;background:#0B1422;border:1px solid var(--line-hi);box-shadow:0 60px 140px -40px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03),0 0 120px -30px rgba(98,227,232,.18);transition:transform .5s cubic-bezier(.2,.8,.2,1);will-change:transform}
+.screen{position:relative;aspect-ratio:16/10;max-width:100%;overflow:hidden;background:radial-gradient(90% 90% at 70% 10%,#20365A 0%,#0E1B2E 50%,#081220 100%)}
+.scene{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .5s,transform .8s cubic-bezier(.2,.8,.2,1);transform:scale(1.03)}
+.scene.on{opacity:1;transform:none}
+.win{position:relative;border-radius:12px;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);background:#fff}
+.win-bar{height:26px;background:#F1F1F3;display:flex;align-items:center;gap:7px;padding-left:11px;border-bottom:1px solid #E3E3E7}
+.win-bar i{width:10px;height:10px;border-radius:50%;background:#FF5F57}.win-bar i:nth-child(2){background:#FEBC2E}.win-bar i:nth-child(3){background:#28C840}
+.dark-win .win-bar{background:#26262A;border-bottom-color:#1A1A1D}
+.shot{position:relative;display:block}
+.shot img{display:block;width:100%;height:auto}
+.win.small{height:86%;aspect-ratio:600/726}
+.win.big{width:93%}
+.ov{position:absolute;background:var(--cover,#fff)}
+.dots{position:absolute;left:3%;top:50%;transform:translateY(-50%);color:#222;font:700 13px/1 var(--f-mono);letter-spacing:.12em;white-space:nowrap;overflow:hidden}
+.typed{position:absolute;left:0;top:0;color:var(--typed,#1d1d1f);font:400 1.05vw/1.4 var(--f-body);white-space:nowrap}
+@media (max-width:900px){ .typed{font-size:1.6vw} .dots{font-size:9px} }
+.caret{display:inline-block;width:1px;height:1.1em;background:var(--whale);vertical-align:-2px;margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.ring{position:absolute;border-radius:10px;border:2px solid var(--whale);box-shadow:0 0 0 6px rgba(255,105,0,.18);opacity:0;transition:opacity .3s}
+.ring.on{opacity:1}
+.cursor{position:absolute;z-index:5;width:22px;height:22px;pointer-events:none;transition:left .9s cubic-bezier(.5,0,.2,1),top .9s cubic-bezier(.5,0,.2,1);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
+.cursor-ring{position:absolute;z-index:4;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:rgba(255,105,0,.45);transform:scale(0);opacity:0;pointer-events:none}
+.cursor-ring.click{animation:clk .5s ease-out}
+@keyframes clk{from{transform:scale(.2);opacity:1}to{transform:scale(2);opacity:0}}
+.ctrl{display:flex;align-items:center;gap:16px;padding:14px 18px;background:rgba(6,12,22,.9);border-top:1px solid var(--line)}
+.play{width:34px;height:34px;border-radius:50%;border:1px solid var(--line-hi);background:none;color:var(--ink);display:grid;place-items:center;cursor:pointer;flex:none}
+.play svg{width:12px;height:12px}
+.chapters{display:grid;grid-template-columns:4fr 5fr 6fr;gap:6px;flex:1;min-width:0}
+.chap{appearance:none;border:0;background:none;color:var(--dim);text-align:left;cursor:pointer;padding:0;font:500 12px/1.3 var(--f-body);min-width:0}
+.chap .bar{display:block;height:3px;border-radius:3px;background:rgba(147,169,194,.2);overflow:hidden;margin-bottom:8px}
+.chap .bar i{display:block;height:100%;width:0;background:var(--whale)}
+.chap.on{color:var(--ink)}
+.chap .cl{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chap .cl b{font:500 11px var(--f-mono);color:var(--whale-hi);margin-right:6px}
+.tc{font:500 12px/1 var(--f-mono);color:var(--mute);font-variant-numeric:tabular-nums;flex:none}
+.film-cap{margin:14px 0 0;font:400 12px/1.5 var(--f-mono);color:var(--dim)}
+@media (max-width:600px){ .chap .cl span{display:none} }
 
-  /* ---------- playground (paper, dark output panes) ---------- */
-  #playground .pg{margin-top:26px}
-  .pg-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-  .pg-tab{appearance:none;border:1px solid var(--chipline);background:var(--paper-card);color:var(--muted);
-    font:inherit;font-size:14px;font-weight:600;padding:8px 16px;border-radius:9999px;cursor:pointer;
-    transition:background .2s var(--ease),color .2s var(--ease),border-color .2s var(--ease)}
-  .pg-tab:hover{color:var(--ink)}
-  .pg-tab.is-active{background:var(--ink-btn);color:var(--paper);border-color:var(--ink-btn)}
-  .pg-panel{border:1px solid var(--line);border-radius:16px;background:var(--paper-card);overflow:hidden;
-    box-shadow:0 30px 70px -42px rgba(33,29,24,.4);min-height:300px}
-  .pg-demo{display:grid;grid-template-columns:1fr 1.1fr}
-  .pg-col{padding:20px}
-  .pg-col-input{border-right:1px solid var(--line)}
-  @media (max-width:760px){.pg-demo{grid-template-columns:1fr}
-    .pg-col-input{border-right:0;border-bottom:1px solid var(--line)}}
-  /* image-to-code */
-  .pg-thumbs{display:flex;gap:8px;margin-bottom:14px}
-  .pg-thumb{width:64px;height:46px;object-fit:cover;border-radius:8px;border:1px solid var(--line);
-    background:var(--paper-2);cursor:pointer;transition:border-color .15s,box-shadow .15s}
-  .pg-thumb.is-active{border-color:var(--orange);box-shadow:0 0 0 2px rgba(255,105,0,.22)}
-  .pg-shot{width:100%;max-height:300px;object-fit:contain;border-radius:12px;border:1px solid var(--line);
-    background:var(--paper-2);display:block}
-  .pg-demo-img2code .pg-col-output{background:var(--deep-1)}
-  /* Bounded height so the long captured code scrolls inside the pane instead
-     of growing the whole section. height:100% is unreliable here (indefinite
-     grid containing block), so cap with max-height + overflow. */
-  .pg-codearea{margin:0;max-height:380px;overflow:auto;color:#D7DEE9;font-size:12.5px;line-height:1.7}
-  .pg-code{white-space:pre-wrap;word-break:break-word}
-  /* video */
-  .pg-video{width:100%;border-radius:12px;background:#000;display:block}
-  .pg-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-  .pg-chip{appearance:none;border:1px solid var(--chipline);background:var(--paper-card);color:var(--ink);
-    font:inherit;font-size:12.5px;padding:5px 11px;border-radius:9999px;cursor:pointer}
-  .pg-chip:hover{border-color:var(--orange);color:var(--orange)}
-  .pg-question{font-size:14.5px;color:var(--muted);margin:0 0 12px}
-  .pg-ask{appearance:none;border:0;background:var(--ink-btn);color:var(--paper);font:inherit;font-weight:600;
-    font-size:13.5px;padding:8px 16px;border-radius:9999px;cursor:pointer;margin-bottom:12px}
-  .pg-ask:hover{background:#000}
-  .pg-answer{font-size:14.5px;line-height:1.75;color:var(--ink);white-space:pre-wrap}
-  /* asr */
-  .pg-audio{width:100%;height:38px;margin-bottom:12px}
-  .pg-play{appearance:none;border:0;background:var(--ink-btn);color:var(--paper);font:inherit;font-weight:600;
-    font-size:13.5px;padding:8px 16px;border-radius:9999px;cursor:pointer}
-  .pg-transcript{font-size:16px;font-weight:600;color:var(--ink);min-height:24px;white-space:pre-wrap}
-  .pg-action{margin-top:12px;font-size:14px;color:var(--muted);white-space:pre-wrap}
-  .pg-check{color:#1FA765;font-weight:700}
-  .pg-fallback{padding:40px;text-align:center;color:var(--muted);font-size:14px}
-  .pg-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:16px}
-  .pg-honesty{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
-  .pg-honesty::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--orange)}
-  .pg-note{font-size:12px;color:var(--faint);margin:10px 0 0}
+/* 4,000 m — models */
+.models{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:48px}
+.spec{position:relative;padding:30px;border-radius:24px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow:hidden}
+.spec::before{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,var(--whale-glow),transparent 70%);opacity:.6}
+.spec.pro::before{background:radial-gradient(circle,rgba(98,227,232,.28),transparent 70%)}
+.spec-top{position:relative;display:flex;justify-content:space-between;align-items:center;gap:12px;font:500 11px/1 var(--f-mono);letter-spacing:.14em;color:var(--mute);text-transform:uppercase}
+.badge{font:700 11px/1.2 var(--f-mono);letter-spacing:.04em;padding:6px 9px;border-radius:999px;background:var(--whale);color:#fff;text-transform:none;white-space:nowrap}
+.badge.q{background:none;border:1px solid var(--line-hi);color:var(--mute)}
+.spec h3{margin:26px 0 0;font:400 clamp(40px,5vw,64px)/1 var(--f-en);letter-spacing:-.01em}
+.spec h3 em{font-style:italic;color:var(--whale-hi)}
+.spec.pro h3 em{color:var(--bio)}
+.spec p{color:var(--mute);margin:14px 0 0;font-size:15px;max-width:30em}
+.spec dl{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:24px 0 0;font:400 13px/1.4 var(--f-mono)}
+.spec dt{color:var(--dim)}.spec dd{margin:0;color:var(--ink)}
+.console{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
+.panel{padding:26px;border-radius:24px;background:rgba(3,7,13,.72);border:1px solid var(--line);min-width:0}
+.panel h4{margin:0;font:700 17px/1.4 var(--f-body)}
+.panel .hint{margin:6px 0 0;color:var(--mute);font-size:14px}
+.seg{display:inline-flex;margin-top:18px;padding:4px;border-radius:12px;background:rgba(234,241,248,.06);border:1px solid var(--line)}
+.seg button{appearance:none;border:0;background:none;color:var(--mute);font:600 13px/1 var(--f-mono);padding:10px 18px;border-radius:9px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--whale);color:#fff;box-shadow:0 6px 20px -6px var(--whale-glow)}
+pre.req{margin:18px 0 0;padding:16px 18px;border-radius:14px;background:#02050A;border:1px solid var(--line);font:400 13px/1.7 var(--f-mono);color:var(--mute);overflow-x:auto}
+pre.req .k{color:#9CC7FF}pre.req .s{color:#B5E8A8}
+pre.req .v{color:var(--whale-hi);font-weight:700}
+.field{display:block;margin-top:18px}
+.field input{width:100%;font:500 15px/1 var(--f-mono);color:var(--ink);background:#02050A;border:1px solid var(--line-hi);border-radius:12px;padding:15px 16px;outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--whale);box-shadow:0 0 0 4px rgba(255,105,0,.15)}
+.route{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;margin:16px 0 0;font:400 13px/1.5 var(--f-mono)}
+.route dt{color:var(--dim)}.route dd{margin:0}
+.regions{display:flex;gap:6px;flex-wrap:wrap;transition:opacity .3s}
+.regions button{appearance:none;background:none;padding:4px 9px;border-radius:8px;border:1px solid var(--line-hi);color:var(--mute);font:500 12px/1.3 var(--f-mono);cursor:pointer}
+.regions button[aria-pressed="true"]{border-color:var(--whale);color:var(--ink);background:rgba(255,105,0,.14)}
+.regions button:disabled{cursor:default}
+.muted{color:var(--dim)}
+@media (max-width:860px){ .models,.console{grid-template-columns:minmax(0,1fr)} }
 
-  /* ---------- the waterline: paper dives into the deep ---------- */
-  .sounding{position:relative;height:520px;overflow:hidden;
-    background:linear-gradient(180deg,var(--paper) 0%,#DDD6C9 16%,#93989A 42%,#3D5570 68%,#16273E 88%,var(--deep-2) 100%);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-  .sea-level{position:absolute;top:88px;left:0;right:0;border-top:1px solid rgba(255,255,255,.55);opacity:.55}
-  .sea-label{position:absolute;top:70px;left:0;right:0}
-  .sea-label span{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.3em;color:var(--muted)}
-  .sounding .fluke-dive{filter:drop-shadow(0 -14px 34px rgba(255,105,0,.35));animation:sink 7s ease-in-out infinite}
-  .sounding .fluke-dive svg{display:block;transform:rotate(180deg)}
-  @keyframes sink{0%,100%{transform:translateY(0)}50%{transform:translateY(14px)}}
-  .sounding .s-kicker{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.34em;color:#C8D6E8}
-  .sounding .s-line{font-family:var(--serif);font-size:19px;letter-spacing:.18em;color:var(--dtext)}
-  .sounding .s-rope{height:44px;border-left:1px dashed rgba(200,214,232,.4);margin-top:4px}
+/* 6,000 m — heart */
+.heart-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:center}
+.heart-grid .copy{grid-column:2}
+.equation{font:400 clamp(44px,6.4vw,92px)/1 var(--f-en);letter-spacing:-.01em;margin:22px 0 0}
+.equation em{font-style:italic;color:var(--whale-hi)}
+.equation span{color:var(--dim);font-size:.6em;vertical-align:.18em;margin:0 .15em}
+.orbit{grid-column:1;grid-row:1;position:relative;aspect-ratio:1;max-width:520px;width:100%;justify-self:center}
+.orbit svg{width:100%;height:100%;overflow:visible}
+.orbit .spin{animation:spin 90s linear infinite;transform-origin:260px 260px}
+.orbit .spin.rev{animation-duration:140s;animation-direction:reverse}
+.orbit .nl{font:500 11px var(--f-mono);fill:var(--ink)}
+.orbit .ns{font:400 9.5px var(--f-mono);fill:var(--mute)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.log{margin-top:30px;border-radius:16px;background:rgba(2,5,10,.82);border:1px solid var(--line);overflow:hidden}
+.log-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);font:500 11px var(--f-mono);color:var(--dim)}
+.log-bar i{width:9px;height:9px;border-radius:50%;background:var(--slate)}
+.log-bar span{margin-left:8px}
+.log-body{padding:14px 16px;font:400 12.5px/1.9 var(--f-mono);overflow-x:auto;white-space:nowrap}
+.log-body .t{color:var(--dim)}.log-body .u{color:#9CC7FF}.log-body .p{color:var(--bio)}.log-body .m{color:var(--whale-hi)}.log-body .d{color:var(--mute)}
+@media (max-width:860px){ .heart-grid{grid-template-columns:minmax(0,1fr)} .heart-grid .copy,.orbit{grid-column:1} .orbit{grid-row:auto;max-width:400px} }
 
-  /* ---------- the deep ---------- */
-  .deep{position:relative;overflow:hidden;color:var(--dtext);
-    background:linear-gradient(180deg,var(--deep-2) 0%,var(--deep-1) 45%,var(--deep-0) 100%)}
-  .deep .mist{position:absolute;pointer-events:none;filter:blur(30px)}
-  .deep .mist-a{top:120px;right:-140px;width:520px;height:320px;
-    background:radial-gradient(closest-side,rgba(150,180,215,.10),rgba(150,180,215,0) 70%);
-    animation:mist-drift-a 26s var(--ease) infinite alternate}
-  .deep .mist-b{top:52%;left:-160px;width:480px;height:300px;
-    background:radial-gradient(closest-side,rgba(90,120,160,.10),rgba(90,120,160,0) 70%);
-    animation:mist-drift-b 33s var(--ease) infinite alternate}
-  @keyframes mist-drift-a{from{transform:translate(0,0) scale(1)}to{transform:translate(-70px,60px) scale(1.18)}}
-  @keyframes mist-drift-b{from{transform:translate(0,0) scale(1.1)}to{transform:translate(80px,-50px) scale(.95)}}
-  .deep .container{position:relative;z-index:1}
+/* 10,935 m — download */
+.dl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:48px}
+.dl{display:flex;flex-direction:column;gap:14px;padding:26px;border-radius:22px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);text-decoration:none;transition:border-color .3s,transform .3s}
+.dl:hover{border-color:var(--whale);transform:translateY(-4px)}
+.dl.me{border-color:rgba(255,105,0,.55);box-shadow:0 0 60px -20px var(--whale-glow)}
+.dl-os{display:flex;justify-content:space-between;align-items:center;gap:10px;font:700 19px/1.3 var(--f-body)}
+.dl-os small{font:500 10.5px/1 var(--f-mono);color:var(--whale-hi);letter-spacing:.1em}
+.dl-file{font:400 12.5px/1.5 var(--f-mono);color:var(--mute);word-break:break-all}
+.sig{display:inline-flex;align-items:center;gap:8px;font:500 12px/1.4 var(--f-body);color:var(--ink)}
+.sig::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px rgba(88,211,154,.6);flex:none}
+.sig.warn::before{background:var(--warn);box-shadow:0 0 10px rgba(242,193,78,.6)}
+.dl-go{margin-top:auto;font:600 14px/1 var(--f-body);color:var(--whale-hi)}
+.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 28px;margin-top:34px;padding-top:26px;border-top:1px solid var(--line);font-size:14px;color:var(--mute)}
+.notes b{display:block;color:var(--ink);font-weight:500;margin-bottom:4px}
+.notes code{font-size:12px}
+@media (max-width:900px){ .dl-grid,.notes{grid-template-columns:minmax(0,1fr)} }
 
-  .deep-head{padding:96px 0 0}
-  .deep-head .grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
-  .deep-state{font-family:var(--disp);font-weight:700;letter-spacing:.05em;
-    font-size:clamp(28px,3.8vw,44px);line-height:1.2;margin:0 0 18px;color:#F4F6F9}
-  .deep-state em{font-style:normal;color:var(--orange)}
-  .deep-lead{color:var(--dmuted);font-size:16px;line-height:1.9;margin:0;max-width:52ch}
+/* FAQ */
+.faq{padding-block:40px 40px}
+.faq h2{font-size:clamp(30px,3.6vw,46px);margin:18px 0 28px}
+.faq-list{border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 4px;cursor:pointer;font:500 17px/1.5 var(--f-body)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:400 22px/1 var(--f-mono);color:var(--whale-hi);transition:transform .3s;flex:none}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq .ans{margin:0;padding:0 4px 24px;max-width:48em;color:var(--mute);font-size:15px}
 
-  /* session log card */
-  .logcard{background:rgba(6,10,17,.85);border:1px solid rgba(255,255,255,.12);border-radius:12px;
-    overflow:hidden;box-shadow:0 28px 60px rgba(0,0,0,.5)}
-  .logcard .lc-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--dline)}
-  .logcard .lc-bar i{width:10px;height:10px;border-radius:50%;display:block}
-  .logcard .lc-bar i:nth-child(1){background:#FF5F57}.logcard .lc-bar i:nth-child(2){background:#FEBC2E}.logcard .lc-bar i:nth-child(3){background:#28C840}
-  .logcard .lc-title{margin-left:8px;font-family:"JetBrains Mono",monospace;font-size:10.5px;color:#7E93AE}
-  .logcard .lc-body{padding:16px 18px;display:flex;flex-direction:column;gap:8px;
-    font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6}
-  .logcard .lc-t{color:var(--dfaint)}
-  .logcard .lc-role{display:inline-block;min-width:4ch}
-  .logcard .lc-user{color:var(--dmuted)}
-  .logcard .lc-sys{color:#FF9C4A}
-  .logcard .lc-mimo{color:var(--orange)}
-  .logcard .lc-msg{color:var(--dtext)}
-  .logcard .lc-dim{color:var(--dmuted)}
-  .logcard .lc-add{color:var(--ok)}
-  .logcard .lc-del{color:#F87171}
+.resurface{display:flex;flex-direction:column;align-items:center;text-align:center;padding-block:120px 60px}
+.resurface h2{font-size:clamp(36px,5.6vw,76px);line-height:1.15;margin:0}
+html[lang="en"] .resurface h2{font-size:clamp(42px,6.4vw,88px);line-height:1.02}
+.up{margin-top:36px}
+footer{position:relative;z-index:2;padding:40px var(--gutter) calc(90px + env(safe-area-inset-bottom,0px));padding-right:calc(var(--gutter) + var(--hud-w))}
+footer .inner{border-top:1px solid var(--line);padding-top:32px;display:flex;flex-wrap:wrap;gap:14px 28px;justify-content:space-between;font-size:12.5px;color:var(--dim)}
+footer p{margin:0;max-width:62em}
+footer strong{color:var(--mute)}
+.f-links{display:flex;gap:18px}
+.f-links a{text-decoration:none;color:var(--mute)}
+.f-links a:hover{color:var(--ink)}
 
-  /* deep cards */
-  .deep-cards{padding:64px 0 0}
-  .deep-cards .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-  .dcard{background:var(--dcard);border:1px solid var(--dline);border-radius:14px;padding:26px 24px;
-    display:flex;flex-direction:column;gap:10px}
-  .dcard .dc-k{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.18em;color:#7E93AE}
-  .dcard .dc-t{font-size:18px;font-weight:700;color:#F4F6F9}
-  .dcard .dc-d{font-size:13.5px;line-height:1.85;color:var(--dmuted);margin:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-  /* cost block (deep) */
-  .deep-cost{padding:88px 0 0}
-  .deep-cost .eyebrow{color:var(--orange)}
-  .deep-cost h2.feature-title{color:#F4F6F9;font-family:var(--serif)}
-  .deep-cost .feature-desc{color:var(--dmuted)}
-  .deep-cost .cap-head{max-width:62ch}
-  .art-cap{margin-top:36px;border:1px solid var(--dline);border-radius:18px;
-    background:rgba(6,10,17,.5);padding:34px 26px;overflow-x:auto}
-  .art-cap::-webkit-scrollbar{display:none}
-  .statusbar{display:flex;align-items:center;white-space:nowrap;width:max-content;margin:auto;
-    background:rgba(10,18,32,.9);border:1px solid rgba(255,255,255,.14);border-radius:9999px;padding:14px 24px;
-    box-shadow:0 26px 60px -26px rgba(0,0,0,.8);font-size:clamp(13px,1.6vw,17px);
-    color:var(--dtext);font-weight:500;letter-spacing:-.005em}
-  .statusbar .sb-seg{display:inline-flex;align-items:center;gap:7px}
-  .statusbar .sb-mut{color:var(--dfaint)}
-  .statusbar b{font-weight:650;color:var(--dtext)}
-  .statusbar .sb-ok{color:var(--ok)}
-  .statusbar .sb-sep{width:1px;height:18px;background:rgba(255,255,255,.14);margin:0 15px;flex:none}
-  .statusbar .sb-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
-  .statusbar .sb-dot.sb-sm{width:6px;height:6px}
-  .statusbar .sb-rate{font-size:1.3em;font-weight:700;letter-spacing:-.01em;color:var(--orange)}
-  .statusbar .sb-ring{width:18px;height:18px;border-radius:50%;flex:none;
-    background:conic-gradient(var(--orange) 0 96.5%,rgba(255,255,255,.14) 96.5% 100%);
-    -webkit-mask:radial-gradient(circle,transparent 54%,#000 55%);mask:radial-gradient(circle,transparent 54%,#000 55%)}
-  @media (max-width:680px){
-    .art-cap{padding:22px 16px}
-    .statusbar{flex-wrap:wrap;justify-content:center;width:auto;max-width:100%;gap:11px 0;padding:15px 16px;font-size:14px}
-    .statusbar .sb-sep{display:none}
-    .statusbar .sb-seg{margin:0 11px}
-  }
-
-  /* closing (still in the deep) */
-  .closing{padding:96px 0 110px}
-  .closing .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:end}
-  h2.big{font-family:var(--serif);font-size:clamp(30px,4.6vw,54px);line-height:1.35;font-weight:900;
-    letter-spacing:.02em;margin:0;color:#F4F6F9}
-  .closing p{color:var(--dmuted);font-size:16px;line-height:1.9;margin:0}
-  .closing .mono{color:#C8D6E8}
-
-  /* ---------- resurface ---------- */
-  .resurface{position:relative;height:320px;overflow:hidden;
-    background:linear-gradient(180deg,var(--deep-0) 0%,#16273E 22%,#3D5570 48%,#93989A 72%,#DDD6C9 90%,var(--paper) 100%);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-  .resurface .fluke-rise{filter:drop-shadow(0 12px 28px rgba(255,105,0,.3));animation:rise 7s ease-in-out infinite}
-  @keyframes rise{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-  .resurface .r-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.32em;color:var(--muted)}
-
-  /* ---------- faq (paper) ---------- */
-  .faq{padding:64px 0 8px}
-  .faq .container{max-width:820px}
-  .faq h2{font-family:var(--serif);font-size:clamp(26px,3.6vw,38px);letter-spacing:.02em;margin:0 0 26px;font-weight:700}
-  .faq details{border-top:1px solid var(--line);padding:18px 0}
-  .faq details:last-child{border-bottom:1px solid var(--line)}
-  .faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;
-    gap:18px;font-size:16.5px;font-weight:600;color:var(--ink)}
-  .faq summary::-webkit-details-marker{display:none}
-  .faq summary::after{content:"+";color:var(--orange);font-weight:600;font-size:22px;line-height:1;
-    flex:0 0 auto;transition:transform .25s var(--ease)}
-  .faq details[open] summary::after{transform:rotate(45deg)}
-  .faq .ans{color:var(--muted);font-size:15px;line-height:1.8;margin:12px 0 2px;max-width:70ch}
-
-  /* ---------- cta band (paper) ---------- */
-  .cta{position:relative;padding:96px 0;text-align:center;overflow:hidden}
-  .cta h2{font-family:var(--serif);font-size:clamp(30px,4.6vw,52px);font-weight:900;letter-spacing:.03em;margin:0 0 28px}
-  .cta h2 .dot{color:var(--orange)}
-  .cta .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .cta .seal{position:absolute;right:6vw;bottom:44px;width:54px;height:54px;background:var(--orange);border-radius:7px;
-    display:flex;align-items:center;justify-content:center;transform:rotate(-4deg);
-    box-shadow:0 4px 14px rgba(255,105,0,.3)}
-  .cta .seal svg{width:34px;height:34px;display:block}
-
-  /* ---------- footer ---------- */
-  footer{border-top:1px solid var(--line);padding:56px 0 64px;color:var(--muted);font-size:14px}
-  footer .top{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap;margin-bottom:32px}
-  footer .brand{color:var(--ink)}
-  footer .links{display:flex;gap:26px;flex-wrap:wrap}
-  footer .links a{color:var(--muted);transition:color .2s}
-  footer .links a:hover{color:var(--ink)}
-  .disclaimer{max-width:70ch;line-height:1.7;color:var(--faint);font-size:13px}
-  .disclaimer strong{color:var(--muted);font-weight:600}
-
-  /* ---------- reveal animations ---------- */
-  .reveal{opacity:0;transform:translateY(30px);
-    transition:opacity .8s var(--ease-out),transform 1s var(--ease-spring)}
-  .reveal.in{opacity:1;transform:none}
-  .reveal[data-d="1"]{transition-delay:.08s}.reveal[data-d="2"]{transition-delay:.16s}.reveal[data-d="3"]{transition-delay:.24s}
-  /* clip-wipe variant for big headlines.
-     NOTE: keep ≥45% of the box unclipped — a fully clipped target never
-     intersects, so the IntersectionObserver would never reveal it. */
-  .reveal[data-fx="clip"]{clip-path:inset(0 0 55% 0);transform:translateY(24px);
-    transition:opacity .55s var(--ease-out),clip-path .95s var(--ease),transform .95s var(--ease)}
-  .reveal.in[data-fx="clip"]{clip-path:inset(-8% 0 -14% 0)}
-  /* word-by-word reveal (faint -> ink / deep-muted -> white) */
-  .words .w{color:var(--faint);transition:color .5s var(--ease)}
-  .deep .words .w,.sounding .words .w{color:#3E5068}
-  .words.in .w{color:inherit}
-
-  @media (max-width:860px){
-    .nav-links{display:none}
-    .feature .grid,.closing .grid,.deep-head .grid{grid-template-columns:1fr;gap:36px}
-    .feature.reverse .grid > .copy{order:0}
-    .hero{padding:128px 0 56px}
-    section.feature{padding:60px 0}
-    .deep-cards .grid{grid-template-columns:1fr}
-    .sounding{height:440px}
-  }
-  @media (max-width:600px){
-    .nav .nav-cta .btn-primary span{display:none}
-    .nav .nav-cta .btn-primary{padding:9px 11px}
-    .lang-toggle button{padding:5px 9px}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *{animation:none!important}
-    html{scroll-behavior:auto}
-    .reveal{opacity:1;transform:none;transition:none;clip-path:none!important}
-    .words .w{color:inherit}
-    .caret{display:none}
-    .scroll-progress{display:none}
-  }
-  /* ?motion=off — same stilled rendering as prefers-reduced-motion, opt-in via
-     URL for screenshot/archival tooling */
-  html[data-motion="off"] *{animation:none!important;transition:none!important}
-  html[data-motion="off"]{scroll-behavior:auto}
-  html[data-motion="off"] .reveal{opacity:1;transform:none;clip-path:none!important}
-  html[data-motion="off"] .words .w{color:inherit}
-  html[data-motion="off"] .caret{display:none}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+html[data-motion="off"] *,html[data-motion="off"] *::before,html[data-motion="off"] *::after{animation:none!important;transition:none!important}
+html[data-motion="off"]{scroll-behavior:auto}
 </style>
 </head>
 <body>
 
-<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+<canvas id="ocean" aria-hidden="true"></canvas>
 
-<!-- reusable glyphs: the whale fluke (assets/brand/mio-mark.svg) + platform icons -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="fluke" viewBox="0 0 1024 1024">
-    <path d="M 150 430 C 324 376, 464 430, 512 548 C 560 430, 700 376, 874 430 C 800 520, 700 570, 598 588 C 586 640, 590 700, 612 758 C 576 788, 448 788, 412 758 C 434 700, 438 640, 426 588 C 324 570, 224 520, 150 430 Z"/>
-  </symbol>
+  <symbol id="fluke" viewBox="0 0 1024 1024"><path d="M 150 430 C 324 376, 464 430, 512 548 C 560 430, 700 376, 874 430 C 800 520, 700 570, 598 588 C 586 640, 590 700, 612 758 C 576 788, 448 788, 412 758 C 434 700, 438 640, 426 588 C 324 570, 224 520, 150 430 Z"/></symbol>
   <symbol id="apple" viewBox="0 0 384 512"><path fill="currentColor" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></symbol>
   <symbol id="windows" viewBox="0 0 448 512"><path fill="currentColor" d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></symbol>
-  <symbol id="download" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v8.59l2.3-2.3a1 1 0 0 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V4a1 1 0 0 1 1-1zM5 18a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z"/></symbol>
-  <symbol id="arrow" viewBox="0 0 448 512"><path fill="currentColor" d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></symbol>
+  <symbol id="github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 .25a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.22.48-2.69-1.07-2.69-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.71 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.77-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.52.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.45.55.38A8 8 0 0 0 8 .25Z"/></symbol>
 </svg>
 
-<nav class="nav" id="nav">
-  <div class="container">
-    <a class="brand" href="#top"><svg fill="#FF6900"><use href="#fluke"/></svg> Mio</a>
-    <div class="nav-links">
-      <a href="#features" data-i18n="nav.features">Features</a>
-      <a href="#playground" data-i18n="nav.playground">Playground</a>
-      <a href="#deep" data-i18n="nav.deep">The deep</a>
-      <a href="#faq" data-i18n="nav.faq">FAQ</a>
-      <a href="https://github.com/shin4/mio">GitHub</a>
+<nav class="nav" aria-label="Main">
+  <a class="brand" href="#top" aria-label="Mio">
+    <svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="115" fill="#FF6900"/><path transform="translate(20.5 -11.7) scale(0.46)" fill="#fff" d="M 150 430 C 324 376, 464 430, 512 548 C 560 430, 700 376, 874 430 C 800 520, 700 570, 598 588 C 586 640, 590 700, 612 758 C 576 788, 448 788, 412 758 C 434 700, 438 640, 426 588 C 324 570, 224 520, 150 430 Z"/></svg>
+    Mio
+  </a>
+  <div class="nav-links">
+    <a href="#new" data-i18n="nav.new">What's new</a>
+    <a href="#film" data-i18n="nav.film">Film</a>
+    <a href="#models" data-i18n="nav.models">Models</a>
+    <a href="#heart" data-i18n="nav.heart">The heart</a>
+    <a href="#download" data-i18n="nav.download">Download</a>
+    <a href="#faq" data-i18n="nav.faq">FAQ</a>
+  </div>
+  <div class="nav-tools">
+    <div class="lang" role="group" aria-label="Language / 语言">
+      <button type="button" data-lang="zh">中</button>
+      <button type="button" data-lang="en">EN</button>
     </div>
-    <div class="nav-cta">
-      <div class="lang-toggle" role="group" aria-label="Language / 语言">
-        <button type="button" data-lang="zh">CN</button>
-        <button type="button" data-lang="en">EN</button>
-      </div>
-      <a class="btn btn-primary" href="https://github.com/shin4/mio">
-        <span data-i18n="nav.star">Star on GitHub</span>
-        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.22.48-2.69-1.07-2.69-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.71 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.77-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.52.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.45.55.38A8 8 0 0 0 8 .25Z"/></svg>
-      </a>
-    </div>
+    <a class="gh" href="https://github.com/shin4/mio"><svg aria-hidden="true"><use href="#github"/></svg><span>GitHub</span></a>
   </div>
 </nav>
 
-<main id="top">
+<aside class="hud" aria-hidden="true">
+  <div class="hud-read">
+    <div class="hud-m" id="hudM">0<small>m</small></div>
+    <div class="hud-zone" id="hudZone">Epipelagic</div>
+    <div class="hud-local" id="hudLocal">Sunlight zone</div>
+    <div class="hud-env">
+      <div><span data-i18n="hud.temp">Temp</span> <b id="hudT">24.0°C</b></div>
+      <div><span data-i18n="hud.pressure">Pressure</span> <b id="hudP">1 atm</b></div>
+      <div><span data-i18n="hud.light">Light</span> <b id="hudL">100%</b></div>
+    </div>
+  </div>
+  <div class="ruler" id="ruler"><div class="marker" id="marker"></div></div>
+</aside>
+<div class="mhud" aria-hidden="true"><span id="mM">0 m</span> · <b id="mZ">Sunlight zone</b></div>
 
-  <!-- SEA LEVEL · HERO -->
-  <section class="hero">
-    <div class="container">
-      <span class="kicker reveal">MIO — NATIVE DESKTOP AGENT FOR MIMO</span>
-      <h1 class="hero-title"><span class="ghost" aria-hidden="true">A whale for a heart, MiMo for a body.</span><span class="live"><span id="typed"></span><span class="caret" id="caret"></span></span></h1>
-      <p class="hero-sub reveal" data-d="1" data-i18n="hero.sub">A native desktop coding agent for MiMo — its heart is the open-source DeepSeek Harness runtime; its body is MiMo seeing, hearing, speaking, and coding.</p>
-      <div class="hero-download hero-cta reveal" data-d="2">
-        <div class="dl-buttons">
-          <a class="btn btn-primary" id="dl-primary" href="https://github.com/shin4/mio/releases">
-            <svg class="glyph" id="dl-icon" aria-hidden="true"><use href="#download"/></svg>
-            <span id="dl-text">Download</span>
-          </a>
-          <a class="btn btn-secondary" href="https://github.com/shin4/mio/releases">
-            <span data-i18n="download.all">All Downloads</span>
-            <svg class="glyph" aria-hidden="true"><use href="#arrow"/></svg>
-          </a>
+<main class="wrap" id="top">
+
+  <!-- 0 m · surface -->
+  <section class="hero" data-depth="0" data-zone="Epipelagic" data-zh="海面层" data-en="Sunlight zone" data-whale="right">
+    <div class="inner">
+      <div class="hero-copy">
+        <a class="chip" href="https://github.com/shin4/mio/releases" id="relChip"><em id="relTag">v0.4.0</em> <span><b style="color:var(--ink);font-weight:500" data-i18n="hero.chip">Official dsh Desktop core</b> · <span id="relDate">2026-09-25</span> →</span></a>
+        <h1 class="display"><span class="ln"><span data-i18n-html="hero.l1">A whale for a heart,</span></span><span class="ln"><span data-i18n-html="hero.l2"><span class="mimo">MiMo</span> for a body.</span></span></h1>
+        <p class="echo" data-i18n="hero.echo">鲸为心，MiMo 为身。</p>
+        <p class="hero-sub" data-i18n-html="hero.sub">Mio is a native desktop coding agent for MiMo. Since 0.4.0 its heart is the <b>official DeepSeek Harness Desktop</b>, and its body is the <b>MiMo model family</b>.</p>
+        <div class="cta-row">
+          <a class="btn btn-whale" id="heroDl" href="#download"><svg aria-hidden="true" id="heroIcon"><use href="#apple"/></svg><span id="heroDlText">Download</span> <small id="heroDlSub"></small></a>
+          <a class="btn btn-ghost" href="#download" data-i18n="hero.all">All platforms ↓</a>
         </div>
-        <p class="dl-version" id="dl-version" hidden>
-          <span data-i18n="download.latest">Latest release</span>
-          <span class="num" id="dl-version-num"></span>
-        </p>
-      </div>
-      <div class="hero-chips reveal" data-d="3" aria-hidden="true">
-        <span data-i18n="mq.coding">Coding</span>
-        <span data-i18n="mq.reasoning">Reasoning</span>
-        <span data-i18n="mq.multimodal">Multimodal</span>
-        <span data-i18n="mq.dictation">Dictation</span>
-        <span data-i18n="mq.speech">Speech</span>
-        <span data-i18n="mq.oss">Open source · MIT</span>
+        <div class="hero-meta">
+          <span data-i18n="hero.m1">Free · MIT open source</span>
+          <span data-i18n="hero.m2">macOS signed &amp; notarized</span>
+          <a href="https://github.com/shin4/mio/releases/download/v0.4.0/mio-0.4.0-mac-x64.dmg" id="altDl" data-i18n="hero.intel" hidden>Intel Mac</a>
+        </div>
+        <button class="voice" id="capabilities" type="button" aria-pressed="false">
+          <span class="vp"><svg viewBox="0 0 12 12" id="voiceIcon" aria-hidden="true"><path d="M2 1l9 5-9 5z" fill="currentColor"/></svg></span>
+          <span><span data-i18n="voice.label">Hear Mio introduce itself</span><br><small data-i18n="voice.sub">Synthesized with MiMo TTS · voice Chloe</small></span>
+          <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        </button>
+        <audio id="voiceAudio" preload="none"></audio>
       </div>
     </div>
+    <a class="dive-cue" href="#new"><i></i><span data-i18n="hero.dive">Dive</span></a>
   </section>
 
-  <!-- FEATURES (paper) -->
-  <div id="features"></div>
-
-  <section class="feature">
-    <div class="container">
-      <div class="grid">
-        <div class="copy">
-          <div class="eyebrow reveal" data-i18n="feat1.eyebrow">BODY — NATIVE RUNTIME</div>
-          <h2 class="feature-title reveal" data-fx="clip" data-d="1" data-i18n="feat1.title">MiMo, not a provider skin.</h2>
-          <p class="feature-desc words reveal" data-d="2" data-i18n="feat1.desc">MiMo models are first-class participants in the agent runtime. Request shaping, model selection, and context packaging are tuned for MiMo rather than treating it as a generic OpenAI-compatible provider.</p>
-          <div class="actions reveal" data-d="3"><a class="btn btn-secondary" href="https://github.com/shin4/mio" data-i18n="feat1.action">Read the architecture</a></div>
-        </div>
-        <div class="visual reveal" data-d="1">
-          <div class="window"><div class="bar"><i></i><i></i><i></i><span class="bar-title">Mio</span></div><img id="welcome-screenshot" src="./assets/welcome.png?v=0.3.1" alt="Mio 0.3.1 welcome screen — connect your MiMo account" width="640" height="520" loading="lazy" /></div>
-        </div>
+  <!-- 200 m · what's new -->
+  <section class="zone" id="new" data-depth="200" data-zone="Mesopelagic" data-zh="中层带 · 暮光区" data-en="Twilight zone">
+    <div class="inner news-grid">
+      <div class="news-head rise">
+        <div class="depth-tag"><i>200 m</i> <span data-i18n="new.tag">The last of the sunlight</span></div>
+        <h2 class="display" data-i18n-html="new.title">0.4.0 gets<br>a new heart.</h2>
+        <p class="echo" data-i18n="new.echo">换了心脏，还是那头鲸。</p>
+        <p class="lead" data-i18n="new.lead">The workspace, settings, tools and sessions are the official dsh Desktop, as upstream ships them. Mio adds one reviewed layer on top: its brand, the MiMo configuration, and native account setup.</p>
       </div>
-    </div>
-  </section>
-
-  <section class="feature reverse" id="capabilities">
-    <div class="container">
-      <div class="grid">
-        <div class="copy">
-          <div class="eyebrow reveal" data-i18n="feat2.eyebrow">BODY — SEE · HEAR · SPEAK</div>
-          <h2 class="feature-title reveal" data-fx="clip" data-d="1" data-i18n="feat2.title">See, hear, and speak.</h2>
-          <p class="feature-desc words reveal" data-d="2" data-i18n="feat2.desc">Multimodal understanding, audio dictation, and speech synthesis are native MiMo capabilities — designed to shape product behavior, not bolted on after the fact.</p>
-        </div>
-        <div class="visual reveal" data-d="1">
-          <div class="voice-demo">
-            <div class="vd-head"><span class="vd-dot"></span><span data-i18n="voice.kicker">Hear it — generated by MiMo TTS</span></div>
-            <div class="vd-row">
-              <div class="vd-meta"><span class="vd-lang">EN</span><span class="vd-voice mono">voice · Chloe</span></div>
-              <audio controls preload="none">
-                <source src="./assets/promo-en.mp3" type="audio/mpeg" />
-                <source src="./assets/promo-en.wav" type="audio/wav" />
-              </audio>
-            </div>
-            <div class="vd-row">
-              <div class="vd-meta"><span class="vd-lang">中文</span><span class="vd-voice mono">音色 · 冰糖</span></div>
-              <audio controls preload="none">
-                <source src="./assets/promo-zh.mp3" type="audio/mpeg" />
-                <source src="./assets/promo-zh.wav" type="audio/wav" />
-              </audio>
-            </div>
-            <p class="vd-note" data-i18n="voice.note">The voice you hear was synthesized by Mio’s own built-in TTS.</p>
-          </div>
-        </div>
+      <div class="news-list">
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k1">Heart · core</span><h3 data-i18n="new.t1">Official dsh Desktop 0.1.7-rc.2</h3><p data-i18n="new.d1">Upstream's native workspace, settings and tools. Version-pinned, patches reviewed, no fork.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k2">Body · models</span><h3 data-i18n="new.t2">MiMo V2.6 Flash by default, thinking on</h3><p data-i18n-html="new.d2">V2.6 Pro is one click away. Thinking switches per session, and requests only send <code>thinking.type</code>.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k3">Onboarding · setup</span><h3 data-i18n="new.t3">Paste a key, and the billing track follows</h3><p data-i18n-html="new.d3"><code>sk-</code> keys are pay-as-you-go; <code>tp-</code> keys are token plans with a region: CN, SGP or AMS.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k4">Identity · look</span><h3 data-i18n="new.t4">Mio's icons, theme, in Chinese and English</h3><p data-i18n="new.d4">macOS installers are signed and notarized; every installer ships with SHA-256 checksums and qualification evidence.</p></article>
       </div>
     </div>
   </section>
 
-  <!-- PLAYGROUND (paper) -->
-  <section class="feature" id="playground">
-    <div class="container">
-      <div class="eyebrow reveal" data-i18n="playground.eyebrow">BODY — TRY IT</div>
-      <h2 class="feature-title reveal" data-fx="clip" data-d="1" data-i18n="playground.title">Hand MiMo your material — watch it read.</h2>
-      <div class="pg reveal" data-d="2">
-        <div class="pg-tabs" role="tablist" aria-label="Playground demos">
-          <button class="pg-tab is-active" role="tab" data-demo="img2code" aria-controls="pg-panel" aria-selected="true" tabindex="0" data-i18n="playground.tab.img2code">Screenshot → code</button>
-          <button class="pg-tab" role="tab" data-demo="video" aria-controls="pg-panel" aria-selected="false" tabindex="-1" data-i18n="playground.tab.video">Video → understanding</button>
-          <button class="pg-tab" role="tab" data-demo="voice" aria-controls="pg-panel" aria-selected="false" tabindex="-1" data-i18n="playground.tab.voice">Speak → act</button>
+  <!-- 1,000 m · film -->
+  <section class="zone" id="film" data-depth="1000" data-zone="Bathypelagic" data-zh="深层带 · 午夜区" data-en="Midnight zone">
+    <div class="inner">
+      <div class="film-head rise">
+        <div>
+          <div class="depth-tag"><i>1,000 m</i> <span data-i18n="film.tag">Below here, the only light is living light</span></div>
+          <h2 class="display" data-i18n="film.title">Connected to MiMo in 15 seconds.</h2>
+          <p class="echo" data-i18n="film.echo">15 秒，连上 MiMo。</p>
         </div>
-        <div class="pg-panel" id="pg-panel" role="tabpanel">
-          <p class="pg-fallback" data-i18n="playground.loading">Loading the demo…</p>
-        </div>
-        <div class="pg-foot">
-          <span class="pg-honesty" data-i18n="playground.chip">Recorded real MiMo output</span>
-          <a class="btn btn-brand" href="https://github.com/shin4/mio/releases" data-i18n="playground.cta">Want to try your own? Download Mio →</a>
-        </div>
-        <p class="pg-note" data-i18n="playground.note">These are real, pre-captured MiMo responses replayed here — free uploads run in the desktop app.</p>
+        <p class="lead" data-i18n="film.lead">Connect your account on the welcome screen, paste a key, pick a region, and start coding.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- THE WATERLINE -->
-  <section class="sounding" id="deep" aria-label="The sounding — dive below the surface">
-    <div class="sea-level" aria-hidden="true"></div>
-    <div class="sea-label container" aria-hidden="true"><span>SEA LEVEL · 0M</span></div>
-    <div class="fluke-dive" aria-hidden="true">
-      <svg width="112" height="112" viewBox="0 0 1024 1024" fill="#FF6900"><use href="#fluke"/></svg>
-    </div>
-    <span class="s-kicker">THE SOUNDING</span>
-    <span class="s-line" data-i18n="sounding.line">Dive — the heart beats below.</span>
-    <div class="s-rope" aria-hidden="true"></div>
-  </section>
-
-  <!-- THE DEEP -->
-  <div class="deep">
-    <div class="mist mist-a" aria-hidden="true"></div>
-    <div class="mist mist-b" aria-hidden="true"></div>
-
-    <section class="deep-head">
-      <div class="container">
-        <div class="grid">
-          <div class="copy">
-            <h2 class="deep-state reveal" data-fx="clip">MIO = MIMO × <em>HARNESS</em></h2>
-            <p class="deep-lead words reveal" data-d="1" data-i18n="deep.lead">What beats below is a whale. Mio’s heart is the open-source DeepSeek Harness — models, tools, voice, and sessions are plugins, composed in configuration; every heartbeat lands in a replayable session log.</p>
-          </div>
-          <div class="visual reveal" data-d="2">
-            <div class="logcard" role="img" aria-label="Mio session log — every run is replayable">
-              <div class="lc-bar"><i></i><i></i><i></i><span class="lc-title" data-i18n="log.title">mio — session log · fully replayable</span></div>
-              <div class="lc-body">
-                <div><span class="lc-t">10:42:07</span>&nbsp;&nbsp;<span class="lc-role lc-user">user</span>&nbsp;&nbsp;<span class="lc-msg" data-i18n="log.l1">Make the settings page dark</span></div>
-                <div><span class="lc-t">10:42:08</span>&nbsp;&nbsp;<span class="lc-role lc-sys">plan</span>&nbsp;&nbsp;<span class="lc-dim" data-i18n="log.l2">read tokens.css → 3 hardcoded colors found</span></div>
-                <div><span class="lc-t">10:42:11</span>&nbsp;&nbsp;<span class="lc-role lc-sys">tool</span>&nbsp;&nbsp;<span class="lc-dim">edit src/theme/tokens.css <span class="lc-add">+18</span> <span class="lc-del">−6</span></span></div>
-                <div><span class="lc-t">10:42:13</span>&nbsp;&nbsp;<span class="lc-role lc-mimo">mimo</span>&nbsp;&nbsp;<span class="lc-msg" data-i18n="log.l4">Done. Cache hit 98%, cost ¥0.004</span></div>
+      <div class="film-stage rise">
+        <div class="player" id="player">
+          <div class="screen" id="screen" role="img" aria-label="Mio 0.4.0: connect MiMo, enter a key, start coding" data-i18n-aria="film.aria">
+            <div class="scene" data-s="0">
+              <div class="win small"><div class="win-bar"><i></i><i></i><i></i></div>
+                <div class="shot"><img data-shot="welcome" src="./assets/film/welcome.en.png" alt="" width="600" height="700" loading="lazy" /></div>
               </div>
             </div>
+            <div class="scene" data-s="1">
+              <div class="win small"><div class="win-bar"><i></i><i></i><i></i></div>
+                <div class="shot"><img data-shot="key" src="./assets/film/key.en.png" alt="" width="600" height="700" loading="lazy" />
+                  <div class="ov" style="left:14.5%;top:46.2%;width:71%;height:5.2%"><span class="dots" id="keyDots"></span></div>
+                  <div class="ring" id="ringRegion" style="left:67.5%;top:54.2%;width:19.5%;height:5.2%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="scene" data-s="2">
+              <div class="win big" id="mainWin"><div class="win-bar"><i></i><i></i><i></i></div>
+                <div class="shot"><img data-shot="workspace" src="./assets/film/workspace.en.png" alt="" width="1280" height="820" loading="lazy" />
+                  <div class="ov" id="promptCover" style="left:33.8%;top:51%;width:40%;height:3.4%"><span class="typed" id="typed"></span></div>
+                </div>
+              </div>
+            </div>
+            <span class="cursor-ring" id="cursorRing"></span>
+            <svg class="cursor" id="cursor" viewBox="0 0 24 24" style="left:62%;top:78%" aria-hidden="true"><path d="M3 2l7.5 19 2.6-7.7L21 10.8z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="ctrl">
+            <button class="play" id="play" type="button" aria-label="Pause"><svg viewBox="0 0 12 12" id="playIcon" aria-hidden="true"><rect x="2" y="1" width="3" height="10" fill="currentColor"/><rect x="7" y="1" width="3" height="10" fill="currentColor"/></svg></button>
+            <div class="chapters">
+              <button class="chap" type="button"><span class="bar"><i></i></span><span class="cl"><b>01</b><span data-i18n="film.c1">Connect MiMo</span></span></button>
+              <button class="chap" type="button"><span class="bar"><i></i></span><span class="cl"><b>02</b><span data-i18n="film.c2">Key and region</span></span></button>
+              <button class="chap" type="button"><span class="bar"><i></i></span><span class="cl"><b>03</b><span data-i18n="film.c3">Start coding</span></span></button>
+            </div>
+            <span class="tc" id="tc">0:00 / 0:15</span>
           </div>
         </div>
+        <p class="film-cap" data-i18n="film.cap">A walkthrough composed from real Mio 0.4.0 screens.</p>
       </div>
-    </section>
-
-    <section class="deep-cards">
-      <div class="container">
-        <div class="grid">
-          <div class="dcard reveal">
-            <span class="dc-k">EVERYTHING IS A PLUGIN</span>
-            <span class="dc-t" data-i18n="deep.c1t">Everything is a plugin</span>
-            <p class="dc-d" data-i18n="deep.c1d">Capabilities are Cordis plugins — models, tools, voice, sessions — swapped and recomposed at the configuration layer.</p>
-          </div>
-          <div class="dcard reveal" data-d="1">
-            <span class="dc-k">REPLAYABLE BY DESIGN</span>
-            <span class="dc-t" data-i18n="deep.c2t">Every run leaves a trace</span>
-            <p class="dc-d" data-i18n="deep.c2d">Everything the model sees lands in an append-only session log; resume, fork, and replay share the same stream.</p>
-          </div>
-          <div class="dcard reveal" data-d="2">
-            <span class="dc-k">MIMO-FIRST</span>
-            <span class="dc-t" data-i18n="deep.c3t">MiMo first, by default</span>
-            <p class="dc-d" data-i18n="deep.c3d">New sessions default to mimo-v2.5 with a 1M-token context, and the app connects your MiMo account on first run.</p>
-          </div>
-          <div class="dcard reveal" data-d="3">
-            <span class="dc-k">DUAL PROVIDER</span>
-            <span class="dc-t" data-i18n="deep.c4t">DeepSeek rides along</span>
-            <p class="dc-d" data-i18n="deep.c4d">dsh’s native DeepSeek routes ship alongside MiMo — pick per session, swap like any other plugin.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="deep-cost">
-      <div class="container">
-        <div class="cap-head">
-          <div class="eyebrow reveal" data-i18n="feat3.eyebrow">HEART — COST-AWARE</div>
-          <h2 class="feature-title reveal" data-fx="clip" data-d="1" data-i18n="feat3.title">The cheapest capable model, by default.</h2>
-          <p class="feature-desc words reveal" data-d="2" data-i18n="feat3.desc">Stable prefix-cache inputs, visible token and cost accounting, lightweight context by default, and model selection that matches each task to the cheapest capable MiMo model.</p>
-        </div>
-        <div class="art-cap reveal" data-d="2">
-          <div class="statusbar" role="img" aria-label="Mio in-app status bar — cache 98%, prefix stable, context 101.9K of 1.0M, usage 4.5M, 82 tokens per second">
-            <span class="sb-seg"><span class="sb-ring"></span><span class="sb-mut" data-i18n="cap.cache">Cache</span> <b data-count="98" data-suffix="%">98%</b></span>
-            <span class="sb-sep"></span>
-            <span class="sb-seg"><span class="sb-dot"></span><span data-i18n="cap.prefix">Prefix stable</span></span>
-            <span class="sb-sep"></span>
-            <span class="sb-seg"><span class="sb-mut" data-i18n="cap.context">Context</span> <b class="sb-ok" data-count="101.9" data-dec="1" data-suffix="K">101.9K</b><span class="sb-mut">&nbsp;/ 1.0M</span> <span class="sb-dot sb-sm"></span></span>
-            <span class="sb-sep"></span>
-            <span class="sb-seg"><span class="sb-mut" data-i18n="cap.usage">Usage</span> <b data-count="4.5" data-dec="1" data-suffix="M">4.5M</b></span>
-            <span class="sb-sep"></span>
-            <span class="sb-seg"><b class="sb-rate" data-count="82">82</b> <span class="sb-mut">tok/s</span></span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="closing">
-      <div class="container">
-        <div class="grid">
-          <h2 class="big reveal" data-fx="clip" data-i18n-html="closing.title">Body at the surface,<br>heart in the deep.</h2>
-          <p class="words reveal" data-d="1" data-i18n-html="closing.desc">Mio keeps project state isolated, so it runs beside upstream OpenCode without mixing local configuration. Project config lives in <span class="mono">mio.json</span>, and project-local agents, commands, and plans live under <span class="mono">.mio/</span>.</p>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- RESURFACE -->
-  <section class="resurface" aria-hidden="true">
-    <div class="fluke-rise">
-      <svg width="72" height="72" viewBox="0 0 1024 1024" fill="#FF6900"><use href="#fluke"/></svg>
     </div>
-    <span class="r-label">RESURFACE</span>
+  </section>
+
+  <!-- 4,000 m · models -->
+  <section class="zone" id="models" data-depth="4000" data-zone="Abyssopelagic" data-zh="深渊带" data-en="Abyssal zone">
+    <div class="inner">
+      <div class="rise">
+        <div class="depth-tag"><i>4,000 m</i> <span data-i18n="models.tag">400 atmospheres</span></div>
+        <h2 class="display" data-i18n="models.title">Two bodies, one switch.</h2>
+        <p class="echo" data-i18n="models.echo">两副身躯，一个开关。</p>
+      </div>
+      <div class="models">
+        <article class="spec rise">
+          <div class="spec-top"><span>mimo-v2.6-flash</span><span class="badge" data-i18n="models.f.badge">Default for new sessions</span></div>
+          <h3>V2.6 <em>Flash</em></h3>
+          <p data-i18n="models.f.desc">The everyday body: fast, economical, with thinking on by default.</p>
+          <dl>
+            <dt data-i18n="models.k.think">Thinking</dt><dd data-i18n="models.f.think">Off / High · High by default</dd>
+            <dt data-i18n="models.k.ctx">Context</dt><dd data-i18n="models.v.ctx">App budget 262,144 tokens</dd>
+            <dt data-i18n="models.k.out">Max output</dt><dd data-i18n="models.v.out">Up to 32,768 tokens</dd>
+          </dl>
+        </article>
+        <article class="spec pro rise">
+          <div class="spec-top"><span>mimo-v2.6-pro</span><span class="badge q" data-i18n="models.p.badge">One click away</span></div>
+          <h3>V2.6 <em>Pro</em></h3>
+          <p data-i18n="models.p.desc">For harder work: cross-file refactors and long debugging chains.</p>
+          <dl>
+            <dt data-i18n="models.k.think">Thinking</dt><dd>Off / High</dd>
+            <dt data-i18n="models.k.ctx">Context</dt><dd data-i18n="models.v.ctx">App budget 262,144 tokens</dd>
+            <dt>UltraSpeed</dt><dd class="muted" data-i18n="models.p.ultra">Build flag, off in releases</dd>
+          </dl>
+        </article>
+      </div>
+      <div class="console">
+        <div class="panel rise">
+          <h4 data-i18n="think.title">Thinking switch</h4>
+          <p class="hint" data-i18n="think.hint">Flip it: one field changes in the request, and the whale swarm changes with it.</p>
+          <div class="seg" role="group" aria-label="Thinking">
+            <button type="button" id="thinkOff" aria-pressed="false">Off</button>
+            <button type="button" id="thinkHigh" aria-pressed="true">High</button>
+          </div>
+<pre class="req" aria-live="polite">{
+  <span class="k">"model"</span>: <span class="s">"mimo-v2.6-flash"</span>,
+  <span class="k">"thinking"</span>: { <span class="k">"type"</span>: <span class="v" id="thinkVal">"enabled"</span> },
+  <span class="k">"max_completion_tokens"</span>: 32768
+}</pre>
+        </div>
+        <div class="panel rise">
+          <h4 data-i18n="key.title">Your key picks the route</h4>
+          <p class="hint" data-i18n="key.hint">Try a prefix. This page reads it locally; nothing is stored or sent.</p>
+          <label class="field" for="keyIn"><span class="sr" data-i18n="key.label">Example API key prefix</span><input id="keyIn" autocomplete="off" spellcheck="false" placeholder="sk-… / tp-…" value="tp-" /></label>
+          <dl class="route">
+            <dt data-i18n="key.bill">Billing</dt><dd id="rBill"></dd>
+            <dt data-i18n="key.region">Region</dt><dd><div class="regions" id="rReg"><button type="button" aria-pressed="true">CN</button><button type="button" aria-pressed="false">SGP</button><button type="button" aria-pressed="false">AMS</button></div></dd>
+            <dt data-i18n="key.endpoint">Endpoint</dt><dd id="rEnd" class="muted"></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6,000 m · the heart -->
+  <section class="zone" id="heart" data-depth="6000" data-zone="Hadalpelagic" data-zh="超深渊带" data-en="Hadal zone" data-whale="left" data-whale-fit=".orbit">
+    <div class="inner heart-grid">
+      <div class="copy rise">
+        <div class="depth-tag"><i>6,000 m</i> <span data-i18n="heart.tag">Where the heart beats</span></div>
+        <p class="equation">MIO <span>=</span> MIMO <span>×</span> <em>Harness</em></p>
+        <p class="lead" data-i18n="heart.lead">What beats below is a whale. DeepSeek Harness makes models, tools and sessions plugins; Mio pins an upstream version, adds one reviewed layer, and configures MiMo through dsh's own provider. When upstream improves, Mio moves a version pin.</p>
+        <div class="log">
+          <div class="log-bar"><i></i><i></i><i></i><span data-i18n="log.title">session log · append-only · replayable</span></div>
+          <div class="log-body">
+            <div><span class="t">10:42:07</span>&nbsp; <span class="u">user</span>&nbsp; <span data-i18n="log.l1">Add dark mode to the settings page</span></div>
+            <div><span class="t">10:42:08</span>&nbsp; <span class="p">tool</span>&nbsp; <span class="d">read  src/styles/tokens.css → 3 hardcoded colors</span></div>
+            <div><span class="t">10:42:11</span>&nbsp; <span class="p">tool</span>&nbsp; <span class="d">edit  tokens.css · settings.tsx  (+24 −9)</span></div>
+            <div><span class="t">10:42:13</span>&nbsp; <span class="m">mimo</span>&nbsp; <span data-i18n="log.l4">Done. V2.6 Flash · thinking enabled</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="orbit rise" aria-hidden="true">
+        <svg viewBox="0 0 520 520">
+          <defs><radialGradient id="core" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FF8A1F" stop-opacity=".55"/><stop offset="1" stop-color="#FF6900" stop-opacity="0"/></radialGradient></defs>
+          <circle cx="260" cy="260" r="120" fill="none" stroke="rgba(147,169,194,.22)" stroke-dasharray="2 6"/>
+          <circle cx="260" cy="260" r="210" fill="none" stroke="rgba(147,169,194,.14)"/>
+          <circle cx="260" cy="260" r="92" fill="url(#core)"/>
+          <text x="260" y="338" text-anchor="middle" class="nl" style="font-size:12px">dsh Desktop</text>
+          <text x="260" y="354" text-anchor="middle" class="ns">0.1.7-rc.2 · pinned</text>
+          <g class="spin">
+            <g transform="translate(260 140)"><circle r="6" fill="#FF6900"/><text y="-14" text-anchor="middle" class="nl">llm-pi-ai → MiMo</text></g>
+            <g transform="translate(364 320)"><circle r="5" fill="#62E3E8"/><text y="20" text-anchor="middle" class="nl">agent-default-model</text></g>
+            <g transform="translate(156 320)"><circle r="5" fill="#EAF1F8"/><text y="20" text-anchor="middle" class="nl">@mio/brand</text></g>
+          </g>
+          <g class="spin rev">
+            <g transform="translate(260 50)"><circle r="4" fill="#93A9C2"/><text y="-10" text-anchor="middle" class="ns">workspace</text></g>
+            <g transform="translate(470 260)"><circle r="4" fill="#93A9C2"/><text x="10" y="4" class="ns">tools</text></g>
+            <g transform="translate(260 470)"><circle r="4" fill="#93A9C2"/><text y="18" text-anchor="middle" class="ns">session log</text></g>
+            <g transform="translate(50 260)"><circle r="4" fill="#93A9C2"/><text x="-10" y="4" text-anchor="end" class="ns">settings</text></g>
+            <g transform="translate(408 112)"><circle r="4" fill="#93A9C2"/><text x="10" y="4" class="ns">welcome</text></g>
+            <g transform="translate(112 408)"><circle r="4" fill="#93A9C2"/><text x="-10" y="4" text-anchor="end" class="ns">plugins</text></g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10,935 m · download -->
+  <section class="zone" id="download" data-depth="10935" data-zone="Challenger Deep" data-zh="挑战者深渊" data-en="Challenger Deep">
+    <div class="inner">
+      <div class="rise">
+        <div class="depth-tag"><i>10,935 m</i> <span data-i18n="dl.tag">The deepest point on Earth</span></div>
+        <h2 class="display" data-i18n="dl.title">Bring the whale home.</h2>
+        <p class="echo" data-i18n="dl.echo">带一头鲸回水面。</p>
+      </div>
+      <div class="dl-grid">
+        <a class="dl rise" data-os="mac" data-arch="arm64" href="https://github.com/shin4/mio/releases/download/v0.4.0/mio-0.4.0-mac-arm64.dmg">
+          <span class="dl-os">macOS <small>APPLE SILICON</small></span>
+          <span class="dl-file"><span class="fn">mio-0.4.0-mac-arm64.dmg</span><br><span data-i18n="dl.zip">ZIP also available</span></span>
+          <span class="sig" data-i18n="dl.signed">Developer ID signed + notarized</span>
+          <span class="dl-go" data-i18n="dl.goDmg">Download DMG →</span>
+        </a>
+        <a class="dl rise" data-os="mac" data-arch="x64" href="https://github.com/shin4/mio/releases/download/v0.4.0/mio-0.4.0-mac-x64.dmg">
+          <span class="dl-os">macOS <small>INTEL</small></span>
+          <span class="dl-file"><span class="fn">mio-0.4.0-mac-x64.dmg</span><br><span data-i18n="dl.zip">ZIP also available</span></span>
+          <span class="sig" data-i18n="dl.signed">Developer ID signed + notarized</span>
+          <span class="dl-go" data-i18n="dl.goDmg">Download DMG →</span>
+        </a>
+        <a class="dl rise" data-os="win" data-arch="x64" href="https://github.com/shin4/mio/releases/download/v0.4.0/mio-0.4.0-win-x64-unsigned.exe">
+          <span class="dl-os">Windows <small>X64</small></span>
+          <span class="dl-file"><span class="fn">mio-0.4.0-win-x64-unsigned.exe</span></span>
+          <span class="sig warn" data-i18n="dl.unsigned">Unsigned: expect a SmartScreen prompt</span>
+          <span class="dl-go" data-i18n="dl.goExe">Download installer →</span>
+        </a>
+      </div>
+      <div class="notes rise">
+        <div><b data-i18n="dl.n1t">Verify</b><span data-i18n-html="dl.n1">Check downloads against <code>SHA256SUMS.txt</code>; <code>qualification.json</code> records each installer's source commit and signing state.</span></div>
+        <div><b data-i18n="dl.n2t">Upgrading from 0.3.x</b><span data-i18n="dl.n2">Install manually. 0.4.0 starts with a fresh data directory and does not migrate earlier sessions, settings or keys.</span></div>
+        <div><b>Linux</b><span data-i18n="dl.n3">Not part of 0.4.0; it will follow separately. Automatic updates are off in this release.</span></div>
+      </div>
+    </div>
   </section>
 
   <!-- FAQ -->
-  <section class="faq" id="faq">
-    <div class="container">
-      <h2 class="reveal" data-i18n="faq.title">Frequently asked questions</h2>
-      <details>
-        <summary data-i18n="faq.q1">What is Mio?</summary>
-        <p class="ans" data-i18n="faq.a1">Mio is a free, MIT-licensed native desktop coding agent for the MiMo model family. Its agent core is DeepSeek Harness (dsh) — the open-source, plugin-based agent runtime — composed MiMo-first, and its window is a thin Electron shell around dsh’s own web client. Installers ship for macOS, Windows, and Linux.</p>
-      </details>
-      <details>
-        <summary data-i18n="faq.q2">Why is it built on DeepSeek Harness?</summary>
-        <p class="ans" data-i18n="faq.a2">Because the hard parts of an agent runtime — the tool loop, session persistence, model routing, the web client — already exist there, and they are open source. In dsh every capability is a Cordis plugin, so Mio is a configuration layer over dsh’s own profile rather than a fork: MiMo-first defaults, Mio’s branding and onboarding as plugins, nothing upstream rewritten. Improvements to dsh arrive by moving a version pin.</p>
-      </details>
-      <details>
-        <summary data-i18n="faq.q3">What is the relationship to DeepSeek — can I use DeepSeek models?</summary>
-        <p class="ans" data-i18n="faq.a3">dsh is DeepSeek’s open-source agent harness (MIT); Mio is an independent project that runs on it, not a DeepSeek product. And yes — dsh’s native DeepSeek routes ship alongside MiMo instead of being stripped out, so you can pick either per session. New sessions default to MiMo.</p>
-      </details>
-      <details>
-        <summary data-i18n="faq.q4">Which MiMo models and capabilities does it support?</summary>
-        <p class="ans" data-i18n="faq.a4">mimo-v2.5 and mimo-v2.5-pro, each with a 1M-token context window and the four reasoning-effort levels MiMo accepts. Coding, reasoning, and image understanding run on the dsh core today. Voice dictation (ASR) and speech synthesis (TTS) are MiMo platform capabilities being rebuilt as standalone dsh plugins — dsh has no audio layer of its own, so that part is net-new work rather than a port.</p>
-      </details>
-      <details>
-        <summary data-i18n="faq.q5">Which platforms does Mio run on?</summary>
-        <p class="ans" data-i18n="faq.a5">Signed and notarized builds for macOS on Apple Silicon and Intel, a signed Windows installer, and a Linux AppImage — all produced by the same release pipeline. There is no terminal (TUI) version planned.</p>
-      </details>
-      <details>
-        <summary data-i18n="faq.q6">Is Mio an official Xiaomi product?</summary>
-        <p class="ans" data-i18n="faq.a6">No. Mio is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client.</p>
-      </details>
-      <details>
-        <summary data-i18n="faq.q7">How is it different from a generic OpenAI-compatible client?</summary>
-        <p class="ans" data-i18n="faq.a7">The wire is not the difference — MiMo speaks OpenAI chat completions, and Mio deliberately serves it through dsh’s own adapter instead of writing another one. What differs is everything around it: a runtime where MiMo is the default rather than one entry in a dropdown, an app that connects your MiMo account on first run and derives the right endpoint from your key, an append-only session log that makes any run resumable, forkable, and replayable, visible token and cost accounting, and project state kept under .mio/ so Mio runs beside other agents without mixing configuration.</p>
-      </details>
-      <details>
-        <summary data-i18n="faq.q8">How much does it cost, and how do I get started?</summary>
-        <p class="ans" data-i18n="faq.a8">The app is free and MIT-licensed; you pay only for MiMo API usage. Download the latest build from the Releases page, then paste a MiMo API key from platform.xiaomimimo.com on first run — the key’s prefix decides the billing track, pay-as-you-go (sk-) or token plan (tp-), so you never choose an endpoint by hand. You can skip that step and add the key later from the Models page.</p>
-      </details>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta">
-    <div class="container">
-      <h2 class="reveal" data-fx="clip"><span data-i18n="cta.title">Get Mio</span><span class="dot" data-i18n="cta.dot">.</span></h2>
-      <div class="hero-cta reveal" data-d="1">
-        <a class="btn btn-primary" href="https://github.com/shin4/mio" data-i18n="cta.viewGithub">View on GitHub</a>
-        <a class="btn btn-secondary" href="https://github.com/shin4/mio/issues/new" data-i18n="cta.report">Report an issue</a>
+  <section class="faq" id="faq" data-depth="10935" data-zone="Challenger Deep" data-zh="挑战者深渊" data-en="Challenger Deep">
+    <div class="inner">
+      <h2 class="display rise" data-i18n="faq.title">Frequently asked questions</h2>
+      <div class="faq-list">
+        <details><summary data-i18n="faq.q1">What is Mio?</summary><p class="ans" data-i18n="faq.a1">Mio is a free, MIT-licensed native desktop coding agent for the MiMo model family, for macOS and Windows. Since 0.4.0 it is the official DeepSeek Harness Desktop — upstream's workspace, tools and settings — with Mio's identity and MiMo defaults layered on top.</p></details>
+        <details><summary data-i18n="faq.q2">Why is it built on DeepSeek Harness?</summary><p class="ans" data-i18n="faq.a2">The hard parts of a desktop agent — the tool loop, session persistence, model routing, the workspace UI — already exist in dsh, and they are open source. Mio composes them instead of forking them: a pinned upstream source, a reviewed overlay, and MiMo configured through dsh's own provider. Upstream improvements arrive by moving a version pin.</p></details>
+        <details><summary data-i18n="faq.q3">Is Mio a DeepSeek product?</summary><p class="ans" data-i18n="faq.a3">No. DeepSeek Harness is DeepSeek's open-source agent harness (MIT). Mio is an independent project built on it and is not a DeepSeek product.</p></details>
+        <details><summary data-i18n="faq.q4">Which MiMo models does it support?</summary><p class="ans" data-i18n="faq.a4">MiMo V2.6 Flash, the default for new sessions, and MiMo V2.6 Pro. Thinking switches on or off per session; Off and High map to MiMo's thinking switch, with no graded effort levels. UltraSpeed is an opt-in build flag for accounts that support it.</p></details>
+        <details><summary data-i18n="faq.q5">Which platforms does Mio run on?</summary><p class="ans" data-i18n="faq.a5">macOS on Apple Silicon and Intel, Developer ID signed and notarized, and Windows x64, unsigned in 0.4.0. Linux will follow separately. There is no terminal (TUI) version planned.</p></details>
+        <details><summary data-i18n="faq.q6">Will my 0.3.x sessions and settings carry over?</summary><p class="ans" data-i18n="faq.a6">No. 0.4.0 starts with a fresh data directory and does not import earlier sessions, workspaces, settings or keys. Install it manually and reconnect your MiMo account on the welcome screen.</p></details>
+        <details><summary data-i18n="faq.q7">Is Mio an official Xiaomi product?</summary><p class="ans" data-i18n="faq.a7">No. Mio is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client.</p></details>
+        <details><summary data-i18n="faq.q8">How much does it cost, and how do I get started?</summary><p class="ans" data-i18n="faq.a8">The app is free and MIT-licensed; you pay only for MiMo API usage. Download the installer, then paste a MiMo API key from platform.xiaomimimo.com on the welcome screen: sk- keys are pay-as-you-go, tp- keys are token plans and ask for a region. You can skip that step and add the key later from the Models page.</p></details>
       </div>
     </div>
-    <div class="seal" aria-hidden="true"><svg viewBox="0 0 1024 1024" fill="#FFFFFF"><use href="#fluke"/></svg></div>
   </section>
 
+  <section class="resurface" data-depth="10935" data-zone="Challenger Deep" data-zh="挑战者深渊" data-en="Challenger Deep">
+    <h2 class="display rise" data-i18n-html="close.title">Body at the surface,<br>heart in the deep.</h2>
+    <p class="echo rise" data-i18n="close.echo">身在水面，心在深海。</p>
+    <a class="btn btn-ghost up" href="#top" data-i18n="close.up">↑ Resurface</a>
+  </section>
 </main>
 
 <footer>
-  <div class="container">
-    <div class="top">
-      <a class="brand" href="#top"><svg width="22" height="22" fill="#FF6900"><use href="#fluke"/></svg> Mio</a>
-      <div class="links">
-        <a href="https://github.com/shin4/mio">GitHub</a>
-        <a href="https://github.com/shin4/mio/issues" data-i18n="footer.issues">Issues</a>
-        <a href="https://github.com/shin4/mio/blob/main/LICENSE" data-i18n="footer.license">License (MIT)</a>
-      </div>
+  <div class="inner">
+    <p data-i18n-html="footer.disclaimer"><strong>Disclaimer:</strong> Mio is an independent, community-maintained project. It is not an official Xiaomi product and is not affiliated with, sponsored by, or endorsed by Xiaomi Inc. It connects to the MiMo model platform purely as a third-party client. Built on DeepSeek Harness (MIT); portions of the archived core are derived from opencode (MIT).</p>
+    <div class="f-links">
+      <a href="https://github.com/shin4/mio">GitHub</a>
+      <a href="https://github.com/shin4/mio/issues" data-i18n="footer.issues">Issues</a>
+      <a href="https://github.com/shin4/mio/blob/main/LICENSE" data-i18n="footer.license">License (MIT)</a>
     </div>
-    <p class="disclaimer" data-i18n-html="footer.disclaimer"><strong>Disclaimer:</strong> Mio is an independent, community-maintained project. It is not an official Xiaomi product and is not affiliated with, sponsored by, or endorsed by Xiaomi Inc. It connects to the MiMo model platform purely as a third-party client. Built on DeepSeek Harness (MIT); portions of the archived core are derived from opencode (MIT).</p>
-    <p class="disclaimer" style="margin-top:14px" data-i18n="footer.copyright">© 2026 Mio maintainers · MIT License</p>
+    <p data-i18n="footer.copyright">© 2026 Mio maintainers · MIT License</p>
   </div>
 </footer>
 
@@ -823,329 +702,588 @@
   const motionOff = new URLSearchParams(location.search).get('motion') === 'off';
   if (motionOff) document.documentElement.dataset.motion = 'off';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches || motionOff;
+  /* Shared with the WebGL module below: scroll depth and the thinking switch drive the scene. */
+  const dive = window.__dive = { depth: 0, think: 1, still: reduce };
 
-  /* ---- nav shadow + scroll progress ---- */
-  const nav = document.getElementById('nav');
-  const progress = document.getElementById('scroll-progress');
-  const onScroll = () => {
-    nav.classList.toggle('scrolled', scrollY > 8);
-    const max = document.documentElement.scrollHeight - innerHeight;
-    if (progress) progress.style.transform = 'scaleX(' + (max > 0 ? scrollY/max : 0) + ')';
-  };
-  addEventListener('scroll', onScroll, {passive:true}); onScroll();
-
-  /* ---- hero typewriter (restartable per language; ghost reserves the box height) ---- */
-  const typed = document.getElementById('typed');
-  const caret = document.getElementById('caret');
-  const ghost = document.querySelector('.hero-title .ghost');
-  let twTimer = null;
-  function runTypewriter(str){
-    clearTimeout(twTimer);
-    if (ghost) ghost.textContent = str;
-    if (reduce){ typed.textContent = str; if (caret) caret.style.display = 'none'; return; }
-    let i = 0;
-    const tick = () => {
-      typed.textContent = str.slice(0, i);
-      if (i++ <= str.length) twTimer = setTimeout(tick, 42 + Math.random()*46);
-    };
-    twTimer = setTimeout(tick, 250);
-  }
-
-  /* ---- word / character reveal wrapping (re-runnable on language switch) ---- */
-  function wrapWords(el, lang){
-    const tokenize = lang === 'zh'
-      ? (t => Array.from(t))              // CJK has no spaces → split per character
-      : (t => t.split(/(\s+)/));          // Latin → split per word
-    const walk = node => {
-      [...node.childNodes].forEach(n => {
-        if (n.nodeType === 3){
-          const frag = document.createDocumentFragment();
-          tokenize(n.textContent).forEach(tok => {
-            if (tok === '') return;
-            if (/^\s+$/.test(tok)){ frag.appendChild(document.createTextNode(tok)); return; }
-            const s = document.createElement('span'); s.className = 'w'; s.textContent = tok; frag.appendChild(s);
-          });
-          n.replaceWith(frag);
-        } else if (n.nodeType === 1 && !n.classList.contains('mono')) walk(n);
-      });
-    };
-    walk(el);
-    const step = lang === 'zh' ? 14 : 28;   // tighter stagger for CJK (more tokens)
-    el.querySelectorAll('.w').forEach((w, k) => w.style.transitionDelay = Math.min(k*step, 600) + 'ms');
-  }
-
-  /* ---- intersection reveal ---- */
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, {threshold:.18, rootMargin:'0px 0px -8% 0px'});
-  document.querySelectorAll('.reveal, .words').forEach(el => io.observe(el));
-
-  /* ---- status-bar count-up (easeOutExpo) ---- */
-  const sb = document.querySelector('.statusbar');
-  if (sb && !reduce) {
-    const easeOutExpo = t => t >= 1 ? 1 : 1 - Math.pow(2, -10*t);
-    const cio = new IntersectionObserver(es => es.forEach(e => {
-      if (!e.isIntersecting) return;
-      cio.disconnect();
-      sb.querySelectorAll('[data-count]').forEach(el => {
-        const end = parseFloat(el.dataset.count), dec = +(el.dataset.dec||0), suf = el.dataset.suffix||'';
-        const t0 = performance.now(), dur = 1500;
-        const step = now => {
-          const k = easeOutExpo(Math.min((now-t0)/dur, 1));
-          el.textContent = (end*k).toFixed(dec) + suf;
-          if (k < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-      });
-    }), {threshold:.6});
-    cio.observe(sb);
-  }
-
-  /* ---- i18n (EN / 简体中文) ---- */
   const I18N = {
     en: {
       'meta.title':'Mio — A native desktop coding agent for MiMo',
-      'meta.desc':'Mio is a native desktop coding agent for the MiMo model family — coding, reasoning, multimodal understanding, dictation, and speech, as first-class runtime capabilities.',
-      'nav.features':'Features','nav.playground':'Playground','nav.deep':'The deep','nav.faq':'FAQ','nav.star':'Star on GitHub',
-      'hero.title':'A whale for a heart,\nMiMo for a body.',
-      'hero.sub':'A native desktop coding agent for MiMo — its heart is the open-source DeepSeek Harness runtime; its body is MiMo seeing, hearing, speaking, and coding.',
-      'download.latest':'Latest release','download.all':'All Downloads','download.generic':'Download',
-      'download.mac':'Download for macOS','download.win':'Download for Windows','download.linux':'Download for Linux',
-      'mq.coding':'Coding','mq.reasoning':'Reasoning','mq.multimodal':'Multimodal','mq.dictation':'Dictation',
-      'mq.speech':'Speech','mq.oss':'Open source · MIT',
-      'feat1.eyebrow':'BODY — NATIVE RUNTIME','feat1.title':'MiMo, not a provider skin.',
-      'feat1.desc':'MiMo models are first-class participants in the agent runtime. Request shaping, model selection, and context packaging are tuned for MiMo rather than treating it as a generic OpenAI-compatible provider.',
-      'feat1.action':'Read the architecture',
-      'feat2.eyebrow':'BODY — SEE · HEAR · SPEAK','feat2.title':'See, hear, and speak.',
-      'feat2.desc':'Multimodal understanding, audio dictation, and speech synthesis are native MiMo capabilities — designed to shape product behavior, not bolted on after the fact.',
-      'voice.kicker':'Hear it — generated by MiMo TTS',
-      'voice.note':'The voice you hear was synthesized by Mio’s own built-in TTS — not a recorded voiceover.',
-      'playground.eyebrow':'BODY — TRY IT','playground.title':'Hand MiMo your material — watch it read.',
-      'playground.tab.img2code':'Screenshot → code','playground.tab.video':'Video → understanding','playground.tab.voice':'Speak → act',
-      'playground.loading':'Loading the demo…',
-      'playground.chip':'Recorded real MiMo output',
-      'playground.cta':'Want to try your own? Download Mio →',
-      'playground.note':'These are real, pre-captured MiMo responses replayed here — free uploads run in the desktop app.',
-      'sounding.line':'Dive — the heart beats below.',
-      'deep.lead':'What beats below is a whale. Mio’s heart is the open-source DeepSeek Harness — models, tools, voice, and sessions are plugins, composed in configuration; every heartbeat lands in a replayable session log.',
-      'log.title':'mio — session log · fully replayable',
-      'log.l1':'Make the settings page dark',
-      'log.l2':'read tokens.css → 3 hardcoded colors found',
-      'log.l4':'Done. Cache hit 98%, cost ¥0.004',
-      'deep.c1t':'Everything is a plugin',
-      'deep.c1d':'Capabilities are Cordis plugins — models, tools, voice, sessions — swapped and recomposed at the configuration layer.',
-      'deep.c2t':'Every run leaves a trace',
-      'deep.c2d':'Everything the model sees lands in an append-only session log; resume, fork, and replay share the same stream.',
-      'deep.c3t':'MiMo first, by default',
-      'deep.c3d':'New sessions default to mimo-v2.5 with a 1M-token context, and the app connects your MiMo account on first run.',
-      'deep.c4t':'DeepSeek rides along',
-      'deep.c4d':'dsh’s native DeepSeek routes ship alongside MiMo — pick per session, swap like any other plugin.',
-      'feat3.eyebrow':'HEART — COST-AWARE','feat3.title':'The cheapest capable model, by default.',
-      'feat3.desc':'Stable prefix-cache inputs, visible token and cost accounting, lightweight context by default, and model selection that matches each task to the cheapest capable MiMo model.',
-      'cap.cache':'Cache','cap.prefix':'Prefix stable','cap.context':'Context','cap.usage':'Usage',
-      'closing.title':'Body at the surface,<br>heart in the deep.',
-      'closing.desc':'Mio keeps project state isolated, so it runs beside upstream OpenCode without mixing local configuration. Project config lives in <span class="mono">mio.json</span>, and project-local agents, commands, and plans live under <span class="mono">.mio/</span>.',
-      'cta.title':'Get Mio','cta.dot':'.','cta.viewGithub':'View on GitHub','cta.report':'Report an issue',
+      'meta.desc':'Mio is a free, open-source native desktop coding agent for the MiMo model family, built on the official DeepSeek Harness Desktop. For macOS and Windows.',
+      'nav.new':'What\'s new','nav.film':'Film','nav.models':'Models','nav.heart':'The heart','nav.download':'Download','nav.faq':'FAQ',
+      'hud.temp':'Temp','hud.pressure':'Pressure','hud.light':'Light',
+      'hero.chip':'Official dsh Desktop core',
+      'hero.l1':'A whale for a heart,','hero.l2':'<span class="mimo">MiMo</span> for a body.','hero.echo':'鲸为心，MiMo 为身。',
+      'hero.sub':'Mio is a native desktop coding agent for MiMo. Since 0.4.0 its heart is the <b>official DeepSeek Harness Desktop</b>, and its body is the <b>MiMo model family</b>.',
+      'hero.all':'All platforms ↓','hero.m1':'Free · MIT open source','hero.m2':'macOS signed & notarized','hero.intel':'Intel Mac','hero.dive':'Dive',
+      'dl.hero.mac':'Download for macOS','dl.hero.macSub':'Apple Silicon · DMG','dl.hero.win':'Download for Windows','dl.hero.winSub':'x64 · unsigned','dl.hero.other':'See downloads','dl.hero.otherSub':'macOS · Windows',
+      'voice.label':'Hear Mio introduce itself','voice.sub':'Synthesized with MiMo TTS · voice Chloe',
+      'new.tag':'The last of the sunlight','new.title':'0.4.0 gets<br>a new heart.','new.echo':'换了心脏，还是那头鲸。',
+      'new.lead':'The workspace, settings, tools and sessions are the official dsh Desktop, as upstream ships them. Mio adds one reviewed layer on top: its brand, the MiMo configuration, and native account setup.',
+      'new.k1':'Heart · core','new.t1':'Official dsh Desktop 0.1.7-rc.2','new.d1':'Upstream\'s native workspace, settings and tools. Version-pinned, patches reviewed, no fork.',
+      'new.k2':'Body · models','new.t2':'MiMo V2.6 Flash by default, thinking on','new.d2':'V2.6 Pro is one click away. Thinking switches per session, and requests only send <code>thinking.type</code>.',
+      'new.k3':'Onboarding · setup','new.t3':'Paste a key, and the billing track follows','new.d3':'<code>sk-</code> keys are pay-as-you-go; <code>tp-</code> keys are token plans with a region: CN, SGP or AMS.',
+      'new.k4':'Identity · look','new.t4':'Mio\'s icons and theme, in Chinese and English','new.d4':'macOS installers are signed and notarized; every installer ships with SHA-256 checksums and qualification evidence.',
+      'film.tag':'Below here, the only light is living light','film.title':'Connected to MiMo in 15 seconds.','film.echo':'15 秒，连上 MiMo。',
+      'film.lead':'Connect your account on the welcome screen, paste a key, pick a region, and start coding.',
+      'film.aria':'Mio 0.4.0: connect MiMo, enter a key, start coding',
+      'film.c1':'Connect MiMo','film.c2':'Key and region','film.c3':'Start coding',
+      'film.cap':'A walkthrough composed from real Mio 0.4.0 screens.','film.prompt':'Add dark mode to the settings page, keep the orange accent',
+      'film.play':'Play','film.pause':'Pause',
+      'models.tag':'400 atmospheres','models.title':'Two bodies, one switch.','models.echo':'两副身躯，一个开关。',
+      'models.f.badge':'Default for new sessions','models.f.desc':'The everyday body: fast, economical, with thinking on by default.',
+      'models.k.think':'Thinking','models.k.ctx':'Context','models.k.out':'Max output',
+      'models.f.think':'Off / High · High by default','models.v.ctx':'App budget 262,144 tokens','models.v.out':'Up to 32,768 tokens',
+      'models.p.badge':'One click away','models.p.desc':'For harder work: cross-file refactors and long debugging chains.','models.p.ultra':'Build flag, off in releases',
+      'think.title':'Thinking switch','think.hint':'Flip it: one field changes in the request, and the whale swarm changes with it.',
+      'key.title':'Your key picks the route','key.hint':'Try a prefix. This page reads it locally; nothing is stored or sent.','key.label':'Example API key prefix',
+      'key.bill':'Billing','key.region':'Region','key.endpoint':'Endpoint',
+      'key.tp':'Token Plan','key.sk':'Pay-as-you-go','key.unknown':'Unrecognized prefix','key.empty':'Waiting for a key',
+      'key.tpEnd':'Derived from key and region','key.skEnd':'No region needed','key.hintEnd':'Starts with sk- or tp-',
+      'heart.tag':'Where the heart beats',
+      'heart.lead':'What beats below is a whale. DeepSeek Harness makes models, tools and sessions plugins; Mio pins an upstream version, adds one reviewed layer, and configures MiMo through dsh\'s own provider. When upstream improves, Mio moves a version pin.',
+      'log.title':'session log · append-only · replayable','log.l1':'Add dark mode to the settings page','log.l4':'Done. V2.6 Flash · thinking enabled',
+      'dl.tag':'The deepest point on Earth','dl.title':'Bring the whale home.','dl.echo':'带一头鲸回水面。',
+      'dl.zip':'ZIP also available','dl.signed':'Developer ID signed + notarized','dl.unsigned':'Unsigned: expect a SmartScreen prompt',
+      'dl.goDmg':'Download DMG →','dl.goExe':'Download installer →',
+      'dl.n1t':'Verify','dl.n1':'Check downloads against <code>SHA256SUMS.txt</code>; <code>qualification.json</code> records each installer\'s source commit and signing state.',
+      'dl.n2t':'Upgrading from 0.3.x','dl.n2':'Install manually. 0.4.0 starts with a fresh data directory and does not migrate earlier sessions, settings or keys.',
+      'dl.n3':'Not part of 0.4.0; it will follow separately. Automatic updates are off in this release.',
       'faq.title':'Frequently asked questions',
       'faq.q1':'What is Mio?',
-      'faq.a1':'Mio is a free, MIT-licensed native desktop coding agent for the MiMo model family. Its agent core is DeepSeek Harness (dsh) — the open-source, plugin-based agent runtime — composed MiMo-first, and its window is a thin Electron shell around dsh’s own web client. Installers ship for macOS, Windows, and Linux.',
+      'faq.a1':'Mio is a free, MIT-licensed native desktop coding agent for the MiMo model family, for macOS and Windows. Since 0.4.0 it is the official DeepSeek Harness Desktop — upstream\'s workspace, tools and settings — with Mio\'s identity and MiMo defaults layered on top.',
       'faq.q2':'Why is it built on DeepSeek Harness?',
-      'faq.a2':'Because the hard parts of an agent runtime — the tool loop, session persistence, model routing, the web client — already exist there, and they are open source. In dsh every capability is a Cordis plugin, so Mio is a configuration layer over dsh’s own profile rather than a fork: MiMo-first defaults, Mio’s branding and onboarding as plugins, nothing upstream rewritten. Improvements to dsh arrive by moving a version pin.',
-      'faq.q3':'What is the relationship to DeepSeek — can I use DeepSeek models?',
-      'faq.a3':'dsh is DeepSeek’s open-source agent harness (MIT); Mio is an independent project that runs on it, not a DeepSeek product. And yes — dsh’s native DeepSeek routes ship alongside MiMo instead of being stripped out, so you can pick either per session. New sessions default to MiMo.',
-      'faq.q4':'Which MiMo models and capabilities does it support?',
-      'faq.a4':'mimo-v2.5 and mimo-v2.5-pro, each with a 1M-token context window and the four reasoning-effort levels MiMo accepts. Coding, reasoning, and image understanding run on the dsh core today. Voice dictation (ASR) and speech synthesis (TTS) are MiMo platform capabilities being rebuilt as standalone dsh plugins — dsh has no audio layer of its own, so that part is net-new work rather than a port.',
+      'faq.a2':'The hard parts of a desktop agent — the tool loop, session persistence, model routing, the workspace UI — already exist in dsh, and they are open source. Mio composes them instead of forking them: a pinned upstream source, a reviewed overlay, and MiMo configured through dsh\'s own provider. Upstream improvements arrive by moving a version pin.',
+      'faq.q3':'Is Mio a DeepSeek product?',
+      'faq.a3':'No. DeepSeek Harness is DeepSeek\'s open-source agent harness (MIT). Mio is an independent project built on it and is not a DeepSeek product.',
+      'faq.q4':'Which MiMo models does it support?',
+      'faq.a4':'MiMo V2.6 Flash, the default for new sessions, and MiMo V2.6 Pro. Thinking switches on or off per session; Off and High map to MiMo\'s thinking switch, with no graded effort levels. UltraSpeed is an opt-in build flag for accounts that support it.',
       'faq.q5':'Which platforms does Mio run on?',
-      'faq.a5':'Signed and notarized builds for macOS on Apple Silicon and Intel, a signed Windows installer, and a Linux AppImage — all produced by the same release pipeline. There is no terminal (TUI) version planned.',
-      'faq.q6':'Is Mio an official Xiaomi product?',
-      'faq.a6':'No. Mio is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client.',
-      'faq.q7':'How is it different from a generic OpenAI-compatible client?',
-      'faq.a7':'The wire is not the difference — MiMo speaks OpenAI chat completions, and Mio deliberately serves it through dsh’s own adapter instead of writing another one. What differs is everything around it: a runtime where MiMo is the default rather than one entry in a dropdown, an app that connects your MiMo account on first run and derives the right endpoint from your key, an append-only session log that makes any run resumable, forkable, and replayable, visible token and cost accounting, and project state kept under .mio/ so Mio runs beside other agents without mixing configuration.',
+      'faq.a5':'macOS on Apple Silicon and Intel, Developer ID signed and notarized, and Windows x64, unsigned in 0.4.0. Linux will follow separately. There is no terminal (TUI) version planned.',
+      'faq.q6':'Will my 0.3.x sessions and settings carry over?',
+      'faq.a6':'No. 0.4.0 starts with a fresh data directory and does not import earlier sessions, workspaces, settings or keys. Install it manually and reconnect your MiMo account on the welcome screen.',
+      'faq.q7':'Is Mio an official Xiaomi product?',
+      'faq.a7':'No. Mio is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client.',
       'faq.q8':'How much does it cost, and how do I get started?',
-      'faq.a8':'The app is free and MIT-licensed; you pay only for MiMo API usage. Download the latest build from the Releases page, then paste a MiMo API key from platform.xiaomimimo.com on first run — the key’s prefix decides the billing track, pay-as-you-go (sk-) or token plan (tp-), so you never choose an endpoint by hand. You can skip that step and add the key later from the Models page.',
+      'faq.a8':'The app is free and MIT-licensed; you pay only for MiMo API usage. Download the installer, then paste a MiMo API key from platform.xiaomimimo.com on the welcome screen: sk- keys are pay-as-you-go, tp- keys are token plans and ask for a region. You can skip that step and add the key later from the Models page.',
+      'close.title':'Body at the surface,<br>heart in the deep.','close.echo':'身在水面，心在深海。','close.up':'↑ Resurface',
       'footer.issues':'Issues','footer.license':'License (MIT)',
       'footer.disclaimer':'<strong>Disclaimer:</strong> Mio is an independent, community-maintained project. It is not an official Xiaomi product and is not affiliated with, sponsored by, or endorsed by Xiaomi Inc. It connects to the MiMo model platform purely as a third-party client. Built on DeepSeek Harness (MIT); portions of the archived core are derived from opencode (MIT).',
       'footer.copyright':'© 2026 Mio maintainers · MIT License'
     },
     zh: {
       'meta.title':'Mio — 为 MiMo 打造的原生桌面代码智能体',
-      'meta.desc':'Mio 是为 MiMo 模型家族打造的原生桌面代码智能体——将编程、推理、多模态理解、听写与语音合成作为一等运行时能力。',
-      'nav.features':'特性','nav.playground':'试玩','nav.deep':'深处','nav.faq':'常见问题','nav.star':'在 GitHub 点 Star',
-      'hero.title':'鲸为心，MiMo 为身。',
-      'hero.sub':'为 MiMo 打造的原生桌面代码智能体——心脏是开源的 DeepSeek Harness 运行时，身体是 MiMo 的看、听、说与编程。',
-      'download.latest':'最新版本','download.all':'全部下载','download.generic':'下载',
-      'download.mac':'下载 macOS 版','download.win':'下载 Windows 版','download.linux':'下载 Linux 版',
-      'mq.coding':'编程','mq.reasoning':'推理','mq.multimodal':'多模态','mq.dictation':'语音听写',
-      'mq.speech':'语音合成','mq.oss':'开源 · MIT',
-      'feat1.eyebrow':'BODY — NATIVE RUNTIME','feat1.title':'MiMo，而非提供商套壳。',
-      'feat1.desc':'MiMo 模型是智能体运行时中的一等公民。请求构造、模型选择与上下文打包都为 MiMo 调优，而不是把它当作通用的 OpenAI 兼容提供商。',
-      'feat1.action':'查看架构',
-      'feat2.eyebrow':'BODY — SEE · HEAR · SPEAK','feat2.title':'能看、能听、能说。',
-      'feat2.desc':'多模态理解、语音听写与语音合成都是 MiMo 的原生能力——用来塑造产品行为，而不是事后拼接。',
-      'voice.kicker':'听一段 — 由 MiMo TTS 生成',
-      'voice.note':'你听到的语音由 Mio 内置的 TTS 合成——不是请人配音录的。',
-      'playground.eyebrow':'BODY — TRY IT','playground.title':'把素材交给 MiMo，看它怎么读懂。',
-      'playground.tab.img2code':'截图 → 代码','playground.tab.video':'看视频 → 读懂','playground.tab.voice':'说话 → 执行',
-      'playground.loading':'正在加载演示…',
-      'playground.chip':'MiMo 真实输出回放',
-      'playground.cta':'想用自己的素材？下载 Mio →',
-      'playground.note':'这些是预置示例的真实回放——自由上传请在桌面 app 里玩。',
-      'sounding.line':'下潜——心脏在深处',
-      'deep.lead':'水下跳动的，是一头鲸。Mio 的心脏是开源的 DeepSeek Harness——模型、工具、语音、会话都是插件，在配置层组合；每一次心跳，都写进可回放的会话日志。',
-      'log.title':'mio — 会话日志 · 一切可回放',
-      'log.l1':'把设置页改成深色主题',
-      'log.l2':'读取 tokens.css → 定位 3 处硬编码色值',
-      'log.l4':'已完成。缓存命中 98%，本次成本 ¥0.004',
-      'deep.c1t':'一切皆插件',
-      'deep.c1d':'能力由 Cordis 插件提供——模型、工具、语音、会话——在配置层自由替换与重组。',
-      'deep.c2t':'有迹可循',
-      'deep.c2d':'模型看到的一切都写入仅追加的会话日志；恢复、分叉与回放共享同一份事件流。',
-      'deep.c3t':'MiMo 默认在前',
-      'deep.c3d':'新会话默认 mimo-v2.5，上下文 1M token；首次启动即接入你的 MiMo 账号。',
-      'deep.c4t':'DeepSeek 并肩可用',
-      'deep.c4d':'保留 dsh 原生的 DeepSeek 路由，与 MiMo 并列可选——像其它插件一样随手切换。',
-      'feat3.eyebrow':'HEART — COST-AWARE','feat3.title':'默认选用最具性价比的可用模型。',
-      'feat3.desc':'稳定的前缀缓存输入、可见的 token 与成本核算、默认轻量的上下文，以及为每个任务匹配最便宜可用 MiMo 模型的选择策略。',
-      'cap.cache':'缓存','cap.prefix':'前缀稳定','cap.context':'上下文','cap.usage':'用量',
-      'closing.title':'身在水面，<br>心在深海。',
-      'closing.desc':'Mio 让项目状态保持隔离，因此能与上游 OpenCode 并存而不混用本地配置。项目配置位于 <span class="mono">mio.json</span>，项目级的智能体、命令与计划位于 <span class="mono">.mio/</span>。',
-      'cta.title':'获取 Mio','cta.dot':'。','cta.viewGithub':'在 GitHub 查看','cta.report':'反馈问题',
+      'meta.desc':'Mio 是为 MiMo 模型家族打造的免费开源原生桌面代码智能体，基于官方 DeepSeek Harness Desktop，支持 macOS 与 Windows。',
+      'nav.new':'0.4.0 新变化','nav.film':'实机影片','nav.models':'模型','nav.heart':'心脏','nav.download':'下载','nav.faq':'常见问题',
+      'hud.temp':'水温','hud.pressure':'水压','hud.light':'光照',
+      'hero.chip':'官方 dsh Desktop 内核',
+      'hero.l1':'鲸为心，','hero.l2':'<span class="mimo">MiMo</span> 为身。','hero.echo':'A whale for a heart, MiMo for a body.',
+      'hero.sub':'Mio 是为 MiMo 打造的原生桌面代码智能体。0.4.0 起，心脏换成<b>官方 DeepSeek Harness Desktop</b>，身躯是 <b>MiMo 系列模型</b>。',
+      'hero.all':'全部平台 ↓','hero.m1':'免费 · MIT 开源','hero.m2':'macOS 已签名公证','hero.intel':'Intel 版','hero.dive':'下潜',
+      'dl.hero.mac':'下载 macOS 版','dl.hero.macSub':'Apple Silicon · DMG','dl.hero.win':'下载 Windows 版','dl.hero.winSub':'x64 · 未签名','dl.hero.other':'查看下载','dl.hero.otherSub':'macOS · Windows',
+      'voice.label':'听 Mio 自我介绍','voice.sub':'由 MiMo TTS 合成 · 音色 冰糖',
+      'new.tag':'最后一缕阳光','new.title':'0.4.0，<br>换了一颗心脏。','new.echo':'New heart, same whale.',
+      'new.lead':'工作区、设置、工具与会话全部沿用官方 dsh Desktop。Mio 只在上面加一层审阅过的补丁：品牌、MiMo 配置，以及原生的账号接入。',
+      'new.k1':'Heart · 内核','new.t1':'官方 dsh Desktop 0.1.7-rc.2','new.d1':'上游原生工作区、设置与工具，版本锁定、补丁可审阅，不 fork。',
+      'new.k2':'Body · 模型','new.t2':'默认 MiMo V2.6 Flash，推理开启','new.d2':'V2.6 Pro 一键切换；推理可按会话开关，请求只发 <code>thinking.type</code>。',
+      'new.k3':'Onboarding · 接入','new.t3':'粘贴 Key，自动识别计费方式','new.d3':'<code>sk-</code> 走按量付费；<code>tp-</code> 是订阅套餐，再选地域 CN / SGP / AMS。',
+      'new.k4':'Identity · 外观','new.t4':'Mio 的图标、主题与中英文体验','new.d4':'macOS 安装包签名并公证，全部安装包附 SHA-256 校验和与验证记录。',
+      'film.tag':'从这里开始，光来自生物自己','film.title':'15 秒，连上 MiMo。','film.echo':'Connected to MiMo in 15 seconds.',
+      'film.lead':'欢迎页连接账号，粘贴 Key、选择地域，然后直接开始写代码。',
+      'film.aria':'Mio 0.4.0 流程：连接 MiMo、填写 Key、进入工作区',
+      'film.c1':'连接 MiMo','film.c2':'Key 与地域','film.c3':'开始编码',
+      'film.cap':'由 Mio 0.4.0 实机截图合成的流程演示。','film.prompt':'给设置页加深色模式，保留现有的橙色强调色',
+      'film.play':'播放','film.pause':'暂停',
+      'models.tag':'400 个大气压','models.title':'两副身躯，一个开关。','models.echo':'Two bodies, one switch.',
+      'models.f.badge':'新会话默认','models.f.desc':'日常编码的默认身躯：快，经济，推理默认开启。',
+      'models.k.think':'推理','models.k.ctx':'上下文','models.k.out':'单次输出',
+      'models.f.think':'Off / High · 默认 High','models.v.ctx':'应用预算 262,144 tokens','models.v.out':'最多 32,768 tokens',
+      'models.p.badge':'一键切换','models.p.desc':'留给更难的任务：跨文件重构、长链路排查。','models.p.ultra':'构建开关，发行版默认关闭',
+      'think.title':'推理开关','think.hint':'切换一下：请求里只变一个字段，海里的鲸群也跟着变。',
+      'key.title':'Key 决定路线','key.hint':'输入前缀试试。页面只在本地识别前缀，不会保存或发送任何内容。','key.label':'示例 API Key 前缀',
+      'key.bill':'计费','key.region':'地域','key.endpoint':'端点',
+      'key.tp':'订阅套餐 Token Plan','key.sk':'按量付费','key.unknown':'无法识别的前缀','key.empty':'等待输入',
+      'key.tpEnd':'由 Key 与地域推导，无需手填','key.skEnd':'无需选择地域','key.hintEnd':'以 sk- 或 tp- 开头',
+      'heart.tag':'心脏在这里跳动',
+      'heart.lead':'水下跳动的，是一头鲸。DeepSeek Harness 把模型、工具、会话都做成插件；Mio 只锁定上游版本、叠一层审阅过的补丁，把 MiMo 配进 dsh 自带的 provider。上游变好，Mio 挪一下版本锁就跟上。',
+      'log.title':'session log · append-only · 可回放','log.l1':'给设置页加深色模式','log.l4':'完成。V2.6 Flash · thinking enabled',
+      'dl.tag':'地球最深处','dl.title':'带一头鲸回水面。','dl.echo':'Bring the whale home.',
+      'dl.zip':'另有 .zip','dl.signed':'Developer ID 签名 + 公证','dl.unsigned':'未签名：会出现 SmartScreen 提示',
+      'dl.goDmg':'下载 DMG →','dl.goExe':'下载安装包 →',
+      'dl.n1t':'校验','dl.n1':'用 <code>SHA256SUMS.txt</code> 核对下载；<code>qualification.json</code> 记录每个安装包的源码提交与签名状态。',
+      'dl.n2t':'从 0.3.x 升级','dl.n2':'需手动安装。0.4.0 使用全新数据目录，不迁移旧会话、设置与 Key。',
+      'dl.n3':'不在 0.4.0 中，后续单独提供。本版未启用自动更新。',
       'faq.title':'常见问题',
       'faq.q1':'什么是 Mio？',
-      'faq.a1':'Mio 是面向 MiMo 模型家族的免费开源（MIT）原生桌面代码智能体。它的智能体内核是开源的插件化运行时 DeepSeek Harness（dsh），以 MiMo 优先的方式组合而成；窗口则是一层薄薄的 Electron 外壳，托管 dsh 自己的 Web 客户端。macOS、Windows、Linux 均提供安装包。',
+      'faq.a1':'Mio 是面向 MiMo 模型家族的免费开源（MIT）原生桌面代码智能体，支持 macOS 与 Windows。自 0.4.0 起，它就是官方 DeepSeek Harness Desktop——沿用上游的工作区、工具与设置——再叠加 Mio 的品牌与 MiMo 默认配置。',
       'faq.q2':'为什么建立在 DeepSeek Harness 之上？',
-      'faq.a2':'因为智能体运行时最难的那几块——工具循环、会话持久化、模型路由、Web 客户端——dsh 已经做好，而且是开源的。在 dsh 里每一项能力都是 Cordis 插件，所以 Mio 是覆盖在 dsh 自有 profile 之上的一层配置，而不是一个 fork：MiMo 优先的默认值、Mio 的品牌与首启接入都以插件形式存在，上游一行没有改写。dsh 的改进，挪一下版本号就继承过来。',
-      'faq.q3':'那 Mio 和 DeepSeek 是什么关系？能用 DeepSeek 模型吗？',
-      'faq.a3':'dsh 是 DeepSeek 开源的智能体运行时（MIT），Mio 是跑在它上面的独立项目，并非 DeepSeek 的产品。至于模型：dsh 原生的 DeepSeek 路由被保留下来，而不是删掉，与 MiMo 并列可选，按会话切换即可；新会话默认走 MiMo。',
-      'faq.q4':'它支持哪些 MiMo 模型与能力？',
-      'faq.a4':'mimo-v2.5 与 mimo-v2.5-pro，均为 100 万 token 上下文，并支持 MiMo 接受的四档推理强度。编程、推理与图像理解今天已经跑在 dsh 内核上；语音听写（ASR）与语音合成（TTS）是 MiMo 平台的原生能力，正作为独立的 dsh 插件重建——dsh 自身没有音频层，这一块是净新增，而不是搬运。',
+      'faq.a2':'桌面智能体最难的那几块——工具循环、会话持久化、模型路由、工作区界面——dsh 都已做好，而且是开源的。Mio 选择组合而不是 fork：锁定版本的上游源码、一层审阅过的补丁，以及通过 dsh 自带 provider 完成的 MiMo 配置。上游的改进，挪一下版本锁就继承过来。',
+      'faq.q3':'Mio 是 DeepSeek 的产品吗？',
+      'faq.a3':'不是。DeepSeek Harness 是 DeepSeek 开源的智能体运行时（MIT），Mio 是基于它构建的独立项目，并非 DeepSeek 的产品。',
+      'faq.q4':'支持哪些 MiMo 模型？',
+      'faq.a4':'MiMo V2.6 Flash（新会话默认）与 MiMo V2.6 Pro。推理可按会话开关；Off 与 High 对应 MiMo 的 thinking 开关，没有分级强度。UltraSpeed 是面向支持该模型账号的可选构建开关。',
       'faq.q5':'Mio 能在哪些平台运行？',
-      'faq.a5':'macOS（Apple Silicon 与 Intel，已签名并公证）、Windows（已签名安装包）、Linux（AppImage），由同一条发布流水线产出。不计划提供终端界面（TUI）。',
-      'faq.q6':'Mio 是小米官方产品吗？',
-      'faq.a6':'不是。Mio 是一个独立的、由社区维护的项目，与小米公司（Xiaomi Inc.）无附属、赞助或背书关系，仅作为第三方客户端连接 MiMo 模型平台。',
-      'faq.q7':'它与通用 OpenAI 兼容客户端有什么不同？',
-      'faq.a7':'差别不在协议上——MiMo 说的就是 OpenAI chat completions，而 Mio 刻意用 dsh 自带的适配器去接，没有再写一个。差别在协议之外：一个默认就是 MiMo 的运行时，而不是下拉框里的一项；首次启动即接入你的 MiMo 账号，并从 Key 推断出正确的端点；追加式会话日志让任何一次运行都可恢复、可分叉、可回放；token 与成本可见；项目状态收在 .mio/ 之下，因此 Mio 能与其它智能体并存而不混用配置。',
-      'faq.q8':'它的费用如何？如何开始使用？',
-      'faq.a8':'应用本身免费、采用 MIT 许可，你只为 MiMo 的 API 用量付费。从 Releases 页下载最新安装包，首次启动时粘贴来自 platform.xiaomimimo.com 的 API Key——Key 的前缀会决定计费轨（按量付费 sk-、订阅套餐 tp-），端点不必手选。这一步也可以跳过，之后在模型页里补填。',
+      'faq.a5':'macOS（Apple Silicon 与 Intel，已 Developer ID 签名并公证）与 Windows x64（0.4.0 为未签名版本）。Linux 后续单独提供。不计划提供终端界面（TUI）。',
+      'faq.q6':'0.3.x 的会话和设置会保留吗？',
+      'faq.a6':'不会。0.4.0 使用全新的数据目录，不导入此前的会话、工作区、设置或 Key。请手动安装，并在欢迎页重新连接 MiMo 账号。',
+      'faq.q7':'Mio 是小米官方产品吗？',
+      'faq.a7':'不是。Mio 是一个独立的、由社区维护的项目，与小米公司（Xiaomi Inc.）无附属、赞助或背书关系，仅作为第三方客户端连接 MiMo 模型平台。',
+      'faq.q8':'费用如何？如何开始使用？',
+      'faq.a8':'应用本身免费、采用 MIT 许可，你只为 MiMo 的 API 用量付费。下载安装包后，在欢迎页粘贴来自 platform.xiaomimimo.com 的 API Key：sk- 为按量付费，tp- 为订阅套餐并需选择地域。这一步也可以跳过，之后在模型页里补填。',
+      'close.title':'身在水面，<br>心在深海。','close.echo':'Body at the surface, heart in the deep.','close.up':'↑ 上浮',
       'footer.issues':'问题反馈','footer.license':'许可证 (MIT)',
       'footer.disclaimer':'<strong>声明：</strong>Mio 是一个独立的、由社区维护的项目。它不是小米官方产品，与小米公司（Xiaomi Inc.）无附属、赞助或背书关系。它仅作为第三方客户端连接 MiMo 模型平台。基于 DeepSeek Harness（MIT）构建；归档内核中的部分代码衍生自 opencode（MIT）。',
       'footer.copyright':'© 2026 Mio 维护者 · MIT 许可证'
     }
   };
+  let lang = 'en';
+  const t = k => I18N[lang][k];
 
-  function applyLang(lang){
-    if (!I18N[lang]) lang = 'en';
-    const d = I18N[lang];
-    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-    const welcomeScreenshot = document.getElementById('welcome-screenshot');
-    welcomeScreenshot.src = lang === 'zh' ? './assets/welcome.zh-CN.png?v=0.3.1' : './assets/welcome.png?v=0.3.1';
-    welcomeScreenshot.alt = lang === 'zh' ? 'Mio 0.3.1 欢迎界面 — 连接 MiMo 账户' : 'Mio 0.3.1 welcome screen — connect your MiMo account';
-    document.title = d['meta.title'];
-    const md = document.querySelector('meta[name="description"]');
-    if (md) md.setAttribute('content', d['meta.desc']);
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const v = d[el.getAttribute('data-i18n')]; if (v != null) el.textContent = v;
-    });
-    document.querySelectorAll('[data-i18n-html]').forEach(el => {
-      const v = d[el.getAttribute('data-i18n-html')]; if (v != null) el.innerHTML = v;
-    });
-    runTypewriter(d['hero.title']);
-    document.querySelectorAll('.words').forEach(el => wrapWords(el, lang));
-    document.querySelectorAll('.lang-toggle button').forEach(b =>
-      b.classList.toggle('active', b.dataset.lang === lang));
-    const dlText = document.getElementById('dl-text');
-    if (dlText) dlText.textContent = d[DL_KEY[detectedOS]];
-    try { localStorage.setItem('mio-lang', lang); } catch(e){}
-    try { const u = new URL(location.href); u.searchParams.set('lang', lang); history.replaceState(null, '', u); } catch(e){}
-  }
-
-  document.querySelectorAll('.lang-toggle button').forEach(b =>
-    b.addEventListener('click', () => applyLang(b.dataset.lang)));
-
-  /* ---- download CTA: platform detection + latest version ---- */
-  const REPO = 'shin4/mio';
-  /* Artifacts are matched by extension against the release's own asset list,
-     never by filename. The names have already changed once — v0.2.1 shipped
-     `mio-desktop-mac-arm64.dmg`, v0.3.0-rc.2 ships `mio-mac-arm64.dmg` — and a
-     hardcoded name does not fail loudly when that happens, it just 404s every
-     visitor who clicks Download. The extension is the part that is actually
-     stable, because it is what the platform requires. */
-  const SUFFIX = { mac:'.dmg', win:'.exe', linux:'.AppImage' };
-  /* Which build to prefer when a platform ships more than one. A wrong guess
-     stays recoverable: the "All Downloads" button beside this one lists every
-     asset, so nobody is stranded on the wrong architecture. */
-  const ARCH_RANK = { mac:['arm64','x64'], win:['x64','arm64'], linux:['x86_64','x64','arm64'] };
-  const DL_KEY = { mac:'download.mac', win:'download.win', linux:'download.linux', other:'download.generic' };
-
-  /* The download URL for one platform, or null when the release carries no
-     artifact for it — a real case while a platform's build is broken or a
-     release is still uploading, and the reason the caller leaves the button
-     pointing at the releases page instead of inventing a URL. */
-  function assetUrlFor(assets, os) {
-    const suffix = SUFFIX[os];
-    if (!suffix || !assets) return null;
-    /* `.blockmap` and `.zip` siblings fall out here: only the installer itself
-       ends with the platform's own extension. */
-    const matching = assets.filter(a => a && typeof a.name === 'string' && a.name.endsWith(suffix));
-    if (matching.length === 0) return null;
-    for (const arch of (ARCH_RANK[os] || [])) {
-      const hit = matching.find(a => a.name.indexOf(arch) !== -1);
-      if (hit) return hit.browser_download_url;
-    }
-    return matching[0].browser_download_url;
-  }
+  /* ---- platform detection ---- */
   function detectOS(){
     const s = (((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '') + ' ' + (navigator.userAgent || '')).toLowerCase();
-    if (/android/.test(s) || /iphone|ipad|ipod/.test(s)) return 'other'; // mobile can't run the desktop app
+    if (/android|iphone|ipad|ipod/.test(s)) return 'other'; // phones can't run the desktop app
     if (/mac/.test(s)) return 'mac';
     if (/win/.test(s)) return 'win';
-    if (/linux|x11|cros/.test(s)) return 'linux';
     return 'other';
   }
-  const detectedOS = detectOS();
-  const dlPrimary = document.getElementById('dl-primary');
-  const dlIconUse = document.querySelector('#dl-icon use');
-  /* The icon is safe to set now — it depends only on the visitor's platform.
-     The href is not: it stays on the markup's releases-page default until the
-     release actually names an artifact, so a blocked request, a rate-limited
-     API, or a release without this platform's build all degrade to a page that
-     works rather than to a broken download. */
-  if (dlPrimary && detectedOS !== 'other' && dlIconUse)
-    dlIconUse.setAttribute('href', detectedOS === 'mac' ? '#apple' : detectedOS === 'win' ? '#windows' : '#download');
+  const os = detectOS();
+  const heroDl = document.getElementById('heroDl');
+  const cards = [...document.querySelectorAll('.dl[data-os]')];
+  const myCard = cards.find(c => c.dataset.os === os);
+  if (myCard) { myCard.classList.add('me'); heroDl.href = myCard.href; }
+  if (os === 'win') document.querySelector('#heroIcon use').setAttribute('href', '#windows');
+  if (os === 'other') document.getElementById('heroIcon').hidden = true;
+  document.getElementById('altDl').hidden = os !== 'mac';
+  function renderHeroDl(){
+    const key = os === 'mac' ? 'mac' : os === 'win' ? 'win' : 'other';
+    document.getElementById('heroDlText').textContent = t('dl.hero.' + key);
+    document.getElementById('heroDlSub').textContent = t('dl.hero.' + key + 'Sub');
+  }
 
-  /* `/releases`, not `/releases/latest`: the latter is defined as the newest
-     release that is *not* a prerelease, and Mio's 0.3 line is release
-     candidates. While that is true, `latest` either answers with a much older
-     stable build or, once none is published, 404s. Listing and taking the
-     newest published entry follows the actual release train. */
-  fetch('https://api.github.com/repos/' + REPO + '/releases?per_page=10', { headers: { Accept: 'application/vnd.github+json' } })
+  /* ---- latest release: version chip + asset URLs ----
+     Assets are matched by platform extension and architecture against the
+     release's own asset list, never by an assembled filename, so a renamed
+     artifact degrades to the markup's v0.4.0 links instead of a 404. Drafts
+     are skipped; the API lists newest first. */
+  const SUFFIX = { mac:'.dmg', win:'.exe' };
+  fetch('https://api.github.com/repos/shin4/mio/releases?per_page=10', { headers: { Accept: 'application/vnd.github+json' } })
     .then(r => r.ok ? r.json() : null)
     .then(list => {
-      /* Drafts are visible here to anyone holding a token and are half-uploaded
-         by definition, so they are never offered. The API returns newest first. */
-      const d = Array.isArray(list) ? list.find(r => r && !r.draft) : null;
-      if (!d) return;
-      if (d.tag_name) {
-        document.getElementById('dl-version-num').textContent = d.tag_name;
-        document.getElementById('dl-version').hidden = false;
-      }
-      /* `browser_download_url` from the release we just read, rather than a
-         `/releases/latest/download/<name>` URL assembled here: the assembled
-         form re-resolves "latest" on click and can land on a different release
-         than the version label above it. */
-      const url = detectedOS === 'other' ? null : assetUrlFor(d.assets, detectedOS);
-      if (url && dlPrimary) dlPrimary.href = url;
+      const rel = Array.isArray(list) ? list.find(r => r && !r.draft) : null;
+      if (!rel) return;
+      if (rel.tag_name) document.getElementById('relTag').textContent = rel.tag_name;
+      if (rel.published_at) document.getElementById('relDate').textContent = rel.published_at.slice(0, 10);
+      if (rel.html_url) document.getElementById('relChip').href = rel.html_url;
+      const assets = Array.isArray(rel.assets) ? rel.assets : [];
+      cards.forEach(card => {
+        const hit = assets.find(a => a && typeof a.name === 'string' && a.name.endsWith(SUFFIX[card.dataset.os]) && a.name.indexOf(card.dataset.arch) !== -1);
+        if (!hit) return;
+        card.href = hit.browser_download_url;
+        card.querySelector('.fn').textContent = hit.name;
+        if (card === myCard) heroDl.href = hit.browser_download_url;
+        if (card.dataset.os === 'mac' && card.dataset.arch === 'x64') document.getElementById('altDl').href = hit.browser_download_url;
+      });
     })
-    .catch(()=>{});
+    .catch(() => {});
 
-  /* ---- pick initial language: saved choice > ?lang= > browser language > English ---- */
-  let savedLang = null; try { savedLang = localStorage.getItem('mio-lang'); } catch(e){}
+  /* ---- voice intro (MiMo TTS) ---- */
+  const voice = document.getElementById('capabilities'), audio = document.getElementById('voiceAudio'), voiceIcon = document.getElementById('voiceIcon');
+  const setVoice = on => {
+    voice.classList.toggle('playing', on); voice.setAttribute('aria-pressed', String(on));
+    voiceIcon.innerHTML = on ? '<rect x="2" y="1" width="3" height="10" fill="currentColor"/><rect x="7" y="1" width="3" height="10" fill="currentColor"/>' : '<path d="M2 1l9 5-9 5z" fill="currentColor"/>';
+  };
+  voice.addEventListener('click', () => {
+    if (!audio.paused) { audio.pause(); return; }
+    const src = './assets/promo-' + (lang === 'zh' ? 'zh' : 'en') + '.mp3';
+    if (!audio.src.endsWith(src.slice(1))) audio.src = src;
+    audio.play().catch(() => setVoice(false));
+  });
+  audio.addEventListener('play', () => setVoice(true));
+  audio.addEventListener('pause', () => setVoice(false));
+  audio.addEventListener('ended', () => setVoice(false));
+
+  /* ---- depth HUD ---- */
+  const stops = [...document.querySelectorAll('[data-depth]')].filter((s, i, a) => a.findIndex(x => x.dataset.depth === s.dataset.depth) === i);
+  const env = [[0, 24, 100], [200, 14, 1], [1000, 4.2, 0], [4000, 1.6, 0], [6000, 1.3, 0], [10935, 2.4, 0]]; // metres, °C, % surface light
+  const lerpEnv = (m, k) => {
+    for (let i = 1; i < env.length; i++) if (m <= env[i][0]) {
+      const a = env[i - 1], b = env[i], f = (m - a[0]) / (b[0] - a[0]);
+      return a[k] + (b[k] - a[k]) * f;
+    }
+    return env[env.length - 1][k];
+  };
+  const $ = id => document.getElementById(id);
+  const ruler = $('ruler'), marker = $('marker');
+  const ticks = stops.map((s, i) => {
+    const tk = document.createElement('div'); tk.className = 'tick';
+    tk.style.top = (i / (stops.length - 1) * 100) + '%';
+    const a = document.createElement('a'); a.href = s.id ? '#' + s.id : '#top';
+    a.textContent = Number(s.dataset.depth).toLocaleString('en-US') + ' m';
+    tk.appendChild(a); ruler.appendChild(tk);
+    return tk;
+  });
+  const fmt = n => Math.round(n).toLocaleString('en-US');
+  function updateHud(){
+    const mid = scrollY + innerHeight * 0.45;
+    const tops = stops.map(s => s.getBoundingClientRect().top + scrollY);
+    tops[0] = Math.max(tops[0], innerHeight * 0.45); // the page top reads 0 m
+    let idx = 0;
+    tops.forEach((top, i) => { if (mid >= top) idx = i; });
+    let frac = 0, m = +stops[idx].dataset.depth;
+    if (idx < stops.length - 1) {
+      frac = Math.min(1, Math.max(0, (mid - tops[idx]) / (tops[idx + 1] - tops[idx])));
+      const a = +stops[idx].dataset.depth, b = +stops[idx + 1].dataset.depth;
+      m = a + (b - a) * (frac * frac * (3 - 2 * frac));
+    }
+    const max = document.documentElement.scrollHeight - innerHeight;
+    dive.depth = max > 0 ? scrollY / max : 0;
+    const cur = stops[idx], local = lang === 'zh' ? cur.dataset.zh : cur.dataset.en;
+    $('hudM').firstChild.textContent = fmt(m);
+    $('hudZone').textContent = cur.dataset.zone; $('hudLocal').textContent = local;
+    $('hudT').textContent = lerpEnv(m, 1).toFixed(1) + '°C';
+    $('hudP').textContent = '≈ ' + fmt(1 + m / 10) + ' atm';
+    const L = lerpEnv(m, 2);
+    $('hudL').textContent = L >= 1 ? Math.round(L) + '%' : (L > 0 ? '<1%' : '0');
+    marker.style.top = ((idx + frac) / (stops.length - 1) * 100) + '%';
+    ticks.forEach((tk, i) => tk.classList.toggle('on', i === idx));
+    $('mM').textContent = fmt(m) + ' m'; $('mZ').textContent = local;
+  }
+  addEventListener('scroll', updateHud, { passive: true });
+  addEventListener('resize', updateHud);
+
+  /* ---- thinking switch ---- */
+  const off = $('thinkOff'), high = $('thinkHigh');
+  const setThink = on => {
+    off.setAttribute('aria-pressed', String(!on)); high.setAttribute('aria-pressed', String(on));
+    $('thinkVal').textContent = on ? '"enabled"' : '"disabled"';
+    dive.think = on ? 1 : 0;
+  };
+  off.addEventListener('click', () => setThink(false));
+  high.addEventListener('click', () => setThink(true));
+
+  /* ---- key prefix → route (local only) ---- */
+  const keyIn = $('keyIn'), rReg = $('rReg'), regions = [...rReg.querySelectorAll('button')];
+  function route(){
+    const v = keyIn.value.trim();
+    const tp = v.startsWith('tp-'), sk = v.startsWith('sk-');
+    $('rBill').textContent = tp ? t('key.tp') : sk ? t('key.sk') : v ? t('key.unknown') : t('key.empty');
+    $('rEnd').textContent = tp ? t('key.tpEnd') : sk ? t('key.skEnd') : t('key.hintEnd');
+    rReg.style.opacity = tp ? 1 : .3;
+    regions.forEach(b => b.disabled = !tp);
+  }
+  keyIn.addEventListener('input', route);
+  regions.forEach(b => b.addEventListener('click', () => regions.forEach(x => x.setAttribute('aria-pressed', String(x === b)))));
+
+  /* ---- film: a 15 s timeline over real 0.4.0 screens ---- */
+  const T = 15, chapStart = [0, 4, 9, 15];
+  const scenes = [...document.querySelectorAll('.scene')], chaps = [...document.querySelectorAll('.chap')];
+  const cursor = $('cursor'), ring = $('cursorRing'), screen = $('screen');
+  const keyDots = $('keyDots'), ringRegion = $('ringRegion'), typed = $('typed');
+  const play = $('play'), playIcon = $('playIcon');
+  const path = [ // [time s, x %, y %, click]
+    [0, 62, 78], [1.6, 50, 70], [2.6, 50, 71.5, 1],
+    [4.2, 64, 62], [5.2, 42, 47], [7.0, 68, 55.6, 1], [8.1, 50, 76, 1],
+    [9.4, 40, 60], [10.0, 38, 53, 1], [13.4, 84.5, 60.5], [14.0, 84.5, 60.5, 1]
+  ];
+  let ft = 0, playing = !reduce, lastClick = -1, inView = false, last = performance.now();
+  function renderFilm(){
+    const s = ft < 4 ? 0 : ft < 9 ? 1 : 2;
+    scenes.forEach((el, i) => el.classList.toggle('on', i === s));
+    chaps.forEach((c, i) => {
+      const f = Math.min(1, Math.max(0, (ft - chapStart[i]) / (chapStart[i + 1] - chapStart[i])));
+      c.querySelector('.bar i').style.width = (f * 100) + '%';
+      c.classList.toggle('on', i === s);
+    });
+    keyDots.textContent = '•'.repeat(Math.max(0, Math.min(18, Math.floor((ft - 5.2) / 0.09))));
+    ringRegion.classList.toggle('on', ft > 6.9 && ft < 8.4);
+    const prompt = t('film.prompt');
+    const k = Math.max(0, Math.min(prompt.length, Math.floor((ft - 10.3) / (lang === 'zh' ? 0.13 : 0.055))));
+    typed.textContent = prompt.slice(0, k);
+    if (ft > 10 && ft < 13.8) typed.insertAdjacentHTML('beforeend', '<span class="caret"></span>');
+    let p = path[0];
+    for (const q of path) if (ft >= q[0]) p = q;
+    cursor.style.left = p[1] + '%'; cursor.style.top = p[2] + '%';
+    if (p[3] && lastClick !== p[0]) {
+      lastClick = p[0];
+      ring.style.left = p[1] + '%'; ring.style.top = p[2] + '%';
+      ring.classList.remove('click'); void ring.offsetWidth; ring.classList.add('click');
+    }
+    $('tc').textContent = '0:' + String(Math.floor(ft)).padStart(2, '0') + ' / 0:15';
+  }
+  function filmTick(now){
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    if (playing && inView) {
+      ft += dt;
+      if (ft >= T) { ft = 0; lastClick = -1; }
+      renderFilm();
+    }
+    requestAnimationFrame(filmTick);
+  }
+  const setPlaying = v => {
+    playing = v;
+    play.setAttribute('aria-label', t(v ? 'film.pause' : 'film.play'));
+    playIcon.innerHTML = v ? '<rect x="2" y="1" width="3" height="10" fill="currentColor"/><rect x="7" y="1" width="3" height="10" fill="currentColor"/>' : '<path d="M2 1l9 5-9 5z" fill="currentColor"/>';
+  };
+  play.addEventListener('click', () => setPlaying(!playing));
+  chaps.forEach((c, i) => c.addEventListener('click', () => { ft = chapStart[i] + 0.01; lastClick = -1; renderFilm(); }));
+  new IntersectionObserver(es => es.forEach(e => { inView = e.isIntersecting; })).observe(screen);
+  if (reduce) { ft = 12.5; setPlaying(false); }
+  requestAnimationFrame(filmTick);
+
+  const player = $('player');
+  if (!reduce && matchMedia('(pointer:fine)').matches) {
+    player.addEventListener('pointermove', e => {
+      const r = player.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      player.style.transform = 'rotateY(' + (x * 6) + 'deg) rotateX(' + (-y * 5) + 'deg)';
+    });
+    player.addEventListener('pointerleave', () => { player.style.transform = ''; });
+  }
+
+  /* ---- language ---- */
+  function applyLang(next){
+    lang = I18N[next] ? next : 'en';
+    const d = I18N[lang];
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.title = d['meta.title'];
+    document.querySelector('meta[name="description"]').setAttribute('content', d['meta.desc']);
+    document.querySelectorAll('[data-i18n]').forEach(el => { const v = d[el.dataset.i18n]; if (v != null) el.textContent = v; });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { const v = d[el.dataset.i18nHtml]; if (v != null) el.innerHTML = v; });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => { const v = d[el.dataset.i18nAria]; if (v != null) el.setAttribute('aria-label', v); });
+    document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    /* Film: the Chinese build runs light, the English capture is dark mode. */
+    const suffix = lang === 'zh' ? 'zh' : 'en';
+    document.querySelectorAll('img[data-shot]').forEach(img => { img.src = './assets/film/' + img.dataset.shot + '.' + suffix + '.png'; });
+    const main = $('mainWin'), dark = lang !== 'zh';
+    main.classList.toggle('dark-win', dark);
+    main.style.setProperty('--cover', dark ? '#2B2B2F' : '#fff');
+    main.style.setProperty('--typed', dark ? '#E9E9EC' : '#1d1d1f');
+    if (!audio.paused) audio.pause();
+    audio.removeAttribute('src');
+    renderHeroDl(); route(); updateHud(); renderFilm(); setPlaying(playing);
+    try { localStorage.setItem('mio-lang', lang); } catch (e) {}
+    try { const u = new URL(location.href); u.searchParams.set('lang', lang); history.replaceState(null, '', u); } catch (e) {}
+  }
+  document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => applyLang(b.dataset.lang)));
+
+  /* Initial language: saved choice > ?lang= > browser language > English. */
+  let saved = null; try { saved = localStorage.getItem('mio-lang'); } catch (e) {}
   const urlLang = new URLSearchParams(location.search).get('lang');
   const navLang = ((navigator.languages && navigator.languages[0]) || navigator.language || 'en').toLowerCase();
-  const initLang = savedLang || urlLang || (navLang.indexOf('zh') === 0 ? 'zh' : 'en');
-  applyLang(I18N[initLang] ? initLang : 'en');
+  applyLang(saved || urlLang || (navLang.indexOf('zh') === 0 ? 'zh' : 'en'));
 })();
 </script>
-<script type="module" src="./assets/playground/playground.js"></script>
+
+<script type="module">
+/* The ocean: a full-screen depth shader, marine snow, and a swarm sampled from
+   the Mio fluke that forms at the surface, disperses on the way down, and
+   re-forms as the heart inside the runtime orbit. three.js is vendored
+   (assets/vendor, r170, MIT) so the page does not depend on a CDN. */
+import * as THREE from './assets/vendor/three.module.min.js';
+
+const dive = window.__dive;
+const canvas = document.getElementById('ocean');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' }); }
+catch (e) { renderer = null; }
+if (renderer) start(renderer);
+
+function start(renderer){
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+  camera.position.set(0, 0, 10);
+  const NOISE = 'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}' +
+    'float noise(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);' +
+    'return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);}';
+
+  const bgU = { uTime:{value:0}, uDepth:{value:0}, uRes:{value:new THREE.Vector2(1,1)}, uThink:{value:1}, uHeart:{value:0}, uHeartPos:{value:new THREE.Vector2(.3,.45)} };
+  const bg = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+    uniforms: bgU, depthWrite: false, depthTest: false,
+    vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.,1.); }',
+    fragmentShader: `precision highp float; varying vec2 vUv;
+    uniform float uTime,uDepth,uThink,uHeart; uniform vec2 uRes,uHeartPos; ${NOISE}
+    float caustic(vec2 p,float t){ vec2 i=p; float c=1.0; float inten=.005;
+      for(int n=0;n<4;n++){ float tt=t*(1.0-(3.5/float(n+1)));
+        i=p+vec2(cos(tt-i.x)+sin(tt+i.y),sin(tt-i.y)+cos(tt+i.x));
+        c+=1.0/length(vec2(p.x/(sin(i.x+tt)/inten),p.y/(cos(i.y+tt)/inten))); }
+      c/=4.0; c=1.17-pow(c,1.4); return pow(clamp(c,0.,1.),8.0); }
+    void main(){
+      vec2 uv=vUv; float asp=uRes.x/uRes.y; float d=clamp(uDepth,0.,1.);
+      vec3 surf=vec3(.045,.27,.38), twi=vec3(.018,.085,.16), mid=vec3(.01,.03,.062), abyss=vec3(.006,.013,.026);
+      vec3 top = d<.12 ? mix(surf,twi,d/.12) : d<.4 ? mix(twi,mid,(d-.12)/.28) : mix(mid,abyss,(d-.4)/.6);
+      vec3 col = mix(mix(top*.28,abyss,.55), top, smoothstep(0.,1.,uv.y));
+      vec2 p=vec2((uv.x-.5)*asp,uv.y);
+      float sun=pow(1.-clamp(d*4.5,0.,1.),2.);
+      vec2 dir=p-vec2(.35,1.55);
+      float ang=atan(dir.x,-dir.y);
+      float rays=noise(vec2(ang*10.,uTime*.12))*noise(vec2(ang*27.+3.,uTime*.19));
+      rays=pow(rays,1.4)*smoothstep(2.1,.1,length(dir));
+      col+=vec3(.5,.82,1.)*rays*.6*sun;
+      col+=vec3(.55,.9,1.)*caustic(p*5.5+vec2(0.,uTime*.05),uTime*.45)*smoothstep(.5,1.,uv.y)*sun*.28;
+      col+=vec3(.7,.9,1.)*smoothstep(.82,1.08,uv.y)*sun*.25;
+      float hg=exp(-length((uv-uHeartPos)*vec2(asp,1.))*2.4);
+      col+=vec3(1.,.38,.05)*hg*uHeart*(.16+.07*uThink*(.5+.5*sin(uTime*2.4)));
+      float v=smoothstep(1.35,.25,length((uv-.5)*vec2(asp*.85,1.)));
+      col*=mix(.5,1.,v);
+      col+=(hash(uv*uRes+fract(uTime))-.5)*.02;
+      gl_FragColor=vec4(col,1.);
+    }`
+  }));
+  bg.frustumCulled = false; bg.renderOrder = -1;
+  scene.add(bg);
+
+  // Marine snow
+  const SN = innerWidth < 700 ? 1100 : 2400;
+  const sp = new Float32Array(SN * 3), ss = new Float32Array(SN * 4);
+  for (let i = 0; i < SN; i++) {
+    sp.set([(Math.random() - .5) * 26, (Math.random() - .5) * 16, -10 + Math.random() * 13], i * 3);
+    ss.set([Math.random(), Math.random(), Math.random(), Math.random()], i * 4);
+  }
+  const snowGeo = new THREE.BufferGeometry();
+  snowGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+  snowGeo.setAttribute('aSeed', new THREE.BufferAttribute(ss, 4));
+  const snowU = { uTime:{value:0}, uScroll:{value:0}, uPx:{value:renderer.getPixelRatio()}, uThink:{value:1}, uDepth:{value:0} };
+  scene.add(new THREE.Points(snowGeo, new THREE.ShaderMaterial({
+    uniforms: snowU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: `uniform float uTime,uScroll,uPx,uThink,uDepth; attribute vec4 aSeed; varying float vA; varying vec3 vC;
+    void main(){ vec3 p=position;
+      p.y=mod(p.y+uTime*(.04+aSeed.x*.1)+uScroll*(.5+aSeed.y*.9)+8.,16.)-8.;
+      p.x+=sin(uTime*.25+aSeed.z*6.283)*.35;
+      vec4 mv=modelViewMatrix*vec4(p,1.); gl_Position=projectionMatrix*mv;
+      gl_PointSize=(.7+aSeed.w*2.4)*uPx*(11./-mv.z);
+      float tw=.55+.45*sin(uTime*(.5+aSeed.x*2.)+aSeed.y*20.);
+      float bio=step(.88,aSeed.z)*smoothstep(.18,.42,uDepth);
+      vec3 glow=aSeed.w>.55?vec3(.38,.9,.92):vec3(1.,.48,.12);
+      vC=mix(vec3(.72,.86,1.),glow,bio);
+      vA=tw*mix(.42,1.,bio)*(.75+.35*uThink)*smoothstep(-11.,-6.,mv.z);
+    }`,
+    fragmentShader: 'varying float vA; varying vec3 vC; void main(){ float d=length(gl_PointCoord-.5); float a=smoothstep(.5,0.,d); gl_FragColor=vec4(vC,a*a*vA*.75); }'
+  })));
+
+  // Whale-tail swarm sampled from the Mio mark
+  const tail = new Path2D('M 150 430 C 324 376, 464 430, 512 548 C 560 430, 700 376, 874 430 C 800 520, 700 570, 598 588 C 586 640, 590 700, 612 758 C 576 788, 448 788, 412 758 C 434 700, 438 640, 426 588 C 324 570, 224 520, 150 430 Z');
+  const cx = document.createElement('canvas').getContext('2d');
+  const inside = (x, y) => cx.isPointInPath(tail, x, y);
+  const WN = innerWidth < 700 ? 3200 : 5600;
+  const home = new Float32Array(WN * 3), scat = new Float32Array(WN * 3), wseed = new Float32Array(WN * 2);
+  let n = 0, guard = 0;
+  while (n < WN && guard++ < 400000) {
+    const x = 150 + Math.random() * 724, y = 376 + Math.random() * 412;
+    if (!inside(x, y)) continue;
+    const edge = !inside(x + 9, y) || !inside(x - 9, y) || !inside(x, y + 9) || !inside(x, y - 9);
+    if (!edge && Math.random() < .55) continue;
+    home.set([(x - 512) / 1024 * 6.4, -(y - 575) / 1024 * 6.4, (Math.random() - .5) * (edge ? .25 : .6)], n * 3);
+    const r = 5 + Math.random() * 7, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
+    scat.set([r * Math.sin(ph) * Math.cos(th), r * Math.sin(ph) * Math.sin(th), r * Math.cos(ph) * .6 - 2], n * 3);
+    wseed.set([Math.random(), edge ? 1 : 0], n * 2);
+    n++;
+  }
+  const whaleGeo = new THREE.BufferGeometry();
+  whaleGeo.setAttribute('position', new THREE.BufferAttribute(home, 3));
+  whaleGeo.setAttribute('aScat', new THREE.BufferAttribute(scat, 3));
+  whaleGeo.setAttribute('aSeed', new THREE.BufferAttribute(wseed, 2));
+  whaleGeo.setDrawRange(0, n);
+  const whaleU = { uTime:{value:0}, uForm:{value:0}, uPx:{value:renderer.getPixelRatio()}, uMouse:{value:new THREE.Vector3(99,99,0)}, uThink:{value:1}, uAlpha:{value:1} };
+  const swarm = new THREE.Group();
+  swarm.add(new THREE.Points(whaleGeo, new THREE.ShaderMaterial({
+    uniforms: whaleU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: `uniform float uTime,uForm,uPx,uThink; uniform vec3 uMouse; attribute vec3 aScat; attribute vec2 aSeed; varying float vA; varying float vEdge;
+    void main(){
+      float st=clamp(uForm*1.6-aSeed.x*.6,0.,1.); st=st*st*(3.-2.*st);
+      vec3 drift=aScat+vec3(sin(uTime*.2+aSeed.x*30.)*.6,mod(uTime*.25+aSeed.x*9.,6.)-3.,0.);
+      vec3 p=mix(drift,position,st);
+      p.y+=sin(p.x*1.1-uTime*1.4)*.09*st;
+      p.z+=cos(p.x*.9-uTime*1.4)*.18*st;
+      float r0=length(position.xy-vec2(0.,-.5));
+      float pulse=pow(max(0.,sin(r0*4.-uTime*3.2)),6.)*uThink*st;
+      p.xy+=normalize(position.xy+vec2(.001))*pulse*.08;
+      vec2 dm=p.xy-uMouse.xy; float md=length(dm);
+      p.xy+=normalize(dm+vec2(.0001))*1.1*exp(-md*md*1.6)*st;
+      vec4 mv=modelViewMatrix*vec4(p,1.); gl_Position=projectionMatrix*mv;
+      gl_PointSize=(1.1+aSeed.x*2.3+aSeed.y*.8)*uPx*(10./-mv.z)*(1.+pulse*1.2);
+      vA=(.35+.65*st)*(.55+.45*sin(uTime*2.+aSeed.x*40.))+pulse*.8;
+      vEdge=aSeed.y;
+    }`,
+    fragmentShader: `uniform float uAlpha; varying float vA; varying float vEdge;
+    void main(){ float d=length(gl_PointCoord-.5); float a=smoothstep(.5,0.,d);
+      vec3 c=mix(vec3(1.,.41,0.),vec3(1.,.72,.42),vEdge*.6+a*.35);
+      gl_FragColor=vec4(c,a*a*vA*.85*uAlpha); }`
+  })));
+  scene.add(swarm);
+
+  const anchors = [...document.querySelectorAll('[data-whale]')];
+  const fitSel = document.querySelector('[data-whale-fit]');
+  const fitEl = fitSel ? document.querySelector(fitSel.dataset.whaleFit) : null;
+  const mouse = new THREE.Vector2(9, 9), ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit = new THREE.Vector3();
+  let pointer = false;
+  addEventListener('pointermove', e => { pointer = true; mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); }, { passive: true });
+
+  function resize(){
+    renderer.setSize(innerWidth, innerHeight, false);
+    camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+    bgU.uRes.value.set(innerWidth * renderer.getPixelRatio(), innerHeight * renderer.getPixelRatio());
+  }
+  addEventListener('resize', resize); resize();
+
+  let form = 0, heart = 0, sx = 3.2, sy = 0, ssc = 1, rotY = 0, rotX = 0, think = 1;
+  const born = performance.now();
+
+  function frame(now, ease){
+    const time = (now - born) / 1000;
+    const narrow = innerWidth < 900;
+    let best = 0, side = 'right';
+    for (const a of anchors) {
+      // A fitted anchor is judged by the element the whale sits in, not the whole (tall on phones) section.
+      const r = (a.dataset.whaleFit && fitEl ? fitEl : a).getBoundingClientRect();
+      const f = 1 - Math.abs((r.top + r.height / 2) - innerHeight / 2) / (innerHeight * .85);
+      if (f > best) { best = f; side = a.dataset.whale; }
+    }
+    const target = Math.min(Math.min(1, time / 2.6), Math.max(0, Math.min(1, best * 1.5)));
+    form += (target - form) * .045 * ease;
+    heart += ((side === 'left' ? form : 0) - heart) * .05 * ease;
+    const halfH = Math.tan(THREE.MathUtils.degToRad(25)) * 10, halfW = halfH * camera.aspect;
+    let tx = narrow ? 0 : halfW * .45, ty = narrow ? 1.9 : -.2, tsc = narrow ? Math.min(1, camera.aspect * 1.25) : 1;
+    if (side === 'left' && fitEl) {
+      // Sit inside the runtime orbit's inner ring: the whale is the heart.
+      const r = fitEl.getBoundingClientRect(), perPx = 2 * halfH / innerHeight;
+      tx = ((r.left + r.width / 2) / innerWidth * 2 - 1) * halfW;
+      ty = -((r.top + r.height * .47) / innerHeight * 2 - 1) * halfH + camera.position.y;
+      tsc = r.width * (230 / 520) * perPx / 4.5;
+      bgU.uHeartPos.value.set((r.left + r.width / 2) / innerWidth, 1 - (r.top + r.height * .47) / innerHeight);
+    }
+    const k = Math.min(1, .06 * ease);
+    sx += (tx - sx) * k; sy += (ty - sy) * k; ssc += (tsc - ssc) * k;
+    swarm.position.set(sx, sy, 0); swarm.scale.setScalar(ssc);
+    rotY += ((pointer ? mouse.x * .35 : 0) - rotY) * .05; rotX += ((pointer ? -mouse.y * .18 : 0) - rotX) * .05;
+    swarm.rotation.set(rotX, rotY + Math.sin(time * .3) * .12, 0);
+    if (pointer) {
+      ray.setFromCamera(mouse, camera);
+      if (ray.ray.intersectPlane(plane, hit)) { swarm.worldToLocal(hit); whaleU.uMouse.value.copy(hit); }
+    }
+    think += (dive.think - think) * Math.min(1, .06 * ease);
+    // On phones the surface swarm sits behind the headline, so it glows at half strength there.
+    whaleU.uAlpha.value = narrow ? .5 + .5 * heart : 1;
+    whaleU.uTime.value = time; whaleU.uForm.value = form; whaleU.uThink.value = think;
+    snowU.uTime.value = time; snowU.uScroll.value = scrollY / innerHeight * 2.2; snowU.uThink.value = think; snowU.uDepth.value = dive.depth;
+    bgU.uTime.value = time; bgU.uDepth.value = dive.depth; bgU.uThink.value = think; bgU.uHeart.value = heart;
+    camera.position.y = -Math.min(1, dive.depth) * .6;
+    renderer.render(scene, camera);
+  }
+
+  if (dive.still) {
+    // Reduced motion or ?motion=off: settle into a still frame and redraw only on scroll/resize/switch.
+    const still = () => { for (let i = 0; i < 12; i++) frame(born + 6000, 20); };
+    still();
+    addEventListener('scroll', still, { passive: true });
+    addEventListener('resize', still);
+    document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', still));
+  } else {
+    let visible = !document.hidden;
+    document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+    renderer.setAnimationLoop(now => { if (visible) frame(now, 1); });
+  }
+}
+</script>
 </body>
 </html>
