@@ -83,7 +83,7 @@ const json = (value) => new Response(JSON.stringify(value), { headers: { "conten
  */
 export function apply(ctx, config) {
   const apiKey = credentialRef(config.apiKeyRef)
-  ctx.connection.fetch.register({
+  ctx.effect(() => ctx.connection.fetch.register({
     path: "/api/mio/tts",
     methods: ["POST"],
     requestBody: "buffered",
@@ -114,8 +114,8 @@ export function apply(ctx, config) {
         headers: { "content-type": "audio/wav", "cache-control": "no-store" },
       })
     },
-  })
-  ctx.connection.fetch.register({
+  }))
+  ctx.effect(() => ctx.connection.fetch.register({
     path: "/api/mio/tts/voice",
     methods: ["GET", "PUT"],
     requestBody: "buffered",
@@ -127,5 +127,5 @@ export function apply(ctx, config) {
       await ctx.settings.update(ctx.fiber.entry?.options.id ?? name, { voice })
       return json({ voice: config.voice.get(), voices: VOICES })
     },
-  })
+  }))
 }
