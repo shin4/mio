@@ -861,10 +861,20 @@ lines of DSP helpers with existing unit tests, and ~900 lines of Solid UI.
       documented quirk (a leading empty user message is mandatory), voicedesign via natural
       language plus `optimize_text_preview`, and voiceclone passing the reference clip's data URL
       as `audio.voice`
-- [ ] **Dictation plugin.** `mimo-v2.5-asr` with an `input_audio` content part plus MiMo's
+      — **Read-aloud slice done 2026-09-26 as `@mio/tts`** (`desktop/tts`): preset voices only,
+      one action per finalized reply in `conversation.chat.assistant-actions`, text taken from the
+      Chat projection the copy action uses and synthesized behind an authenticated
+      `/api/mio/tts` Fetch route. The voice is chosen (with preview) in a Settings → General row
+      and saved into the entry's volatile config; all nine presets were confirmed live on the CN
+      Token Plan endpoint. Singing, voicedesign and voiceclone remain open.
+- [x] **Dictation plugin.** `mimo-v2.5-asr` with an `input_audio` content part plus MiMo's
       `asr_options.language`; capture via `getUserMedia` + PCM16 mono WAV encoding, gated by a
       shared VAD (2s minimum, RMS/peak/active-ms thresholds) that runs on both client and server,
       one data URL per utterance under a 60s / 10MB cap
+      — **Done 2026-09-26 as `@mio/asr`** (`desktop/asr`): dsh 0.1.7 now ships the capture, WAV
+      encoding, Remote and composer UI as the experimental voice-input bundle, so Mio contributes
+      only a `location: 'cloud'` provider and recomposes that bundle around it. No archived
+      recorder/VAD code was ported.
 - [ ] Reuse rather than re-derive: WAV encode/decode, the VAD, the recorder lifecycle, the
       singleton read-aloud player, transcript insertion. MiMo-specific are the model ids, wire
       shapes, singing/audio-tag/design/clone semantics, `asr_options`, the `reasoning_content`

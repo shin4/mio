@@ -96,11 +96,13 @@ after(async () => {
   for (const home of homes) await rm(home, { recursive: true, force: true })
 })
 
-/** Headless replay mounts the real brand host face; the Web suite verifies bundle discovery. */
+/** Headless replay mounts the real brand and read-aloud host faces; the Web suite verifies bundle discovery. */
 async function installPlugins(home: string, profile: string) {
-  const target = path.join(home, "profiles", profile, "node_modules", "@mio", "brand")
-  await mkdir(target, { recursive: true })
-  await cp(path.join(RUNTIME, "brand"), target, { recursive: true })
+  for (const name of ["brand", "tts"]) {
+    const target = path.join(home, "profiles", profile, "node_modules", "@mio", name)
+    await mkdir(target, { recursive: true })
+    await cp(path.join(RUNTIME, name), target, { recursive: true })
+  }
 }
 
 async function boot(cassette: string | string[], prompt: string, thinking: "high" | "off" = "high") {

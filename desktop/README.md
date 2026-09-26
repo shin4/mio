@@ -39,7 +39,13 @@ Never edit only `.desktop-build/upstream`: changes there are generated and are n
 of record. The prepare script stops on a wrong checkout or an incompatible patch.
 
 `@mio/desktop` is a composition bundle; its separate `@mio/brand` dependency owns browser
-slots and accent tokens. This separation is required by upstream bundle resolution. Neither
+slots and accent tokens. `@mio/asr` (`desktop/asr`) registers MiMo ASR as the cloud recognizer
+of the official voice-input bundle, reading the MiMo route's live `baseURL` and `MIO_API_KEY`.
+New profiles ship voice input enabled; profiles created by 0.4.0 enable it under Plugins.
+`@mio/tts` (`desktop/tts`) adds a read-aloud action to every finalized reply; it serves
+`POST /api/mio/tts` behind browser authentication and synthesizes with MiMo TTS on the same route.
+Its voice is chosen and previewed under Settings → General (`GET`/`PUT /api/mio/tts/voice`) and
+saved into the profile patch. This separation is required by upstream bundle resolution. Neither
 ships a fork of the model adapter. Shared framework peers resolve to the upstream workspace.
 
 ## Product and release boundaries
@@ -74,6 +80,11 @@ backend and official streaming adapter against CN Token Plan. Makes six live gen
 requests, removes temporary credentials, and writes sanitized results to
 `.desktop-build/live-validation.json`. It is excluded from the automatic test glob.
 See `VALIDATION.md` for scope and `live-validation.json` for the latest evidence.
+
+Voice uses the same opt-in shape: `MIMO_API_KEY` (or `MIO_API_KEY`) plus `MIO_REGION` for a Token Plan
+key, then `node --expose-internals test/voice-live-probe.mjs`. It saves the key through the native
+welcome backend, transcribes the landing-page clips, reads a reply aloud through `/api/mio/tts`, and
+hears that speech back through voice input. Sanitized evidence: `voice-live-validation.json`.
 
 ## Optional UltraSpeed model
 
