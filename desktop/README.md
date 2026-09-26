@@ -73,7 +73,7 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
   `nightly-mac.yml` merged from both macOS architectures; electron-updater picks the arm64 or x64
   ZIP by name. DeepSeek's COS feed and mandatory-update policy are never used. The unsigned Windows
   build updates too, verified by the feed's SHA-512 only.
-- Mio installers use `product.json` version `0.4.2`; the bundled dsh runtime remains pinned
+- Mio installers use `product.json` version `0.4.3`; the bundled dsh runtime remains pinned
   to `0.1.7-rc.2`.
 - macOS signs with `com.apple.security.device.audio-input`; `verify-release.mjs` rejects a build
   without it (0.4.1 shipped without it and macOS silently denied the microphone).
