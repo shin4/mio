@@ -52,6 +52,13 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
 ## Product and release boundaries
 
 - Native welcome accepts MiMo API keys. `tp-` keys select cn/sgp/ams; other keys use PAYG.
+- `@mio/desktop` disables official rows rather than patching their source: DeepSeek sign-in (Account
+  settings, sidebar account menu, account-billed model route), message feedback and `/feedback`, and
+  the `ptc`/`minimal` agent presets (`standard` and `cordis`/Creator remain). The `deepseek-account`
+  service and `account-controller` stay mounted because Electron's welcome backend reads them.
+  The DeepSeek Harness preview notice ships acknowledged (`welcomeNoticeVersion`, re-check against
+  upstream on every dsh bump) and the browser DeepSeek API-key onboarding is off
+  (`credentialOnboarding: false`); Desktop already suppressed both, this covers a browser on the Host.
 - Defaults: `mimo-v2.6-flash`, thinking enabled. Official Off/High labels mean disabled/enabled;
   no graded `reasoning_effort` is sent. Model settings retain the official editing workflow.
 - The packaged home is `userData/dsh-desktop`, separate from the old `userData/dsh`.
