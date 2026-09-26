@@ -464,15 +464,15 @@ html[data-motion="off"]{scroll-behavior:auto}
     <div class="inner news-grid">
       <div class="news-head rise">
         <div class="depth-tag"><i>200 m</i> <span data-i18n="new.tag">The last of the sunlight</span></div>
-        <h2 class="display" data-i18n-html="new.title">Now it listens,<br>and speaks.</h2>
-        <p class="echo" data-i18n="new.echo">会听，也会说。</p>
-        <p class="lead" data-i18n="new.lead">Speak a request and MiMo ASR drafts it; click a reply and MiMo TTS reads it back. Both ride the MiMo account you already connected: same key, same region, nothing extra to install.</p>
+        <h2 class="display" data-i18n-html="new.title">Now it sees,<br>and hears.</h2>
+        <p class="echo" data-i18n="new.echo">看得见，也听得见。</p>
+        <p class="lead" data-i18n="new.lead">Paste a screenshot and MiMo V2.6 reads it. Attach a recording or a video and MiMo listens or watches, then tells Mio what it found. All on the MiMo account you already connected: same key, same region.</p>
       </div>
       <div class="news-list">
-        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k1">Voice · input</span><h3 data-i18n="new.t1">Speak, and it becomes a draft</h3><p data-i18n-html="new.d1">The mic in the composer records up to 60 seconds. <code>mimo-v2.5-asr</code> transcribes it into the draft, and nothing is sent until you send it.</p></article>
-        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k2">Voice · read aloud</span><h3 data-i18n="new.t2">Replies, read aloud</h3><p data-i18n-html="new.d2">A speaker button sits next to Copy. <code>mimo-v2.5-tts</code> reads the prose and skips code; long answers are read from the start, up to about 4,000 characters.</p></article>
-        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k3">Settings · voice</span><h3 data-i18n="new.t3">Nine MiMo voices, with a preview</h3><p data-i18n-html="new.d3">Settings → General → Read-aloud voice: 冰糖, 茉莉, 苏打, 白桦, Mia, Chloe, Milo, Dean or the default.</p></article>
-        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k4">Heart · core</span><h3 data-i18n="new.t4">Still the official dsh Desktop</h3><p data-i18n-html="new.d4">0.1.7-rc.2 as upstream ships it, MiMo V2.6 Flash by default, native key setup. Voice arrives as two plugins, not a fork.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k1">Vision · images</span><h3 data-i18n="new.t1">Paste a screenshot, and it reads it</h3><p data-i18n-html="new.d1">MiMo V2.6 Flash and Pro take images in the composer: screenshots, mockups, error screens, drawn diagrams.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k2">Media · audio</span><h3 data-i18n="new.t2">Hand it a recording</h3><p data-i18n-html="new.d2">Attach MP3, WAV, FLAC, M4A or OGG. The <code>mimo_media_read</code> tool has <code>mimo-v2.6-flash</code> transcribe or summarize it for the agent.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k3">Media · video</span><h3 data-i18n="new.t3">Hand it a video</h3><p data-i18n-html="new.d3">Attach MP4, MOV, AVI or WMV. MiMo samples frames and sound and says what happens when, up to 50 MB per file once Base64-encoded.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k4">Heart · core</span><h3 data-i18n="new.t4">Still the official dsh Desktop</h3><p data-i18n-html="new.d4">0.1.7-rc.2 as upstream ships it. Images are one line of config; audio and video arrive as one plugin, not a fork. PDF waits until the MiMo API accepts documents.</p></article>
       </div>
     </div>
   </section>
@@ -723,12 +723,12 @@ html[data-motion="off"]{scroll-behavior:auto}
       'hero.all':'All platforms ↓','hero.m1':'Free · MIT open source','hero.m2':'macOS signed & notarized','hero.intel':'Intel Mac','hero.dive':'Dive',
       'dl.hero.mac':'Download for macOS','dl.hero.macSub':'Apple Silicon · DMG','dl.hero.win':'Download for Windows','dl.hero.winSub':'x64 · unsigned','dl.hero.other':'See downloads','dl.hero.otherSub':'macOS · Windows',
       'voice.label':'Hear Mio introduce itself','voice.sub':'Synthesized with MiMo TTS · voice Chloe',
-      'new.tag':'The last of the sunlight','new.title':'Now it listens,<br>and speaks.','new.echo':'会听，也会说。',
-      'new.lead':'Speak a request and MiMo ASR drafts it; click a reply and MiMo TTS reads it back. Both ride the MiMo account you already connected: same key, same region, nothing extra to install.',
-      'new.k1':'Voice · input','new.t1':'Speak, and it becomes a draft','new.d1':'The mic in the composer records up to 60 seconds. <code>mimo-v2.5-asr</code> transcribes it into the draft, and nothing is sent until you send it.',
-      'new.k2':'Voice · read aloud','new.t2':'Replies, read aloud','new.d2':'A speaker button sits next to Copy. <code>mimo-v2.5-tts</code> reads the prose and skips code; long answers are read from the start, up to about 4,000 characters.',
-      'new.k3':'Settings · voice','new.t3':'Nine MiMo voices, with a preview','new.d3':'Settings → General → Read-aloud voice: 冰糖, 茉莉, 苏打, 白桦, Mia, Chloe, Milo, Dean or the default.',
-      'new.k4':'Heart · core','new.t4':'Still the official dsh Desktop','new.d4':'0.1.7-rc.2 as upstream ships it, MiMo V2.6 Flash by default, native key setup. Voice arrives as two plugins, not a fork.',
+      'new.tag':'The last of the sunlight','new.title':'Now it sees,<br>and hears.','new.echo':'看得见，也听得见。',
+      'new.lead':'Paste a screenshot and MiMo V2.6 reads it. Attach a recording or a video and MiMo listens or watches, then tells Mio what it found. All on the MiMo account you already connected: same key, same region.',
+      'new.k1':'Vision · images','new.t1':'Paste a screenshot, and it reads it','new.d1':'MiMo V2.6 Flash and Pro take images in the composer: screenshots, mockups, error screens, drawn diagrams.',
+      'new.k2':'Media · audio','new.t2':'Hand it a recording','new.d2':'Attach MP3, WAV, FLAC, M4A or OGG. The <code>mimo_media_read</code> tool has <code>mimo-v2.6-flash</code> transcribe or summarize it for the agent.',
+      'new.k3':'Media · video','new.t3':'Hand it a video','new.d3':'Attach MP4, MOV, AVI or WMV. MiMo samples frames and sound and says what happens when, up to 50 MB per file once Base64-encoded.',
+      'new.k4':'Heart · core','new.t4':'Still the official dsh Desktop','new.d4':'0.1.7-rc.2 as upstream ships it. Images are one line of config; audio and video arrive as one plugin, not a fork. PDF waits until the MiMo API accepts documents.',
       'film.tag':'Below here, the only light is living light','film.title':'Connected to MiMo in 15 seconds.','film.echo':'15 秒，连上 MiMo。',
       'film.lead':'Connect your account on the welcome screen, paste a key, pick a region, and start coding.',
       'film.aria':'Mio 0.4.0: connect MiMo, enter a key, start coding',
@@ -789,12 +789,12 @@ html[data-motion="off"]{scroll-behavior:auto}
       'hero.all':'全部平台 ↓','hero.m1':'免费 · MIT 开源','hero.m2':'macOS 已签名公证','hero.intel':'Intel 版','hero.dive':'下潜',
       'dl.hero.mac':'下载 macOS 版','dl.hero.macSub':'Apple Silicon · DMG','dl.hero.win':'下载 Windows 版','dl.hero.winSub':'x64 · 未签名','dl.hero.other':'查看下载','dl.hero.otherSub':'macOS · Windows',
       'voice.label':'听 Mio 自我介绍','voice.sub':'由 MiMo TTS 合成 · 音色 冰糖',
-      'new.tag':'最后一缕阳光','new.title':'会听，<br>也会说。','new.echo':'Now it listens, and speaks.',
-      'new.lead':'说出需求，MiMo ASR 把它写成草稿；点一下回复，MiMo TTS 读给你听。两者都走你已连接的 MiMo 账号：同一个 Key、同一个地域，无需额外安装。',
-      'new.k1':'Voice · 听写','new.t1':'说一句，变成一段草稿','new.d1':'输入框里的麦克风最长录 60 秒，<code>mimo-v2.5-asr</code> 转写进草稿，你确认后才会发送。',
-      'new.k2':'Voice · 朗读','new.t2':'回复，一键朗读','new.d2':'朗读按钮就在复制旁边。<code>mimo-v2.5-tts</code> 读正文、跳过代码；长回复从开头读起，最多约 4,000 字。',
-      'new.k3':'Settings · 音色','new.t3':'9 种 MiMo 音色，可试听','new.d3':'设置 → 通用设置 → 朗读音色：默认、冰糖、茉莉、苏打、白桦、Mia、Chloe、Milo、Dean。',
-      'new.k4':'Heart · 内核','new.t4':'内核仍是官方 dsh Desktop','new.d4':'沿用上游 0.1.7-rc.2，默认 MiMo V2.6 Flash、原生 Key 接入。语音以两个插件接入，不 fork。',
+      'new.tag':'最后一缕阳光','new.title':'看得见，<br>也听得见。','new.echo':'Now it sees, and hears.',
+      'new.lead':'贴一张截图，MiMo V2.6 直接看懂；附上录音或视频，MiMo 听完、看完再告诉 Mio。全部走你已连接的 MiMo 账号：同一个 Key、同一个地域。',
+      'new.k1':'Vision · 图片','new.t1':'贴一张截图，它就能看懂','new.d1':'MiMo V2.6 Flash 与 Pro 在输入框里接受图片：截图、设计稿、报错界面、手绘草图。',
+      'new.k2':'Media · 音频','new.t2':'交给它一段录音','new.d2':'附上 MP3、WAV、FLAC、M4A 或 OGG，<code>mimo_media_read</code> 工具请 <code>mimo-v2.6-flash</code> 为 agent 转写或摘要。',
+      'new.k3':'Media · 视频','new.t3':'交给它一段视频','new.d3':'附上 MP4、MOV、AVI 或 WMV，MiMo 抽帧并听声音，说清什么时候发生了什么；单个文件 Base64 编码后不超过 50 MB。',
+      'new.k4':'Heart · 内核','new.t4':'内核仍是官方 dsh Desktop','new.d4':'沿用上游 0.1.7-rc.2。图片只是一行配置，音频与视频以一个插件接入，不 fork。PDF 要等 MiMo 的接口支持文档。',
       'film.tag':'从这里开始，光来自生物自己','film.title':'15 秒，连上 MiMo。','film.echo':'Connected to MiMo in 15 seconds.',
       'film.lead':'欢迎页连接账号，粘贴 Key、选择地域，然后直接开始写代码。',
       'film.aria':'Mio 0.4.0 流程：连接 MiMo、填写 Key、进入工作区',
