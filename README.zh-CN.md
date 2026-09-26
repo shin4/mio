@@ -30,15 +30,18 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 保持上游原样——再叠加 Mio 的品牌与 MiMo 优先的配置。Mio 不 fork 模型适配器：MiMo 通过 dsh 自带的 provider 配置接入，
 产品层是一组经过审阅的补丁，存放在 [`desktop/`](desktop/README.md)。
 
-## 0.4.0 新变化
+## 0.4.1 新变化
 
-- **基于官方 dsh Desktop 0.1.7-rc.2** — 原生工作区、设置与工具，与上游一致。
-- **默认 MiMo V2.6** — 新会话默认 **MiMo V2.6 Flash** 并开启推理；**V2.6 Pro** 一键切换，推理可按会话关闭。
-- **原生 MiMo 账号接入** — 在欢迎页粘贴 API Key 即可：Key 前缀决定计费方式，订阅套餐可选地域（CN / SGP / AMS）。
-- **Mio 品牌** — 全应用使用 Mio 图标、主题与标识，支持中文与英文。
-- **经过验证的安装包** — macOS 安装包已 Developer ID 签名并公证；所有安装包附带 SHA-256 校验和与验证记录。
+- **MiMo ASR 语音输入** — 点输入框里的麦克风说出需求，MiMo ASR（`mimo-v2.5-asr`）会把它转成草稿，确认后再发送。
+  识别语言默认自动判断，也可固定为中文。
+- **MiMo TTS 朗读** — 每条完成的回复旁（复制按钮边）多了一个朗读按钮。Mio 用 `mimo-v2.5-tts` 朗读正文，跳过代码块，
+  同一时间只播放一条。
+- **自选音色** — **设置 → 通用设置 → 朗读音色**提供 MiMo 的 9 种预置音色（默认、冰糖、茉莉、苏打、白桦、Mia、Chloe、
+  Milo、Dean），并可试听。
+- 两者都使用你已连接的 MiMo 账号，包括订阅套餐所选地域。无需额外的 Key，也不下载本地模型。
 
-完整说明见 [Mio v0.4.0 发行说明](https://github.com/shin4/mio/releases/tag/v0.4.0)。
+0.4.0 已将 Mio 迁移到官方 dsh Desktop 0.1.7-rc.2，默认使用 MiMo V2.6 Flash，并支持原生的 MiMo 账号接入。完整说明见
+[v0.4.1](https://github.com/shin4/mio/releases/tag/v0.4.1) · [v0.4.0](https://github.com/shin4/mio/releases/tag/v0.4.0)。
 
 ## 下载
 
@@ -46,17 +49,19 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 
 | 平台 | 文件 | 签名 |
 | --- | --- | --- |
-| macOS · Apple Silicon | `mio-0.4.0-mac-arm64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
-| macOS · Intel | `mio-0.4.0-mac-x64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
-| Windows x64 | `mio-0.4.0-win-x64-unsigned.exe` | **未签名** — 安装时会出现 SmartScreen / 未知发布者提示 |
+| macOS · Apple Silicon | `mio-0.4.1-mac-arm64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
+| macOS · Intel | `mio-0.4.1-mac-x64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
+| Windows x64 | `mio-0.4.1-win-x64-unsigned.exe` | **未签名** — 安装时会出现 SmartScreen / 未知发布者提示 |
 
-可用 `SHA256SUMS.txt` 校验下载；`mio-0.4.0-qualification.json` 记录了每个安装包的源码提交、哈希与签名状态。
-0.4.0 不包含 Linux 版本，后续单独提供。
+可用 `SHA256SUMS.txt` 校验下载；`mio-0.4.1-qualification.json` 记录了每个安装包的源码提交、哈希与签名状态。
+Linux 版本后续单独提供。
 
-### 从 0.3.x 升级
+### 升级
 
-- **手动安装** — 本版未启用自动更新。
-- **全新数据目录** — 0.4.0 不迁移旧的会话、工作区、设置或 API Key，请在欢迎页重新连接 MiMo 账号。
+- **手动安装** — 仍未启用自动更新。
+- **从 0.4.0 升级** — 直接覆盖安装，会话、设置和 MiMo Key 都会保留。朗读立即可用；由 0.4.0 创建的配置默认未开启语音输入，
+  请在**插件 → 语音输入**中开启一次。
+- **从 0.3.x 升级** — 0.4 使用全新的数据目录，不迁移旧的会话、工作区、设置或 API Key，请在欢迎页重新连接 MiMo 账号。
 
 ## 连接 MiMo
 
@@ -73,6 +78,15 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 
 `Off` 与 `High` 对应 MiMo 的 `thinking` 开关（关闭 / 开启），不存在分级的推理强度。`mimo-v2.6-pro-ultraspeed`
 不包含在发行版中——如账号支持，参见[可选的 UltraSpeed 模型](desktop/README.md#optional-ultraspeed-model)。
+
+## 语音
+
+语音功能使用你已连接的 MiMo 账号：录音和回复文本会发送到 MiMo API，本机不做转写或合成。
+
+- **说出需求** — 点输入框里的麦克风开始说话（最长 60 秒），再点停止。转写结果会放进草稿，不会自动发送。
+  在**插件 → 语音输入**中可以看到识别服务（MiMo ASR）和识别语言：*自动识别*（推荐，英文也用它）或*中文*。
+- **收听回复** — 点回复下方的朗读按钮开始朗读，再点一次停止。标题、强调和链接按普通文字朗读，代码块会跳过。
+- **选择音色** — **设置 → 通用设置 → 朗读音色**。点*试听*会用所选音色读一句示例，中文音色读中文，英文音色读英文。
 
 ## 从源码构建
 
@@ -91,7 +105,7 @@ bun run dev:desktop
 ## 🔊 听一段
 
 **[入口页](https://shin4.github.io/mio/#capabilities)** 上的介绍语音由 MiMo TTS 合成，而不是请人配音。英文音色 *Chloe*，
-中文音色 *冰糖*。语音听写与朗读尚未进入 0.4.0 桌面版——它们正作为 dsh 插件重建。
+中文音色 *冰糖*。自 0.4.1 起，桌面版也用同样的模型听写和朗读，详见[语音](#语音)。
 
 <details>
 <summary>文稿</summary>
@@ -115,10 +129,11 @@ Mio 是一款免费、采用 MIT 许可证的原生桌面代码智能体，面�
 ### 支持哪些 MiMo 模型？
 
 MiMo V2.6 Flash（默认）与 MiMo V2.6 Pro，均可开启或关闭推理。UltraSpeed 是面向支持该模型账号的可选构建开关。
+语音输入使用 `mimo-v2.5-asr`，朗读使用 `mimo-v2.5-tts`，均走同一个账号。
 
 ### Mio 能在哪些平台运行？
 
-macOS（Apple Silicon 与 Intel，已签名并公证）与 Windows x64（0.4.0 为未签名版本）。Linux 后续单独提供，不计划提供终端界面（TUI）。
+macOS（Apple Silicon 与 Intel，已签名并公证）与 Windows x64（未签名）。Linux 后续单独提供，不计划提供终端界面（TUI）。
 
 ### 0.3.x 的会话和设置会保留吗？
 

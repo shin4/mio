@@ -56,13 +56,13 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
 - The packaged home is `userData/dsh-desktop`, separate from the old `userData/dsh`.
 - Icons reuse existing Mio assets. Windows installer bitmaps are generated during the build.
 - `product.json` disables updates. Both packaging and runtime reject DeepSeek's feed for Mio.
-- Mio installers use `product.json` version `0.4.0`; the bundled dsh runtime remains pinned
+- Mio installers use `product.json` version `0.4.1`; the bundled dsh runtime remains pinned
   to `0.1.7-rc.2`. Automatic updates remain disabled.
 
 Packaging delegates to upstream: `bun run package:desktop mac-arm64`, `mac-x64`, or `win-x64`.
 Only Windows supports `--unsigned`. Prepare the upstream platform-local `.env.macos` or
 `.env.windows`; its app ID must equal `product.json`. macOS requires signing/notarization
-credentials. The approved v0.4.0 Windows distribution is explicitly unsigned and uses the `-unsigned`
+credentials. The approved v0.4.x Windows distribution is explicitly unsigned and uses the `-unsigned`
 filename suffix. Never run the upstream `upload:*` commands for Mio.
 
 See [the current plan](../docs/mio-desktop-plan.md) for completion evidence and remaining gates.
@@ -105,7 +105,7 @@ checks, and regression tests pass. macOS DMG/ZIP signatures, stapled tickets and
 acceptance are verified; Windows runs a silent installation and tests its installed runtime.
 
 Artifacts contain `qualification.json` with source commit, hashes and explicit signing state.
-The workflow does not publish automatically. Publish the exact qualified artifacts as v0.4.0
+The workflow does not publish automatically. Publish the exact qualified artifacts as the `product.json` version
 after all three jobs pass; never substitute artifacts from another source commit. Signing
 inputs exist only on their macOS runner and are cleaned after the job.
 
