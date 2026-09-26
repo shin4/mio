@@ -283,6 +283,34 @@ const enableUltraSpeed = process.argv.includes("--ultraspeed")
 const bundle = join(directory, "node_modules/@mio/desktop")
 await mkdir(bundle, { recursive: true })
 await writeFile(join(bundle, "package.json"), await readFile(join(root, "desktop/bundle/package.json")))
+for (const name of ["hidden-presets.js", "saved-model-input.js"]) {
+  await writeFile(join(bundle, name), await readFile(join(root, "desktop/bundle", name)))
+}
+// A profile whose welcome ran on 0.4.3: its `llm-pi-ai` write stored the whole provider table,
+// models without `input`, in the user layer that applies after every bundle.
+const savedBeforeImage = process.argv.includes("--saved-before-image")
+if (savedBeforeImage) {
+  await writeFile(
+    join(directory, "cordis.patch.yml"),
+    [
+      "- id: llm-pi-ai",
+      "  config:",
+      "    providers:",
+      "      mimo:",
+      "        displayName: MiMo",
+      "        apiKeyEnv: MIO_API_KEY",
+      "        api: openai-completions",
+      "        baseURL: https://token-plan-cn.xiaomimimo.com/v1",
+      "        compat: { thinkingFormat: deepseek, supportsReasoningEffort: false, maxTokensField: max_completion_tokens, requiresReasoningContentOnAssistantMessages: true }",
+      "        defaultContextWindow: 262144",
+      "        defaultMaxTokens: 32768",
+      "        models:",
+      "          - { id: mimo-v2.6-flash, name: MiMo V2.6 Flash, reasoningEfforts: { off: none, high: high } }",
+      "          - { id: mimo-v2.6-pro, name: MiMo V2.6 Pro, reasoningEfforts: { off: none, high: high } }",
+      "",
+    ].join("\n"),
+  )
+}
 await writeFile(
   join(bundle, "mio.patch.yml"),
   composeModels(await readFile(join(root, "desktop/bundle/mio.patch.yml"), "utf8"), { enableUltraSpeed }),
@@ -313,10 +341,19 @@ try {
     model.reasoning.efforts.map((effort) => effort.id),
     ["off", "high"],
   )
-  // The session controller admits an image prompt only for a model declaring `image`.
+  // The session controller admits an image prompt only for a model declaring `image`. A stale
+  // saved model list is repaired after startup, so wait for that write to apply.
+  const modalities = async (id) =>
+    [...(await running.ctx.llm.resolveModelInfo("mimo", id)).inputModalities].sort((a, b) => a.localeCompare(b))
+  const deadline = Date.now() + 20_000
+  const repaired = async () => (await modalities("mimo-v2.6-pro")).length === 2 || Date.now() > deadline
+  if (savedBeforeImage) while (!(await repaired())) await new Promise((resolve) => setTimeout(resolve, 100))
   for (const id of ["mimo-v2.6-flash", "mimo-v2.6-pro"]) {
-    const info = await running.ctx.llm.resolveModelInfo("mimo", id)
-    assert.deepEqual([...info.inputModalities].sort((a, b) => a.localeCompare(b)), ["image", "text"], `${id} input modalities`)
+    assert.deepEqual(await modalities(id), ["image", "text"], `${id} input modalities`)
+  }
+  if (savedBeforeImage) {
+    const saved = await readFile(join(directory, "cordis.patch.yml"), "utf8")
+    assert.equal(saved.match(/- image/g)?.length, 2, `saved models must declare image:\n${saved}`)
   }
   const models = await running.ctx.llm.listModels("mimo")
   assert.equal(
