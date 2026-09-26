@@ -53,9 +53,14 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
 
 - Native welcome accepts MiMo API keys. `tp-` keys select cn/sgp/ams; other keys use PAYG.
 - `@mio/desktop` disables official rows rather than patching their source: DeepSeek sign-in (Account
-  settings, sidebar account menu, account-billed model route), message feedback and `/feedback`, and
-  the `ptc`/`minimal` agent presets (`standard` and `cordis`/Creator remain). The `deepseek-account`
-  service and `account-controller` stay mounted because Electron's welcome backend reads them.
+  settings, sidebar account menu, account-billed model route), and message feedback and `/feedback`.
+  The `deepseek-account` service and `account-controller` stay mounted because Electron's welcome
+  backend reads them.
+- Agent presets offered are `standard` and `cordis` (Creator). `ptc` and `minimal` stay registered —
+  a session resumes under the preset its log recorded, so disabling them strands 0.4.x sessions —
+  and are hidden from Settings and the new-session picker by a `ui-agent-preset` overlay hunk.
+  `hidden-presets.js` (inserted by `@mio/desktop`) moves a saved default among them to `standard`;
+  its list must equal the hunk's `HIDDEN_PRESETS`.
   The DeepSeek Harness preview notice ships acknowledged (`welcomeNoticeVersion`, re-check against
   upstream on every dsh bump) and the browser DeepSeek API-key onboarding is off
   (`credentialOnboarding: false`); Desktop already suppressed both, this covers a browser on the Host.

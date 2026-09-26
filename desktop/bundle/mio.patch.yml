@@ -60,13 +60,14 @@
   disabled: true
 - id: command-feedback
   disabled: true
-# Built-in agent presets: standard and cordis (which carries Creator and custom presets).
-- id: preset-ptc
-  disabled: true
-- id: preset-minimal
-  disabled: true
 - insert:
     - id: mio-desktop-brand
       name: "@mio/brand"
     - id: mio-tts
       name: "@mio/tts"
+    # Agent presets offered: standard and cordis (Creator, custom presets). `ptc` and `minimal`
+    # stay registered, because a session resumes under the preset its log recorded and disabling
+    # them would strand those sessions; the ui-agent-preset overlay hunk hides them instead, and
+    # this moves a saved default among them back to `standard`.
+    - id: mio-hidden-presets
+      name: ./hidden-presets.js
