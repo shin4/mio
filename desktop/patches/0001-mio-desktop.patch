@@ -431,7 +431,7 @@ index c1a2cb5..e9f8d12 100644
      for (const [output, filename] of artifacts) {
        const file = join(output, filename)
 diff --git a/apps/desktop/scripts/package-target.ts b/apps/desktop/scripts/package-target.ts
-index 62f4fcb..5c17b3b 100644
+index 62f4fcb..6784fea 100644
 --- a/apps/desktop/scripts/package-target.ts
 +++ b/apps/desktop/scripts/package-target.ts
 @@ -1,3 +1,4 @@
@@ -495,7 +495,7 @@ index 62f4fcb..5c17b3b 100644
    await execute(['run', 'release:pack', '--family', 'dsh', '--out', buildPaths.packedDsh, ...packArguments], buildEnv, REPOSITORY_ROOT)
    await execute([
      '--dir',
-@@ -456,6 +457,10 @@ export async function packageTarget(
+@@ -456,6 +457,11 @@ export async function packageTarget(
      '--pack-destination',
      buildPaths.packedDsh,
    ], buildEnv, REPOSITORY_ROOT)
@@ -503,10 +503,11 @@ index 62f4fcb..5c17b3b 100644
 +  await execute(['--dir', 'mio/brand', 'pack', '--pack-destination', buildPaths.packedDsh], buildEnv, REPOSITORY_ROOT)
 +  await execute(['--dir', 'mio/asr', 'pack', '--pack-destination', buildPaths.packedDsh], buildEnv, REPOSITORY_ROOT)
 +  await execute(['--dir', 'mio/tts', 'pack', '--pack-destination', buildPaths.packedDsh], buildEnv, REPOSITORY_ROOT)
++  await execute(['--dir', 'mio/media', 'pack', '--pack-destination', buildPaths.packedDsh], buildEnv, REPOSITORY_ROOT)
    await execute(['run', 'release:pack', '--family', 'vendor', '--out', buildPaths.packedVendor, ...packArguments], buildEnv, REPOSITORY_ROOT)
    rmSync(buildPaths.packedLandlock, { recursive: true, force: true })
    mkdirSync(buildPaths.packedLandlock, { recursive: true })
-@@ -482,14 +487,14 @@ export async function packageTarget(
+@@ -482,14 +488,14 @@ export async function packageTarget(
      await withMacOSNotarizationProxy(mac?.notarizationProxy, () => packageMacOSArtifacts({
        arch: target.arch,
        // electron-builder named these artifacts after the published version, so locating them uses the same identifier.
@@ -1270,7 +1271,7 @@ index 7c63262..3a39f46 100644
    "peerDependencies": {
      "@deepseek-ai/cordis": "workspace:~"
 diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
-index 36dc050..4f2af24 100644
+index 36dc050..eb5528f 100644
 --- a/pnpm-lock.yaml
 +++ b/pnpm-lock.yaml
 @@ -726,6 +726,9 @@ importers:
@@ -1283,7 +1284,7 @@ index 36dc050..4f2af24 100644
  
    apps/web:
      devDependencies:
-@@ -931,6 +934,48 @@ importers:
+@@ -931,6 +934,66 @@ importers:
          specifier: ^1.49.0
          version: 1.61.1
  
@@ -1313,9 +1314,27 @@ index 36dc050..4f2af24 100644
 +      '@mio/brand':
 +        specifier: workspace:*
 +        version: link:../brand
++      '@mio/media':
++        specifier: workspace:*
++        version: link:../media
 +      '@mio/tts':
 +        specifier: workspace:*
 +        version: link:../tts
++
++  mio/media:
++    dependencies:
++      '@deepseek-ai/cordis':
++        specifier: workspace:~
++        version: link:../../vendor/cordis
++      '@deepseek-ai/dsh-credentials':
++        specifier: workspace:*
++        version: link:../../packages/credentials/credentials
++      '@deepseek-ai/dsh-tools':
++        specifier: workspace:*
++        version: link:../../packages/core/tools
++      '@deepseek-ai/schemastery':
++        specifier: link:../../vendor/schemastery
++        version: link:../../vendor/schemastery
 +
 +  mio/tts:
 +    dependencies:
@@ -1332,7 +1351,7 @@ index 36dc050..4f2af24 100644
    native/system:
      devDependencies:
        '@deepseek-ai/node-addon-system':
-@@ -7897,9 +7942,9 @@ importers:
+@@ -7897,9 +7960,9 @@ importers:
        '@deepseek-ai/dsh-experimental-speech-to-text':
          specifier: workspace:*
          version: link:../speech-to-text

@@ -19,12 +19,18 @@
         # Conservative app budgets; these are not claims about the model's maximum capacity.
         defaultContextWindow: 262144
         defaultMaxTokens: 32768
+        # Image input is declared per model, never as the route's `defaultInput`: pi-ai's catalog has
+        # no MiMo entry, so an undeclared model is text-only and the composer refuses images for it.
+        # Over-claiming is the costly error (the provider rejects the turn after it is logged), so a
+        # model is listed with `image` only once desktop/test/image-live-probe.mjs passes for it.
         models:
           - id: mimo-v2.6-flash
             name: MiMo V2.6 Flash
+            input: [text, image]
             reasoningEfforts: { off: none, high: high }
           - id: mimo-v2.6-pro
             name: MiMo V2.6 Pro
+            input: [text, image]
             reasoningEfforts: { off: none, high: high }
         # mio:optional-models
 - id: agent-default-model
@@ -65,6 +71,10 @@
       name: "@mio/brand"
     - id: mio-tts
       name: "@mio/tts"
+    # Audio and video understanding as an agent tool: dsh stores attached media verbatim and hands the
+    # model a read-only path, but no dsh route carries audio or video to a model.
+    - id: mio-media
+      name: "@mio/media"
     # Agent presets offered: standard and cordis (Creator, custom presets). `ptc` and `minimal`
     # stay registered, because a session resumes under the preset its log recorded and disabling
     # them would strand those sessions; the ui-agent-preset overlay hunk hides them instead, and

@@ -61,6 +61,7 @@ const files = [
   ...(await readdir(join(root, "desktop/brand"))).map((name) => `desktop/brand/${name}`),
   ...(await readdir(join(root, "desktop/asr"))).map((name) => `desktop/asr/${name}`),
   ...(await readdir(join(root, "desktop/tts"))).map((name) => `desktop/tts/${name}`),
+  ...(await readdir(join(root, "desktop/media"))).map((name) => `desktop/media/${name}`),
   ...(await readdir(join(root, "script/desktop"))).map((name) => `script/desktop/${name}`),
   "assets/brand/mio-icon.svg",
   "packages/shell/resources/icon.png",

@@ -45,7 +45,12 @@ New profiles ship voice input enabled; profiles created by 0.4.0 enable it under
 `@mio/tts` (`desktop/tts`) adds a read-aloud action to every finalized reply; it serves
 `POST /api/mio/tts` behind browser authentication and synthesizes with MiMo TTS on the same route.
 Its voice is chosen and previewed under Settings → General (`GET`/`PUT /api/mio/tts/voice`) and
-saved into the profile patch. `@mio/asr` adds the voice-input language (`GET`/`PUT /api/mio/asr`,
+saved into the profile patch. `@mio/media` (`desktop/media`) registers the agent tool
+`mimo_media_read`: dsh saves any attached file verbatim and names its read-only path to the model,
+but carries no audio or video to a model, so the tool reads the file through the mounted `fs`
+backend and asks MiMo (`mimo-v2.6-flash` by default) about it on the MiMo route, returning text.
+It accepts MiMo's documented audio (MP3/WAV/FLAC/M4A/OGG) and video (MP4/MOV/AVI/WMV) formats up to
+50 MB base64. PDF is refused: MiMo Chat Completions has no file content part. `@mio/asr` adds the voice-input language (`GET`/`PUT /api/mio/asr`,
 persisted by the official speech service) and a microphone-access row beside it. This separation is required by upstream bundle resolution. Neither
 ships a fork of the model adapter. Shared framework peers resolve to the upstream workspace.
 
@@ -104,6 +109,15 @@ Voice uses the same opt-in shape: `MIMO_API_KEY` (or `MIO_API_KEY`) plus `MIO_RE
 key, then `node --expose-internals test/voice-live-probe.mjs`. It saves the key through the native
 welcome backend, transcribes the landing-page clips, reads a reply aloud through `/api/mio/tts`, and
 hears that speech back through voice input. Sanitized evidence: `voice-live-validation.json`.
+
+Image input uses the same shape: `MIO_API_KEY` (plus `MIO_REGION` for a Token Plan key), then
+`node --expose-internals test/image-live-probe.mjs`. It sends one generated PNG to Flash and Pro
+through the attachment store and official adapter. Sanitized evidence: `image-live-validation.json`.
+
+Audio and video: `node test/media-live-probe.mjs <samples>` asks every listed chat model directly;
+`node test/media-tool-live-probe.mjs <samples>` runs real headless agent turns that must call
+`mimo_media_read` themselves. Sanitized evidence: `media-live-validation.json`,
+`media-tool-live-validation.json`.
 
 ## Optional UltraSpeed model
 

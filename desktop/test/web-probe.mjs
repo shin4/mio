@@ -131,6 +131,62 @@ async function verifyTts(ctx, send, origin) {
   }
 }
 
+/** `mimo_media_read` reads media through the fs backend and asks MiMo on the route's endpoint and key. */
+async function verifyMedia(ctx, home) {
+  const { server, requests } = await connectReplay(ctx, {
+    object: "chat.completion",
+    model: "mimo-v2.6-flash",
+    choices: [{ index: 0, message: { role: "assistant", content: "  The speaker says hello.  " } }],
+  })
+  const read = (args) =>
+    ctx.tools.execute({ callId: `media-${requests.length}-${Math.random()}`, name: "mimo_media_read", arguments: args, signal: AbortSignal.timeout(30000) })
+  try {
+    const wav = join(home, "clip.WAV")
+    await writeFile(wav, await recording("en"))
+    const heard = await read({ file_path: wav, question: "Transcribe it." })
+    assert.equal(heard.isError, false, JSON.stringify(heard.error))
+    assert.deepEqual(heard.value, { path: wav, kind: "audio", model: "mimo-v2.6-flash", answer: "The speaker says hello." })
+    assert.match(heard.content[0].text, /<type>audio<\/type>[\s\S]*The speaker says hello\./)
+    const audio = requests.at(-1)
+    assert.equal(audio.url, "/v1/chat/completions")
+    assert.equal(audio.authorization, "Bearer tp-replay")
+    assert.deepEqual(audio.body.thinking, { type: "disabled" })
+    const [part, question] = audio.body.messages[0].content
+    assert.equal(part.type, "input_audio")
+    assert.ok(part.input_audio.data.startsWith("data:audio/wav;base64,UklGR"), "WAV bytes travel as a data URL")
+    assert.deepEqual(question, { type: "text", text: "Transcribe it." })
+
+    const mp4 = join(home, "clip.mp4")
+    await writeFile(mp4, Buffer.from("not really a video"))
+    const seen = await read({ file_path: mp4, question: "Describe it.", fps: 0.5, media_resolution: "max" })
+    assert.equal(seen.isError, false, JSON.stringify(seen.error))
+    assert.equal(seen.value.kind, "video")
+    const video = requests.at(-1).body.messages[0].content[0]
+    assert.deepEqual(
+      { ...video, video_url: { url: video.video_url.url.slice(0, 22) } },
+      { type: "video_url", video_url: { url: "data:video/mp4;base64," }, fps: 0.5, media_resolution: "max" },
+    )
+
+    const before = requests.length
+    const pdf = join(home, "doc.pdf")
+    await writeFile(pdf, "%PDF-1.4")
+    for (const [args, message] of [
+      [{ file_path: pdf, question: "Read it." }, /MP3\/WAV\/FLAC\/M4A\/OGG\/MP4\/MOV\/AVI\/WMV files only/],
+      [{ file_path: wav, question: "Read it.", fps: 2 }, /video only/],
+      [{ file_path: mp4, question: "Read it.", fps: 30 }, /between 0\.1 and 10/],
+      [{ file_path: join(home, "missing.mp3"), question: "Read it." }, /not found/],
+      [{ file_path: wav, question: "  " }, /non-empty/],
+    ]) {
+      const refused = await read(args)
+      assert.equal(refused.isError, true, `${JSON.stringify(args)} must be refused`)
+      assert.match(refused.error.message, message)
+    }
+    assert.equal(requests.length, before, "A refused call must not reach MiMo")
+  } finally {
+    server.close()
+  }
+}
+
 /** Voice input resolves to MiMo ASR on the endpoint and key welcome stores for the MiMo route. */
 async function verifyAsr(ctx, send, origin) {
   assert.ok(
@@ -220,7 +276,7 @@ await writeFile(
   join(bundle, "mio.patch.yml"),
   composeModels(await readFile(join(root, "desktop/bundle/mio.patch.yml"), "utf8"), { enableUltraSpeed }),
 )
-for (const name of ["brand", "tts"]) {
+for (const name of ["brand", "tts", "media"]) {
   await symlink(
     join(upstream, "mio", name),
     join(directory, "node_modules/@mio", name),
@@ -246,6 +302,11 @@ try {
     model.reasoning.efforts.map((effort) => effort.id),
     ["off", "high"],
   )
+  // The session controller admits an image prompt only for a model declaring `image`.
+  for (const id of ["mimo-v2.6-flash", "mimo-v2.6-pro"]) {
+    const info = await running.ctx.llm.resolveModelInfo("mimo", id)
+    assert.deepEqual([...info.inputModalities].sort((a, b) => a.localeCompare(b)), ["image", "text"], `${id} input modalities`)
+  }
   const models = await running.ctx.llm.listModels("mimo")
   assert.equal(
     models.some((model) => model.id === "mimo-v2.6-pro-ultraspeed"),
@@ -285,6 +346,7 @@ try {
   assert.deepEqual(await backend.save("contains whitespace"), { ok: false })
   await verifyAsr(running.ctx, send, `http://127.0.0.1:${running.ctx.webServer.port}`)
   await verifyTts(running.ctx, send, `http://127.0.0.1:${running.ctx.webServer.port}`)
+  await verifyMedia(running.ctx, home)
   console.log("Mio web composition verified")
 } finally {
   await running.shutdown.shutdown(0)
