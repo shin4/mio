@@ -19,6 +19,10 @@ export const Config = z.object({
   route: z.string().min(1).default("mimo"),
   apiKeyRef: z.string().min(1).default("MIO_API_KEY"),
   maxCharacters: z.natural().min(1).default(4000),
+  // Synthesis time grows with length (about 30 Chinese characters per second on 2026-09-26), so
+  // a short first part starts playback quickly and later parts are prefetched while it plays.
+  firstPartCharacters: z.natural().min(1).default(120),
+  partCharacters: z.natural().min(1).default(600),
 })
 
 /**
@@ -55,6 +59,60 @@ export function speakable(markdown) {
 }
 
 /**
+ * The part of a long reply one synthesis reads: whole sentences up to the limit, so a long
+ * answer is read from its start instead of failing. Without a sentence end in reach, the
+ * text is cut at the limit.
+ * @param text - speakable text.
+ * @param limit - maximum characters per synthesis.
+ * @returns text of at most `limit` characters.
+ */
+export function opening(text, limit) {
+  if (text.length <= limit) return text
+  const head = text.slice(0, limit)
+  const end = Math.max(...["。", "！", "？", ".", "!", "?", "\n"].map((mark) => head.lastIndexOf(mark)))
+  return (end > 0 ? head.slice(0, end + 1) : head).trim()
+}
+
+/**
+ * Cut text into pieces of at most `size` characters, breaking after a clause mark or space in the
+ * second half of a piece when there is one, so a long sentence is not split inside a word.
+ * @param text - one sentence.
+ * @param size - maximum characters per piece.
+ * @returns pieces in order.
+ */
+function cut(text, size) {
+  if (text.length <= size) return [text]
+  const head = text.slice(0, size)
+  const soft = Math.max(...["，", "、", "；", "：", ",", ";", ":", " "].map((mark) => head.lastIndexOf(mark)))
+  const at = soft >= size / 2 ? soft + 1 : size
+  return [text.slice(0, at), ...cut(text.slice(at), size)]
+}
+
+/**
+ * Split speakable text into parts synthesized one after another: whole sentences, the first part
+ * short so playback starts quickly. A sentence longer than a part is cut at clause marks or spaces.
+ * @param text - speakable text, already limited by {@link opening}.
+ * @param first - maximum characters of the first part.
+ * @param rest - maximum characters of every later part.
+ * @returns non-empty parts in reading order.
+ */
+export function parts(text, first, rest) {
+  const sentences = text.match(/[^。！？.!?\n]+(?:[。！？.!?]+|\n|$)\s*/g) ?? []
+  const [opener = "", ...others] = sentences
+  const [lead, ...tail] = cut(opener, first)
+  return [lead, ...[...tail, ...others].flatMap((sentence) => cut(sentence, rest))]
+    .reduce((result, piece) => {
+      const limit = result.length <= 1 ? first : rest
+      const last = result.at(-1)
+      if (last !== undefined && last.length + piece.length <= limit) result[result.length - 1] = last + piece
+      else result.push(piece)
+      return result
+    }, [])
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0)
+}
+
+/**
  * The synthesis request MiMo documents for a preset voice: the text is the assistant turn.
  * @param config - validated configuration.
  * @param text - speakable text.
@@ -76,7 +134,8 @@ const failure = (status, message) =>
 const json = (value) => new Response(JSON.stringify(value), { headers: { "content-type": "application/json" } })
 
 /**
- * Serve `POST /api/mio/tts` with `{ text, voice? }`, answering WAV bytes, and the voice preference
+ * Serve `POST /api/mio/tts` with `{ text, voice?, part? }`, answering one part's WAV bytes and the
+ * part count in `x-mio-tts-parts`, and the voice preference
  * at `GET`/`PUT /api/mio/tts/voice`.
  * @param ctx - Host context.
  * @param config - validated configuration.
@@ -94,9 +153,11 @@ export function apply(ctx, config) {
       // choice made in settings reaches the next request without a remount.
       const voice = body.voice ?? config.voice.get()
       if (!VOICES.includes(voice)) return failure(400, "unknown voice")
-      const text = speakable(body.text)
-      if (text.length === 0) return failure(422, "nothing to read aloud")
-      if (text.length > config.maxCharacters) return failure(413, `longer than ${config.maxCharacters} characters`)
+      const all = parts(opening(speakable(body.text), config.maxCharacters), config.firstPartCharacters, config.partCharacters)
+      if (all.length === 0) return failure(422, "nothing to read aloud")
+      const part = body.part ?? 0
+      if (!Number.isInteger(part) || part < 0 || part >= all.length) return failure(400, "no such part")
+      const text = all[part]
       const key = (await ctx.credentials.resolve(apiKey))?.value
       if (!key) return failure(409, `${config.apiKeyRef} is not configured`)
       const response = await fetch(`${endpointOf(ctx, config.route)}/chat/completions`, {
@@ -111,7 +172,7 @@ export function apply(ctx, config) {
       const audio = (await response.json())?.choices?.[0]?.message?.audio?.data
       if (typeof audio !== "string" || audio.length === 0) return failure(502, "MiMo TTS returned no audio")
       return new Response(Buffer.from(audio, "base64"), {
-        headers: { "content-type": "audio/wav", "cache-control": "no-store" },
+        headers: { "content-type": "audio/wav", "cache-control": "no-store", "x-mio-tts-parts": String(all.length) },
       })
     },
   }))

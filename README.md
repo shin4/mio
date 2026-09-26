@@ -32,15 +32,22 @@ workspace, settings, tools and session model, unchanged — with Mio's identity 
 configuration layered on top. Mio ships no fork of the model adapter: MiMo is configured through
 dsh's own provider, and the product overlay is a reviewed patch set kept in [`desktop/`](desktop/README.md).
 
-## What's new in 0.4.0
+## What's new in 0.4.1
 
-- **Official dsh Desktop 0.1.7-rc.2 foundation** — the native workspace, settings and tools, as upstream ships them.
-- **MiMo V2.6 by default** — new sessions start on **MiMo V2.6 Flash** with thinking enabled; **V2.6 Pro** is one click away. Thinking can be switched off per session.
-- **Native MiMo account setup** — paste an API key on the welcome screen. The key prefix picks the billing track; token plans choose a region (CN / SGP / AMS).
-- **Mio identity** — Mio icons, theme and brand across the app, in Chinese and English.
-- **Qualified installers** — macOS builds are Developer ID signed and notarized; every installer ships with SHA-256 checksums and qualification evidence.
+- **Voice input with MiMo ASR** — the mic button in the composer records your request and MiMo ASR
+  (`mimo-v2.5-asr`) turns it into a draft you can edit before sending. Language is detected
+  automatically, or pinned to Chinese.
+- **Read aloud with MiMo TTS** — every finished reply gets a speaker button next to Copy. Mio reads
+  the prose with `mimo-v2.5-tts`, skips code blocks, and plays one reply at a time. Long answers
+  are read from the start, up to about 4,000 characters.
+- **Pick the voice** — **Settings → General → Read-aloud voice** offers MiMo's nine preset voices
+  (冰糖, 茉莉, 苏打, 白桦, Mia, Chloe, Milo, Dean and the default) with a preview button.
+- Both use the MiMo account you already connected, including your Token Plan region. There is no
+  extra key and no local model download.
 
-Full notes: [Mio v0.4.0 release](https://github.com/shin4/mio/releases/tag/v0.4.0).
+0.4.0 moved Mio onto the official dsh Desktop 0.1.7-rc.2, with MiMo V2.6 Flash as the default and
+native MiMo account setup. Full notes: [v0.4.1](https://github.com/shin4/mio/releases/tag/v0.4.1) ·
+[v0.4.0](https://github.com/shin4/mio/releases/tag/v0.4.0).
 
 ## Download
 
@@ -48,18 +55,21 @@ Get the latest installers from [Releases](https://github.com/shin4/mio/releases/
 
 | Platform | File | Signing |
 | --- | --- | --- |
-| macOS · Apple Silicon | `mio-0.4.0-mac-arm64.dmg` (or `.zip`) | Developer ID signed + notarized |
-| macOS · Intel | `mio-0.4.0-mac-x64.dmg` (or `.zip`) | Developer ID signed + notarized |
-| Windows x64 | `mio-0.4.0-win-x64-unsigned.exe` | **Unsigned** — expect a SmartScreen / unknown-publisher prompt |
+| macOS · Apple Silicon | `mio-0.4.1-mac-arm64.dmg` (or `.zip`) | Developer ID signed + notarized |
+| macOS · Intel | `mio-0.4.1-mac-x64.dmg` (or `.zip`) | Developer ID signed + notarized |
+| Windows x64 | `mio-0.4.1-win-x64-unsigned.exe` | **Unsigned** — expect a SmartScreen / unknown-publisher prompt |
 
-Verify downloads against `SHA256SUMS.txt`; `mio-0.4.0-qualification.json` records the source
-commit, hashes and signing state of each installer. Linux is not part of 0.4.0 and will follow separately.
+Verify downloads against `SHA256SUMS.txt`; `mio-0.4.1-qualification.json` records the source
+commit, hashes and signing state of each installer. Linux will follow separately.
 
-### Upgrading from 0.3.x
+### Upgrading
 
-- **Install manually** — automatic updates are disabled in this release.
-- **Fresh data directory** — 0.4.0 does not migrate previous sessions, workspaces, settings or
-  API keys. Reconnect your MiMo account on the welcome screen.
+- **Install manually** — automatic updates are still disabled.
+- **From 0.4.0** — install over it; sessions, settings and your MiMo key are kept. Read aloud is
+  on right away. Voice input starts switched off in profiles created by 0.4.0: turn on
+  **Plugins → Voice input** once.
+- **From 0.3.x** — 0.4 uses a fresh data directory and does not migrate previous sessions,
+  workspaces, settings or API keys. Reconnect your MiMo account on the welcome screen.
 
 ## Connect to MiMo
 
@@ -77,6 +87,21 @@ Get an API key from [platform.xiaomimimo.com](https://platform.xiaomimimo.com) a
 `Off` and `High` map to MiMo's `thinking` switch (disabled / enabled); there are no graded effort
 tiers. `mimo-v2.6-pro-ultraspeed` stays out of the release build — see
 [Optional UltraSpeed model](desktop/README.md#optional-ultraspeed-model) if your account supports it.
+
+## Voice
+
+Voice runs on the MiMo account you connected. Recordings and reply text go to the MiMo API.
+Nothing is transcribed or synthesized on your machine.
+
+- **Speak a request** — click the mic in the composer, talk (up to 60 seconds), then stop. The
+  transcript lands in the draft and is not sent until you send it. **Plugins → Voice input**
+  shows the recognizer (MiMo ASR) and the language: *Detect automatically* (recommended, also for
+  English) or *Chinese*.
+- **Hear a reply** — click the speaker under a reply to read it aloud; click again to stop.
+  Headings, emphasis and links are read as plain prose, and code blocks are skipped. A long answer
+  is read from its start, in whole sentences up to about 4,000 characters.
+- **Choose the voice** — **Settings → General → Read-aloud voice**. *Preview* plays a short line in
+  the selected voice, in Chinese or English to match that voice.
 
 ## Build from source
 
@@ -97,8 +122,8 @@ validation and the release pipeline; the pre-0.4.0 Electron shell remains reacha
 ## 🔊 Hear it
 
 The intro voice on the **[landing page](https://shin4.github.io/mio/#capabilities)** was synthesized
-with MiMo TTS, not recorded by a voice actor. English voice *Chloe*, Chinese voice *冰糖*.
-Voice dictation and speech are not part of the 0.4.0 desktop yet — they are being rebuilt as dsh plugins.
+with MiMo TTS, not recorded by a voice actor. English voice *Chloe*, Chinese voice *冰糖*. Since
+0.4.1 the desktop app listens and speaks with the same models — see [Voice](#voice).
 
 <details>
 <summary>Transcript</summary>
@@ -125,11 +150,12 @@ own provider. Upstream improvements arrive by moving a version pin.
 ### Which MiMo models does it support?
 
 MiMo V2.6 Flash (the default) and MiMo V2.6 Pro, each with thinking on or off. UltraSpeed is an
-opt-in build flag for accounts that support it.
+opt-in build flag for accounts that support it. Voice uses `mimo-v2.5-asr` for input and
+`mimo-v2.5-tts` for read aloud, on the same account.
 
 ### Which platforms does Mio run on?
 
-macOS on Apple Silicon and Intel (signed and notarized) and Windows x64 (unsigned in 0.4.0).
+macOS on Apple Silicon and Intel (signed and notarized) and Windows x64 (unsigned).
 Linux will follow separately. There is no terminal (TUI) version planned.
 
 ### Will my 0.3.x sessions and settings carry over?

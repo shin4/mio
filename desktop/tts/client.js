@@ -81,37 +81,49 @@ window.__ModuleLoader__.load({
     const stop = (messageId) => {
       if (playing?.messageId === messageId) publish(undefined)
     }
-    const start = async (messageId, text, onError, voice) => {
-      const current = { messageId, controller: new AbortController(), phase: "loading" }
-      publish(current)
-      const response = await fetch("/api/mio/tts", {
+    /** One synthesized part and how many parts the reply has. */
+    const synthesize = (current, text, voice, part) =>
+      fetch("/api/mio/tts", {
         method: "POST",
         credentials: "same-origin",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(voice === undefined ? { text } : { text, voice }),
+        body: JSON.stringify(voice === undefined ? { text, part } : { text, voice, part }),
         signal: current.controller.signal,
-      }).catch((error) => ({ ok: false, aborted: current.controller.signal.aborted, error }))
-      if (playing !== current) return
-      if (!response.ok) {
-        const reason = response.json
-          ? ((await response.json().catch(() => undefined))?.error ?? `HTTP ${response.status}`)
-          : String(response.error?.message ?? response.error)
-        publish(undefined)
-        onError(reason)
-        return
-      }
-      const blob = await response.blob()
-      if (playing !== current) return
-      current.url = URL.createObjectURL(blob)
-      current.audio = new Audio(current.url)
-      current.audio.addEventListener("ended", () => stop(messageId))
-      current.phase = "playing"
+      }).then(async (response) => {
+        if (!response.ok) {
+          throw new Error((await response.json().catch(() => undefined))?.error ?? `HTTP ${response.status}`)
+        }
+        return { blob: await response.blob(), parts: Number(response.headers.get("x-mio-tts-parts") ?? 1) }
+      })
+
+    // Parts play in order; the next one is synthesized while the current one plays.
+    const start = (messageId, text, onError, voice) => {
+      const current = { messageId, controller: new AbortController(), phase: "loading" }
       publish(current)
-      await current.audio.play().catch((error) => {
+      const fail = (error) => {
         if (playing !== current) return
         publish(undefined)
         onError(String(error?.message ?? error))
-      })
+      }
+      const play = async (part, pending) => {
+        const result = await pending.catch(fail)
+        if (playing !== current || result === undefined) return
+        const next = part + 1 < result.parts ? synthesize(current, text, voice, part + 1) : undefined
+        next?.catch(() => {})
+        if (current.url) URL.revokeObjectURL(current.url)
+        current.url = URL.createObjectURL(result.blob)
+        current.audio = new Audio(current.url)
+        const ended = new Promise((resolve) => current.audio.addEventListener("ended", resolve, { once: true }))
+        current.phase = "playing"
+        publish(current)
+        const started = await current.audio.play().then(() => true, fail)
+        if (!started) return
+        await ended
+        if (playing !== current) return
+        if (next === undefined) return stop(messageId)
+        await play(part + 1, next)
+      }
+      return play(0, synthesize(current, text, voice, 0))
     }
 
     const usePlayback = (messageId) => {

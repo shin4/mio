@@ -28,8 +28,8 @@
     {
       "@type": "SoftwareApplication",
       "name": "Mio",
-      "softwareVersion": "0.4.0",
-      "description": "Mio is a free, open-source native desktop coding agent for the MiMo model family, for macOS and Windows. It is the official DeepSeek Harness Desktop with Mio's identity and MiMo defaults: MiMo V2.6 Flash for new sessions, V2.6 Pro one click away, and native MiMo account setup.",
+      "softwareVersion": "0.4.1",
+      "description": "Mio is a free, open-source native desktop coding agent for the MiMo model family, for macOS and Windows. It is the official DeepSeek Harness Desktop with Mio's identity and MiMo defaults: MiMo V2.6 Flash for new sessions, V2.6 Pro one click away, native MiMo account setup, and MiMo voice: speech input with MiMo ASR and read-aloud replies with MiMo TTS.",
       "url": "https://shin4.github.io/mio/",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "macOS, Windows",
@@ -56,7 +56,12 @@
         {
           "@type": "Question",
           "name": "Which platforms does Mio run on?",
-          "acceptedAnswer": { "@type": "Answer", "text": "macOS on Apple Silicon and Intel, signed and notarized, and Windows x64, unsigned in 0.4.0. Linux will follow separately." }
+          "acceptedAnswer": { "@type": "Answer", "text": "macOS on Apple Silicon and Intel, signed and notarized, and Windows x64, unsigned. Linux will follow separately." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I talk to Mio, and can it read replies aloud?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, since 0.4.1. The mic in the composer transcribes your request with MiMo ASR into an editable draft, and the speaker button under each reply reads it with MiMo TTS in one of nine voices. Both use your MiMo account." }
         },
         {
           "@type": "Question",
@@ -430,7 +435,7 @@ html[data-motion="off"]{scroll-behavior:auto}
   <section class="hero" data-depth="0" data-zone="Epipelagic" data-zh="海面层" data-en="Sunlight zone" data-whale="right">
     <div class="inner">
       <div class="hero-copy">
-        <a class="chip" href="https://github.com/shin4/mio/releases" id="relChip"><em id="relTag">v0.4.0</em> <span><b style="color:var(--ink);font-weight:500" data-i18n="hero.chip">Official dsh Desktop core</b> · <span id="relDate">2026-09-25</span> →</span></a>
+        <a class="chip" href="https://github.com/shin4/mio/releases" id="relChip"><em id="relTag">v0.4.1</em> <span><b style="color:var(--ink);font-weight:500" data-i18n="hero.chip">Now with MiMo voice</b> · <span id="relDate">2026-09-26</span> →</span></a>
         <h1 class="display"><span class="ln"><span data-i18n-html="hero.l1">A whale for a heart,</span></span><span class="ln"><span data-i18n-html="hero.l2"><span class="mimo">MiMo</span> for a body.</span></span></h1>
         <p class="echo" data-i18n="hero.echo">鲸为心，MiMo 为身。</p>
         <p class="hero-sub" data-i18n-html="hero.sub">Mio is a native desktop coding agent for MiMo. Since 0.4.0 its heart is the <b>official DeepSeek Harness Desktop</b>, and its body is the <b>MiMo model family</b>.</p>
@@ -441,7 +446,7 @@ html[data-motion="off"]{scroll-behavior:auto}
         <div class="hero-meta">
           <span data-i18n="hero.m1">Free · MIT open source</span>
           <span data-i18n="hero.m2">macOS signed &amp; notarized</span>
-          <a href="https://github.com/shin4/mio/releases/download/v0.4.0/mio-0.4.0-mac-x64.dmg" id="altDl" data-i18n="hero.intel" hidden>Intel Mac</a>
+          <a href="https://github.com/shin4/mio/releases/download/v0.4.1/mio-0.4.1-mac-x64.dmg" id="altDl" data-i18n="hero.intel" hidden>Intel Mac</a>
         </div>
         <button class="voice" id="capabilities" type="button" aria-pressed="false">
           <span class="vp"><svg viewBox="0 0 12 12" id="voiceIcon" aria-hidden="true"><path d="M2 1l9 5-9 5z" fill="currentColor"/></svg></span>
@@ -459,15 +464,15 @@ html[data-motion="off"]{scroll-behavior:auto}
     <div class="inner news-grid">
       <div class="news-head rise">
         <div class="depth-tag"><i>200 m</i> <span data-i18n="new.tag">The last of the sunlight</span></div>
-        <h2 class="display" data-i18n-html="new.title">0.4.0 gets<br>a new heart.</h2>
-        <p class="echo" data-i18n="new.echo">换了心脏，还是那头鲸。</p>
-        <p class="lead" data-i18n="new.lead">The workspace, settings, tools and sessions are the official dsh Desktop, as upstream ships them. Mio adds one reviewed layer on top: its brand, the MiMo configuration, and native account setup.</p>
+        <h2 class="display" data-i18n-html="new.title">Now it listens,<br>and speaks.</h2>
+        <p class="echo" data-i18n="new.echo">会听，也会说。</p>
+        <p class="lead" data-i18n="new.lead">Speak a request and MiMo ASR drafts it; click a reply and MiMo TTS reads it back. Both ride the MiMo account you already connected: same key, same region, nothing extra to install.</p>
       </div>
       <div class="news-list">
-        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k1">Heart · core</span><h3 data-i18n="new.t1">Official dsh Desktop 0.1.7-rc.2</h3><p data-i18n="new.d1">Upstream's native workspace, settings and tools. Version-pinned, patches reviewed, no fork.</p></article>
-        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k2">Body · models</span><h3 data-i18n="new.t2">MiMo V2.6 Flash by default, thinking on</h3><p data-i18n-html="new.d2">V2.6 Pro is one click away. Thinking switches per session, and requests only send <code>thinking.type</code>.</p></article>
-        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k3">Onboarding · setup</span><h3 data-i18n="new.t3">Paste a key, and the billing track follows</h3><p data-i18n-html="new.d3"><code>sk-</code> keys are pay-as-you-go; <code>tp-</code> keys are token plans with a region: CN, SGP or AMS.</p></article>
-        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k4">Identity · look</span><h3 data-i18n="new.t4">Mio's icons, theme, in Chinese and English</h3><p data-i18n="new.d4">macOS installers are signed and notarized; every installer ships with SHA-256 checksums and qualification evidence.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k1">Voice · input</span><h3 data-i18n="new.t1">Speak, and it becomes a draft</h3><p data-i18n-html="new.d1">The mic in the composer records up to 60 seconds. <code>mimo-v2.5-asr</code> transcribes it into the draft, and nothing is sent until you send it.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k2">Voice · read aloud</span><h3 data-i18n="new.t2">Replies, read aloud</h3><p data-i18n-html="new.d2">A speaker button sits next to Copy. <code>mimo-v2.5-tts</code> reads the prose and skips code; long answers are read from the start, up to about 4,000 characters.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k3">Settings · voice</span><h3 data-i18n="new.t3">Nine MiMo voices, with a preview</h3><p data-i18n-html="new.d3">Settings → General → Read-aloud voice: 冰糖, 茉莉, 苏打, 白桦, Mia, Chloe, Milo, Dean or the default.</p></article>
+        <article class="ping rise"><span class="ping-dot"></span><span class="ping-k" data-i18n="new.k4">Heart · core</span><h3 data-i18n="new.t4">Still the official dsh Desktop</h3><p data-i18n-html="new.d4">0.1.7-rc.2 as upstream ships it, MiMo V2.6 Flash by default, native key setup. Voice arrives as two plugins, not a fork.</p></article>
       </div>
     </div>
   </section>
@@ -634,29 +639,29 @@ html[data-motion="off"]{scroll-behavior:auto}
         <p class="echo" data-i18n="dl.echo">带一头鲸回水面。</p>
       </div>
       <div class="dl-grid">
-        <a class="dl rise" data-os="mac" data-arch="arm64" href="https://github.com/shin4/mio/releases/download/v0.4.0/mio-0.4.0-mac-arm64.dmg">
+        <a class="dl rise" data-os="mac" data-arch="arm64" href="https://github.com/shin4/mio/releases/download/v0.4.1/mio-0.4.1-mac-arm64.dmg">
           <span class="dl-os">macOS <small>APPLE SILICON</small></span>
-          <span class="dl-file"><span class="fn">mio-0.4.0-mac-arm64.dmg</span><br><span data-i18n="dl.zip">ZIP also available</span></span>
+          <span class="dl-file"><span class="fn">mio-0.4.1-mac-arm64.dmg</span><br><span data-i18n="dl.zip">ZIP also available</span></span>
           <span class="sig" data-i18n="dl.signed">Developer ID signed + notarized</span>
           <span class="dl-go" data-i18n="dl.goDmg">Download DMG →</span>
         </a>
-        <a class="dl rise" data-os="mac" data-arch="x64" href="https://github.com/shin4/mio/releases/download/v0.4.0/mio-0.4.0-mac-x64.dmg">
+        <a class="dl rise" data-os="mac" data-arch="x64" href="https://github.com/shin4/mio/releases/download/v0.4.1/mio-0.4.1-mac-x64.dmg">
           <span class="dl-os">macOS <small>INTEL</small></span>
-          <span class="dl-file"><span class="fn">mio-0.4.0-mac-x64.dmg</span><br><span data-i18n="dl.zip">ZIP also available</span></span>
+          <span class="dl-file"><span class="fn">mio-0.4.1-mac-x64.dmg</span><br><span data-i18n="dl.zip">ZIP also available</span></span>
           <span class="sig" data-i18n="dl.signed">Developer ID signed + notarized</span>
           <span class="dl-go" data-i18n="dl.goDmg">Download DMG →</span>
         </a>
-        <a class="dl rise" data-os="win" data-arch="x64" href="https://github.com/shin4/mio/releases/download/v0.4.0/mio-0.4.0-win-x64-unsigned.exe">
+        <a class="dl rise" data-os="win" data-arch="x64" href="https://github.com/shin4/mio/releases/download/v0.4.1/mio-0.4.1-win-x64-unsigned.exe">
           <span class="dl-os">Windows <small>X64</small></span>
-          <span class="dl-file"><span class="fn">mio-0.4.0-win-x64-unsigned.exe</span></span>
+          <span class="dl-file"><span class="fn">mio-0.4.1-win-x64-unsigned.exe</span></span>
           <span class="sig warn" data-i18n="dl.unsigned">Unsigned: expect a SmartScreen prompt</span>
           <span class="dl-go" data-i18n="dl.goExe">Download installer →</span>
         </a>
       </div>
       <div class="notes rise">
         <div><b data-i18n="dl.n1t">Verify</b><span data-i18n-html="dl.n1">Check downloads against <code>SHA256SUMS.txt</code>; <code>qualification.json</code> records each installer's source commit and signing state.</span></div>
-        <div><b data-i18n="dl.n2t">Upgrading from 0.3.x</b><span data-i18n="dl.n2">Install manually. 0.4.0 starts with a fresh data directory and does not migrate earlier sessions, settings or keys.</span></div>
-        <div><b>Linux</b><span data-i18n="dl.n3">Not part of 0.4.0; it will follow separately. Automatic updates are off in this release.</span></div>
+        <div><b data-i18n="dl.n2t">Upgrading</b><span data-i18n="dl.n2">From 0.4.0, install over it: sessions, settings and your key stay, and voice input is one switch in Plugins. From 0.3.x, 0.4 starts with a fresh data directory.</span></div>
+        <div><b>Linux</b><span data-i18n="dl.n3">It will follow separately. Automatic updates are still off; install new versions manually.</span></div>
       </div>
     </div>
   </section>
@@ -670,8 +675,9 @@ html[data-motion="off"]{scroll-behavior:auto}
         <details><summary data-i18n="faq.q2">Why is it built on DeepSeek Harness?</summary><p class="ans" data-i18n="faq.a2">The hard parts of a desktop agent — the tool loop, session persistence, model routing, the workspace UI — already exist in dsh, and they are open source. Mio composes them instead of forking them: a pinned upstream source, a reviewed overlay, and MiMo configured through dsh's own provider. Upstream improvements arrive by moving a version pin.</p></details>
         <details><summary data-i18n="faq.q3">Is Mio a DeepSeek product?</summary><p class="ans" data-i18n="faq.a3">No. DeepSeek Harness is DeepSeek's open-source agent harness (MIT). Mio is an independent project built on it and is not a DeepSeek product.</p></details>
         <details><summary data-i18n="faq.q4">Which MiMo models does it support?</summary><p class="ans" data-i18n="faq.a4">MiMo V2.6 Flash, the default for new sessions, and MiMo V2.6 Pro. Thinking switches on or off per session; Off and High map to MiMo's thinking switch, with no graded effort levels. UltraSpeed is an opt-in build flag for accounts that support it.</p></details>
-        <details><summary data-i18n="faq.q5">Which platforms does Mio run on?</summary><p class="ans" data-i18n="faq.a5">macOS on Apple Silicon and Intel, Developer ID signed and notarized, and Windows x64, unsigned in 0.4.0. Linux will follow separately. There is no terminal (TUI) version planned.</p></details>
-        <details><summary data-i18n="faq.q6">Will my 0.3.x sessions and settings carry over?</summary><p class="ans" data-i18n="faq.a6">No. 0.4.0 starts with a fresh data directory and does not import earlier sessions, workspaces, settings or keys. Install it manually and reconnect your MiMo account on the welcome screen.</p></details>
+        <details><summary data-i18n="faq.q9">Can I talk to Mio, and can it read replies aloud?</summary><p class="ans" data-i18n="faq.a9">Yes, since 0.4.1. The mic in the composer transcribes your request with MiMo ASR into an editable draft, and the speaker button under each reply reads it with MiMo TTS in one of nine voices. Both use your MiMo account; recordings and reply text are sent to the MiMo API.</p></details>
+        <details><summary data-i18n="faq.q5">Which platforms does Mio run on?</summary><p class="ans" data-i18n="faq.a5">macOS on Apple Silicon and Intel, Developer ID signed and notarized, and Windows x64, unsigned. Linux will follow separately. There is no terminal (TUI) version planned.</p></details>
+        <details><summary data-i18n="faq.q6">Will my sessions and settings carry over?</summary><p class="ans" data-i18n="faq.a6">From 0.4.0, yes: install 0.4.1 over it and everything stays. From 0.3.x, no: 0.4 starts with a fresh data directory and does not import earlier sessions, workspaces, settings or keys, so reconnect your MiMo account on the welcome screen.</p></details>
         <details><summary data-i18n="faq.q7">Is Mio an official Xiaomi product?</summary><p class="ans" data-i18n="faq.a7">No. Mio is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client.</p></details>
         <details><summary data-i18n="faq.q8">How much does it cost, and how do I get started?</summary><p class="ans" data-i18n="faq.a8">The app is free and MIT-licensed; you pay only for MiMo API usage. Download the installer, then paste a MiMo API key from platform.xiaomimimo.com on the welcome screen: sk- keys are pay-as-you-go, tp- keys are token plans and ask for a region. You can skip that step and add the key later from the Models page.</p></details>
       </div>
@@ -711,18 +717,18 @@ html[data-motion="off"]{scroll-behavior:auto}
       'meta.desc':'Mio is a free, open-source native desktop coding agent for the MiMo model family, built on the official DeepSeek Harness Desktop. For macOS and Windows.',
       'nav.new':'What\'s new','nav.film':'Film','nav.models':'Models','nav.heart':'The heart','nav.download':'Download','nav.faq':'FAQ',
       'hud.temp':'Temp','hud.pressure':'Pressure','hud.light':'Light',
-      'hero.chip':'Official dsh Desktop core',
+      'hero.chip':'Now with MiMo voice',
       'hero.l1':'A whale for a heart,','hero.l2':'<span class="mimo">MiMo</span> for a body.','hero.echo':'鲸为心，MiMo 为身。',
       'hero.sub':'Mio is a native desktop coding agent for MiMo. Since 0.4.0 its heart is the <b>official DeepSeek Harness Desktop</b>, and its body is the <b>MiMo model family</b>.',
       'hero.all':'All platforms ↓','hero.m1':'Free · MIT open source','hero.m2':'macOS signed & notarized','hero.intel':'Intel Mac','hero.dive':'Dive',
       'dl.hero.mac':'Download for macOS','dl.hero.macSub':'Apple Silicon · DMG','dl.hero.win':'Download for Windows','dl.hero.winSub':'x64 · unsigned','dl.hero.other':'See downloads','dl.hero.otherSub':'macOS · Windows',
       'voice.label':'Hear Mio introduce itself','voice.sub':'Synthesized with MiMo TTS · voice Chloe',
-      'new.tag':'The last of the sunlight','new.title':'0.4.0 gets<br>a new heart.','new.echo':'换了心脏，还是那头鲸。',
-      'new.lead':'The workspace, settings, tools and sessions are the official dsh Desktop, as upstream ships them. Mio adds one reviewed layer on top: its brand, the MiMo configuration, and native account setup.',
-      'new.k1':'Heart · core','new.t1':'Official dsh Desktop 0.1.7-rc.2','new.d1':'Upstream\'s native workspace, settings and tools. Version-pinned, patches reviewed, no fork.',
-      'new.k2':'Body · models','new.t2':'MiMo V2.6 Flash by default, thinking on','new.d2':'V2.6 Pro is one click away. Thinking switches per session, and requests only send <code>thinking.type</code>.',
-      'new.k3':'Onboarding · setup','new.t3':'Paste a key, and the billing track follows','new.d3':'<code>sk-</code> keys are pay-as-you-go; <code>tp-</code> keys are token plans with a region: CN, SGP or AMS.',
-      'new.k4':'Identity · look','new.t4':'Mio\'s icons and theme, in Chinese and English','new.d4':'macOS installers are signed and notarized; every installer ships with SHA-256 checksums and qualification evidence.',
+      'new.tag':'The last of the sunlight','new.title':'Now it listens,<br>and speaks.','new.echo':'会听，也会说。',
+      'new.lead':'Speak a request and MiMo ASR drafts it; click a reply and MiMo TTS reads it back. Both ride the MiMo account you already connected: same key, same region, nothing extra to install.',
+      'new.k1':'Voice · input','new.t1':'Speak, and it becomes a draft','new.d1':'The mic in the composer records up to 60 seconds. <code>mimo-v2.5-asr</code> transcribes it into the draft, and nothing is sent until you send it.',
+      'new.k2':'Voice · read aloud','new.t2':'Replies, read aloud','new.d2':'A speaker button sits next to Copy. <code>mimo-v2.5-tts</code> reads the prose and skips code; long answers are read from the start, up to about 4,000 characters.',
+      'new.k3':'Settings · voice','new.t3':'Nine MiMo voices, with a preview','new.d3':'Settings → General → Read-aloud voice: 冰糖, 茉莉, 苏打, 白桦, Mia, Chloe, Milo, Dean or the default.',
+      'new.k4':'Heart · core','new.t4':'Still the official dsh Desktop','new.d4':'0.1.7-rc.2 as upstream ships it, MiMo V2.6 Flash by default, native key setup. Voice arrives as two plugins, not a fork.',
       'film.tag':'Below here, the only light is living light','film.title':'Connected to MiMo in 15 seconds.','film.echo':'15 秒，连上 MiMo。',
       'film.lead':'Connect your account on the welcome screen, paste a key, pick a region, and start coding.',
       'film.aria':'Mio 0.4.0: connect MiMo, enter a key, start coding',
@@ -746,8 +752,8 @@ html[data-motion="off"]{scroll-behavior:auto}
       'dl.zip':'ZIP also available','dl.signed':'Developer ID signed + notarized','dl.unsigned':'Unsigned: expect a SmartScreen prompt',
       'dl.goDmg':'Download DMG →','dl.goExe':'Download installer →',
       'dl.n1t':'Verify','dl.n1':'Check downloads against <code>SHA256SUMS.txt</code>; <code>qualification.json</code> records each installer\'s source commit and signing state.',
-      'dl.n2t':'Upgrading from 0.3.x','dl.n2':'Install manually. 0.4.0 starts with a fresh data directory and does not migrate earlier sessions, settings or keys.',
-      'dl.n3':'Not part of 0.4.0; it will follow separately. Automatic updates are off in this release.',
+      'dl.n2t':'Upgrading','dl.n2':'From 0.4.0, install over it: sessions, settings and your key stay, and voice input is one switch in Plugins. From 0.3.x, 0.4 starts with a fresh data directory.',
+      'dl.n3':'It will follow separately. Automatic updates are still off; install new versions manually.',
       'faq.title':'Frequently asked questions',
       'faq.q1':'What is Mio?',
       'faq.a1':'Mio is a free, MIT-licensed native desktop coding agent for the MiMo model family, for macOS and Windows. Since 0.4.0 it is the official DeepSeek Harness Desktop — upstream\'s workspace, tools and settings — with Mio\'s identity and MiMo defaults layered on top.',
@@ -757,10 +763,12 @@ html[data-motion="off"]{scroll-behavior:auto}
       'faq.a3':'No. DeepSeek Harness is DeepSeek\'s open-source agent harness (MIT). Mio is an independent project built on it and is not a DeepSeek product.',
       'faq.q4':'Which MiMo models does it support?',
       'faq.a4':'MiMo V2.6 Flash, the default for new sessions, and MiMo V2.6 Pro. Thinking switches on or off per session; Off and High map to MiMo\'s thinking switch, with no graded effort levels. UltraSpeed is an opt-in build flag for accounts that support it.',
+      'faq.q9':'Can I talk to Mio, and can it read replies aloud?',
+      'faq.a9':'Yes, since 0.4.1. The mic in the composer transcribes your request with MiMo ASR into an editable draft, and the speaker button under each reply reads it with MiMo TTS in one of nine voices. Both use your MiMo account; recordings and reply text are sent to the MiMo API.',
       'faq.q5':'Which platforms does Mio run on?',
-      'faq.a5':'macOS on Apple Silicon and Intel, Developer ID signed and notarized, and Windows x64, unsigned in 0.4.0. Linux will follow separately. There is no terminal (TUI) version planned.',
-      'faq.q6':'Will my 0.3.x sessions and settings carry over?',
-      'faq.a6':'No. 0.4.0 starts with a fresh data directory and does not import earlier sessions, workspaces, settings or keys. Install it manually and reconnect your MiMo account on the welcome screen.',
+      'faq.a5':'macOS on Apple Silicon and Intel, Developer ID signed and notarized, and Windows x64, unsigned. Linux will follow separately. There is no terminal (TUI) version planned.',
+      'faq.q6':'Will my sessions and settings carry over?',
+      'faq.a6':'From 0.4.0, yes: install 0.4.1 over it and everything stays. From 0.3.x, no: 0.4 starts with a fresh data directory and does not import earlier sessions, workspaces, settings or keys, so reconnect your MiMo account on the welcome screen.',
       'faq.q7':'Is Mio an official Xiaomi product?',
       'faq.a7':'No. Mio is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client.',
       'faq.q8':'How much does it cost, and how do I get started?',
@@ -773,20 +781,20 @@ html[data-motion="off"]{scroll-behavior:auto}
     zh: {
       'meta.title':'Mio — 为 MiMo 打造的原生桌面代码智能体',
       'meta.desc':'Mio 是为 MiMo 模型家族打造的免费开源原生桌面代码智能体，基于官方 DeepSeek Harness Desktop，支持 macOS 与 Windows。',
-      'nav.new':'0.4.0 新变化','nav.film':'实机影片','nav.models':'模型','nav.heart':'心脏','nav.download':'下载','nav.faq':'常见问题',
+      'nav.new':'0.4.1 新变化','nav.film':'实机影片','nav.models':'模型','nav.heart':'心脏','nav.download':'下载','nav.faq':'常见问题',
       'hud.temp':'水温','hud.pressure':'水压','hud.light':'光照',
-      'hero.chip':'官方 dsh Desktop 内核',
+      'hero.chip':'现已支持 MiMo 语音',
       'hero.l1':'鲸为心，','hero.l2':'<span class="mimo">MiMo</span> 为身。','hero.echo':'A whale for a heart, MiMo for a body.',
       'hero.sub':'Mio 是为 MiMo 打造的原生桌面代码智能体。0.4.0 起，心脏换成<b>官方 DeepSeek Harness Desktop</b>，身躯是 <b>MiMo 系列模型</b>。',
       'hero.all':'全部平台 ↓','hero.m1':'免费 · MIT 开源','hero.m2':'macOS 已签名公证','hero.intel':'Intel 版','hero.dive':'下潜',
       'dl.hero.mac':'下载 macOS 版','dl.hero.macSub':'Apple Silicon · DMG','dl.hero.win':'下载 Windows 版','dl.hero.winSub':'x64 · 未签名','dl.hero.other':'查看下载','dl.hero.otherSub':'macOS · Windows',
       'voice.label':'听 Mio 自我介绍','voice.sub':'由 MiMo TTS 合成 · 音色 冰糖',
-      'new.tag':'最后一缕阳光','new.title':'0.4.0，<br>换了一颗心脏。','new.echo':'New heart, same whale.',
-      'new.lead':'工作区、设置、工具与会话全部沿用官方 dsh Desktop。Mio 只在上面加一层审阅过的补丁：品牌、MiMo 配置，以及原生的账号接入。',
-      'new.k1':'Heart · 内核','new.t1':'官方 dsh Desktop 0.1.7-rc.2','new.d1':'上游原生工作区、设置与工具，版本锁定、补丁可审阅，不 fork。',
-      'new.k2':'Body · 模型','new.t2':'默认 MiMo V2.6 Flash，推理开启','new.d2':'V2.6 Pro 一键切换；推理可按会话开关，请求只发 <code>thinking.type</code>。',
-      'new.k3':'Onboarding · 接入','new.t3':'粘贴 Key，自动识别计费方式','new.d3':'<code>sk-</code> 走按量付费；<code>tp-</code> 是订阅套餐，再选地域 CN / SGP / AMS。',
-      'new.k4':'Identity · 外观','new.t4':'Mio 的图标、主题与中英文体验','new.d4':'macOS 安装包签名并公证，全部安装包附 SHA-256 校验和与验证记录。',
+      'new.tag':'最后一缕阳光','new.title':'会听，<br>也会说。','new.echo':'Now it listens, and speaks.',
+      'new.lead':'说出需求，MiMo ASR 把它写成草稿；点一下回复，MiMo TTS 读给你听。两者都走你已连接的 MiMo 账号：同一个 Key、同一个地域，无需额外安装。',
+      'new.k1':'Voice · 听写','new.t1':'说一句，变成一段草稿','new.d1':'输入框里的麦克风最长录 60 秒，<code>mimo-v2.5-asr</code> 转写进草稿，你确认后才会发送。',
+      'new.k2':'Voice · 朗读','new.t2':'回复，一键朗读','new.d2':'朗读按钮就在复制旁边。<code>mimo-v2.5-tts</code> 读正文、跳过代码；长回复从开头读起，最多约 4,000 字。',
+      'new.k3':'Settings · 音色','new.t3':'9 种 MiMo 音色，可试听','new.d3':'设置 → 通用设置 → 朗读音色：默认、冰糖、茉莉、苏打、白桦、Mia、Chloe、Milo、Dean。',
+      'new.k4':'Heart · 内核','new.t4':'内核仍是官方 dsh Desktop','new.d4':'沿用上游 0.1.7-rc.2，默认 MiMo V2.6 Flash、原生 Key 接入。语音以两个插件接入，不 fork。',
       'film.tag':'从这里开始，光来自生物自己','film.title':'15 秒，连上 MiMo。','film.echo':'Connected to MiMo in 15 seconds.',
       'film.lead':'欢迎页连接账号，粘贴 Key、选择地域，然后直接开始写代码。',
       'film.aria':'Mio 0.4.0 流程：连接 MiMo、填写 Key、进入工作区',
@@ -810,8 +818,8 @@ html[data-motion="off"]{scroll-behavior:auto}
       'dl.zip':'另有 .zip','dl.signed':'Developer ID 签名 + 公证','dl.unsigned':'未签名：会出现 SmartScreen 提示',
       'dl.goDmg':'下载 DMG →','dl.goExe':'下载安装包 →',
       'dl.n1t':'校验','dl.n1':'用 <code>SHA256SUMS.txt</code> 核对下载；<code>qualification.json</code> 记录每个安装包的源码提交与签名状态。',
-      'dl.n2t':'从 0.3.x 升级','dl.n2':'需手动安装。0.4.0 使用全新数据目录，不迁移旧会话、设置与 Key。',
-      'dl.n3':'不在 0.4.0 中，后续单独提供。本版未启用自动更新。',
+      'dl.n2t':'升级','dl.n2':'从 0.4.0 直接覆盖安装，会话、设置与 Key 都保留，语音输入在插件页开启一次即可；从 0.3.x 升级则使用全新数据目录。',
+      'dl.n3':'后续单独提供。仍未启用自动更新，新版本需手动安装。',
       'faq.title':'常见问题',
       'faq.q1':'什么是 Mio？',
       'faq.a1':'Mio 是面向 MiMo 模型家族的免费开源（MIT）原生桌面代码智能体，支持 macOS 与 Windows。自 0.4.0 起，它就是官方 DeepSeek Harness Desktop——沿用上游的工作区、工具与设置——再叠加 Mio 的品牌与 MiMo 默认配置。',
@@ -821,10 +829,12 @@ html[data-motion="off"]{scroll-behavior:auto}
       'faq.a3':'不是。DeepSeek Harness 是 DeepSeek 开源的智能体运行时（MIT），Mio 是基于它构建的独立项目，并非 DeepSeek 的产品。',
       'faq.q4':'支持哪些 MiMo 模型？',
       'faq.a4':'MiMo V2.6 Flash（新会话默认）与 MiMo V2.6 Pro。推理可按会话开关；Off 与 High 对应 MiMo 的 thinking 开关，没有分级强度。UltraSpeed 是面向支持该模型账号的可选构建开关。',
+      'faq.q9':'可以用语音和 Mio 交流吗？',
+      'faq.a9':'可以，自 0.4.1 起。输入框里的麦克风会用 MiMo ASR 把你的话转成可编辑的草稿；每条回复下的朗读按钮会用 MiMo TTS 以 9 种音色之一读出来。两者都使用你的 MiMo 账号，录音与回复文本会发送到 MiMo API。',
       'faq.q5':'Mio 能在哪些平台运行？',
-      'faq.a5':'macOS（Apple Silicon 与 Intel，已 Developer ID 签名并公证）与 Windows x64（0.4.0 为未签名版本）。Linux 后续单独提供。不计划提供终端界面（TUI）。',
-      'faq.q6':'0.3.x 的会话和设置会保留吗？',
-      'faq.a6':'不会。0.4.0 使用全新的数据目录，不导入此前的会话、工作区、设置或 Key。请手动安装，并在欢迎页重新连接 MiMo 账号。',
+      'faq.a5':'macOS（Apple Silicon 与 Intel，已 Developer ID 签名并公证）与 Windows x64（未签名）。Linux 后续单独提供。不计划提供终端界面（TUI）。',
+      'faq.q6':'升级后会话和设置会保留吗？',
+      'faq.a6':'从 0.4.0 升级会：直接覆盖安装 0.4.1，一切照旧。从 0.3.x 升级不会：0.4 使用全新的数据目录，不导入此前的会话、工作区、设置或 Key，请在欢迎页重新连接 MiMo 账号。',
       'faq.q7':'Mio 是小米官方产品吗？',
       'faq.a7':'不是。Mio 是一个独立的、由社区维护的项目，与小米公司（Xiaomi Inc.）无附属、赞助或背书关系，仅作为第三方客户端连接 MiMo 模型平台。',
       'faq.q8':'费用如何？如何开始使用？',
@@ -863,7 +873,7 @@ html[data-motion="off"]{scroll-behavior:auto}
   /* ---- latest release: version chip + asset URLs ----
      Assets are matched by platform extension and architecture against the
      release's own asset list, never by an assembled filename, so a renamed
-     artifact degrades to the markup's v0.4.0 links instead of a 404. Drafts
+     artifact degrades to the markup's fallback links instead of a 404. Drafts
      are skipped; the API lists newest first. */
   const SUFFIX = { mac:'.dmg', win:'.exe' };
   fetch('https://api.github.com/repos/shin4/mio/releases?per_page=10', { headers: { Accept: 'application/vnd.github+json' } })
