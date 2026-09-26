@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises"
 import { createHash } from "node:crypto"
 import { createRequire } from "node:module"
 import { test } from "node:test"
+import { fileURLToPath } from "node:url"
 import { composeUpdateFeed } from "../../script/desktop/update-feed.mjs"
 import { officialClientBuildEnvironment } from "../../.desktop-build/upstream/scripts/client-build-environment.ts"
 import { createElectronBuilderConfig } from "../../.desktop-build/upstream/apps/desktop/scripts/electron-builder-config.mjs"
@@ -53,7 +54,7 @@ void test("one GitHub release feed serves both macOS architectures and Windows",
 
 void test("the browser bundle reports the Mio version, not the pinned runtime's", async () => {
   const product = JSON.parse(await readFile(new URL("../product.json", import.meta.url), "utf8"))
-  const root = new URL("../../.desktop-build/upstream", import.meta.url).pathname
+  const root = fileURLToPath(new URL("../../.desktop-build/upstream", import.meta.url))
   const environment = officialClientBuildEnvironment(root, { DSH_CLIENT_COMMIT_HASH: "477b4f4" })
   assert.equal(environment.DSH_CLIENT_VERSION, product.version)
   assert.equal(environment.DSH_CLIENT_TITLE, "Mio")
