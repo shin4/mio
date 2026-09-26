@@ -69,7 +69,9 @@ export async function prepare() {
     !/^[a-z0-9-]+$/.test(product.dataDirectory)
   )
     throw new Error("Invalid Mio product identity")
-  if (product.updateOrigin !== null) throw new Error("Mio update feed is not qualified yet; keep updateOrigin null")
+  // The feed is the latest GitHub release: publish-release.mjs uploads its metadata beside the installers.
+  if (product.updateOrigin !== null && !/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/releases\/latest\/download$/.test(product.updateOrigin))
+    throw new Error("Mio updateOrigin must be null or a GitHub releases/latest/download URL")
   const modelPatch = composeModels(await readFile(join(root, "desktop/bundle/mio.patch.yml"), "utf8"), product)
   await cp(join(root, "desktop/bundle"), join(upstream, "mio/desktop"), { recursive: true })
   await writeFile(join(upstream, "mio/desktop/mio.patch.yml"), modelPatch)

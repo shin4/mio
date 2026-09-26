@@ -67,7 +67,7 @@
 - 开发版：`.desktop-build/home` 与 `.desktop-build/electron-user-data`。
 - 不扫描或导入旧 `userData/dsh`、旧 OpenCode 数据或官方 `~/.dsh`。
 - 保留上游 app recovery；恢复 profile 时仍使用包含 Mio 组合包的模板。
-- 当前 `updateOrigin: null`，不启用更新；Mio 的打包配置与运行时都拒绝使用官方更新源。
+- 0.4.2 起 `updateOrigin` 指向 GitHub `releases/latest/download`：发布时上传 `nightly.yml` 与合并双架构的 `nightly-mac.yml`；不使用 DeepSeek COS 更新源与强制更新策略。
 - 首轮内部构建保留上游版本 `0.1.7-rc.2`，不冒充 Mio 0.3.x 的可升级正式版。
   正式 Mio 版本编号和更新顺序验证留在发行阶段。
 

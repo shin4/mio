@@ -8,10 +8,12 @@
   "main": "index.js",
   "exports": {
     ".": "./index.js",
+    "./client": "./client.js",
     "./package.json": "./package.json"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "client.js"
   ],
   "dependencies": {
     "@deepseek-ai/dsh-credentials": "workspace:*",
@@ -20,5 +22,13 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "workspace:~"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
   }
 }

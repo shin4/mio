@@ -5,6 +5,7 @@ import { createHash } from "node:crypto"
 import { createReadStream } from "node:fs"
 import { copyFile, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises"
 import { join } from "node:path"
+import { composeUpdateFeed } from "./update-feed.mjs"
 
 assert.equal(process.env.GITHUB_ACTIONS, "true")
 assert.equal(process.env.GITHUB_REF, "refs/heads/main")
@@ -44,6 +45,7 @@ gh("run", "download", runId, "--dir", directory)
 const checksums = []
 const evidence = []
 const uploads = []
+const updates = {}
 for (const target of targets) {
   const source = join(directory, `mio-${target}`)
   const qualification = JSON.parse(await readFile(join(source, "qualification.json"), "utf8"))
@@ -69,17 +71,33 @@ for (const target of targets) {
     const file = join(source, artifact.name)
     assert.equal((await stat(file)).size, artifact.bytes)
     const hash = createHash("sha256")
-    for await (const chunk of createReadStream(file)) hash.update(chunk)
+    const updateHash = createHash("sha512")
+    for await (const chunk of createReadStream(file)) {
+      hash.update(chunk)
+      updateHash.update(chunk)
+    }
     assert.equal(hash.digest("hex"), artifact.sha256)
+    if (artifact.name === qualification.update?.url) assert.equal(updateHash.digest("base64"), qualification.update.sha512)
     const destination = join(directory, artifact.name)
     await copyFile(file, destination)
     uploads.push(destination)
     checksums.push(`${artifact.sha256}  ${artifact.name}`)
   }
+  // The feed may name only an installer this loop just verified byte-for-byte.
+  const payload = qualification.artifacts.find((item) => item.name === qualification.update?.url)
+  assert.ok(payload, `${target} qualification has no update payload`)
+  assert.equal(qualification.update.size, payload.bytes)
+  updates[target] = qualification.update
   evidence.push({ ...qualification, build: record })
 }
 const report = join(directory, `mio-${product.version}-qualification.json`)
 await writeFile(report, JSON.stringify({ run: run.html_url, platforms: evidence }, null, 2) + "\n")
+// Update metadata last: the feed follows the release only once it is marked latest below.
+for (const [name, text] of Object.entries(composeUpdateFeed(product.version, updates))) {
+  const file = join(directory, name)
+  await writeFile(file, text)
+  uploads.push(file)
+}
 const sums = join(directory, "SHA256SUMS.txt")
 await writeFile(sums, checksums.join("\n") + "\n")
 const notes = `desktop/releases/${tag}.md`
@@ -91,7 +109,7 @@ gh("release", "create", tag, "--draft", "--verify-tag", "--title", `Mio ${tag}`,
 gh("release", "upload", tag, ...uploads, sums, report)
 const release = JSON.parse(gh("release", "view", tag, "--json", "isDraft,assets"))
 assert.equal(release.isDraft, true)
-assert.equal(release.assets.length, 7)
+assert.equal(release.assets.length, 9)
 for (const file of [...uploads, sums, report]) {
   const name = file.split("/").at(-1)
   const asset = release.assets.find((item) => item.name === name)

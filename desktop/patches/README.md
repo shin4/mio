@@ -12,6 +12,8 @@ Base: `dsh-v0.1.7-rc.2`, `477b4f420553e8a52c2fbccc464d7561b239c443`.
 - Workspace package declarations and the matching pnpm lockfile delta.
 - Voice input: the official voice-input bundle recomposed around `@mio/asr` (MiMo ASR, no
   local SenseVoice), shipped enabled in new Desktop profiles, and packed with the product.
+  macOS signs the app with `com.apple.security.device.audio-input`; without it the hardened
+  runtime blocks the microphone and the system never prompts.
 - Packing `@mio/tts` with the product (its composition lives in `desktop/bundle`).
 
 No agent, session format, permissions or provider adapter internals are changed.
