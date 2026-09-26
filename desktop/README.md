@@ -71,6 +71,9 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
   (`credentialOnboarding: false`); Desktop already suppressed both, this covers a browser on the Host.
 - Defaults: `mimo-v2.6-flash`, thinking enabled. Official Off/High labels mean disabled/enabled;
   no graded `reasoning_effort` is sent. Model settings retain the official editing workflow.
+  Any Settings write to `llm-pi-ai` (welcome's endpoint write, a Models page save) snapshots the
+  whole provider table into the user layer; `saved-model-input.js` copies a bundle-declared `input`
+  onto saved model rows that state none, so a profile saved on 0.4.3 still gets V2.6 image input.
 - The packaged home is `userData/dsh-desktop`, separate from the old `userData/dsh`.
 - Icons reuse existing Mio assets. Windows installer bitmaps are generated during the build.
 - Updates come from the latest GitHub release (`product.json` `updateOrigin`, a flat

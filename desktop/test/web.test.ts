@@ -4,15 +4,16 @@ import { spawnSync } from "node:child_process"
 import { fileURLToPath } from "node:url"
 import { test } from "node:test"
 
-for (const enabled of [false, true])
-  test(`Desktop composition: UltraSpeed ${enabled ? "enabled" : "disabled"}`, { timeout: 120_000 }, () => {
+const variants = [
+  { name: "UltraSpeed disabled", flags: [] },
+  { name: "UltraSpeed enabled", flags: ["--ultraspeed"] },
+  { name: "model list saved before image input", flags: ["--saved-before-image"] },
+]
+for (const { name, flags } of variants)
+  test(`Desktop composition: ${name}`, { timeout: 120_000 }, () => {
     const result = spawnSync(
       process.execPath,
-      [
-        "--expose-internals",
-        fileURLToPath(new URL("./web-probe.mjs", import.meta.url)),
-        ...(enabled ? ["--ultraspeed"] : []),
-      ],
+      ["--expose-internals", fileURLToPath(new URL("./web-probe.mjs", import.meta.url)), ...flags],
       {
         encoding: "utf8",
         timeout: 90_000,

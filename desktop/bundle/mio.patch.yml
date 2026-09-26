@@ -23,6 +23,7 @@
         # no MiMo entry, so an undeclared model is text-only and the composer refuses images for it.
         # Over-claiming is the costly error (the provider rejects the turn after it is logged), so a
         # model is listed with `image` only once desktop/test/image-live-probe.mjs passes for it.
+        # saved-model-input.js carries it onto a model list the user layer saved before it was declared.
         models:
           - id: mimo-v2.6-flash
             name: MiMo V2.6 Flash
@@ -81,3 +82,7 @@
     # this moves a saved default among them back to `standard`.
     - id: mio-hidden-presets
       name: ./hidden-presets.js
+    # A settings write snapshots this route's whole provider table into the user layer, shadowing
+    # models' `input` declared here later; this restores it on rows that state none.
+    - id: mio-saved-model-input
+      name: ./saved-model-input.js
