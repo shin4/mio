@@ -6,7 +6,8 @@
   "license": "MIT",
   "type": "module",
   "files": [
-    "mio.patch.yml"
+    "mio.patch.yml",
+    "hidden-presets.js"
   ],
   "dsh": {
     "bundle": {

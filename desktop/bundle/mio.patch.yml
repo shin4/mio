@@ -12,6 +12,10 @@
           supportsReasoningEffort: false
           maxTokensField: max_completion_tokens
           requiresReasoningContentOnAssistantMessages: true
+        # MiMo V2.6 thinking is binary (`thinking.type` enabled/disabled, on by default; no
+        # reasoning_effort): `off`/`high` below are its two states. Naming the default here drops
+        # the provider-default "Default" row, which would only repeat `high`.
+        reasoning: high
         # Conservative app budgets; these are not claims about the model's maximum capacity.
         defaultContextWindow: 262144
         defaultMaxTokens: 32768
@@ -30,8 +34,40 @@
     reasoningEffort: high
 - id: ui-brand-official
   disabled: true
+# No DeepSeek sign-in: Mio connects MiMo (and DeepSeek) by API key only. The Account settings
+# section, its sidebar menu and the account-billed model route go; the API-key `llm-deepseek` route
+# stays. `deepseek-account` and `account-controller` stay mounted: Electron's welcome backend reads
+# `account/getState` and watches `account/watch`, and fails to start without them.
+- id: llm-deepseek-account
+  disabled: true
+- id: ui-settings-account
+  disabled: true
+# No DeepSeek Harness preview notice: ship it acknowledged. Desktop never registers the notice; this
+# covers a loopback browser opening the same Host. Must equal WELCOME_NOTICE_VERSION in
+# @deepseek-ai/dsh-client-ui-settings-models (onboarding-copy.ts); re-check it on every dsh bump.
+- id: ui-settings-general
+  config:
+    welcomeNoticeVersion: "2026-08-13.1"
+# No DeepSeek API-key onboarding dialog: Mio's native welcome owns credential setup, and the dialog
+# only offers DeepSeek. Desktop already suppresses it; this also covers a browser on the same Host.
+- id: ui-settings-models
+  config:
+    credentialOnboarding: false
+# No message feedback: Like/Dislike, the feedback dialog and /feedback.
+- id: message-feedback
+  disabled: true
+- id: ui-message-feedback
+  disabled: true
+- id: command-feedback
+  disabled: true
 - insert:
     - id: mio-desktop-brand
       name: "@mio/brand"
     - id: mio-tts
       name: "@mio/tts"
+    # Agent presets offered: standard and cordis (Creator, custom presets). `ptc` and `minimal`
+    # stay registered, because a session resumes under the preset its log recorded and disabling
+    # them would strand those sessions; the ui-agent-preset overlay hunk hides them instead, and
+    # this moves a saved default among them back to `standard`.
+    - id: mio-hidden-presets
+      name: ./hidden-presets.js

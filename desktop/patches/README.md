@@ -5,6 +5,13 @@ Base: `dsh-v0.1.7-rc.2`, `477b4f420553e8a52c2fbccc464d7561b239c443`.
 `0001-mio-desktop.patch` covers:
 
 - Product identity, private data home, external protocol, native Chinese/English wording.
+- Agent-preset choosing surfaces (`ui-agent-preset`: Settings cards and the new-session picker)
+  drop `ptc` and `minimal`. They stay registered so sessions recorded under them still resume; the
+  registry has no hide option, so only the client roster reads filter them.
+- Empty-conversation hero (`ui-conversation`; no slot or locale override reaches it): a bilingual
+  headline in every locale — 「于深处写下光」 with "Write Light into the Deep" as a new `hero.subline`
+  line beneath it — and the badge 「基于 DeepSeek Harness」/ "Built on DeepSeek Harness", plain
+  descriptive attribution per upstream `BRAND_GUIDELINES`.
 - Browser builds embed the Mio version (`apps/desktop/mio-product.json`, generated) as
   `DSH_CLIENT_VERSION`, so Settings → General shows Mio's version rather than the runtime's.
 - Native MiMo credential setup using upstream discovery, settings and credentials RPCs.

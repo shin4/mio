@@ -1077,6 +1077,126 @@ index a32e1f1..a2feacf 100644
    })
    ipcMain.handle(WELCOME_IPC.skip, async (event) => {
      assertSender(event)
+diff --git a/packages/client/ui-agent-preset/src/client/section-store.ts b/packages/client/ui-agent-preset/src/client/section-store.ts
+index daaefa6..0ff192e 100644
+--- a/packages/client/ui-agent-preset/src/client/section-store.ts
++++ b/packages/client/ui-agent-preset/src/client/section-store.ts
+@@ -3,7 +3,7 @@ import type { Context } from '@deepseek-ai/cordis'
+ import type {} from '@deepseek-ai/dsh-api-remotes/client'
+ import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-store'
+ import type { AgentPresetRow } from '@deepseek-ai/dsh-agent-preset-registry/types'
+-import { writeDefaultPreset } from './settings-store.ts'
++import { offeredRoster, writeDefaultPreset } from './settings-store.ts'
+ 
+ /** The read-only composition viewer over one preset. */
+ export interface PresetView {
+@@ -46,7 +46,7 @@ export class AgentPresetSectionController {
+     try {
+       const result = await this.ctx.remote.agentPresets.list()
+       if (!result.ok) throw new Error(result.error.message)
+-      this.set({ status: 'ready', error: null, rows: result.value.presets })
++      this.set({ status: 'ready', error: null, rows: offeredRoster(result.value).presets })
+     } catch (error) { this.set({ status: 'error', error: message(error) }) }
+   }
+ 
+diff --git a/packages/client/ui-agent-preset/src/client/settings-store.ts b/packages/client/ui-agent-preset/src/client/settings-store.ts
+index 7344c3f..d9f860c 100644
+--- a/packages/client/ui-agent-preset/src/client/settings-store.ts
++++ b/packages/client/ui-agent-preset/src/client/settings-store.ts
+@@ -51,6 +51,21 @@ export type RosterRead = { ok: true; value: AgentPresetRoster } | { ok: false; e
+ 
+ const EMPTY_ROSTER: AgentPresetRoster = { presets: [] }
+ 
++/**
++ * Mio: presets kept registered but never offered. Sessions recorded under them still resume, and
++ * the Host resets a saved default among them, so only the choosing surfaces drop them.
++ */
++const HIDDEN_PRESETS: ReadonlySet<string> = new Set(['ptc', 'minimal'])
++
++/**
++ * Drop the presets Mio does not offer from a roster.
++ * @param roster - the Host roster.
++ * @returns the roster the choosing surfaces show.
++ */
++export function offeredRoster(roster: AgentPresetRoster): AgentPresetRoster {
++  return { ...roster, presets: roster.presets.filter(preset => !HIDDEN_PRESETS.has(preset.id)) }
++}
++
+ /**
+  * Read the roster, turning a refusal into the message every surface shows.
+  * @param ctx - the browser plugin context carrying the Remote namespaces.
+@@ -58,7 +73,7 @@ const EMPTY_ROSTER: AgentPresetRoster = { presets: [] }
+  */
+ export async function readRoster(ctx: ClientContext): Promise<RosterRead> {
+   const result = await ctx.remote.agentPresets.list()
+-  if (result.ok) return { ok: true, value: result.value }
++  if (result.ok) return { ok: true, value: offeredRoster(result.value) }
+   // Agent presets are optional: without that service every session uses the
+   // Host composition, so callers receive the same empty roster as a mounted
+   // service with no configured roots.
+diff --git a/packages/client/ui-conversation/src/client/locales.ts b/packages/client/ui-conversation/src/client/locales.ts
+index 88ae069..4a37570 100644
+--- a/packages/client/ui-conversation/src/client/locales.ts
++++ b/packages/client/ui-conversation/src/client/locales.ts
+@@ -74,8 +74,9 @@ export const zh = {
+   'settings.enter.description': '智能体运行时 Enter 键和发送按钮的行为；Cmd/Ctrl+Enter 使用另一行为',
+   'settings.enter.queue': '排队发送',
+   'settings.enter.steer': '插话发送',
+-  'hero.headline': '探索未至之境',
+-  'hero.preview': '预览版',
++  'hero.headline': '于深处写下光',
++  'hero.subline': 'Write Light into the Deep',
++  'hero.preview': '基于 DeepSeek Harness',
+   'hero.chooseWorkspace': '选择工作区',
+   'session.hierarchy': '会话层级',
+   'todo.title': '任务',
+@@ -444,8 +445,9 @@ export const en = {
+   'settings.enter.description': 'What Enter and the Send button do while the agent is running; Cmd/Ctrl+Enter uses the other behavior',
+   'settings.enter.queue': 'Queue',
+   'settings.enter.steer': 'Steer',
+-  'hero.headline': 'Into the Unknown',
+-  'hero.preview': 'Preview',
++  'hero.headline': '于深处写下光',
++  'hero.subline': 'Write Light into the Deep',
++  'hero.preview': 'Built on DeepSeek Harness',
+   'hero.chooseWorkspace': 'Choose workspace',
+   'session.hierarchy': 'Session hierarchy',
+   'todo.title': 'To-dos',
+diff --git a/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx b/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
+index 40df872..c451d54 100644
+--- a/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
++++ b/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
+@@ -155,6 +155,8 @@ export function HeroShell({ t, renderSlot, children }: HeroShellProps) {
+             <span className={css.previewBadge}>{t('hero.preview')}</span>
+           </span>
+         </div>
++        {/* Mio: the bilingual headline's English line, in every locale. */}
++        <p className={css.subline}>{t('hero.subline')}</p>
+         <div className={css.body}>
+           {/* The composer remains mounted outside this component. */}
+         </div>
+diff --git a/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css b/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
+index aac6a5c..f86c43b 100644
+--- a/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
++++ b/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
+@@ -75,6 +75,17 @@
+   white-space: nowrap;
+ }
+ 
++/* Mio: English line under the Chinese headline. The negative margin pulls it
++   into the title block, 4px below the headline, past the stack's 12px gap. */
++.subline {
++  margin: -8px 0 0;
++  text-align: center;
++  font-size: 15px;
++  line-height: 20px;
++  font-weight: 400;
++  color: var(--dsw-alias-label-secondary);
++}
++
+ /* Keep hover detection on a stationary box while the mark moves within it;
+    hover rules target the hitbox so a slot-occupant mark swims too. */
+ .fishHitbox {
 diff --git a/packages/experimental/voice-input-bundle/cordis.patch.yml b/packages/experimental/voice-input-bundle/cordis.patch.yml
 index 255734d..82cb4a2 100644
 --- a/packages/experimental/voice-input-bundle/cordis.patch.yml
