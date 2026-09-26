@@ -156,6 +156,17 @@ async function verifyMedia(ctx, home) {
     assert.ok(part.input_audio.data.startsWith("data:audio/wav;base64,UklGR"), "WAV bytes travel as a data URL")
     assert.deepEqual(question, { type: "text", text: "Transcribe it." })
 
+    // An attached recording: dsh stores it verbatim and tells the model its read-only path in this
+    // exact handle text; the tool must open that path through the fs backend.
+    const attached = await ctx.attachments.saveFile({ data: await recording("en"), name: "memo.wav" })
+    const handle = ctx.llm.fileRequestText(attached)
+    const saved = handle.match(/saved at "([^"]+)"/)?.[1]
+    assert.ok(saved?.endsWith("memo.wav"), `the model sees a readable path: ${handle}`)
+    const fromAttachment = await read({ file_path: saved, question: "Transcribe it." })
+    assert.equal(fromAttachment.isError, false, JSON.stringify(fromAttachment.error))
+    assert.equal(fromAttachment.value.kind, "audio")
+    assert.ok(requests.at(-1).body.messages[0].content[0].input_audio.data.startsWith("data:audio/wav;base64,UklGR"))
+
     const mp4 = join(home, "clip.mp4")
     await writeFile(mp4, Buffer.from("not really a video"))
     const seen = await read({ file_path: mp4, question: "Describe it.", fps: 0.5, media_resolution: "max" })

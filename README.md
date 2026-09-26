@@ -32,7 +32,17 @@ workspace, settings, tools and session model, unchanged — with Mio's identity 
 configuration layered on top. Mio ships no fork of the model adapter: MiMo is configured through
 dsh's own provider, and the product overlay is a reviewed patch set kept in [`desktop/`](desktop/README.md).
 
-## What's new in 0.4.3
+## What's new in 0.4.4
+
+- **Images** — MiMo V2.6 Flash and Pro now accept images: drag or paste screenshots, mockups and
+  error screens into the composer.
+- **Audio and video** — attach a recording or a video and Mio asks MiMo to listen to or watch it
+  through the new `mimo_media_read` tool, then answers from the transcript, summary or moment it
+  needs. MP3/WAV/FLAC/M4A/OGG and MP4/MOV/AVI/WMV, up to 50 MB per file once Base64-encoded.
+- **PDF is not supported yet** — MiMo's API does not take documents, so Mio says so instead of
+  guessing. Send page screenshots as images.
+
+### 0.4.3
 
 - **A home screen of its own** — the empty conversation reads 「于深处写下光」 with *Write Light into
   the Deep* beneath it, and the badge says "Built on DeepSeek Harness".
@@ -67,7 +77,8 @@ dsh's own provider, and the product overlay is a reviewed patch set kept in [`de
   extra key and no local model download.
 
 0.4.0 moved Mio onto the official dsh Desktop 0.1.7-rc.2, with MiMo V2.6 Flash as the default and
-native MiMo account setup. Full notes: [v0.4.3](https://github.com/shin4/mio/releases/tag/v0.4.3) ·
+native MiMo account setup. Full notes: [v0.4.4](https://github.com/shin4/mio/releases/tag/v0.4.4) ·
+[v0.4.3](https://github.com/shin4/mio/releases/tag/v0.4.3) ·
 [v0.4.2](https://github.com/shin4/mio/releases/tag/v0.4.2) ·
 [v0.4.1](https://github.com/shin4/mio/releases/tag/v0.4.1) ·
 [v0.4.0](https://github.com/shin4/mio/releases/tag/v0.4.0).
@@ -78,18 +89,18 @@ Get the latest installers from [Releases](https://github.com/shin4/mio/releases/
 
 | Platform | File | Signing |
 | --- | --- | --- |
-| macOS · Apple Silicon | `mio-0.4.3-mac-arm64.dmg` (or `.zip`) | Developer ID signed + notarized |
-| macOS · Intel | `mio-0.4.3-mac-x64.dmg` (or `.zip`) | Developer ID signed + notarized |
-| Windows x64 | `mio-0.4.3-win-x64-unsigned.exe` | **Unsigned** — expect a SmartScreen / unknown-publisher prompt |
+| macOS · Apple Silicon | `mio-0.4.4-mac-arm64.dmg` (or `.zip`) | Developer ID signed + notarized |
+| macOS · Intel | `mio-0.4.4-mac-x64.dmg` (or `.zip`) | Developer ID signed + notarized |
+| Windows x64 | `mio-0.4.4-win-x64-unsigned.exe` | **Unsigned** — expect a SmartScreen / unknown-publisher prompt |
 
-Verify downloads against `SHA256SUMS.txt`; `mio-0.4.3-qualification.json` records the source
+Verify downloads against `SHA256SUMS.txt`; `mio-0.4.4-qualification.json` records the source
 commit, hashes and signing state of each installer. Linux will follow separately.
 
 ### Upgrading
 
 - **From 0.4.2 on** — updates arrive automatically; Mio asks before downloading and before
   restarting. Windows updates are verified by SHA-512, as the installer is unsigned.
-- **From 0.4.0 or 0.4.1** — install 0.4.3 over it once by hand; sessions, settings and your MiMo
+- **From 0.4.0 or 0.4.1** — install 0.4.4 over it once by hand; sessions, settings and your MiMo
   key are kept. If you denied Mio the microphone before, turn it on in **System Settings → Privacy
   & Security → Microphone**. Voice input starts switched off in profiles created by 0.4.0: turn on
   **Plugins → Voice input** once.
