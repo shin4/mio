@@ -38,7 +38,8 @@ dsh's own provider, and the product overlay is a reviewed patch set kept in [`de
   (`mimo-v2.5-asr`) turns it into a draft you can edit before sending. Language is detected
   automatically, or pinned to Chinese.
 - **Read aloud with MiMo TTS** — every finished reply gets a speaker button next to Copy. Mio reads
-  the prose with `mimo-v2.5-tts`, skips code blocks, and plays one reply at a time.
+  the prose with `mimo-v2.5-tts`, skips code blocks, and plays one reply at a time. Long answers
+  are read from the start, up to about 4,000 characters.
 - **Pick the voice** — **Settings → General → Read-aloud voice** offers MiMo's nine preset voices
   (冰糖, 茉莉, 苏打, 白桦, Mia, Chloe, Milo, Dean and the default) with a preview button.
 - Both use the MiMo account you already connected, including your Token Plan region. There is no
@@ -97,7 +98,8 @@ Nothing is transcribed or synthesized on your machine.
   shows the recognizer (MiMo ASR) and the language: *Detect automatically* (recommended, also for
   English) or *Chinese*.
 - **Hear a reply** — click the speaker under a reply to read it aloud; click again to stop.
-  Headings, emphasis and links are read as plain prose, and code blocks are skipped.
+  Headings, emphasis and links are read as plain prose, and code blocks are skipped. A long answer
+  is read from its start, in whole sentences up to about 4,000 characters.
 - **Choose the voice** — **Settings → General → Read-aloud voice**. *Preview* plays a short line in
   the selected voice, in Chinese or English to match that voice.
 

@@ -74,8 +74,32 @@ async function verifyTts(ctx, send, origin) {
       audio: { format: "wav", voice: "mimo_default" },
       stream: false,
     })
+    // A long answer is read from its start in parts: a short first one so playback starts
+    // quickly, then whole sentences up to the overall limit, fetched one part at a time.
+    const long = Array.from({ length: 200 }, (_, index) => `Sentence number ${index} of a long answer.`).join(" ")
+    const part = (index) =>
+      send(`${origin}/api/mio/tts`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ text: long, part: index }),
+      })
+    const first = await part(0)
+    assert.equal(first.status, 200)
+    const count = Number(first.headers.get("x-mio-tts-parts"))
+    assert.ok(count > 2, `expected several parts, got ${count}`)
+    assert.ok(requests.at(-1).body.messages[0].content.length <= 120, "The first part must be short")
+    const read = [requests.at(-1).body.messages[0].content]
+    for (const index of Array.from({ length: count - 1 }, (_, offset) => offset + 1)) {
+      assert.equal((await part(index)).status, 200)
+      read.push(requests.at(-1).body.messages[0].content)
+    }
+    const joined = read.join(" ")
+    assert.ok(long.startsWith(joined) && joined.endsWith("."), "Parts must be whole sentences in reading order")
+    assert.ok(joined.length > 3500 && joined.length <= 4000, `read ${joined.length} characters`)
+    assert.equal((await part(count)).status, 400)
+    const spoken = requests.length
     assert.equal((await speak("```\nonly code\n```")).status, 422)
-    assert.equal(requests.length, 1, "A reply with nothing speakable must not reach MiMo")
+    assert.equal(requests.length, spoken, "A reply with nothing speakable must not reach MiMo")
     // The General settings row: read the choices, reject an unknown voice, save one that sticks.
     const voiceRoute = `${origin}/api/mio/tts/voice`
     const put = (voice) =>
