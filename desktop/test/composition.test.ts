@@ -98,7 +98,7 @@ after(async () => {
 
 /** Headless replay mounts the real brand and read-aloud host faces; the Web suite verifies bundle discovery. */
 async function installPlugins(home: string, profile: string) {
-  for (const name of ["brand", "tts"]) {
+  for (const name of ["brand", "tts", "media"]) {
     const target = path.join(home, "profiles", profile, "node_modules", "@mio", name)
     await mkdir(target, { recursive: true })
     await cp(path.join(RUNTIME, name), target, { recursive: true })

@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@mio/brand": "workspace:*",
+    "@mio/media": "workspace:*",
     "@mio/tts": "workspace:*"
   }
 }

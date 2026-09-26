@@ -48,6 +48,42 @@ credential store was removed afterward. No archived adapter or replay responses 
 The probe verifies the welcome backend, not credential entry through the Electron UI. Tool
 execution is synthetic and does not qualify filesystem tools or an entire agent session.
 
+## Live image input (2026-09-26)
+
+`test/image-live-probe.mjs` against the same CN Token Plan account: a 64×64 PNG (left red, right
+blue) saved through the dsh attachment store and sent by the official pi-ai adapter. Flash and Pro
+both declare `[text, image]`, both requests carried an inline `data:image/png` `image_url` part, and
+both answered `left=red, right=blue` with thinking off. Evidence: `image-live-validation.json`.
+This qualifies raster images only; audio, video and PDF have no dsh content path.
+
+## Live audio, video and PDF input (2026-09-26)
+
+`test/media-live-probe.mjs` sends a spoken sentence (WAV and MP3), a two-color MP4 and a one-line
+PDF straight to Chat Completions on the same CN Token Plan account, for every chat model `/models`
+lists. Wire shapes are the archived 0.2.0 ones. Evidence: `media-live-validation.json`.
+
+- `mimo-v2.6-flash`, `mimo-v2.6-pro` and `mimo-v2.5` transcribed both audio files and named the
+  video's colors in order. Usage reports `audio_tokens` and `video_tokens`.
+- `mimo-v2.5-pro` refuses all non-text media ("No endpoints found that support image input").
+- PDF is refused by every model with `Param Incorrect`, also with a filename, raw base64 or as
+  `image_url`. The Responses API answers `input_file` with `responses_feature_not_supported`.
+  This gateway has no native PDF input; a PDF has to become text or page images first.
+
+## `mimo_media_read` tool (2026-09-26)
+
+Official docs checked 2026-09-26 (Chat Completions, Models, Image/Audio/Video Understanding):
+content parts are text, image, audio and video only; Flash, Pro, UltraSpeed and `mimo-v2.5` accept
+media; base64 media is capped at 50 MB; `mimo-v2.5` and `mimo-v2.5-pro` retire 2026-10-21.
+
+- Offline (`test/web.test.ts`): against a local stand-in for MiMo, the tool sends WAV bytes as an
+  `input_audio` data URL and a video as `video_url` with `fps`/`media_resolution`, with thinking
+  off, the route's key and endpoint; it refuses PDF, audio `fps`, out-of-range `fps`, a missing file
+  and an empty question without calling MiMo.
+- Live (`test/media-tool-live-probe.mjs`, CN Token Plan): two real headless agent turns on the Mio
+  composition. The session log records a `mimo_media_read` call in each; the agent answered the
+  spoken code (`42 blue apples`) and the video colors (red, green). Evidence:
+  `media-tool-live-validation.json`.
+
 ## Not yet qualified
 
 - PAYG, SGP/AMS, other accounts and Electron UI credential-entry happy path; live coverage above
