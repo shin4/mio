@@ -4,6 +4,7 @@ import { createHash } from "node:crypto"
 import { createRequire } from "node:module"
 import { test } from "node:test"
 import { composeUpdateFeed } from "../../script/desktop/update-feed.mjs"
+import { officialClientBuildEnvironment } from "../../.desktop-build/upstream/scripts/client-build-environment.ts"
 import { createElectronBuilderConfig } from "../../.desktop-build/upstream/apps/desktop/scripts/electron-builder-config.mjs"
 import { validateDesktopPackageEnvironment } from "../../.desktop-build/upstream/apps/desktop/scripts/desktop-package-environment.mjs"
 
@@ -48,4 +49,12 @@ void test("one GitHub release feed serves both macOS architectures and Windows",
   const win = yaml.load(feed["nightly.yml"])
   assert.deepEqual(win.files, [{ url: "mio-0.4.2-win-x64-unsigned.exe", sha512: sha512("mio-0.4.2-win-x64-unsigned.exe"), size: 30 }])
   assert.throws(() => composeUpdateFeed("0.4.2", { "mac-arm64": entry("mio-0.4.2-mac-arm64.zip", "x") }), /mac-x64/)
+})
+
+void test("the browser bundle reports the Mio version, not the pinned runtime's", async () => {
+  const product = JSON.parse(await readFile(new URL("../product.json", import.meta.url), "utf8"))
+  const root = new URL("../../.desktop-build/upstream", import.meta.url).pathname
+  const environment = officialClientBuildEnvironment(root, { DSH_CLIENT_COMMIT_HASH: "477b4f4" })
+  assert.equal(environment.DSH_CLIENT_VERSION, product.version)
+  assert.equal(environment.DSH_CLIENT_TITLE, "Mio")
 })

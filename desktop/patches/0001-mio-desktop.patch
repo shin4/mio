@@ -1235,7 +1235,7 @@ index 4782ad5..dcbf496 100644
    - packages/*/*
    # The Landlock launcher is developed with its harness consumers but keeps
 diff --git a/scripts/client-build-environment.ts b/scripts/client-build-environment.ts
-index 57f12ef..d81d1fa 100644
+index 57f12ef..45adeb8 100644
 --- a/scripts/client-build-environment.ts
 +++ b/scripts/client-build-environment.ts
 @@ -19,7 +19,7 @@ export const CLIENT_BUILD_PROFILE_SELECTOR = 'DSH_BUILD_CLIENT_PROFILE'
@@ -1247,3 +1247,39 @@ index 57f12ef..d81d1fa 100644
  } as const
  
  /** Public variable carrying the source commit embedded in client artifacts. */
+@@ -67,6 +67,17 @@ export function repositoryCommitHash(root: string, environment: NodeJS.ProcessEn
+  * @param root - repository root containing the authoritative package.json.
+  * @returns the repository's semver-compatible package version.
+  */
++/**
++ * Mio: browser builds show and report the product version, not the pinned dsh runtime's.
++ * @param root - repository root holding the generated product record.
++ * @returns the Mio release version from desktop/product.json.
++ */
++function productVersion(root: string): string {
++  const manifest: unknown = JSON.parse(readFileSync(resolve(root, 'apps/desktop/mio-product.json'), 'utf8'))
++  if (!isObject(manifest) || typeof manifest.version !== 'string') throw new Error('apps/desktop/mio-product.json has no version')
++  return manifest.version
++}
++
+ export function repositoryVersion(root: string): string {
+   const path = resolve(root, 'package.json')
+   let manifest: unknown
+@@ -128,7 +139,7 @@ export function repositoryClientBuildEnvironment(
+     ...inherited,
+     DSH_CLIENT_COMMIT_HASH: repositoryCommitHash(root, environment),
+     ...(dirty === true ? { DSH_CLIENT_GIT_DIRTY: 'true' } : {}),
+-    DSH_CLIENT_VERSION: repositoryVersion(root),
++    DSH_CLIENT_VERSION: productVersion(root),
+   }
+ }
+ 
+@@ -144,7 +155,7 @@ export function officialClientBuildEnvironment(
+ ): Readonly<Record<`DSH_CLIENT_${string}`, string>> {
+   return {
+     DSH_CLIENT_COMMIT_HASH: repositoryCommitHash(root, environment),
+-    DSH_CLIENT_VERSION: repositoryVersion(root),
++    DSH_CLIENT_VERSION: productVersion(root),
+     ...OFFICIAL_CLIENT_BUILD_ENVIRONMENT,
+   }
+ }

@@ -48,6 +48,7 @@ export async function prepare() {
   await verifyCheckout(upstream, patches, [
     "apps/desktop/src/mio-product.ts",
     "apps/desktop/scripts/mio-product.mjs",
+    "apps/desktop/mio-product.json",
     ...["icon.png", "icon-macos.png", "icon-windows.png", "tray-windows.ico", "mio.icns"].map(
       (name) => `apps/desktop/resources/${name}`,
     ),
@@ -87,6 +88,8 @@ export async function prepare() {
       `// Generated from desktop/product.json.\nexport const mioProduct = ${JSON.stringify(product, null, 2)}${suffix}\n`,
     )
   }
+  // The client build embeds this version in the browser bundle (Settings → General, sidebar badge).
+  await writeFile(join(upstream, "apps/desktop/mio-product.json"), `${JSON.stringify(product, null, 2)}\n`)
   for (const name of ["icon.png", "icon-macos.png", "icon-windows.png"]) {
     await cp(join(root, "packages/shell/resources/icon.png"), join(upstream, "apps/desktop/resources", name))
   }
