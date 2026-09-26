@@ -5,7 +5,7 @@
 
 Key facts:
 - Category: native desktop coding agent (AI pair programmer) for the MiMo model family.
-- Current release: 0.4.4 (2026-09-26), built on the official dsh Desktop 0.1.7-rc.2 — upstream's workspace, settings, tools and sessions, plus a reviewed Mio overlay. No fork of the model adapter: MiMo is configured through dsh's own provider.
+- Current release: 0.4.5 (2026-09-27), built on the official dsh Desktop 0.1.7-rc.2 — upstream's workspace, settings, tools and sessions, plus a reviewed Mio overlay. No fork of the model adapter: MiMo is configured through dsh's own provider.
 - Models: MiMo V2.6 Flash (default for new sessions, thinking on) and MiMo V2.6 Pro. Thinking is Off/High, mapped to MiMo's thinking switch. UltraSpeed is an opt-in build flag.
 - Setup: paste a MiMo API key on the welcome screen. `sk-` keys are pay-as-you-go; `tp-` keys are token plans with a CN, SGP or AMS region.
 - Platforms: macOS Apple Silicon and Intel (Developer ID signed and notarized) and Windows x64 (unsigned). Linux will follow separately; no terminal/TUI version is planned.
@@ -16,8 +16,8 @@ Key facts:
 - Independent, community-maintained project. Not an official Xiaomi product and not affiliated with Xiaomi Inc.; not a DeepSeek product.
 
 ## Docs
-- [README (English)](https://github.com/shin4/mio/blob/main/README.md): Overview, what is new in 0.4.4, downloads, setup, voice, build from source, and FAQ.
-- [README (简体中文)](https://github.com/shin4/mio/blob/main/README.zh-CN.md): 中文版概览、0.4.4 新变化、下载、接入、语音、源码构建与常见问题。
+- [README (English)](https://github.com/shin4/mio/blob/main/README.md): Overview, what is new in 0.4.5, downloads, setup, voice, build from source, and FAQ.
+- [README (简体中文)](https://github.com/shin4/mio/blob/main/README.zh-CN.md): 中文版概览、0.4.5 新变化、下载、接入、语音、源码构建与常见问题。
 - [Landing page](https://shin4.github.io/mio/): Product overview, features, FAQ, and download.
 
 ## Download
