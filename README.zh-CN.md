@@ -30,7 +30,14 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 保持上游原样——再叠加 Mio 的品牌与 MiMo 优先的配置。Mio 不 fork 模型适配器：MiMo 通过 dsh 自带的 provider 配置接入，
 产品层是一组经过审阅的补丁，存放在 [`desktop/`](desktop/README.md)。
 
-## 0.4.3 新变化
+## 0.4.4 新变化
+
+- **图片输入** — MiMo V2.6 Flash 和 Pro 现在接受图片：截图、设计稿、报错界面可以直接拖进或粘贴到输入框。
+- **音频与视频理解** — 附上录音或视频后，Mio 通过新工具 `mimo_media_read` 请 MiMo 听完或看完，再按需要给出转写、摘要或某个时刻的内容。
+  支持 MP3/WAV/FLAC/M4A/OGG 与 MP4/MOV/AVI/WMV，单个文件 Base64 编码后不超过 50 MB。
+- **暂不支持 PDF** — MiMo 的接口目前不接受文档，Mio 会直接说明而不是猜测。可以把页面截图后当作图片发送。
+
+### 0.4.3
 
 - **首页有了自己的标语** — 空白会话页显示「于深处写下光」，下方是英文 *Write Light into the Deep*，角标写着「基于 DeepSeek Harness」。
 - **只留 Mio 用得上的** — 去掉了 DeepSeek 账号登录、反馈入口和内测声明，MiMo 与 DeepSeek 都通过 API Key 接入。
@@ -55,7 +62,7 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 - 两者都使用你已连接的 MiMo 账号，包括订阅套餐所选地域。无需额外的 Key，也不下载本地模型。
 
 0.4.0 已将 Mio 迁移到官方 dsh Desktop 0.1.7-rc.2，默认使用 MiMo V2.6 Flash，并支持原生的 MiMo 账号接入。完整说明见
-[v0.4.3](https://github.com/shin4/mio/releases/tag/v0.4.3) · [v0.4.2](https://github.com/shin4/mio/releases/tag/v0.4.2) · [v0.4.1](https://github.com/shin4/mio/releases/tag/v0.4.1) · [v0.4.0](https://github.com/shin4/mio/releases/tag/v0.4.0)。
+[v0.4.4](https://github.com/shin4/mio/releases/tag/v0.4.4) · [v0.4.3](https://github.com/shin4/mio/releases/tag/v0.4.3) · [v0.4.2](https://github.com/shin4/mio/releases/tag/v0.4.2) · [v0.4.1](https://github.com/shin4/mio/releases/tag/v0.4.1) · [v0.4.0](https://github.com/shin4/mio/releases/tag/v0.4.0)。
 
 ## 下载
 
@@ -63,17 +70,17 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 
 | 平台 | 文件 | 签名 |
 | --- | --- | --- |
-| macOS · Apple Silicon | `mio-0.4.3-mac-arm64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
-| macOS · Intel | `mio-0.4.3-mac-x64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
-| Windows x64 | `mio-0.4.3-win-x64-unsigned.exe` | **未签名** — 安装时会出现 SmartScreen / 未知发布者提示 |
+| macOS · Apple Silicon | `mio-0.4.4-mac-arm64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
+| macOS · Intel | `mio-0.4.4-mac-x64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
+| Windows x64 | `mio-0.4.4-win-x64-unsigned.exe` | **未签名** — 安装时会出现 SmartScreen / 未知发布者提示 |
 
-可用 `SHA256SUMS.txt` 校验下载；`mio-0.4.3-qualification.json` 记录了每个安装包的源码提交、哈希与签名状态。
+可用 `SHA256SUMS.txt` 校验下载；`mio-0.4.4-qualification.json` 记录了每个安装包的源码提交、哈希与签名状态。
 Linux 版本后续单独提供。
 
 ### 升级
 
 - **0.4.2 起** — 新版本自动送达，下载与重启前都会询问。Windows 安装包未签名，更新以 SHA-512 校验。
-- **从 0.4.0 或 0.4.1 升级** — 手动覆盖安装一次 0.4.3，会话、设置和 MiMo Key 都会保留。若曾拒绝 Mio 使用麦克风，
+- **从 0.4.0 或 0.4.1 升级** — 手动覆盖安装一次 0.4.4，会话、设置和 MiMo Key 都会保留。若曾拒绝 Mio 使用麦克风，
   请在**系统设置 → 隐私与安全性 → 麦克风**中打开 Mio。由 0.4.0 创建的配置默认未开启语音输入，请在**插件 → 语音输入**中开启一次。
 - **从 0.3.x 升级** — 0.4 使用全新的数据目录，不迁移旧的会话、工作区、设置或 API Key，请在欢迎页重新连接 MiMo 账号。
 

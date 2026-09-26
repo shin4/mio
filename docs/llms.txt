@@ -5,18 +5,19 @@
 
 Key facts:
 - Category: native desktop coding agent (AI pair programmer) for the MiMo model family.
-- Current release: 0.4.3 (2026-09-26), built on the official dsh Desktop 0.1.7-rc.2 — upstream's workspace, settings, tools and sessions, plus a reviewed Mio overlay. No fork of the model adapter: MiMo is configured through dsh's own provider.
+- Current release: 0.4.4 (2026-09-26), built on the official dsh Desktop 0.1.7-rc.2 — upstream's workspace, settings, tools and sessions, plus a reviewed Mio overlay. No fork of the model adapter: MiMo is configured through dsh's own provider.
 - Models: MiMo V2.6 Flash (default for new sessions, thinking on) and MiMo V2.6 Pro. Thinking is Off/High, mapped to MiMo's thinking switch. UltraSpeed is an opt-in build flag.
 - Setup: paste a MiMo API key on the welcome screen. `sk-` keys are pay-as-you-go; `tp-` keys are token plans with a CN, SGP or AMS region.
 - Platforms: macOS Apple Silicon and Intel (Developer ID signed and notarized) and Windows x64 (unsigned). Linux will follow separately; no terminal/TUI version is planned.
 - Upgrading: from 0.4.2 Mio updates itself from GitHub Releases, asking before download and restart; install the current release by hand once over 0.4.0/0.4.1, keeping data; 0.4 started with a fresh data directory, so 0.3.x sessions, settings and keys are not migrated.
 - Voice (since 0.4.1): speak a request into an editable draft with MiMo ASR (mimo-v2.5-asr), and read replies aloud with MiMo TTS (mimo-v2.5-tts) in one of nine preset voices chosen under Settings → General. Both use the connected MiMo account; recordings and reply text go to the MiMo API.
+- Images, audio and video (since 0.4.4): MiMo V2.6 Flash and Pro accept images in the composer; attached audio (MP3/WAV/FLAC/M4A/OGG) and video (MP4/MOV/AVI/WMV), up to 50 MB Base64 each, are understood by MiMo through the mimo_media_read agent tool. PDF is not supported because MiMo's API takes no documents.
 - Cost: the app is free and MIT-licensed; you pay only for MiMo API usage via platform.xiaomimimo.com.
 - Independent, community-maintained project. Not an official Xiaomi product and not affiliated with Xiaomi Inc.; not a DeepSeek product.
 
 ## Docs
-- [README (English)](https://github.com/shin4/mio/blob/main/README.md): Overview, what is new in 0.4.3, downloads, setup, voice, build from source, and FAQ.
-- [README (简体中文)](https://github.com/shin4/mio/blob/main/README.zh-CN.md): 中文版概览、0.4.3 新变化、下载、接入、语音、源码构建与常见问题。
+- [README (English)](https://github.com/shin4/mio/blob/main/README.md): Overview, what is new in 0.4.4, downloads, setup, voice, build from source, and FAQ.
+- [README (简体中文)](https://github.com/shin4/mio/blob/main/README.zh-CN.md): 中文版概览、0.4.4 新变化、下载、接入、语音、源码构建与常见问题。
 - [Landing page](https://shin4.github.io/mio/): Product overview, features, FAQ, and download.
 
 ## Download
