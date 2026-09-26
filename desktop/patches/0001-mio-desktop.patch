@@ -1077,6 +1077,69 @@ index a32e1f1..a2feacf 100644
    })
    ipcMain.handle(WELCOME_IPC.skip, async (event) => {
      assertSender(event)
+diff --git a/packages/client/ui-conversation/src/client/locales.ts b/packages/client/ui-conversation/src/client/locales.ts
+index 88ae069..4a37570 100644
+--- a/packages/client/ui-conversation/src/client/locales.ts
++++ b/packages/client/ui-conversation/src/client/locales.ts
+@@ -74,8 +74,9 @@ export const zh = {
+   'settings.enter.description': '智能体运行时 Enter 键和发送按钮的行为；Cmd/Ctrl+Enter 使用另一行为',
+   'settings.enter.queue': '排队发送',
+   'settings.enter.steer': '插话发送',
+-  'hero.headline': '探索未至之境',
+-  'hero.preview': '预览版',
++  'hero.headline': '于深处写下光',
++  'hero.subline': 'Write Light into the Deep',
++  'hero.preview': '基于 DeepSeek Harness',
+   'hero.chooseWorkspace': '选择工作区',
+   'session.hierarchy': '会话层级',
+   'todo.title': '任务',
+@@ -444,8 +445,9 @@ export const en = {
+   'settings.enter.description': 'What Enter and the Send button do while the agent is running; Cmd/Ctrl+Enter uses the other behavior',
+   'settings.enter.queue': 'Queue',
+   'settings.enter.steer': 'Steer',
+-  'hero.headline': 'Into the Unknown',
+-  'hero.preview': 'Preview',
++  'hero.headline': '于深处写下光',
++  'hero.subline': 'Write Light into the Deep',
++  'hero.preview': 'Built on DeepSeek Harness',
+   'hero.chooseWorkspace': 'Choose workspace',
+   'session.hierarchy': 'Session hierarchy',
+   'todo.title': 'To-dos',
+diff --git a/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx b/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
+index 40df872..c451d54 100644
+--- a/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
++++ b/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
+@@ -155,6 +155,8 @@ export function HeroShell({ t, renderSlot, children }: HeroShellProps) {
+             <span className={css.previewBadge}>{t('hero.preview')}</span>
+           </span>
+         </div>
++        {/* Mio: the bilingual headline's English line, in every locale. */}
++        <p className={css.subline}>{t('hero.subline')}</p>
+         <div className={css.body}>
+           {/* The composer remains mounted outside this component. */}
+         </div>
+diff --git a/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css b/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
+index aac6a5c..f86c43b 100644
+--- a/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
++++ b/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
+@@ -75,6 +75,17 @@
+   white-space: nowrap;
+ }
+ 
++/* Mio: English line under the Chinese headline. The negative margin pulls it
++   into the title block, 4px below the headline, past the stack's 12px gap. */
++.subline {
++  margin: -8px 0 0;
++  text-align: center;
++  font-size: 15px;
++  line-height: 20px;
++  font-weight: 400;
++  color: var(--dsw-alias-label-secondary);
++}
++
+ /* Keep hover detection on a stationary box while the mark moves within it;
+    hover rules target the hitbox so a slot-occupant mark swims too. */
+ .fishHitbox {
 diff --git a/packages/experimental/voice-input-bundle/cordis.patch.yml b/packages/experimental/voice-input-bundle/cordis.patch.yml
 index 255734d..82cb4a2 100644
 --- a/packages/experimental/voice-input-bundle/cordis.patch.yml
