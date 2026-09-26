@@ -1271,7 +1271,7 @@ index 7c63262..3a39f46 100644
    "peerDependencies": {
      "@deepseek-ai/cordis": "workspace:~"
 diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
-index 36dc050..eb5528f 100644
+index 36dc050..4376679 100644
 --- a/pnpm-lock.yaml
 +++ b/pnpm-lock.yaml
 @@ -726,6 +726,9 @@ importers:
@@ -1284,7 +1284,7 @@ index 36dc050..eb5528f 100644
  
    apps/web:
      devDependencies:
-@@ -931,6 +934,66 @@ importers:
+@@ -931,6 +934,67 @@ importers:
          specifier: ^1.49.0
          version: 1.61.1
  
@@ -1323,6 +1323,10 @@ index 36dc050..eb5528f 100644
 +
 +  mio/media:
 +    dependencies:
++      '@deepseek-ai/schemastery':
++        specifier: link:../../vendor/schemastery
++        version: link:../../vendor/schemastery
++    devDependencies:
 +      '@deepseek-ai/cordis':
 +        specifier: workspace:~
 +        version: link:../../vendor/cordis
@@ -1332,9 +1336,6 @@ index 36dc050..eb5528f 100644
 +      '@deepseek-ai/dsh-tools':
 +        specifier: workspace:*
 +        version: link:../../packages/core/tools
-+      '@deepseek-ai/schemastery':
-+        specifier: link:../../vendor/schemastery
-+        version: link:../../vendor/schemastery
 +
 +  mio/tts:
 +    dependencies:
@@ -1351,7 +1352,7 @@ index 36dc050..eb5528f 100644
    native/system:
      devDependencies:
        '@deepseek-ai/node-addon-system':
-@@ -7897,9 +7960,9 @@ importers:
+@@ -7897,9 +7961,9 @@ importers:
        '@deepseek-ai/dsh-experimental-speech-to-text':
          specifier: workspace:*
          version: link:../speech-to-text
