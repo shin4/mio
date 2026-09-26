@@ -132,7 +132,11 @@ async function verifyTts(ctx, send, origin) {
 }
 
 /** Voice input resolves to MiMo ASR on the endpoint and key welcome stores for the MiMo route. */
-async function verifyAsr(ctx) {
+async function verifyAsr(ctx, send, origin) {
+  assert.ok(
+    ctx.clientModules.graph().entries.some((entry) => entry.id === "@mio/asr"),
+    "Voice input must mount its Settings → General rows",
+  )
   const snapshot = ctx.speechToText.snapshot()
   assert.deepEqual(
     snapshot.providers.map((provider) => [provider.id, provider.name, provider.location, provider.languages]),
@@ -172,6 +176,16 @@ async function verifyAsr(ctx) {
   } finally {
     server.close()
   }
+  // The General settings row: MiMo ASR's languages, validated, persisted by the official speech service.
+  const route = `${origin}/api/mio/asr`
+  const put = (language) =>
+    send(route, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ language }) })
+  assert.deepEqual(await (await send(route)).json(), { active: true, language: "auto", languages: ["auto", "zh"] })
+  assert.equal((await put("en")).status, 400)
+  assert.equal((await (await put("zh")).json()).language, "zh")
+  assert.equal(ctx.speechToText.snapshot().selection.language, "zh", "The speech service owns the saved language")
+  assert.equal((await (await send(route)).json()).language, "zh")
+  assert.equal((await fetch(route)).status, 401, "The route must sit behind browser authentication")
 }
 
 const home = await mkdtemp(join(tmpdir(), "mio-desktop-web-"))
@@ -269,7 +283,7 @@ try {
   assert.equal(state.hasApiKey, false)
   assert.deepEqual(await backend.save("not-a-key", "invalid-region"), { ok: false })
   assert.deepEqual(await backend.save("contains whitespace"), { ok: false })
-  await verifyAsr(running.ctx)
+  await verifyAsr(running.ctx, send, `http://127.0.0.1:${running.ctx.webServer.port}`)
   await verifyTts(running.ctx, send, `http://127.0.0.1:${running.ctx.webServer.port}`)
   console.log("Mio web composition verified")
 } finally {

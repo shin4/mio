@@ -5,7 +5,7 @@
   "dataDirectory": "dsh-desktop",
   "provider": "mimo",
   "credentialRef": "MIO_API_KEY",
-  "updateOrigin": null,
+  "updateOrigin": "https://github.com/shin4/mio/releases/latest/download",
   "enableUltraSpeed": false,
-  "version": "0.4.1"
+  "version": "0.4.2"
 }

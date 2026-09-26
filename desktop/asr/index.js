@@ -4,7 +4,7 @@ import { credentialRef } from "@deepseek-ai/dsh-credentials"
 import { validateWave } from "@deepseek-ai/dsh-experimental-speech-to-text/wave"
 
 export const name = "mio-asr"
-export const inject = ["speechToText", "credentials", "settings"]
+export const inject = ["speechToText", "credentials", "settings", "connection"]
 
 /**
  * MiMo `asr_options.language` values offered to voice input. `en` is withheld: on 2026-09-26 the
@@ -53,6 +53,9 @@ function transcriptOf(body) {
     .trim()
 }
 
+const json = (value, status = 200) =>
+  new Response(JSON.stringify(value), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } })
+
 /**
  * Register MiMo ASR with the speech registry; activation makes no network call.
  * @param ctx - Host context.
@@ -95,6 +98,26 @@ export function apply(ctx, config) {
         }
         const text = transcriptOf(await response.json())
         return { text, audioSeconds, inferenceSeconds: (performance.now() - started) / 1000 }
+      },
+    }),
+  )
+  // Settings → General reads and changes the recognition language here. The official speech service
+  // owns the preference and persists it into its own profile entry; this only selects MiMo ASR with it.
+  const selection = () => {
+    const { selection } = ctx.speechToText.snapshot()
+    return { active: selection.providerId === config.providerId, language: selection.language, languages: LANGUAGES }
+  }
+  ctx.effect(() =>
+    ctx.connection.fetch.register({
+      path: "/api/mio/asr",
+      methods: ["GET", "PUT"],
+      requestBody: "buffered",
+      async fetch(request) {
+        if (request.method === "GET") return json(selection())
+        const language = (await request.json().catch(() => undefined))?.language
+        if (!LANGUAGES.includes(language)) return json({ error: "unsupported language" }, 400)
+        await ctx.speechToText.configure({ providerId: config.providerId, language })
+        return json(selection())
       },
     }),
   )

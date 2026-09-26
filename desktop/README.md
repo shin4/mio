@@ -45,7 +45,8 @@ New profiles ship voice input enabled; profiles created by 0.4.0 enable it under
 `@mio/tts` (`desktop/tts`) adds a read-aloud action to every finalized reply; it serves
 `POST /api/mio/tts` behind browser authentication and synthesizes with MiMo TTS on the same route.
 Its voice is chosen and previewed under Settings → General (`GET`/`PUT /api/mio/tts/voice`) and
-saved into the profile patch. This separation is required by upstream bundle resolution. Neither
+saved into the profile patch. `@mio/asr` adds the voice-input language (`GET`/`PUT /api/mio/asr`,
+persisted by the official speech service) and a microphone-access row beside it. This separation is required by upstream bundle resolution. Neither
 ships a fork of the model adapter. Shared framework peers resolve to the upstream workspace.
 
 ## Product and release boundaries
@@ -55,9 +56,15 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
   no graded `reasoning_effort` is sent. Model settings retain the official editing workflow.
 - The packaged home is `userData/dsh-desktop`, separate from the old `userData/dsh`.
 - Icons reuse existing Mio assets. Windows installer bitmaps are generated during the build.
-- `product.json` disables updates. Both packaging and runtime reject DeepSeek's feed for Mio.
-- Mio installers use `product.json` version `0.4.1`; the bundled dsh runtime remains pinned
-  to `0.1.7-rc.2`. Automatic updates remain disabled.
+- Updates come from the latest GitHub release (`product.json` `updateOrigin`, a flat
+  `releases/latest/download` feed). `publish-release.mjs` uploads `nightly.yml` and one
+  `nightly-mac.yml` merged from both macOS architectures; electron-updater picks the arm64 or x64
+  ZIP by name. DeepSeek's COS feed and mandatory-update policy are never used. The unsigned Windows
+  build updates too, verified by the feed's SHA-512 only.
+- Mio installers use `product.json` version `0.4.2`; the bundled dsh runtime remains pinned
+  to `0.1.7-rc.2`.
+- macOS signs with `com.apple.security.device.audio-input`; `verify-release.mjs` rejects a build
+  without it (0.4.1 shipped without it and macOS silently denied the microphone).
 
 Packaging delegates to upstream: `bun run package:desktop mac-arm64`, `mac-x64`, or `win-x64`.
 Only Windows supports `--unsigned`. Prepare the upstream platform-local `.env.macos` or

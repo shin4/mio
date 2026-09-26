@@ -48,6 +48,7 @@ export async function prepare() {
   await verifyCheckout(upstream, patches, [
     "apps/desktop/src/mio-product.ts",
     "apps/desktop/scripts/mio-product.mjs",
+    "apps/desktop/mio-product.json",
     ...["icon.png", "icon-macos.png", "icon-windows.png", "tray-windows.ico", "mio.icns"].map(
       (name) => `apps/desktop/resources/${name}`,
     ),
@@ -69,7 +70,9 @@ export async function prepare() {
     !/^[a-z0-9-]+$/.test(product.dataDirectory)
   )
     throw new Error("Invalid Mio product identity")
-  if (product.updateOrigin !== null) throw new Error("Mio update feed is not qualified yet; keep updateOrigin null")
+  // The feed is the latest GitHub release: publish-release.mjs uploads its metadata beside the installers.
+  if (product.updateOrigin !== null && !/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/releases\/latest\/download$/.test(product.updateOrigin))
+    throw new Error("Mio updateOrigin must be null or a GitHub releases/latest/download URL")
   const modelPatch = composeModels(await readFile(join(root, "desktop/bundle/mio.patch.yml"), "utf8"), product)
   await cp(join(root, "desktop/bundle"), join(upstream, "mio/desktop"), { recursive: true })
   await writeFile(join(upstream, "mio/desktop/mio.patch.yml"), modelPatch)
@@ -85,6 +88,8 @@ export async function prepare() {
       `// Generated from desktop/product.json.\nexport const mioProduct = ${JSON.stringify(product, null, 2)}${suffix}\n`,
     )
   }
+  // The client build embeds this version in the browser bundle (Settings → General, sidebar badge).
+  await writeFile(join(upstream, "apps/desktop/mio-product.json"), `${JSON.stringify(product, null, 2)}\n`)
   for (const name of ["icon.png", "icon-macos.png", "icon-windows.png"]) {
     await cp(join(root, "packages/shell/resources/icon.png"), join(upstream, "apps/desktop/resources", name))
   }
