@@ -32,7 +32,18 @@ workspace, settings, tools and session model, unchanged — with Mio's identity 
 configuration layered on top. Mio ships no fork of the model adapter: MiMo is configured through
 dsh's own provider, and the product overlay is a reviewed patch set kept in [`desktop/`](desktop/README.md).
 
-## What's new in 0.4.1
+## What's new in 0.4.2
+
+- **Automatic updates** — Mio checks GitHub for the latest release and offers it: it asks before
+  downloading and again before restarting to install. **Check for Updates…** in the app menu
+  checks right away. 0.4.2 is the last version you install by hand.
+- **Voice settings in one place** — **Settings → General** now has *Voice input language* (auto or
+  Chinese) and *Microphone access*, which shows whether Mio may record and asks the system for you.
+- **Fixed: the microphone on macOS** — 0.4.1 was signed without the microphone entitlement, so
+  macOS refused recording without ever prompting. 0.4.2 asks on first use.
+- **Settings shows Mio's version** instead of the bundled runtime's.
+
+### 0.4.1
 
 - **Voice input with MiMo ASR** — the mic button in the composer records your request and MiMo ASR
   (`mimo-v2.5-asr`) turns it into a draft you can edit before sending. Language is detected
@@ -46,7 +57,8 @@ dsh's own provider, and the product overlay is a reviewed patch set kept in [`de
   extra key and no local model download.
 
 0.4.0 moved Mio onto the official dsh Desktop 0.1.7-rc.2, with MiMo V2.6 Flash as the default and
-native MiMo account setup. Full notes: [v0.4.1](https://github.com/shin4/mio/releases/tag/v0.4.1) ·
+native MiMo account setup. Full notes: [v0.4.2](https://github.com/shin4/mio/releases/tag/v0.4.2) ·
+[v0.4.1](https://github.com/shin4/mio/releases/tag/v0.4.1) ·
 [v0.4.0](https://github.com/shin4/mio/releases/tag/v0.4.0).
 
 ## Download
@@ -55,18 +67,20 @@ Get the latest installers from [Releases](https://github.com/shin4/mio/releases/
 
 | Platform | File | Signing |
 | --- | --- | --- |
-| macOS · Apple Silicon | `mio-0.4.1-mac-arm64.dmg` (or `.zip`) | Developer ID signed + notarized |
-| macOS · Intel | `mio-0.4.1-mac-x64.dmg` (or `.zip`) | Developer ID signed + notarized |
-| Windows x64 | `mio-0.4.1-win-x64-unsigned.exe` | **Unsigned** — expect a SmartScreen / unknown-publisher prompt |
+| macOS · Apple Silicon | `mio-0.4.2-mac-arm64.dmg` (or `.zip`) | Developer ID signed + notarized |
+| macOS · Intel | `mio-0.4.2-mac-x64.dmg` (or `.zip`) | Developer ID signed + notarized |
+| Windows x64 | `mio-0.4.2-win-x64-unsigned.exe` | **Unsigned** — expect a SmartScreen / unknown-publisher prompt |
 
-Verify downloads against `SHA256SUMS.txt`; `mio-0.4.1-qualification.json` records the source
+Verify downloads against `SHA256SUMS.txt`; `mio-0.4.2-qualification.json` records the source
 commit, hashes and signing state of each installer. Linux will follow separately.
 
 ### Upgrading
 
-- **Install manually** — automatic updates are still disabled.
-- **From 0.4.0** — install over it; sessions, settings and your MiMo key are kept. Read aloud is
-  on right away. Voice input starts switched off in profiles created by 0.4.0: turn on
+- **From 0.4.2 on** — updates arrive automatically; Mio asks before downloading and before
+  restarting. Windows updates are verified by SHA-512, as the installer is unsigned.
+- **From 0.4.0 or 0.4.1** — install 0.4.2 over it once by hand; sessions, settings and your MiMo
+  key are kept. If you denied Mio the microphone before, turn it on in **System Settings → Privacy
+  & Security → Microphone**. Voice input starts switched off in profiles created by 0.4.0: turn on
   **Plugins → Voice input** once.
 - **From 0.3.x** — 0.4 uses a fresh data directory and does not migrate previous sessions,
   workspaces, settings or API keys. Reconnect your MiMo account on the welcome screen.
@@ -94,9 +108,9 @@ Voice runs on the MiMo account you connected. Recordings and reply text go to th
 Nothing is transcribed or synthesized on your machine.
 
 - **Speak a request** — click the mic in the composer, talk (up to 60 seconds), then stop. The
-  transcript lands in the draft and is not sent until you send it. **Plugins → Voice input**
-  shows the recognizer (MiMo ASR) and the language: *Detect automatically* (recommended, also for
-  English) or *Chinese*.
+  transcript lands in the draft and is not sent until you send it. **Settings → General → Voice
+  input language** picks *Auto-detect* (recommended, also for English) or *Chinese*; *Microphone
+  access* right below shows whether Mio may record.
 - **Hear a reply** — click the speaker under a reply to read it aloud; click again to stop.
   Headings, emphasis and links are read as plain prose, and code blocks are skipped. A long answer
   is read from its start, in whole sentences up to about 4,000 characters.
