@@ -35,6 +35,16 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 
 ## Desktop development state
 
+**Upgrade implementation (2026-09-29):** the development branch now pins official dsh
+`0.2.0-rc.2` (`639ed015397290b3745d163aafe02ffee4aa3f84`) and Mio candidate `0.5.0-rc.1`.
+Production remains **0.4.5** on dsh `0.1.7-rc.2`; no release or update feed has changed.
+The [upgrade spec](docs/dsh-upgrade-0.2.0-rc.2-spec.md) remains the acceptance contract;
+[implementation evidence and remaining gates](docs/dsh-upgrade-0.2.0-rc.2-evidence.md) distinguish
+local passes from live API, signed installation and cross-platform qualification still required.
+Earlier dated “not released” statements describe the initial Desktop implementation stage.
+Cancelled legacy-data import does not waive preservation of existing 0.4.x profiles.
+Schedule must be re-enabled using the official optional bundle; stored tasks are retained.
+
 The active source-based Desktop is described above and in `desktop/README.md`. The table
 below records the **legacy released implementation**, not the new development dependency pin.
 

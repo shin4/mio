@@ -47,6 +47,7 @@ export async function prepare() {
   // Do not allow whole directories: an extra source file must fail this gate.
   await verifyCheckout(upstream, patches, [
     "apps/desktop/src/mio-product.ts",
+    "apps/desktop-host/src/mio-product.ts",
     "apps/desktop/scripts/mio-product.mjs",
     "apps/desktop/mio-product.json",
     ...["icon.png", "icon-macos.png", "icon-windows.png", "tray-windows.ico", "mio.icns"].map(
@@ -66,6 +67,10 @@ export async function prepare() {
     throw new Error("Invalid Mio release version")
   }
   if (
+    typeof product.name !== "string" ||
+    !/^[A-Za-z][A-Za-z0-9 -]{0,63}$/.test(product.name) ||
+    typeof product.cliCommand !== "string" ||
+    !/^[a-z][a-z0-9-]{0,62}$/.test(product.cliCommand) ||
     !/^[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(product.appId) ||
     !/^[a-z][a-z0-9-]*$/.test(product.protocol) ||
     !/^[a-z0-9-]+$/.test(product.dataDirectory)
@@ -81,12 +86,13 @@ export async function prepare() {
   await cp(join(root, "desktop/asr"), join(upstream, "mio/asr"), { recursive: true })
   await cp(join(root, "desktop/tts"), join(upstream, "mio/tts"), { recursive: true })
   await cp(join(root, "desktop/media"), join(upstream, "mio/media"), { recursive: true })
-  for (const [target, suffix] of [
-    ["src/mio-product.ts", " as const"],
-    ["scripts/mio-product.mjs", ""],
+  for (const [app, target, suffix] of [
+    ["desktop", "src/mio-product.ts", " as const"],
+    ["desktop", "scripts/mio-product.mjs", ""],
+    ["desktop-host", "src/mio-product.ts", " as const"],
   ]) {
     await writeFile(
-      join(upstream, "apps/desktop", target),
+      join(upstream, "apps", app, target),
       `// Generated from desktop/product.json.\nexport const mioProduct = ${JSON.stringify(product, null, 2)}${suffix}\n`,
     )
   }

@@ -11,6 +11,7 @@ export function composeModels(patch, product) {
       ? `          - ${JSON.stringify({
           id: "mimo-v2.6-pro-ultraspeed",
           name: "MiMo V2.6 Pro UltraSpeed",
+          contextWindow: 1048576,
           reasoningEfforts: { off: "none", high: "high" },
         })}`
       : marker,

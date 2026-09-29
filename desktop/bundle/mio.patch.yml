@@ -16,8 +16,8 @@
         # reasoning_effort): `off`/`high` below are its two states. Naming the default here drops
         # the provider-default "Default" row, which would only repeat `high`.
         reasoning: high
-        # Conservative app budgets; these are not claims about the model's maximum capacity.
-        defaultContextWindow: 262144
+        # V2.6 context capacity; output remains a separate application budget.
+        defaultContextWindow: 1048576
         defaultMaxTokens: 32768
         # Image input is declared per model, never as the route's `defaultInput`: pi-ai's catalog has
         # no MiMo entry, so an undeclared model is text-only and the composer refuses images for it.
@@ -27,10 +27,12 @@
         models:
           - id: mimo-v2.6-flash
             name: MiMo V2.6 Flash
+            contextWindow: 1048576
             input: [text, image]
             reasoningEfforts: { off: none, high: high }
           - id: mimo-v2.6-pro
             name: MiMo V2.6 Pro
+            contextWindow: 1048576
             input: [text, image]
             reasoningEfforts: { off: none, high: high }
         # mio:optional-models
@@ -54,7 +56,7 @@
 # @deepseek-ai/dsh-client-ui-settings-models (onboarding-copy.ts); re-check it on every dsh bump.
 - id: ui-settings-general
   config:
-    welcomeNoticeVersion: "2026-08-13.1"
+    welcomeNoticeVersion: "2026-09-28.1"
 # No DeepSeek API-key onboarding dialog: Mio's native welcome owns credential setup, and the dialog
 # only offers DeepSeek. Desktop already suppresses it; this also covers a browser on the same Host.
 - id: ui-settings-models
@@ -67,6 +69,11 @@
   disabled: true
 - id: command-feedback
   disabled: true
+# Keep the native welcome's analytics RPC mounted, but do not collect product events.
+- id: product-analytics
+  config:
+    enabled: false
+    appVersion: !!js process.env.DSH_CLIENT_VERSION
 - insert:
     - id: mio-desktop-brand
       name: "@mio/brand"

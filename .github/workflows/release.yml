@@ -49,6 +49,8 @@ jobs:
       - name: Desktop regression tests
         working-directory: desktop
         run: node --test test/*.test.ts
+      - name: Upstream upgrade compatibility and native CLI tests
+        run: node script/desktop/test-upgrade.mjs
       - name: Upload qualified installers and evidence
         uses: actions/upload-artifact@v4
         with:
