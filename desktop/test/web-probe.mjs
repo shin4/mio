@@ -302,6 +302,7 @@ const explicitInput = process.argv.includes("--explicit-input")
 const explicitContext = process.argv.includes("--explicit-context")
 const customProviderContext = process.argv.includes("--provider-context")
 const hiddenDefault = process.argv.includes("--hidden-default")
+const delayedHmr = process.argv.includes("--delayed-hmr")
 if (savedBeforeImage) {
   await writeFile(
     join(directory, "cordis.patch.yml"),
@@ -321,6 +322,7 @@ if (savedBeforeImage) {
       `          - { id: mimo-v2.6-flash, name: MiMo V2.6 Flash, reasoningEfforts: { off: none, high: high }${explicitInput ? ", input: [text]" : ""}${explicitContext ? ", contextWindow: 131072" : ""} }`,
       "          - { id: mimo-v2.6-pro, name: MiMo V2.6 Pro, reasoningEfforts: { off: none, high: high } }",
       ...(hiddenDefault ? ["- id: agent-preset-registry", "  config:", "    default: standard", "    selectedDefault: minimal"] : []),
+      ...(delayedHmr ? ["- id: hmr", "  disabled: true"] : []),
       "",
     ].join("\n"),
   )
@@ -339,6 +341,9 @@ for (const name of ["brand", "tts", "media"]) {
 const installAnchor = join(upstream, "apps/cli/package.json")
 const profile = loadProfileDirectory("dsh", directory, installAnchor)
 assert.deepEqual(profile.skippedBundles, [])
+// A live owner's lock makes an early unqueued Settings write exceed upstream's two-second wait.
+const settingsLock = join(directory, "package.json.lock")
+if (delayedHmr) await writeFile(settingsLock, `${process.pid}\n`, { flag: "wx" })
 const running = await runProfile({
   environment: loadLayeredEnv("dsh"),
   profile: "desktop",
@@ -347,6 +352,17 @@ const running = await runProfile({
   args: ["--no-open", "--port", "0"],
 })
 try {
+  if (delayedHmr) {
+    await new Promise((resolve) => setTimeout(resolve, 2500))
+    assert.equal(running.ctx.agentPresets.config.selectedDefault.get(), "minimal")
+    await rm(settingsLock)
+    await writeFile(join(directory, "cordis.patch.yml"),
+      (await readFile(join(directory, "cordis.patch.yml"), "utf8")).replace("- id: hmr\n  disabled: true\n", ""))
+    const hmr = [...running.ctx.loader.entries()].find((entry) => entry.options.id === "hmr")
+    assert.ok(hmr)
+    await hmr.update({ disabled: false })
+    await running.ctx.loader.await()
+  }
   const brand = running.ctx.clientModules.graph().entries.find((entry) => entry.id === "@mio/brand")
   assert.ok(brand, "The product bundle must actually mount its browser brand plugin")
   assert.equal(running.ctx.agentDefaultModel.currentSelection().model, "mimo-v2.6-flash")
@@ -355,15 +371,12 @@ try {
     model.reasoning.efforts.map((effort) => effort.id),
     ["off", "high"],
   )
-  // The session controller admits an image prompt only for a model declaring `image`. A stale
-  // saved model list is repaired after startup, so wait for that write to apply.
+  // Startup repairs use the upstream HMR transaction queue. Drain it before reading repaired
+  // values; a wall-clock poll can expire on Windows while a valid write is still queued.
+  await running.ctx.hmr.runExclusive(async () => {})
+  // The session controller admits an image prompt only for a model declaring `image`.
   const modalities = async (id) =>
     [...(await running.ctx.llm.resolveModelInfo("mimo", id)).inputModalities].sort((a, b) => a.localeCompare(b))
-  const deadline = Date.now() + 20_000
-  const repaired = async () => ((await modalities("mimo-v2.6-pro")).length === 2
-    && (!hiddenDefault || running.ctx.agentPresets.config.selectedDefault.get() === "standard"))
-    || Date.now() > deadline
-  if (savedBeforeImage) while (!(await repaired())) await new Promise((resolve) => setTimeout(resolve, 100))
   for (const id of ["mimo-v2.6-flash", "mimo-v2.6-pro"]) {
     assert.equal((await running.ctx.llm.resolveModelInfo("mimo", id)).context.contextWindow,
       explicitContext && id === "mimo-v2.6-flash" ? 131072 : customProviderContext ? 524288 : 1048576, `${id} context capacity`)
