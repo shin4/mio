@@ -56,22 +56,25 @@ export function missingContextOps(base, user) {
  * The section is checked whenever its document changes, since `llm-pi-ai` may activate after this
  * entry; the repair is idempotent. Writes are not awaited, as in hidden-presets.js: they rewrite
  * the profile tree, which waits for every entry to finish activating.
+ * Wait for HMR's native transaction queue before either startup repair writes Settings.
  * @param ctx - context carrying `settings`.
  */
 export function apply(ctx) {
-  let writing = false
-  const repair = () => {
-    if (writing) return
-    const section = ctx.settings.describe().find((row) => row.ns === NS)
-    if (section === undefined) return
-    const ops = [...missingInputOps(section.base, section.user), ...missingContextOps(section.base, section.user)]
-    if (ops.length === 0) return
-    writing = true
-    void ctx.settings.mutate(NS, ops, section.revision).then(
-      () => ctx.logger.info("repaired %d saved model metadata field(s)", ops.length),
-      (error) => ctx.logger.warn(error),
-    ).finally(() => { writing = false })
-  }
-  ctx.on("settings/document-updated", (ns) => { if (ns === NS) repair() })
-  queueMicrotask(repair)
+  ctx.inject(["hmr"], (child) => {
+    let writing = false
+    const repair = () => {
+      if (writing) return
+      const section = child.settings.describe().find((row) => row.ns === NS)
+      if (section === undefined) return
+      const ops = [...missingInputOps(section.base, section.user), ...missingContextOps(section.base, section.user)]
+      if (ops.length === 0) return
+      writing = true
+      void child.settings.mutate(NS, ops, section.revision).then(
+        () => child.logger.info("repaired %d saved model metadata field(s)", ops.length),
+        (error) => child.logger.warn(error),
+      ).finally(() => { writing = false })
+    }
+    child.on("settings/document-updated", (ns) => { if (ns === NS) repair() })
+    queueMicrotask(repair)
+  })
 }
