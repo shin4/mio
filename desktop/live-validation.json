@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-25T11:23:16.914Z",
+  "date": "2026-09-30T03:44:08.881Z",
   "endpoint": "https://token-plan-cn.xiaomimimo.com/v1",
   "results": [
     {
@@ -8,7 +8,7 @@
       "finish": {
         "kind": "stop"
       },
-      "milliseconds": 1265,
+      "milliseconds": 3751,
       "text": "MIO_OK",
       "reasoning": false,
       "toolCalls": [],
@@ -24,7 +24,7 @@
       "finish": {
         "kind": "stop"
       },
-      "milliseconds": 1427,
+      "milliseconds": 2044,
       "text": "MIO_OK",
       "reasoning": false,
       "toolCalls": [],
@@ -40,7 +40,7 @@
       "finish": {
         "kind": "stop"
       },
-      "milliseconds": 3333,
+      "milliseconds": 1293,
       "text": "9.8",
       "reasoning": true,
       "toolCalls": [],
@@ -56,14 +56,14 @@
       "finish": {
         "kind": "stop"
       },
-      "milliseconds": 1541,
+      "milliseconds": 2925,
       "text": "9.8",
       "reasoning": true,
       "toolCalls": [],
       "usage": {
         "inputTokens": 28,
-        "outputTokens": 18,
-        "totalTokens": 46
+        "outputTokens": 108,
+        "totalTokens": 136
       }
     },
     {
@@ -72,7 +72,7 @@
       "finish": {
         "kind": "tool-calls"
       },
-      "milliseconds": 2891,
+      "milliseconds": 1521,
       "text": "",
       "reasoning": true,
       "toolCalls": [
@@ -82,10 +82,9 @@
         }
       ],
       "usage": {
-        "inputTokens": 41,
-        "outputTokens": 28,
-        "totalTokens": 133,
-        "cacheReadTokens": 64
+        "inputTokens": 105,
+        "outputTokens": 40,
+        "totalTokens": 145
       }
     },
     {
@@ -94,14 +93,14 @@
       "finish": {
         "kind": "stop"
       },
-      "milliseconds": 1095,
-      "text": "Paris: **Sunny, 22°C**.",
+      "milliseconds": 2217,
+      "text": "**Paris Weather (synthetic):**\n- **Conditions:** Sunny\n- **Temperature:** 22°C",
       "reasoning": true,
       "toolCalls": [],
       "usage": {
-        "inputTokens": 147,
-        "outputTokens": 17,
-        "totalTokens": 164
+        "inputTokens": 159,
+        "outputTokens": 29,
+        "totalTokens": 188
       }
     }
   ],

@@ -1,4 +1,31 @@
-# Desktop implementation validation — 2026-09-25
+# Mio 0.5.0 release validation — 2026-09-30
+
+Source: Mio `0.5.0`, pinned dsh `0.2.0-rc.2` / `639ed015397290b3745d163aafe02ffee4aa3f84`.
+Local environment: macOS arm64, Node 24.18.0, pnpm 11.7.0, Bun 1.3.14.
+
+- Full official Desktop build passed with frozen dependencies.
+- Desktop regressions: **25 passed, none skipped**, including the built 0.4.5 baseline for session continuation, complete-backup rollback and Schedule task retention.
+- Upstream regressions: **501 passed, one Windows-only test skipped locally**; the release workflow runs that test on Windows.
+- Repository typecheck passed; lint: 0 errors, 43 existing warnings.
+- Repeated live CN Token Plan verification through the actual new runtime: Flash/Pro Off/High, native key validation/save, tool continuation and preserved reasoning; image input on Flash/Pro; Chinese/English ASR, TTS and ASR round trip; real audio/video agent turns with completed `mimo_media_read` events and correct final answers.
+- Live media evidence now uses upstream headless `--json`, which projects committed Session events. Recursive scanning of linked dependencies and matching only uncompressed legacy log filenames are removed from that opt-in probe.
+- Landing page: English/Chinese content, desktop and 390 px viewport, correct 1M model parameters and all three platform fallback links checked in Playwright. A simulated GitHub API failure retained the 0.5.0 static links.
+
+Sanitized live records: `live-validation.json`, `image-live-validation.json`,
+`voice-live-validation.json`, `media-tool-live-validation.json`. The tested account is CN Token Plan;
+this does not qualify other accounts, PAYG, SGP/AMS or UltraSpeed.
+
+Installer qualification is recorded separately by `official-desktop-release`. Publication requires
+all three targets to pass on the exact final source tree; the release's
+`mio-0.5.0-qualification.json` records the run, source, installer hashes and signing state.
+The local build and browser checks do not substitute for signing, notarization or Windows installation.
+Cross-platform manual UI and production update/rollback exercises remain outside the completed local coverage.
+
+The dated record below describes the initial 0.4.0 implementation and its then-open gates.
+
+---
+
+# Historical Desktop implementation validation — 2026-09-25
 
 Environment: macOS arm64, Node 24.18.0, pnpm 11.7.0.
 Upstream: `dsh-v0.1.7-rc.2` / `477b4f420553e8a52c2fbccc464d7561b239c443`.

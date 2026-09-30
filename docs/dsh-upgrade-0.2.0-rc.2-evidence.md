@@ -1,5 +1,25 @@
 # dsh 0.2.0-rc.2 实施与验收记录
 
+## 0.5.0 发布准备：2026-09-30
+
+PR #39 与 #40 已合并；发布源码版本设为 `0.5.0`，内核仍固定为 `0.2.0-rc.2`。
+完整构建与 **25/25** Desktop 回归通过（含真正的 0.4.5 基线），上游 **501 通过、1 项
+Windows 专属本机跳过**；typecheck 通过，lint 0 errors / 43 warnings。
+
+已使用此前授权的 CN Token Plan 账户重新执行真实 Flash/Pro 文本、thinking 开关、工具续传、
+图片、ASR/TTS 回转写和音视频 agent 工具回合。原生 welcome 后端校验与保存通过；
+脱敏记录见 [本次验证](../desktop/VALIDATION.md) 及同目录四份 live JSON。没有把历史 cassette
+当作 V2.6 实测，未扩大 PAYG、SGP/AMS 或 UltraSpeed 账户范围。
+
+音视频 opt-in probe 改用上游 `--json` 的持久事件投影，确认实际完成的工具调用和最终回答；
+避免递归遍历 profile 依赖链接，并兼容新版压缩 v4 会话。完整备份回退、旧会话续接和
+Schedule 数据保留已有自动化证据，人工 UI 全矩阵和生产更新/回退演练仍未完成。
+
+三平台签名、成品安装与运行时资格由 `official-desktop-release` 对最终源树重新执行。
+正式发布只接受成功 run 的原始安装包；公开 release 的 qualification 报告是这部分的最终证据。
+下文是此前候选版验收时的历史状态，不应据此推断后续资格结果。
+
+
 ## 追加修正：V2.6 默认 1M 上下文
 
 按用户要求，V2.6 Flash、Pro、可选 UltraSpeed 默认上下文改为 1,048,576 tokens，

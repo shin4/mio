@@ -99,7 +99,7 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
   `nightly-mac.yml` merged from both macOS architectures; electron-updater picks the arm64 or x64
   ZIP by name. DeepSeek's COS feed and mandatory-update policy are never used. The unsigned Windows
   build updates too, verified by the feed's SHA-512 only.
-- Mio installers use `product.json` version `0.5.0-rc.1` (unreleased candidate); the bundled dsh runtime remains pinned
+- Mio installers use `product.json` version `0.5.0`; the bundled dsh runtime remains pinned
   to `0.2.0-rc.2`.
 - macOS signs with `com.apple.security.device.audio-input`; `verify-release.mjs` rejects a build
   without it (0.4.1 shipped without it and macOS silently denied the microphone).
@@ -113,8 +113,8 @@ filename suffix. Never run the upstream `upload:*` commands for Mio.
 See [the current plan](../docs/mio-desktop-plan.md) for completion evidence and remaining gates.
 The runtime upgrade is specified in the [dsh 0.2.0-rc.2 upgrade spec](../docs/dsh-upgrade-0.2.0-rc.2-spec.md)
 and tracked in the [implementation evidence](../docs/dsh-upgrade-0.2.0-rc.2-evidence.md).
-Local implementation is complete; live API and packaged release qualification remain open.
-The production release is still 0.4.5.
+The 0.5.0 source is prepared for release. Publication requires a successful three-platform
+qualification of this exact source tree; the release includes its qualification report.
 
 ## Opt-in live validation
 

@@ -11,7 +11,7 @@
 [![Release](https://img.shields.io/github/v/release/shin4/mio?color=ff6900&label=release)](https://github.com/shin4/mio/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-ff6900.svg)](./LICENSE)
 ![Desktop: macOS · Windows](https://img.shields.io/badge/desktop-macOS%20%C2%B7%20Windows-121317.svg)
-![dsh Desktop 0.1.7-rc.2](https://img.shields.io/badge/dsh%20Desktop-0.1.7--rc.2-0E1B2E.svg)
+![dsh Desktop 0.2.0-rc.2](https://img.shields.io/badge/dsh%20Desktop-0.2.0--rc.2-0E1B2E.svg)
 
 <img src="docs/assets/welcome.zh-CN.png?v=0.4.0" alt="Mio 0.4.0 欢迎界面：连接 MiMo" width="480" />
 
@@ -30,7 +30,16 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 保持上游原样——再叠加 Mio 的品牌与 MiMo 优先的配置。Mio 不 fork 模型适配器：MiMo 通过 dsh 自带的 provider 配置接入，
 产品层是一组经过审阅的补丁，存放在 [`desktop/`](desktop/README.md)。
 
-## 0.4.5 新变化
+## 0.5.0 新变化
+
+- **官方 dsh Desktop 0.2.0-rc.2** — 工作区、设置与工具循环升级到新的固定内核；内置内核仍为 RC 版本。
+- **1M 上下文** — V2.6 Flash 与 Pro 默认使用 1,048,576 tokens。旧配置继承的 256K 默认值自动修复，显式自定义上限保留。
+- **`mio` 命令** — 在应用的命令设置中安装后，可从终端使用内置运行时。GUI 与 CLI 共用默认数据目录；相对 `MIO_HOME` 以用户主目录为基准，展开 `~`，拒绝空值。
+- **可靠的启动修复** — 等待原生设置服务就绪后再修复保存的图片能力和隐藏的默认 preset，覆盖 Windows 启动场景。
+- **自动化升级须操作** — 已有任务保留在磁盘，但需重新启用**插件 → 官方 → 自动化任务**才会运行。旧 `normal` 会话展示变为 `detailed`，新配置默认 `standard`。
+- 产品 analytics 默认关闭；上游 Session Log 设置保持独立。
+
+### 0.4.5
 
 - **修复：0.4.4 之前连接过 MiMo 时 V2.6 仍不能发图片** — 首次连接 MiMo 时保存下来的模型列表早于图片支持，输入框因此继续拒绝
   MiMo V2.6 Flash 和 Pro 的图片。Mio 现在启动时会为这些已保存的模型补上图片支持；你手动设置过输入类型的模型保持不变。
@@ -67,7 +76,7 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 - 两者都使用你已连接的 MiMo 账号，包括订阅套餐所选地域。无需额外的 Key，也不下载本地模型。
 
 0.4.0 已将 Mio 迁移到官方 dsh Desktop 0.1.7-rc.2，默认使用 MiMo V2.6 Flash，并支持原生的 MiMo 账号接入。完整说明见
-[v0.4.5](https://github.com/shin4/mio/releases/tag/v0.4.5) · [v0.4.4](https://github.com/shin4/mio/releases/tag/v0.4.4) · [v0.4.3](https://github.com/shin4/mio/releases/tag/v0.4.3) · [v0.4.2](https://github.com/shin4/mio/releases/tag/v0.4.2) · [v0.4.1](https://github.com/shin4/mio/releases/tag/v0.4.1) · [v0.4.0](https://github.com/shin4/mio/releases/tag/v0.4.0)。
+[v0.5.0](https://github.com/shin4/mio/releases/tag/v0.5.0) · [v0.4.5](https://github.com/shin4/mio/releases/tag/v0.4.5) · [v0.4.4](https://github.com/shin4/mio/releases/tag/v0.4.4) · [v0.4.3](https://github.com/shin4/mio/releases/tag/v0.4.3) · [v0.4.2](https://github.com/shin4/mio/releases/tag/v0.4.2) · [v0.4.1](https://github.com/shin4/mio/releases/tag/v0.4.1) · [v0.4.0](https://github.com/shin4/mio/releases/tag/v0.4.0)。
 
 ## 下载
 
@@ -75,17 +84,20 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 
 | 平台 | 文件 | 签名 |
 | --- | --- | --- |
-| macOS · Apple Silicon | `mio-0.4.5-mac-arm64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
-| macOS · Intel | `mio-0.4.5-mac-x64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
-| Windows x64 | `mio-0.4.5-win-x64-unsigned.exe` | **未签名** — 安装时会出现 SmartScreen / 未知发布者提示 |
+| macOS · Apple Silicon | `mio-0.5.0-mac-arm64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
+| macOS · Intel | `mio-0.5.0-mac-x64.dmg`（或 `.zip`） | Developer ID 签名 + 公证 |
+| Windows x64 | `mio-0.5.0-win-x64-unsigned.exe` | **未签名** — 安装时会出现 SmartScreen / 未知发布者提示 |
 
-可用 `SHA256SUMS.txt` 校验下载；`mio-0.4.5-qualification.json` 记录了每个安装包的源码提交、哈希与签名状态。
+可用 `SHA256SUMS.txt` 校验下载；`mio-0.5.0-qualification.json` 记录了每个安装包的源码提交、哈希与签名状态。
 Linux 版本后续单独提供。
 
 ### 升级
 
+升级前退出 GUI 与 CLI，备份完整 userData 和自定义 home。升级后重新启用自动化任务，确认任务列表及下次触发时间。
+回退时保留新版数据副本，恢复旧安装包与完整升级前备份；不要直接让旧运行时读取 0.5.0 写入后的数据。
+
 - **0.4.2 起** — 新版本自动送达，下载与重启前都会询问。Windows 安装包未签名，更新以 SHA-512 校验。
-- **从 0.4.0 或 0.4.1 升级** — 手动覆盖安装一次 0.4.5，会话、设置和 MiMo Key 都会保留。若曾拒绝 Mio 使用麦克风，
+- **从 0.4.0 或 0.4.1 升级** — 手动覆盖安装一次 0.5.0，会话、设置和 MiMo Key 都会保留。若曾拒绝 Mio 使用麦克风，
   请在**系统设置 → 隐私与安全性 → 麦克风**中打开 Mio。由 0.4.0 创建的配置默认未开启语音输入，请在**插件 → 语音输入**中开启一次。
 - **从 0.3.x 升级** — 0.4 使用全新的数据目录，不迁移旧的会话、工作区、设置或 API Key，请在欢迎页重新连接 MiMo 账号。
 
