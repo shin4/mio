@@ -1,18 +1,37 @@
 diff --git a/apps/desktop-host/package.json b/apps/desktop-host/package.json
-index a5b679b..f4be958 100644
+index fe870e6308..f9efcaafd2 100644
 --- a/apps/desktop-host/package.json
 +++ b/apps/desktop-host/package.json
-@@ -23,6 +23,7 @@
+@@ -25,7 +25,8 @@
      "@deepseek-ai/dsh-tool-workspace-dependencies": "workspace:*",
      "@deepseek-ai/dsh-skill-office": "workspace:*",
      "@deepseek-ai/dsh-deepseek-account": "workspace:*",
 -    "@deepseek-ai/dsh-workspace": "workspace:*"
 +    "@deepseek-ai/dsh-workspace": "workspace:*",
 +    "@mio/desktop": "workspace:*"
-   }
- }
+   },
+   "devDependencies": {
+     "@deepseek-ai/cordis-plugin-loader": "workspace:~",
+diff --git a/apps/desktop-host/src/cli.ts b/apps/desktop-host/src/cli.ts
+index 97a23b88a2..44adaaa4c6 100644
+--- a/apps/desktop-host/src/cli.ts
++++ b/apps/desktop-host/src/cli.ts
+@@ -1,3 +1,5 @@
++import { resolveMioHome } from '@mio/desktop/home.js'
++import { mioProduct } from './mio-product.ts'
+ /** Public dsh commands using the immutable runtime carried by the Desktop installation. */
+ 
+ import { delimiter, dirname, join, resolve } from 'node:path'
+@@ -11,6 +13,7 @@ import { installOfficeEngineResolution, runtimeArchivePath } from './office-engi
+  * @returns Completion of the selected CLI command; profile plugins own their process lifetime.
+  */
+ export async function runDesktopCli(runtimeDir: string, supportDir: string): Promise<void> {
++  process.env.DSH_HOME = resolveMioHome(mioProduct)
+   installOfficeEngineResolution(runtimeDir)
+   await runCli({
+     manageDesktopProfile: true,
 diff --git a/apps/desktop-host/src/index.ts b/apps/desktop-host/src/index.ts
-index 4a47a92..dd8f57c 100644
+index 4a47a92ce8..dd8f57c54c 100644
 --- a/apps/desktop-host/src/index.ts
 +++ b/apps/desktop-host/src/index.ts
 @@ -27,7 +27,7 @@ async function main(): Promise<void> {
@@ -25,7 +44,7 @@ index 4a47a92..dd8f57c 100644
        packageManager: {
          command: process.execPath,
 diff --git a/apps/desktop/installer/extract-report.h b/apps/desktop/installer/extract-report.h
-index c885816..dfe8b45 100644
+index c885816c75..dfe8b450f8 100644
 --- a/apps/desktop/installer/extract-report.h
 +++ b/apps/desktop/installer/extract-report.h
 @@ -114,7 +114,7 @@ inline std::wstring Headline(int code, const std::wstring& output, const std::ws
@@ -38,7 +57,7 @@ index c885816..dfe8b45 100644
      report += L"Result: " + DescribeResult(code) + L"\r\n";
      report += L"Archive: " + archive + L"\r\n";
 diff --git a/apps/desktop/installer/strings.nsh b/apps/desktop/installer/strings.nsh
-index 174ebfa..42ead8c 100644
+index 174ebfa28b..42ead8c8e7 100644
 --- a/apps/desktop/installer/strings.nsh
 +++ b/apps/desktop/installer/strings.nsh
 @@ -19,20 +19,20 @@ LangString INSTALLER_BROWSE ${LANG_ENGLISH} "Browse"
@@ -69,7 +88,7 @@ index 174ebfa..42ead8c 100644
  LangString INSTALLER_PATH_WRITABLE ${LANG_SIMPCHINESE} "无法写入此位置。请选择当前用户可写入的文件夹；安装程序不会申请管理员权限。"
  LangString INSTALLER_DISK_SPACE ${LANG_ENGLISH} "There is not enough free disk space. Choose another location."
 diff --git a/apps/desktop/installer/uninstall.nsh b/apps/desktop/installer/uninstall.nsh
-index defdd15..92e56a8 100644
+index defdd15923..92e56a8822 100644
 --- a/apps/desktop/installer/uninstall.nsh
 +++ b/apps/desktop/installer/uninstall.nsh
 @@ -25,12 +25,5 @@ Function un.CleanData
@@ -86,8 +105,22 @@ index defdd15..92e56a8 100644
 -  Call un.RemoveData
 +  ; Mio sets app.name explicitly and does not own the upstream package-name or updater cache directories.
  FunctionEnd
+diff --git a/apps/desktop/package.json b/apps/desktop/package.json
+index 3eaf57f56a..bdc8663fdc 100644
+--- a/apps/desktop/package.json
++++ b/apps/desktop/package.json
+@@ -45,7 +45,8 @@
+     "semver": "^7.8.5",
+     "ws": "^8.21.0",
+     "@deepseek-ai/dsh-api-gateway": "workspace:*",
+-    "@deepseek-ai/cordis": "workspace:~"
++    "@deepseek-ai/cordis": "workspace:~",
++    "@mio/desktop": "workspace:*"
+   },
+   "devDependencies": {
+     "@deepseek-ai/dsh-app-boot": "workspace:*",
 diff --git a/apps/desktop/renderer/assets/welcome-brand.svg b/apps/desktop/renderer/assets/welcome-brand.svg
-index 67c917d..a708103 100644
+index 67c917d0bc..a708103ea8 100644
 --- a/apps/desktop/renderer/assets/welcome-brand.svg
 +++ b/apps/desktop/renderer/assets/welcome-brand.svg
 @@ -1,44 +1 @@
@@ -137,7 +170,7 @@ index 67c917d..a708103 100644
 -</svg>
 +<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 472 40" role="img" aria-label="Mio"><g transform="translate(188 -15) scale(.065)"><path fill="#FF6900" d="M150 430C324 376 464 430 512 548C560 430 700 376 874 430C800 520 700 570 598 588C586 640 590 700 612 758C576 788 448 788 412 758C434 700 438 640 426 588C324 570 224 520 150 430Z"/></g><text x="251" y="31" fill="#C85100" font-size="32" font-weight="600" font-family="system-ui,sans-serif">Mio</text></svg>
 diff --git a/apps/desktop/renderer/welcome.css b/apps/desktop/renderer/welcome.css
-index 3b4da2d..fca69c4 100644
+index 3b4da2defb..fca69c4c85 100644
 --- a/apps/desktop/renderer/welcome.css
 +++ b/apps/desktop/renderer/welcome.css
 @@ -341,3 +341,13 @@ body {
@@ -154,30 +187,8 @@ index 3b4da2d..fca69c4 100644
 +@media (prefers-color-scheme: dark) {
 +  body { --dsw-alias-brand-primary: #FF9A55; --dsw-alias-button-primary-hover: #FFB680; }
 +}
-diff --git a/apps/desktop/resources/entitlements.mac.plist b/apps/desktop/resources/entitlements.mac.plist
-new file mode 100644
-index 0000000..a8b7443
---- /dev/null
-+++ b/apps/desktop/resources/entitlements.mac.plist
-@@ -0,0 +1,16 @@
-+<?xml version="1.0" encoding="UTF-8"?>
-+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-+<plist version="1.0">
-+  <dict>
-+    <!-- electron-builder's defaults for hardened-runtime Electron. -->
-+    <key>com.apple.security.cs.allow-jit</key>
-+    <true/>
-+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
-+    <true/>
-+    <key>com.apple.security.cs.disable-library-validation</key>
-+    <true/>
-+    <!-- Voice input: without it the hardened runtime blocks the microphone and TCC never prompts. -->
-+    <key>com.apple.security.device.audio-input</key>
-+    <true/>
-+  </dict>
-+</plist>
 diff --git a/apps/desktop/scripts/desktop-package-environment.mjs b/apps/desktop/scripts/desktop-package-environment.mjs
-index 3addf3f..557f7a6 100644
+index 3addf3ff65..557f7a659e 100644
 --- a/apps/desktop/scripts/desktop-package-environment.mjs
 +++ b/apps/desktop/scripts/desktop-package-environment.mjs
 @@ -1,3 +1,4 @@
@@ -211,8 +222,21 @@ index 3addf3f..557f7a6 100644
    if (target.platform === 'win32') {
      if (!options.prepareOnly) createWindowsTokenSigner({
        certificateFile: environment.DSH_DESKTOP_WINDOWS_CER_FILE,
+diff --git a/apps/desktop/scripts/dev.ts b/apps/desktop/scripts/dev.ts
+index 1ae2f3e952..6318da7160 100644
+--- a/apps/desktop/scripts/dev.ts
++++ b/apps/desktop/scripts/dev.ts
+@@ -78,7 +78,7 @@ async function launchElectron(): Promise<void> {
+   console.log(`desktop development: inspectors main=${String(mainPort)}, renderer=${String(rendererPort)}, host=${String(hostPort)}`)
+   if (process.platform === 'darwin') {
+     const executable = prepareDevelopmentApp({ electron, appRoot: APP_ROOT, directory: DEVELOPMENT_ROOT, home, userData,
+-      mainPort, rendererPort, hostPort, openDevtools: environment.DSH_DESKTOP_OPEN_DEVTOOLS! })
++      mainPort, rendererPort, hostPort, primaryRuntimeDir: environment.DSH_DESKTOP_PRIMARY_RUNTIME_DIR!, openDevtools: environment.DSH_DESKTOP_OPEN_DEVTOOLS! })
+     await run(executable, [], APP_ROOT, environment)
+     return
+   }
 diff --git a/apps/desktop/scripts/development-app.ts b/apps/desktop/scripts/development-app.ts
-index ff09b8b..97f74ec 100644
+index ff09b8b783..75d95de414 100644
 --- a/apps/desktop/scripts/development-app.ts
 +++ b/apps/desktop/scripts/development-app.ts
 @@ -1,7 +1,7 @@
@@ -224,7 +248,15 @@ index ff09b8b..97f74ec 100644
  import { dirname, join } from 'node:path'
  
  /** Workspace and runtime settings captured for Launch Services cold starts. */
-@@ -26,25 +26,27 @@ function quote(value: string): string { return `'${value.replaceAll("'", "'\\''"
+@@ -9,6 +9,7 @@ export interface DevelopmentAppOptions {
+   readonly electron: string
+   readonly appRoot: string
+   readonly directory: string
++  readonly primaryRuntimeDir: string
+   readonly home: string
+   readonly userData: string
+   readonly mainPort: number
+@@ -26,25 +27,27 @@ function quote(value: string): string { return `'${value.replaceAll("'", "'\\''"
   */
  export function prepareDevelopmentApp(options: DevelopmentAppOptions): string {
    const source = dirname(dirname(dirname(options.electron)))
@@ -260,8 +292,16 @@ index ff09b8b..97f74ec 100644
      writeFileSync(executable, launcher, { mode: 0o755 })
      writeFileSync(stamp, identity, { mode: 0o600 })
      execFileSync('/usr/bin/codesign', ['--force', '--deep', '--sign', '-', bundle], { stdio: 'pipe' })
+@@ -62,6 +65,7 @@ export function prepareDevelopmentApp(options: DevelopmentAppOptions): string {
+ export function developmentLauncher(options: DevelopmentAppOptions, bundle: string): string {
+   const environment = {
+     DSH_HOME: options.home,
++    DSH_DESKTOP_PRIMARY_RUNTIME_DIR: options.primaryRuntimeDir,
+     DSH_DESKTOP_DEV_APP: '1',
+     DSH_DESKTOP_HOST_INSPECT_PORT: String(options.hostPort),
+     DSH_DESKTOP_OPEN_DEVTOOLS: options.openDevtools,
 diff --git a/apps/desktop/scripts/electron-builder-config.mjs b/apps/desktop/scripts/electron-builder-config.mjs
-index bab440e..3f18776 100644
+index 1fb787803c..be921513e4 100644
 --- a/apps/desktop/scripts/electron-builder-config.mjs
 +++ b/apps/desktop/scripts/electron-builder-config.mjs
 @@ -1,3 +1,4 @@
@@ -337,7 +377,7 @@ index bab440e..3f18776 100644
      directories: { output: unsigned ? buildPaths.unsignedArtifacts : buildPaths.artifacts },
      asar: true,
      electronDist: buildPaths.electron,
-@@ -151,11 +153,13 @@ export function createElectronBuilderConfig(
+@@ -151,11 +153,10 @@ export function createElectronBuilderConfig(
        icon: fileURLToPath(new URL('../resources/icon-macos.png', import.meta.url)),
        category: 'public.app-category.developer-tools',
        // macOS matches the application locale against this bundle, not Electron Framework resources.
@@ -346,14 +386,11 @@ index bab440e..3f18776 100644
        forceCodeSigning: true,
        hardenedRuntime: true,
 -      extendInfo: { NSMicrophoneUsageDescription: 'DeepSeek Harness uses your microphone to transcribe speech into message drafts.' },
-+      // Hardened runtime denies microphone capture without this entitlement: macOS never shows the prompt.
-+      entitlements: fileURLToPath(new URL('../resources/entitlements.mac.plist', import.meta.url)),
-+      entitlementsInherit: fileURLToPath(new URL('../resources/entitlements.mac.plist', import.meta.url)),
 +      extendInfo: { CFBundleLocalizations: ['en', 'zh_CN'], NSMicrophoneUsageDescription: 'Mio uses your microphone to transcribe speech into message drafts.' },
+       entitlements: fileURLToPath(new URL('./macos-entitlements.plist', import.meta.url)),
+       entitlementsInherit: fileURLToPath(new URL('./macos-entitlements.plist', import.meta.url)),
        // ASAR-unpacked native runtime files are pre-signed; PAK resources are sealed by their enclosing bundle.
-       signIgnore: ['/Contents/Resources/app\\.asar\\.unpacked/dsh(?:/|$)', '/Contents/Resources/runtime/primary-runtime(?:/|$)', '\\.pak$'],
-       notarize: true,
-@@ -189,7 +193,7 @@ export function createElectronBuilderConfig(
+@@ -191,7 +192,7 @@ export function createElectronBuilderConfig(
        // The bundled runtime declares whichever version prepared it: the product version for an ordinary
        // release, and a rewritten one for installed-update qualification.
        await verifyDesktopRuntime(buildPaths.dsh,
@@ -363,7 +400,7 @@ index bab440e..3f18776 100644
        if (packagesWindows && unsigned) await verifyWindowsAsarUnpack(buildPaths.dsh, resourcesDir, windowsCode)
      },
 diff --git a/apps/desktop/scripts/package-macos.ts b/apps/desktop/scripts/package-macos.ts
-index c1a2cb5..e9f8d12 100644
+index c1a2cb5c71..e9f8d12a39 100644
 --- a/apps/desktop/scripts/package-macos.ts
 +++ b/apps/desktop/scripts/package-macos.ts
 @@ -1,5 +1,6 @@
@@ -431,7 +468,7 @@ index c1a2cb5..e9f8d12 100644
      for (const [output, filename] of artifacts) {
        const file = join(output, filename)
 diff --git a/apps/desktop/scripts/package-target.ts b/apps/desktop/scripts/package-target.ts
-index 62f4fcb..6784fea 100644
+index 62f4fcbbb2..6784feac53 100644
 --- a/apps/desktop/scripts/package-target.ts
 +++ b/apps/desktop/scripts/package-target.ts
 @@ -1,3 +1,4 @@
@@ -524,8 +561,71 @@ index 62f4fcb..6784fea 100644
      await withMacOSNotarizationProxy(mac?.notarizationProxy,
        () => notarizeMacOS({ appPath, ...resolveMacOSNotarizationEnvironment(environment) }), undefined, undefined, proxyEvent)
    } else {
+diff --git a/apps/desktop/scripts/prepare-cli.ts b/apps/desktop/scripts/prepare-cli.ts
+index d2b9e14200..b4f1c5fe13 100644
+--- a/apps/desktop/scripts/prepare-cli.ts
++++ b/apps/desktop/scripts/prepare-cli.ts
+@@ -1,17 +1,26 @@
+-/** Package terminal launch scripts that reuse the installed Electron runtime. */
++/** Package terminal launch scripts using the reviewed product identity. */
+ 
+-import { chmodSync, copyFileSync, mkdirSync } from 'node:fs'
++import { chmodSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+ import { join } from 'node:path'
++import { mioProduct } from '../src/mio-product.ts'
+ 
+-/**
+- * Copy the platform launcher into the application's public command directory.
+- * @param destination - Physical runtime/cli directory prepared for the application.
+- * @param platform - Target Desktop operating system.
+- */
++/** @param destination - Physical runtime/cli directory. @param platform - Target OS. */
+ export function prepareDesktopCli(destination: string, platform: 'darwin' | 'win32'): void {
+-  const name = platform === 'win32' ? 'dsh.cmd' : 'dsh'
+-  const command = join(destination, 'bin', name)
++  const template = platform === 'win32' ? 'dsh.cmd' : 'dsh'
++  const command = join(destination, 'bin', mioProduct.cliCommand + (platform === 'win32' ? '.cmd' : ''))
+   mkdirSync(join(destination, 'bin'), { recursive: true })
+-  copyFileSync(join(import.meta.dirname, '..', 'cli', name), command)
++  writeFileSync(command, readFileSync(join(import.meta.dirname, '..', 'cli', template), 'utf8')
++    .replaceAll('DeepSeek Harness', mioProduct.name))
+   if (platform === 'darwin') chmodSync(command, 0o755)
+ }
++
++/** Generate the unchanged PATH-management algorithm with product-owned names.
++ * @param destination - Physical runtime/cli directory.
++ */
++export function prepareDesktopCommandPath(destination: string): void {
++  mkdirSync(destination, { recursive: true })
++  writeFileSync(join(destination, 'command-path.ps1'), readFileSync(join(import.meta.dirname, 'command-path.ps1'), 'utf8')
++    .replaceAll("'dsh.cmd'", "'" + mioProduct.cliCommand + ".cmd'")
++    .replaceAll("'dsh'", "'" + mioProduct.cliCommand + "'")
++    .replaceAll('DeepSeekHarness', mioProduct.appId))
++}
+diff --git a/apps/desktop/scripts/prepare-runtime.ts b/apps/desktop/scripts/prepare-runtime.ts
+index 1b88f091bc..363dc41391 100644
+--- a/apps/desktop/scripts/prepare-runtime.ts
++++ b/apps/desktop/scripts/prepare-runtime.ts
+@@ -10,7 +10,7 @@ import { downloadArtifact } from '@electron/get'
+ import extractZip from 'extract-zip'
+ import { resolveDesktopBuildTarget, resolveDesktopTargetBuildPaths } from './desktop-build-paths.mjs'
+ import { preparePrimaryRuntime } from './prepare-primary-runtime.ts'
+-import { prepareDesktopCli } from './prepare-cli.ts'
++import { prepareDesktopCli, prepareDesktopCommandPath } from './prepare-cli.ts'
+ import { prepareCommandLink } from './prepare-command-link.ts'
+ 
+ const BUILD_PATHS = resolveDesktopTargetBuildPaths()
+@@ -59,7 +59,7 @@ async function main(): Promise<void> {
+     async () => prepareDesktopCli(join(RUNTIME_ROOT, 'cli'), platform))
+   if (macosMinimumVersion !== undefined) prepareCommandLink(join(RUNTIME_ROOT, 'cli'), arch, macosMinimumVersion)
+   cpSync(join(import.meta.dirname, '..', 'lib', 'command-manager-entry.js'), join(RUNTIME_ROOT, 'cli', 'command-manager.js'))
+-  cpSync(join(import.meta.dirname, 'command-path.ps1'), join(RUNTIME_ROOT, 'cli', 'command-path.ps1'))
++  prepareDesktopCommandPath(join(RUNTIME_ROOT, 'cli'))
+   await packagingStep(process.env.DSH_DESKTOP_PACKAGING_RUN_DIR, 'prepare:primary-runtime',
+     () => preparePrimaryRuntime({ deferSmoke: values['defer-primary-runtime-smoke'] }))
+ }
 diff --git a/apps/desktop/scripts/smoke-packaged-runtime.ts b/apps/desktop/scripts/smoke-packaged-runtime.ts
-index 106830b..b30e6ed 100644
+index 106830b5ad..b30e6ed057 100644
 --- a/apps/desktop/scripts/smoke-packaged-runtime.ts
 +++ b/apps/desktop/scripts/smoke-packaged-runtime.ts
 @@ -1,5 +1,7 @@
@@ -568,7 +668,7 @@ index 106830b..b30e6ed 100644
 +  }
 +}
 diff --git a/apps/desktop/scripts/smoke-runtime.ts b/apps/desktop/scripts/smoke-runtime.ts
-index f15f10a..8af75b8 100644
+index f15f10a928..8af75b8c65 100644
 --- a/apps/desktop/scripts/smoke-runtime.ts
 +++ b/apps/desktop/scripts/smoke-runtime.ts
 @@ -1,6 +1,6 @@
@@ -612,10 +712,10 @@ index f15f10a..8af75b8 100644
        const converted = await fetch(new URL(`/desktop-smoke-office/${extension}`, ready.url), {
          headers: { cookie }, signal: AbortSignal.timeout(120_000),
 diff --git a/apps/desktop/src/client/WelcomePage.tsx b/apps/desktop/src/client/WelcomePage.tsx
-index 8fcde77..5cae541 100644
+index b367061732..a19c076ad9 100644
 --- a/apps/desktop/src/client/WelcomePage.tsx
 +++ b/apps/desktop/src/client/WelcomePage.tsx
-@@ -26,6 +26,7 @@ export function Welcome({ api }: { api: WelcomeApi }) {
+@@ -27,6 +27,7 @@ export function Welcome({ api }: { api: WelcomeApi }) {
    const [copyFeedback, setCopyFeedback] = useState<{ status: 'idle' | 'busy' | 'copied' | 'failed' }>({ status: 'idle' })
    const copyState = copyFeedback.status
    const [draft, setDraft] = useState('')
@@ -623,7 +723,7 @@ index 8fcde77..5cae541 100644
    const [error, setError] = useState('')
    const [busy, setBusy] = useState(false)
    const busyRef = useRef(false)
-@@ -96,7 +97,7 @@ export function Welcome({ api }: { api: WelcomeApi }) {
+@@ -100,7 +101,7 @@ export function Welcome({ api }: { api: WelcomeApi }) {
      setBusy(true)
      setError('')
      try {
@@ -632,7 +732,7 @@ index 8fcde77..5cae541 100644
        if (!mounted.current) return
        if (result.ok) setDraft('')
        else setError(m.welcomeKeyFailed)
-@@ -121,19 +122,7 @@ export function Welcome({ api }: { api: WelcomeApi }) {
+@@ -125,19 +126,7 @@ export function Welcome({ api }: { api: WelcomeApi }) {
        if (mounted.current) setBusy(false)
      }
    }
@@ -653,7 +753,7 @@ index 8fcde77..5cae541 100644
    async function cancel() {
      if (cancelling || attemptRef.current === null) return
      setCancelling(true)
-@@ -183,6 +172,13 @@ export function Welcome({ api }: { api: WelcomeApi }) {
+@@ -187,6 +176,13 @@ export function Welcome({ api }: { api: WelcomeApi }) {
            <input ref={input} id="key-input" type="password" autoComplete="new-password" autoCapitalize="off" spellCheck={false} required
              aria-describedby="key-description key-error" aria-invalid={error !== ''} placeholder={m.welcomeKeyPlaceholder}
              value={draft} disabled={busy} onChange={(event) => { setDraft(event.target.value); setError('') }} />
@@ -667,28 +767,157 @@ index 8fcde77..5cae541 100644
            <p id="key-error" className="key-error" role="alert" hidden={error === ''}>{error}</p>
          </div>
        </form>
-@@ -199,14 +195,14 @@ export function Welcome({ api }: { api: WelcomeApi }) {
+@@ -202,15 +198,15 @@ export function Welcome({ api }: { api: WelcomeApi }) {
+         <button id="auth-loading" className="primary" type="button" hidden={failed} disabled aria-label={m.welcomeAuthExchanging}>
            <StateDot state="ongoing" size={16} className="welcome-loading" />
          </button>
-         <button id="auth-retry" className="primary" type="button" hidden={!failed} onClick={() => { void start() }}>{m.welcomeAuthRetry}</button>
--        <button id="auth-api-key" className="secondary" type="button" hidden={!failed} onClick={() => { navigate('key') }}>{m.welcomeApiKey}</button>
+-        <button id="auth-retry" className="primary" type="button" hidden={!failed} onClick={() => { void api.analytics?.('auth_page_click', { button_name: 'sign_in' }); void start() }}>{m.welcomeAuthRetry}</button>
+-        <button id="auth-api-key" className="secondary" type="button" hidden={!failed} onClick={() => { void api.analytics?.('auth_page_click', { button_name: 'api-key' }); navigate('key') }}>{m.welcomeApiKey}</button>
++        <button id="auth-retry" className="primary" type="button" hidden={!failed} onClick={() => { void start() }}>{m.welcomeAuthRetry}</button>
 +        <button id="auth-api-key" className="secondary" type="button" hidden={!failed} onClick={() => { void skip() }}>{m.welcomeKeyLater}</button>
          <button id="auth-cancel" className="secondary" type="button" hidden={failed}
            disabled={cancelling || phase === 'committing' || phase === 'succeeded' || (phase === 'initializing' && !attempt?.id)}
            onClick={() => { void cancel() }}>{m.welcomeAuthCancel}</button>
        </div>
        <div id="entry-actions" className="actions" hidden={page !== 'entry'}>
-         <button id="sign-in" className="primary" type="button" onClick={() => { void start() }}>{m.welcomeSignIn}</button>
--        <button ref={keyButton} id="api-key" className="secondary" type="button" onClick={() => { navigate('key') }}>{m.welcomeApiKey}</button>
+-        <button id="sign-in" className="primary" type="button" onClick={() => { void api.analytics?.('auth_page_click', { button_name: 'sign_in' }); void start() }}>{m.welcomeSignIn}</button>
+-        <button ref={keyButton} id="api-key" className="secondary" type="button" onClick={() => { void api.analytics?.('auth_page_click', { button_name: 'api-key' }); navigate('key') }}>{m.welcomeApiKey}</button>
++        <button id="sign-in" className="primary" type="button" onClick={() => { void start() }}>{m.welcomeSignIn}</button>
 +        <button ref={keyButton} id="api-key" className="secondary" type="button" onClick={() => { void skip() }}>{m.welcomeKeyLater}</button>
        </div>
        <div id="key-actions" className="actions" hidden={page !== 'key'}>
          <button id="save-key" className="primary" type="submit" form="key-form" disabled={busy || draft.trim() === ''}>{m.welcomeKeySave}</button>
+diff --git a/apps/desktop/src/command-installation.ts b/apps/desktop/src/command-installation.ts
+index 3e181ae984..8f602fab88 100644
+--- a/apps/desktop/src/command-installation.ts
++++ b/apps/desktop/src/command-installation.ts
+@@ -1,3 +1,4 @@
++import { mioProduct } from './mio-product.ts'
+ /** Reversible command-link ownership; operations never follow or overwrite a changed command entry. */
+ 
+ import { createHash, randomUUID } from 'node:crypto'
+@@ -53,7 +54,7 @@ function digest(value: unknown): string {
+ }
+ 
+ function receiptPath(options: FileCommandInstallation): string {
+-  return join(dirname(options.destination), '.dsh-desktop-command.json')
++  return join(dirname(options.destination), '.' + mioProduct.cliCommand + '-desktop-command.json')
+ }
+ 
+ async function readEntry(path: string): Promise<Entry> {
+@@ -96,7 +97,7 @@ async function readReceipt(options: FileCommandInstallation): Promise<Receipt |
+   if (record.backup !== undefined) {
+     if (typeof record.backup !== 'object' || record.backup === null) throw new CommandInstallationError('EOWNERSHIP', 'Invalid command backup record.')
+     const candidate = record.backup as Record<string, unknown>
+-    if (typeof candidate.name !== 'string' || !/^\.dsh-command-backup-[a-f0-9-]{36}$/u.test(candidate.name)
++    if (typeof candidate.name !== 'string' || !new RegExp('^\\.' + mioProduct.cliCommand + '-command-backup-[a-f0-9-]{36}$', 'u').test(candidate.name)
+       || typeof candidate.fingerprint !== 'string' || !/^[a-f0-9]{64}$/u.test(candidate.fingerprint)) {
+       throw new CommandInstallationError('EOWNERSHIP', 'Invalid command backup record.')
+     }
+@@ -165,7 +166,7 @@ async function linkEntry(options: FileCommandInstallation, source: string, desti
+ async function withdraw(options: FileCommandInstallation, destination: string, expected: Entry): Promise<string | undefined> {
+   if (expected.kind === 'missing') return undefined
+   if (expected.kind === 'unsupported') throw new CommandInstallationError('EUNSUPPORTED', 'The command path is not a file or symbolic link.')
+-  const path = join(dirname(destination), '.dsh-command-backup-' + randomUUID())
++  const path = join(dirname(destination), '.' + mioProduct.cliCommand + '-command-backup-' + randomUUID())
+   await rename(destination, path)
+   if ((await readEntry(path)).fingerprint !== expected.fingerprint) {
+     try { await restoreEntry(options, path, destination) } catch (error) {
+@@ -189,7 +190,7 @@ export async function installFileCommand(options: FileCommandInstallation, expec
+     if (state.fingerprint !== expected) throw new CommandInstallationError('ESTALE', 'The command changed after confirmation.')
+     if (!await available(options.launcher)) throw new CommandInstallationError('ENOENT', 'The installed launcher is unavailable.')
+     const moved = await withdraw(options, options.destination, entry)
+-    const pending = join(dirname(options.destination), '.dsh-command-new-' + randomUUID())
++    const pending = join(dirname(options.destination), '.' + mioProduct.cliCommand + '-command-new-' + randomUUID())
+     let created: Entry | undefined
+     try {
+       await symlink(options.launcher, pending)
+diff --git a/apps/desktop/src/command-management.ts b/apps/desktop/src/command-management.ts
+index 34c7848dfb..86f00a5901 100644
+--- a/apps/desktop/src/command-management.ts
++++ b/apps/desktop/src/command-management.ts
+@@ -1,3 +1,4 @@
++import { mioProduct } from './mio-product.ts'
+ /** Native command-management dialogs; only fixed installation locations reach the worker. */
+ 
+ import { execFile } from 'node:child_process'
+@@ -55,7 +56,7 @@ function parseState(value: unknown, platform: NodeJS.Platform): CommandState {
+   if (!object(value) || typeof value.fingerprint !== 'string' || !/^[a-f0-9]{64}$/u.test(value.fingerprint)
+     || typeof value.managed !== 'boolean' || typeof value.available !== 'boolean') throw new Error('Invalid command-manager response.')
+   const destination = platform === 'win32' && typeof value.directory === 'string'
+-    ? join(value.directory, 'dsh.cmd') : value.destination
++    ? join(value.directory, mioProduct.cliCommand + '.cmd') : value.destination
+   const launcher = platform === 'win32' ? destination : value.launcher
+   if (typeof destination !== 'string' || !isAbsolute(destination) || typeof launcher !== 'string' || !isAbsolute(launcher)) {
+     throw new Error('Invalid command-manager locations.')
+@@ -112,7 +113,7 @@ export function presentCommandManagement(
+ async function shellCommand(): Promise<{ activeCommand?: string; selectionUnknown?: boolean }> {
+   const shell = userInfo().shell
+   if (shell === null) return { selectionUnknown: true }
+-  const script = "printf '\\0DSH_COMMAND\\0'; command -v dsh; printf '\\0'"
++  const script = `printf '\\0DSH_COMMAND\\0'; command -v ${mioProduct.cliCommand}; printf '\\0'`
+   const { stdout } = await promisify(execFile)(shell, ['-ilc', script], { timeout: 5000, maxBuffer: 65536 })
+   const value = stdout.split('\0DSH_COMMAND\0')[1]?.split('\0')[0]?.trim()
+   if (value === undefined) return { selectionUnknown: true }
+diff --git a/apps/desktop/src/command-manager-entry.ts b/apps/desktop/src/command-manager-entry.ts
+index edfd61c217..62b4eaaee4 100644
+--- a/apps/desktop/src/command-manager-entry.ts
++++ b/apps/desktop/src/command-manager-entry.ts
+@@ -1,3 +1,4 @@
++import { mioProduct } from './mio-product.ts'
+ /** Private command-management worker; macOS mutation targets are fixed before elevation. */
+ 
+ import { spawn } from 'node:child_process'
+@@ -15,7 +16,7 @@ try {
+   if (!['inspect', 'install', 'remove'].includes(operation ?? '')) throw new CommandInstallationError('EINVAL', 'Invalid command-management operation.')
+   if (operation !== 'inspect' && !/^[a-f0-9]{64}$/u.test(fingerprint)) throw new CommandInstallationError('EINVAL', 'Missing command confirmation.')
+   if (process.platform === 'darwin') {
+-    const options = { destination: '/usr/local/bin/dsh', launcher: join(resources, 'runtime', 'cli', 'bin', 'dsh'),
++    const options = { destination: join('/usr/local/bin', mioProduct.cliCommand), launcher: join(resources, 'runtime', 'cli', 'bin', mioProduct.cliCommand),
+       linkHelper: join(resources, 'runtime', 'cli', 'link-entry') }
+     const state = operation === 'inspect' ? await inspectFileCommand(options)
+       : operation === 'install' ? await installFileCommand(options, fingerprint) : await removeFileCommand(options, fingerprint)
 diff --git a/apps/desktop/src/locale.ts b/apps/desktop/src/locale.ts
-index b3f9e53..feab55e 100644
+index 5d9d4607c7..f9bf9c5568 100644
 --- a/apps/desktop/src/locale.ts
 +++ b/apps/desktop/src/locale.ts
-@@ -4,17 +4,17 @@ export const en = {
+@@ -1,13 +1,14 @@
++import { mioProduct } from './mio-product.ts'
+ /** Typed English and Chinese copy owned by the Electron shell. */
+ 
+ export const en = {
+-  cliCommandMenu: 'Manage dsh Command…',
+-  cliCommandTitle: 'Manage dsh Command',
++  cliCommandMenu: `Manage ${mioProduct.cliCommand} Command…`,
++  cliCommandTitle: `Manage ${mioProduct.cliCommand} Command`,
+   cliCommandLocation: 'Desktop command: {path}',
+-  cliCommandSelected: 'Current dsh command: {path}',
++  cliCommandSelected: `Current ${mioProduct.cliCommand} command: {path}`,
+   cliCommandTarget: 'Current launcher target: {path}',
+-  cliCommandShadowed: 'Another dsh takes precedence. Remove or reorder that installation to use the Desktop command by default. You can also run the Desktop command by its full path.',
+-  cliCommandSelectionUnknown: 'Your shell command could not be verified. An alias or another dsh installation may take precedence.',
++  cliCommandShadowed: `Another ${mioProduct.cliCommand} takes precedence. Remove or reorder that installation to use the Desktop command by default. You can also run the Desktop command by its full path.`,
++  cliCommandSelectionUnknown: `Your shell command could not be verified. An alias or another ${mioProduct.cliCommand} installation may take precedence.`,
+   cliCommandInstalled: 'The Desktop command is installed.',
+   cliCommandNotInstalled: 'Add the Desktop command to your terminal.',
+   cliCommandBroken: 'The Desktop command needs repair.',
+@@ -18,30 +19,30 @@ export const en = {
+   cliCommandSwitch: 'Continue with the Desktop command?',
+   cliCommandPreserve: 'An existing command will be preserved. Other installations and shell startup files will not be changed.',
+   cliCommandContinue: 'Continue',
+-  cliCommandInstallApp: 'Install Desktop in your Applications folder before managing the dsh command.',
++  cliCommandInstallApp: `Install Desktop in your Applications folder before managing the ${mioProduct.cliCommand} command.`,
+   cliCommandUpdating: 'An update is being installed. Manage the command after installation finishes.',
+-  cliCommandNewTerminal: 'Open a new terminal and run dsh --version.',
++  cliCommandNewTerminal: `Open a new terminal and run ${mioProduct.cliCommand} --version.`,
+   cliCommandRemoved: 'Desktop command registration removed.',
+   cliCommandPreviousRestored: 'The previous launcher has been restored.',
+   cliCommandOtherKept: 'Other command installations have been left in place.',
+   cliCommandBackupKept: 'A previous launcher is preserved at: {path}',
+-  cliCommandChanged: 'The command or PATH changed while this dialog was open. Open Manage dsh Command again to review the current state.',
++  cliCommandChanged: `The command or PATH changed while this dialog was open. Open Manage ${mioProduct.cliCommand} Command again to review the current state.`,
+   cliCommandOwnershipError: 'The command registration or backup changed. No unrelated command was removed.',
+   cliCommandFailed: 'The command could not be updated. Check that the application is installed and the destination is writable, then retry.',
    application: 'Application',
    fileMenu: 'File',
    closePage: 'Close Page or Window',
@@ -712,7 +941,7 @@ index b3f9e53..feab55e 100644
    quitActiveTasks: 'Running tasks will be interrupted.',
    quitScheduledTasks: 'Scheduled tasks will not run while the app is closed.',
    quitActiveAndScheduledTasks: 'Running tasks will be interrupted, and scheduled tasks will not run while the app is closed.',
-@@ -29,7 +29,7 @@ export const en = {
+@@ -56,7 +57,7 @@ export const en = {
    copy: 'Copy',
    paste: 'Paste',
    selectAll: 'Select All',
@@ -721,7 +950,7 @@ index b3f9e53..feab55e 100644
    fatalSummary: 'The application could not start or stopped unexpectedly.',
    startupAddressInUse: 'Another DSH instance (such as dsh web or the desktop app) is running. They cannot start at the same time. Quit the other running DSH instance, then restart.',
    diagnosticTruncated: '… Error details shortened.',
-@@ -39,12 +39,12 @@ export const en = {
+@@ -66,12 +67,12 @@ export const en = {
    restartApplication: 'Restart',
    recoveryOperationFailed: 'The recovery operation failed',
    disableThirdPartyPlugins: 'Disable third-party plugins, back up profile patch, and restart',
@@ -738,7 +967,7 @@ index b3f9e53..feab55e 100644
    welcomeAuthStarting: 'Opening sign in…',
    welcomeAuthWaiting: 'Browser didn’t open automatically?',
    welcomeAuthWaitingDescription: 'Copy the sign-in link and open it in your browser to sign in.',
-@@ -57,18 +57,22 @@ export const en = {
+@@ -84,18 +85,22 @@ export const en = {
    welcomeAuthCopyFailed: 'Could not copy. Try again.',
    welcomeAuthCancel: 'Cancel',
    welcomeAuthRetry: 'Sign in again',
@@ -765,28 +994,51 @@ index b3f9e53..feab55e 100644
    welcomeContinueFailed: 'Could not open the workspace. Please try again.',
    checkUpdatesMenu: 'Check for Updates…',
    reloadPageMenu: 'Reload Page',
-@@ -85,7 +89,7 @@ export const en = {
-   updateCurrent: 'No updates available. Current version: V{version}',
-   updateChecking: 'Checking for updates…',
-   updateDownload: 'Download update',
--  updateDownloadedTitle: 'DeepSeek Harness v{version} downloaded',
-+  updateDownloadedTitle: 'Mio v{version} downloaded',
-   updateDownloadedDetail: 'The update package has downloaded. Select “Install and Restart” to restart the app and begin installation.',
-   updateDownloadedTitleWindows: 'New version v{version} is ready',
-   updateDownloadedDetailWindows: 'The app will close temporarily during the update and reopen automatically when it is complete.\n\nThe update may take some time. Please wait and do not launch the app again during installation.',
-@@ -103,9 +107,9 @@ export const en = {
+@@ -130,7 +135,7 @@ export const en = {
    updateTasksUnavailable: 'Task status is unavailable. Try updating again when the workspace is ready.',
-   updateStopFailed: 'Tasks could not be stopped safely. The update was not installed. Please try again later.',
+   updateStopFailed: 'Could not safely stop the tasks. The update has not been installed. Please try again later.',
    updateTechnicalDetails: 'View technical details',
 -  updateTitle: 'DeepSeek Harness Update',
 +  updateTitle: 'Mio Update',
-   updateAvailable: 'An update is available',
--  updateDetail: 'DeepSeek Harness {version}\n\nDeepSeek Harness will restart to complete the update.',
-+  updateDetail: 'Mio {version}\n\nMio will restart to complete the update.',
+   updateAvailable: 'New version available: {version}',
+   updateDetail: 'Once the download is complete, you can install the update and restart the app.',
    installAndRestart: 'Install and Restart',
-   later: 'Later',
-   updateFailedTitle: 'Update Failed',
-@@ -148,17 +152,17 @@ export const zh = {
+@@ -172,13 +177,13 @@ export const en = {
+ export type DesktopMessages = { readonly [Key in keyof typeof en]: string }
+ 
+ export const zh = {
+-  cliCommandMenu: '管理 dsh 命令…',
+-  cliCommandTitle: '管理 dsh 命令',
++  cliCommandMenu: `管理 ${mioProduct.cliCommand} 命令…`,
++  cliCommandTitle: `管理 ${mioProduct.cliCommand} 命令`,
+   cliCommandLocation: 'Desktop 命令：{path}',
+-  cliCommandSelected: '当前 dsh 命令：{path}',
++  cliCommandSelected: `当前 ${mioProduct.cliCommand} 命令：{path}`,
+   cliCommandTarget: '当前启动器目标：{path}',
+-  cliCommandShadowed: '另一个 dsh 的优先级更高。请移除或调整该安装的顺序，以默认使用 Desktop 命令；也可以通过完整路径运行 Desktop 命令。',
+-  cliCommandSelectionUnknown: '无法确认 shell 中的命令。别名或另一个 dsh 安装可能具有更高优先级。',
++  cliCommandShadowed: `另一个 ${mioProduct.cliCommand} 的优先级更高。请移除或调整该安装的顺序，以默认使用 Desktop 命令；也可以通过完整路径运行 Desktop 命令。`,
++  cliCommandSelectionUnknown: `无法确认 shell 中的命令。别名或另一个 ${mioProduct.cliCommand} 安装可能具有更高优先级。`,
+   cliCommandInstalled: 'Desktop 命令已安装。',
+   cliCommandNotInstalled: '将 Desktop 命令添加到终端。',
+   cliCommandBroken: 'Desktop 命令需要修复。',
+@@ -189,30 +194,30 @@ export const zh = {
+   cliCommandSwitch: '继续使用 Desktop 命令？',
+   cliCommandPreserve: '现有命令会被保留，不会修改其他安装或 shell 启动文件。',
+   cliCommandContinue: '继续',
+-  cliCommandInstallApp: '请先将 Desktop 安装到“应用程序”文件夹，再管理 dsh 命令。',
++  cliCommandInstallApp: `请先将 Desktop 安装到“应用程序”文件夹，再管理 ${mioProduct.cliCommand} 命令。`,
+   cliCommandUpdating: '正在安装更新。请在安装完成后管理命令。',
+-  cliCommandNewTerminal: '打开新终端并运行 dsh --version。',
++  cliCommandNewTerminal: `打开新终端并运行 ${mioProduct.cliCommand} --version。`,
+   cliCommandRemoved: '已移除 Desktop 命令注册。',
+   cliCommandPreviousRestored: '已恢复之前的启动器。',
+   cliCommandOtherKept: '其他命令安装保持不变。',
+   cliCommandBackupKept: '之前的启动器保留在：{path}',
+-  cliCommandChanged: '对话框打开期间命令或 PATH 已改变。请重新打开“管理 dsh 命令”检查当前状态。',
++  cliCommandChanged: `对话框打开期间命令或 PATH 已改变。请重新打开“管理 ${mioProduct.cliCommand} 命令”检查当前状态。`,
+   cliCommandOwnershipError: '命令注册或备份已改变，未移除无关命令。',
+   cliCommandFailed: '无法更新命令。请检查应用是否已安装、目标位置是否可写，然后重试。',
    application: '应用',
    fileMenu: '文件',
    closePage: '关闭页面或窗口',
@@ -810,7 +1062,7 @@ index b3f9e53..feab55e 100644
    quitActiveTasks: '当前正在运行的任务将会中断',
    quitScheduledTasks: '应用关闭期间，定时任务不会运行',
    quitActiveAndScheduledTasks: '当前正在运行的任务将会中断，且应用关闭期间，定时任务不会运行',
-@@ -173,7 +177,7 @@ export const zh = {
+@@ -227,7 +232,7 @@ export const zh = {
    copy: '复制',
    paste: '粘贴',
    selectAll: '全选',
@@ -819,7 +1071,7 @@ index b3f9e53..feab55e 100644
    fatalSummary: '应用无法启动或已意外停止。',
    startupAddressInUse: '有其他正在运行的 DSH（如其他 dsh web、桌面端），无法同时启动，请退出其他正在运行的 DSH 后重启。',
    diagnosticTruncated: '… 错误详情已截短。',
-@@ -183,12 +187,12 @@ export const zh = {
+@@ -237,12 +242,12 @@ export const zh = {
    restartApplication: '重启',
    recoveryOperationFailed: '恢复操作失败',
    disableThirdPartyPlugins: '禁用第三方插件、备份 profile patch 并重启',
@@ -836,7 +1088,7 @@ index b3f9e53..feab55e 100644
    welcomeAuthStarting: '正在打开登录…',
    welcomeAuthWaiting: '没有自动打开浏览器？',
    welcomeAuthWaitingDescription: '复制登录链接，用浏览器手动打开完成登录',
-@@ -201,18 +205,22 @@ export const zh = {
+@@ -255,18 +260,22 @@ export const zh = {
    welcomeAuthCopyFailed: '复制失败，请重试',
    welcomeAuthCancel: '取消',
    welcomeAuthRetry: '重新登录',
@@ -863,46 +1115,36 @@ index b3f9e53..feab55e 100644
    welcomeContinueFailed: '无法打开工作区，请重试。',
    checkUpdatesMenu: '检查更新…',
    reloadPageMenu: '刷新页面',
-@@ -229,7 +237,7 @@ export const zh = {
-   updateCurrent: '当前暂无可用更新。当前版本：V{version}',
-   updateChecking: '正在检查更新…',
-   updateDownload: '下载更新',
--  updateDownloadedTitle: 'DeepSeek Harness v{version} 下载完成',
-+  updateDownloadedTitle: 'Mio v{version} 下载完成',
-   updateDownloadedDetail: '安装包已下载完毕，点击“安装并重启”，即刻重启客户端，开始部署。',
-   updateDownloadedTitleWindows: '新版本 v{version} 已准备就绪',
-   updateDownloadedDetailWindows: '更新期间应用将暂时关闭，完成后会自动打开。\n\n更新可能需要一些时间，请耐心等待，期间请勿重复启动应用。',
-@@ -247,9 +255,9 @@ export const zh = {
+@@ -301,7 +310,7 @@ export const zh = {
    updateTasksUnavailable: '无法确认任务状态，请在工作区就绪后重试更新。',
-   updateStopFailed: '未能安全停止任务，更新未安装。请稍后重试。',
+   updateStopFailed: '未能安全停止任务，更新尚未安装，请稍后重试。',
    updateTechnicalDetails: '查看技术详情',
 -  updateTitle: 'DeepSeek Harness 更新',
 +  updateTitle: 'Mio 更新',
-   updateAvailable: '发现可用更新',
--  updateDetail: 'DeepSeek Harness {version}\n\nDeepSeek Harness 将重启以完成更新。',
-+  updateDetail: 'Mio {version}\n\nMio 将重启以完成更新。',
+   updateAvailable: '发现新版本 {version}',
+   updateDetail: '下载完成后，可安装并重启应用。',
    installAndRestart: '安装并重启',
-   later: '稍后',
-   updateFailedTitle: '更新失败',
 diff --git a/apps/desktop/src/main.ts b/apps/desktop/src/main.ts
-index a59a8a8..913cdb7 100644
+index b4b8153b7f..7d98d3b349 100644
 --- a/apps/desktop/src/main.ts
 +++ b/apps/desktop/src/main.ts
-@@ -1,3 +1,4 @@
+@@ -1,4 +1,6 @@
++import { resolveMioHome } from '@mio/desktop/home.js'
+ import type { ProductEventMap, ProductEvent } from '@deepseek-ai/dsh-client-product-analytics/types'
 +import { mioProduct } from './mio-product.ts'
  import { WINDOWS_TITLEBAR_HEIGHT } from './windows-layout.ts'
  /** Electron shell: desktop project ownership, custom protocol, windows, and lifecycle. */
  
-@@ -76,6 +77,8 @@ const rendererConsole = new RendererConsoleTail()
+@@ -80,6 +82,8 @@ const rendererConsole = new RendererConsoleTail()
  
  // Platform-conventional logs directory (macOS ~/Library/Logs/<name>, otherwise under userData);
  // set before ready so the first fatal report already resolves under it.
 +app.setName(mioProduct.name)
-+if (app.isPackaged) process.env.DSH_HOME = process.env.MIO_HOME ?? join(app.getPath('userData'), mioProduct.dataDirectory)
++if (app.isPackaged) process.env.DSH_HOME = resolveMioHome(mioProduct, process.env, app.getPath('userData'))
  app.setAppLogsPath()
  
  function currentDesktopLocale(): ReturnType<typeof resolveDesktopLocale> {
-@@ -874,7 +877,7 @@ async function main(): Promise<void> {
+@@ -925,7 +929,7 @@ async function main(): Promise<void> {
    const applicationIconPath = development ? join(app.getAppPath(), 'resources', 'icon-windows.png')
      : join(process.resourcesPath, 'icon.png')
    app.setAboutPanelOptions({
@@ -911,7 +1153,7 @@ index a59a8a8..913cdb7 100644
      applicationVersion: app.getVersion(),
      // The release has no separate build number; omit Electron's bundle version.
      version: '',
-@@ -1109,9 +1112,9 @@ async function main(): Promise<void> {
+@@ -1165,9 +1169,9 @@ async function main(): Promise<void> {
            }
            await clipboard.writeText(platformLoginUrl(state.attempt.authorizeUrl))
          },
@@ -923,7 +1165,7 @@ index a59a8a8..913cdb7 100644
            if (!saved.ok) return saved
            await enterWorkspace()
            return { ok: true }
-@@ -1169,10 +1172,10 @@ async function main(): Promise<void> {
+@@ -1225,10 +1229,10 @@ async function main(): Promise<void> {
      window.focus()
    }
  
@@ -937,10 +1179,10 @@ index a59a8a8..913cdb7 100644
  
    app.on('activate', (_event, hasVisibleWindows) => {
 diff --git a/apps/desktop/src/preload-welcome.ts b/apps/desktop/src/preload-welcome.ts
-index e9ec1aa..44065de 100644
+index 6748367e81..f8f4d4ca32 100644
 --- a/apps/desktop/src/preload-welcome.ts
 +++ b/apps/desktop/src/preload-welcome.ts
-@@ -19,7 +19,7 @@ const api: WelcomeApi = {
+@@ -23,7 +23,7 @@ const api: WelcomeApi = {
      ipcRenderer.on(WELCOME_IPC.state, receive)
      return () => { ipcRenderer.removeListener(WELCOME_IPC.state, receive) }
    },
@@ -950,7 +1192,7 @@ index e9ec1aa..44065de 100644
  }
  contextBridge.exposeInMainWorld('dshWelcome', api)
 diff --git a/apps/desktop/src/project-manager.ts b/apps/desktop/src/project-manager.ts
-index 270d87d..80979e6 100644
+index 270d87d6b2..80979e6d21 100644
 --- a/apps/desktop/src/project-manager.ts
 +++ b/apps/desktop/src/project-manager.ts
 @@ -29,7 +29,7 @@ import {
@@ -963,7 +1205,7 @@ index 270d87d..80979e6 100644
  function writeJson(path: string, value: unknown): void {
    writeFileSync(path, `${JSON.stringify(value, undefined, 2)}\n`, { mode: 0o600 })
 diff --git a/apps/desktop/src/update-coordinator.ts b/apps/desktop/src/update-coordinator.ts
-index c7bf91c..70b622a 100644
+index 8d6eb808e7..89c4f1484f 100644
 --- a/apps/desktop/src/update-coordinator.ts
 +++ b/apps/desktop/src/update-coordinator.ts
 @@ -1,3 +1,4 @@
@@ -971,20 +1213,20 @@ index c7bf91c..70b622a 100644
  /** User-authorized downloads and separate installation of one version-bound Desktop release. */
  
  import { existsSync } from 'node:fs'
-@@ -50,7 +51,7 @@ export class DesktopUpdateCoordinator {
+@@ -51,7 +52,7 @@ export class DesktopUpdateCoordinator {
      private readonly publish: (state: DesktopUpdateState) => DesktopUpdateState,
      private readonly beforeRestart: () => Promise<boolean>,
      private readonly updater: AppUpdater = autoUpdater,
 -    private readonly enabled: () => boolean = () => app.isPackaged && existsSync(join(process.resourcesPath, 'app-update.yml')),
 +    private readonly enabled: () => boolean = () => mioProduct.updateOrigin !== null && app.isPackaged && existsSync(join(process.resourcesPath, 'app-update.yml')),
      private readonly currentVersion: () => string = () => app.getVersion(),
+     private readonly downloadResult?: (success: boolean, reason?: string) => void,
    ) {
-     if (updater === autoUpdater) {
 diff --git a/apps/desktop/src/welcome-api.ts b/apps/desktop/src/welcome-api.ts
-index 0152967..d235963 100644
+index c693f385d6..3d6fd6a860 100644
 --- a/apps/desktop/src/welcome-api.ts
 +++ b/apps/desktop/src/welcome-api.ts
-@@ -36,7 +36,7 @@ export interface WelcomeOperations {
+@@ -45,7 +45,7 @@ export interface WelcomeOperations {
     * @param value - validated, trimmed API key.
     * @returns whether the write completed, without private error details.
     */
@@ -994,15 +1236,16 @@ index 0152967..d235963 100644
     * Enter the workspace without writing an onboarding-completion setting.
     * @returns completion after the workspace opens.
 diff --git a/apps/desktop/src/welcome-backend.ts b/apps/desktop/src/welcome-backend.ts
-index a0bb4e9..40d8b9b 100644
+index 54ab46d85e..3eb641eb86 100644
 --- a/apps/desktop/src/welcome-backend.ts
 +++ b/apps/desktop/src/welcome-backend.ts
-@@ -1,3 +1,4 @@
+@@ -1,4 +1,5 @@
+ import type { ProductEvent } from '@deepseek-ai/dsh-client-product-analytics/types'
 +import { mioProduct } from './mio-product.ts'
  /** Native welcome operations using the shared Web authentication and RPC APIs. */
  
  import { randomUUID } from 'node:crypto'
-@@ -19,10 +20,10 @@ export interface DesktopWelcomeBackend {
+@@ -24,10 +25,10 @@ export interface DesktopWelcomeBackend {
    /** @returns The saved UI language without account or provider requests. */
    readLocalePreference(): Promise<string | null>
    /**
@@ -1015,7 +1258,7 @@ index a0bb4e9..40d8b9b 100644
  }
  
  function record(value: unknown): value is Record<string, unknown> {
-@@ -64,12 +65,13 @@ export async function connectDesktopWelcome(
+@@ -72,12 +73,13 @@ export async function connectDesktopWelcome(
    const settingsAndReference = async () => {
      const settings = await invoke({ namespace: 'settings', method: 'describe', args: {} })
      if (!record(settings) || !Array.isArray(settings.namespaces)) throw new Error('desktop welcome: missing settings namespaces')
@@ -1034,7 +1277,7 @@ index a0bb4e9..40d8b9b 100644
    }
    const localePreference = (namespaces: unknown[]): string | null => {
      const locale: unknown = namespaces.find((item: unknown) => record(item) && item.ns === 'locale')
-@@ -120,11 +122,24 @@ export async function connectDesktopWelcome(
+@@ -134,11 +136,24 @@ export async function connectDesktopWelcome(
        if (!record(settings) || !Array.isArray(settings.namespaces)) throw new Error('desktop welcome: missing settings namespaces')
        return localePreference(settings.namespaces)
      },
@@ -1061,12 +1304,12 @@ index a0bb4e9..40d8b9b 100644
          return { ok: true }
        } catch {
 diff --git a/apps/desktop/src/welcome-window.ts b/apps/desktop/src/welcome-window.ts
-index a32e1f1..a2feacf 100644
+index 61fda9e36a..fa29807060 100644
 --- a/apps/desktop/src/welcome-window.ts
 +++ b/apps/desktop/src/welcome-window.ts
-@@ -77,10 +77,11 @@ export async function openWelcomeWindow(locale: DesktopLocale, operations: Welco
-     }
-   }
+@@ -93,10 +93,11 @@ export async function openWelcomeWindow(locale: DesktopLocale, operations: Welco
+     } else throw new Error('desktop welcome: invalid analytics event')
+   })
    ipcMain.handle(WELCOME_IPC.takeNotice, async (event) => { assertSender(event); return operations.takeNotice() })
 -  ipcMain.handle(WELCOME_IPC.saveApiKey, async (event, value: unknown) => {
 +  ipcMain.handle(WELCOME_IPC.saveApiKey, async (event, value: unknown, region: unknown = 'cn') => {
@@ -1078,8 +1321,574 @@ index a32e1f1..a2feacf 100644
    })
    ipcMain.handle(WELCOME_IPC.skip, async (event) => {
      assertSender(event)
+diff --git a/apps/desktop/tests/cli-launcher.spec.ts b/apps/desktop/tests/cli-launcher.spec.ts
+index 67e38da256..731aa57fb9 100644
+--- a/apps/desktop/tests/cli-launcher.spec.ts
++++ b/apps/desktop/tests/cli-launcher.spec.ts
+@@ -9,7 +9,7 @@ import { expect, it, onTestFinished } from 'vitest'
+ import { prepareDesktopCli } from '../scripts/prepare-cli.ts'
+ 
+ function fixture() {
+-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-cli-launcher-')))
++  const root = realpathSync(mkdtempSync(join(tmpdir(), 'mio-cli-launcher-')))
+   const children: ChildProcessWithoutNullStreams[] = []
+   const exits: Promise<unknown>[] = []
+   onTestFinished(async () => {
+@@ -24,7 +24,7 @@ function fixture() {
+   const resources = join(application, ...platform === 'darwin' ? ['Contents', 'Resources'] : ['resources'])
+   const cli = join(resources, 'runtime', 'cli')
+   prepareDesktopCli(cli, platform)
+-  const electron = join(application, ...platform === 'darwin' ? ['Contents', 'MacOS', 'DeepSeek Harness'] : ['DeepSeek Harness.exe'])
++  const electron = join(application, ...platform === 'darwin' ? ['Contents', 'MacOS', 'Mio'] : ['Mio.exe'])
+   mkdirSync(dirname(electron), { recursive: true })
+   if (platform === 'win32') copyFileSync(process.execPath, electron)
+   else symlinkSync(process.execPath, electron)
+@@ -39,7 +39,7 @@ function fixture() {
+     'process.exitCode = 23',
+     '',
+   ].join('\n'))
+-  const command = join(cli, 'bin', platform === 'win32' ? 'dsh.cmd' : 'dsh')
++  const command = join(cli, 'bin', platform === 'win32' ? 'mio.cmd' : 'mio')
+   function start(args: string[], executable = command) {
+     // cmd fixture inputs contain no metacharacters; POSIX cases exercise literal expansion characters separately.
+     const child = platform === 'win32'
+@@ -76,7 +76,7 @@ it('preserves common arguments, cwd, environment, binary input, stderr and exit
+ it.skipIf(process.platform === 'win32')('resolves chained command symlinks without expanding argument contents', async () => {
+   const f = fixture()
+   const link = join(f.root, 'command-link')
+-  const command = join(f.root, 'dsh')
++  const command = join(f.root, 'mio')
+   symlinkSync(relative(f.root, f.command), link)
+   symlinkSync(link, command)
+   const args = ['quote"inside', 'trailing\\', '%PATH%', '$HOME', '`literal`', '']
+diff --git a/apps/desktop/tests/command-installation.spec.ts b/apps/desktop/tests/command-installation.spec.ts
+index e81cff7027..aa2605f3c8 100644
+--- a/apps/desktop/tests/command-installation.spec.ts
++++ b/apps/desktop/tests/command-installation.spec.ts
+@@ -25,7 +25,7 @@ vi.mock('node:fs/promises', async (importOriginal) => {
+     await barrier.afterStat?.(args[0], result.isFile())
+     return result
+   }, rename: async (...args: Parameters<typeof actual.rename>) => {
+-    if (barrier.failReceipt && String(args[1]).endsWith('.dsh-desktop-command.json')) {
++    if (barrier.failReceipt && String(args[1]).endsWith('.mio-desktop-command.json')) {
+       throw Object.assign(new Error('No space for receipt'), { code: 'ENOSPC' })
+     }
+     await actual.rename(...args)
+@@ -39,16 +39,16 @@ vi.mock('node:fs/promises', async (importOriginal) => {
+ let compiled: string
+ 
+ async function fixture() {
+-  const root = await mkdtemp(join(tmpdir(), 'dsh-command-link-'))
++  const root = await mkdtemp(join(tmpdir(), 'mio-command-link-'))
+   onTestFinished(() => rm(root, { recursive: true, force: true }))
+   const launcher = join(root, 'desktop-launcher')
+   await writeFile(launcher, 'desktop\n', { mode: 0o755 })
+-  return { root, options: { destination: join(root, 'dsh'), launcher, linkHelper: join(compiled, 'link-entry') } }
++  return { root, options: { destination: join(root, 'mio'), launcher, linkHelper: join(compiled, 'link-entry') } }
+ }
+ 
+ describe.skipIf(process.platform === 'win32')('macOS command entry ownership', () => {
+   beforeAll(async () => {
+-    compiled = await mkdtemp(join(tmpdir(), 'dsh-command-control-'))
++    compiled = await mkdtemp(join(tmpdir(), 'mio-command-control-'))
+     if (process.platform === 'darwin') prepareCommandLink(compiled, process.arch === 'arm64' ? 'arm64' : 'x64', '13.0')
+   })
+   afterAll(async () => { if (compiled !== undefined) await rm(compiled, { recursive: true, force: true }) })
+@@ -113,7 +113,7 @@ describe.skipIf(process.platform === 'win32')('macOS command entry ownership', (
+   it.each(['install', 'remove'] as const)('preserves a replacement arriving during %s after the approved entry was read', async (operation) => {
+     const f = await fixture()
+     const installed = await installFileCommand(f.options, (await inspectFileCommand(f.options)).fingerprint)
+-    const receipt = join(f.root, '.dsh-desktop-command.json')
++    const receipt = join(f.root, '.mio-desktop-command.json')
+     const originalReceipt = await readFile(receipt, 'utf8')
+     barrier.afterRead = async (path) => {
+       if (path !== receipt) return
+@@ -184,7 +184,7 @@ describe.skipIf(process.platform === 'win32')('macOS command entry ownership', (
+     const f = await fixture()
+     const installed = await installFileCommand(f.options, (await inspectFileCommand(f.options)).fingerprint)
+     barrier.beforeUnlink = (path) => {
+-      if (path !== join(f.root, '.dsh-desktop-command.json')) return
++      if (path !== join(f.root, '.mio-desktop-command.json')) return
+       barrier.afterStat = async () => { throw Object.assign(new Error('Restoration denied'), { code: 'EPERM' }) }
+       throw Object.assign(new Error('Receipt removal denied'), { code: 'EACCES' })
+     }
+@@ -195,7 +195,7 @@ describe.skipIf(process.platform === 'win32')('macOS command entry ownership', (
+     expect(failure.errors).toMatchObject([{ code: 'EACCES' }, { code: 'EPERM' }])
+     expect(failure.message).toContain('The Desktop command link is preserved at ')
+     barrier.beforeUnlink = undefined; barrier.afterStat = undefined
+-    const preserved = (await readdir(f.root)).filter(name => name.startsWith('.dsh-command-backup-'))
++    const preserved = (await readdir(f.root)).filter(name => name.startsWith('.mio-command-backup-'))
+     expect(preserved).toHaveLength(1)
+     expect(await readlink(join(f.root, preserved[0]!))).toBe(f.options.launcher)
+   })
+@@ -205,12 +205,12 @@ describe.skipIf(process.platform === 'win32')('macOS command entry ownership', (
+     await symlink('previous-command', f.options.destination)
+     const installed = await installFileCommand(f.options, (await inspectFileCommand(f.options)).fingerprint)
+     barrier.beforeUnlink = (path) => {
+-      if (path === join(f.root, '.dsh-desktop-command.json')) throw Object.assign(new Error('Receipt removal denied'), { code: 'EACCES' })
++      if (path === join(f.root, '.mio-desktop-command.json')) throw Object.assign(new Error('Receipt removal denied'), { code: 'EACCES' })
+     }
+     onTestFinished(() => { barrier.beforeUnlink = undefined })
+     await expect(removeFileCommand(f.options, installed.fingerprint)).rejects.toMatchObject({ code: 'EACCES' })
+     expect(await readlink(f.options.destination)).toBe('previous-command')
+-    expect((await readdir(f.root)).filter(name => name.startsWith('.dsh-command-backup-'))).toEqual([])
++    expect((await readdir(f.root)).filter(name => name.startsWith('.mio-command-backup-'))).toEqual([])
+     barrier.beforeUnlink = undefined
+     const retried = await installFileCommand(f.options, (await inspectFileCommand(f.options)).fingerprint)
+     expect(retried.preservedBackup).toBeUndefined()
+@@ -245,7 +245,7 @@ describe.skipIf(process.platform === 'win32')('macOS command entry ownership', (
+ 
+   it('rejects linked receipts and backup paths outside the command directory', async () => {
+     const f = await fixture()
+-    const receipt = join(f.root, '.dsh-desktop-command.json')
++    const receipt = join(f.root, '.mio-desktop-command.json')
+     await symlink(f.options.launcher, receipt)
+     await expect(inspectFileCommand(f.options)).rejects.toMatchObject({ code: 'EOWNERSHIP' })
+     await unlink(receipt)
+diff --git a/apps/desktop/tests/command-management.spec.ts b/apps/desktop/tests/command-management.spec.ts
+index bef9121d23..8d55346502 100644
+--- a/apps/desktop/tests/command-management.spec.ts
++++ b/apps/desktop/tests/command-management.spec.ts
+@@ -5,16 +5,16 @@ import { en, zh } from '../src/locale.ts'
+ import { presentCommandManagement } from '../src/command-management.ts'
+ 
+ it.each([en, zh])('shows installation, repair/removal and shadowed command locations', (messages) => {
+-  const destination = '/usr/local/bin/dsh'
++  const destination = '/usr/local/bin/mio'
+   const missing = presentCommandManagement({ managed: false, available: false, destination }, messages, 'darwin')
+   expect(missing.buttons).toEqual([messages.cliCommandInstall, messages.cancel])
+   expect(missing.cancelId).toBe(1)
+   const installed = presentCommandManagement({ managed: true, available: true, destination, activeCommand: destination }, messages, 'darwin')
+   expect(installed.buttons).toEqual([messages.cliCommandClose, messages.cliCommandRepair, messages.cliCommandRemove])
+   expect(installed.cancelId).toBe(0)
+-  const shadowed = presentCommandManagement({ managed: true, available: true, destination, activeCommand: '/opt/homebrew/bin/dsh' }, messages, 'darwin')
++  const shadowed = presentCommandManagement({ managed: true, available: true, destination, activeCommand: '/opt/homebrew/bin/mio' }, messages, 'darwin')
+   expect(shadowed.type).toBe('warning')
+-  expect(shadowed.detail).toContain('/opt/homebrew/bin/dsh')
++  expect(shadowed.detail).toContain('/opt/homebrew/bin/mio')
+   expect(shadowed.detail).toContain(messages.cliCommandShadowed)
+   const unknown = presentCommandManagement({ managed: false, available: false, destination, selectionUnknown: true }, messages, 'darwin')
+   expect(unknown.detail).toContain(messages.cliCommandSelectionUnknown)
+@@ -24,8 +24,8 @@ it.each([
+   ['darwin', 'en-US', en], ['darwin', 'zh-CN', zh],
+   ['win32', 'en-US', en], ['win32', 'zh-CN', zh],
+ ] as const)('records command status on %s in %s', async (platform, language, messages) => {
+-  const destination = platform === 'darwin' ? '/usr/local/bin/dsh' : 'C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd'
+-  const other = platform === 'darwin' ? '/opt/homebrew/bin/dsh' : 'C:\\Program Files\\nodejs\\dsh.cmd'
++  const destination = platform === 'darwin' ? '/usr/local/bin/mio' : 'C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd'
++  const other = platform === 'darwin' ? '/opt/homebrew/bin/mio' : 'C:\\Program Files\\nodejs\\mio.cmd'
+   const states = [
+     { managed: false, available: false, destination },
+     { managed: true, available: true, destination, activeCommand: destination },
+diff --git a/apps/desktop/tests/command-manager-flow.spec.ts b/apps/desktop/tests/command-manager-flow.spec.ts
+index 0624ccf196..5fad7926fd 100644
+--- a/apps/desktop/tests/command-manager-flow.spec.ts
++++ b/apps/desktop/tests/command-manager-flow.spec.ts
+@@ -39,7 +39,7 @@ async function fixture(options: {
+   elevate?: boolean
+   messages?: DesktopMessages
+ } = {}) {
+-  const root = await mkdtemp(join(tmpdir(), 'dsh-command-dialog-'))
++  const root = await mkdtemp(join(tmpdir(), 'mio-command-dialog-'))
+   onTestFinished(() => rm(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }))
+   const resources = join(root, 'resources')
+   const bin = join(resources, 'runtime', 'primary-runtime', 'dependencies', 'node', 'bin')
+@@ -52,9 +52,9 @@ async function fixture(options: {
+   await writeFile(join(worker, 'package.json'), '{"type":"module"}\n')
+   const state = {
+     fingerprint: 'a'.repeat(64), managed: options.managed ?? false, available: true, kind: options.managed ? 'symlink' : 'file',
+-    destination: join(root, process.platform === 'win32' ? 'dsh.cmd' : 'dsh'),
+-    directory: root, launcher: join(root, 'desktop-dsh'),
+-    activeCommand: options.managed && !options.shadowed ? join(root, process.platform === 'win32' ? 'dsh.cmd' : 'dsh') : join(root, 'other-dsh'),
++    destination: join(root, process.platform === 'win32' ? 'mio.cmd' : 'mio'),
++    directory: root, launcher: join(root, 'desktop-mio'),
++    activeCommand: options.managed && !options.shadowed ? join(root, process.platform === 'win32' ? 'mio.cmd' : 'mio') : join(root, 'other-mio'),
+   }
+   if (process.platform === 'darwin') {
+     const shell = join(root, 'lookup-shell')
+diff --git a/apps/desktop/tests/command-path.spec.ts b/apps/desktop/tests/command-path.spec.ts
+index 0b6612fdd0..dafae061d0 100644
+--- a/apps/desktop/tests/command-path.spec.ts
++++ b/apps/desktop/tests/command-path.spec.ts
+@@ -6,16 +6,18 @@ import { tmpdir } from 'node:os'
+ import { join } from 'node:path'
+ import { promisify } from 'node:util'
+ import { expect, it } from 'vitest'
++import { prepareDesktopCommandPath } from '../scripts/prepare-cli.ts'
+ 
+ it.skipIf(process.platform !== 'win32')('preserves unrelated PATH entries and rejects stale or foreign removal', async () => {
+   const root = await mkdtemp(join(tmpdir(), 'dsh-command-path-'))
+   try {
++    prepareDesktopCommandPath(root)
+     const systemRoot = process.env.SystemRoot ?? process.env.WINDIR
+     if (systemRoot === undefined) throw new Error('SystemRoot is required for the Windows registry test')
+     const result = await promisify(execFile)(join(systemRoot, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe'), [
+       '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File',
+       join(import.meta.dirname, 'fixtures', 'command-path.ps1'),
+-      '-Worker', join(import.meta.dirname, '..', 'scripts', 'command-path.ps1'), '-Root', root,
++      '-Worker', join(root, 'command-path.ps1'), '-Root', root,
+     ], { timeout: 60000, windowsHide: true })
+     expect(result.stdout).toContain('WINDOWS_COMMAND_PATH_OK')
+   } finally {
+diff --git a/apps/desktop/tests/development-app.spec.ts b/apps/desktop/tests/development-app.spec.ts
+index 2f718b7bc5..7bcfaf2b2d 100644
+--- a/apps/desktop/tests/development-app.spec.ts
++++ b/apps/desktop/tests/development-app.spec.ts
+@@ -12,12 +12,12 @@ it.skipIf(process.platform === 'win32')('passes literal workspace paths and cold
+   const bundle = join(root, "Harness ' $(false).app")
+   const binary = join(bundle, 'Contents', 'MacOS', 'Electron')
+   mkdirSync(join(bundle, 'Contents', 'MacOS'), { recursive: true })
+-  writeFileSync(binary, '#!/bin/sh\nprintf "%s\\n" "$DSH_HOME" "$DSH_DESKTOP_DEV_APP" "$DSH_DESKTOP_OPEN_DEVTOOLS" "$@"\n', { mode: 0o755 })
++  writeFileSync(binary, '#!/bin/sh\nprintf "%s\\n" "$DSH_DESKTOP_PRIMARY_RUNTIME_DIR" "$DSH_HOME" "$DSH_DESKTOP_DEV_APP" "$DSH_DESKTOP_OPEN_DEVTOOLS" "$@"\n', { mode: 0o755 })
+   const launcher = join(root, 'launcher')
+   const home = join(root, "home ' $(false)")
+   writeFileSync(launcher, developmentLauncher({ electron: binary, appRoot: root, directory: root,
+-    home, userData: join(root, 'browser data'), mainPort: 9229, rendererPort: 9222, hostPort: 9230, openDevtools: '0' }, bundle))
++    home, primaryRuntimeDir: join(root, "runtime ' $(false)"), userData: join(root, 'browser data'), mainPort: 9229, rendererPort: 9222, hostPort: 9230, openDevtools: '0' }, bundle))
+   const result = execFileSync('/bin/sh', [launcher, '--test-launch-argument'], { encoding: 'utf8' })
+-  expect(result.trimEnd().split('\n')).toEqual([home, '1', '0', '--inspect=127.0.0.1:9229',
++  expect(result.trimEnd().split('\n')).toEqual([join(root, "runtime ' $(false)"), home, '1', '0', '--inspect=127.0.0.1:9229',
+     '--remote-debugging-port=9222', `--user-data-dir=${join(root, 'browser data')}`, root, '--test-launch-argument'])
+ })
+diff --git a/apps/desktop/tests/expected/command-management-darwin-en-US.json b/apps/desktop/tests/expected/command-management-darwin-en-US.json
+index 02f12214f5..299d461580 100644
+--- a/apps/desktop/tests/expected/command-management-darwin-en-US.json
++++ b/apps/desktop/tests/expected/command-management-darwin-en-US.json
+@@ -2,9 +2,9 @@
+   "dialogs": [
+     {
+       "type": "info",
+-      "title": "Manage dsh Command",
++      "title": "Manage mio Command",
+       "message": "Add the Desktop command to your terminal.",
+-      "detail": "Desktop command: /usr/local/bin/dsh",
++      "detail": "Desktop command: /usr/local/bin/mio",
+       "buttons": [
+         "Install",
+         "Cancel"
+@@ -14,9 +14,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "Manage dsh Command",
++      "title": "Manage mio Command",
+       "message": "The Desktop command is installed.",
+-      "detail": "Desktop command: /usr/local/bin/dsh\n\nCurrent dsh command: /usr/local/bin/dsh",
++      "detail": "Desktop command: /usr/local/bin/mio\n\nCurrent mio command: /usr/local/bin/mio",
+       "buttons": [
+         "Close",
+         "Repair",
+@@ -27,9 +27,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "Manage dsh Command",
++      "title": "Manage mio Command",
+       "message": "The Desktop command needs repair.",
+-      "detail": "Desktop command: /usr/local/bin/dsh",
++      "detail": "Desktop command: /usr/local/bin/mio",
+       "buttons": [
+         "Close",
+         "Repair",
+@@ -40,9 +40,9 @@
+     },
+     {
+       "type": "warning",
+-      "title": "Manage dsh Command",
++      "title": "Manage mio Command",
+       "message": "The Desktop command is installed.",
+-      "detail": "Desktop command: /usr/local/bin/dsh\n\nCurrent dsh command: /opt/homebrew/bin/dsh\n\nAnother dsh takes precedence. Remove or reorder that installation to use the Desktop command by default. You can also run the Desktop command by its full path.",
++      "detail": "Desktop command: /usr/local/bin/mio\n\nCurrent mio command: /opt/homebrew/bin/mio\n\nAnother mio takes precedence. Remove or reorder that installation to use the Desktop command by default. You can also run the Desktop command by its full path.",
+       "buttons": [
+         "Close",
+         "Repair",
+@@ -53,9 +53,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "Manage dsh Command",
++      "title": "Manage mio Command",
+       "message": "Add the Desktop command to your terminal.",
+-      "detail": "Desktop command: /usr/local/bin/dsh\n\nYour shell command could not be verified. An alias or another dsh installation may take precedence.",
++      "detail": "Desktop command: /usr/local/bin/mio\n\nYour shell command could not be verified. An alias or another mio installation may take precedence.",
+       "buttons": [
+         "Install",
+         "Cancel"
+diff --git a/apps/desktop/tests/expected/command-management-darwin-zh-CN.json b/apps/desktop/tests/expected/command-management-darwin-zh-CN.json
+index 9b22c7213a..8412bf15dd 100644
+--- a/apps/desktop/tests/expected/command-management-darwin-zh-CN.json
++++ b/apps/desktop/tests/expected/command-management-darwin-zh-CN.json
+@@ -2,9 +2,9 @@
+   "dialogs": [
+     {
+       "type": "info",
+-      "title": "管理 dsh 命令",
++      "title": "管理 mio 命令",
+       "message": "将 Desktop 命令添加到终端。",
+-      "detail": "Desktop 命令：/usr/local/bin/dsh",
++      "detail": "Desktop 命令：/usr/local/bin/mio",
+       "buttons": [
+         "安装",
+         "取消"
+@@ -14,9 +14,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "管理 dsh 命令",
++      "title": "管理 mio 命令",
+       "message": "Desktop 命令已安装。",
+-      "detail": "Desktop 命令：/usr/local/bin/dsh\n\n当前 dsh 命令：/usr/local/bin/dsh",
++      "detail": "Desktop 命令：/usr/local/bin/mio\n\n当前 mio 命令：/usr/local/bin/mio",
+       "buttons": [
+         "关闭",
+         "修复",
+@@ -27,9 +27,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "管理 dsh 命令",
++      "title": "管理 mio 命令",
+       "message": "Desktop 命令需要修复。",
+-      "detail": "Desktop 命令：/usr/local/bin/dsh",
++      "detail": "Desktop 命令：/usr/local/bin/mio",
+       "buttons": [
+         "关闭",
+         "修复",
+@@ -40,9 +40,9 @@
+     },
+     {
+       "type": "warning",
+-      "title": "管理 dsh 命令",
++      "title": "管理 mio 命令",
+       "message": "Desktop 命令已安装。",
+-      "detail": "Desktop 命令：/usr/local/bin/dsh\n\n当前 dsh 命令：/opt/homebrew/bin/dsh\n\n另一个 dsh 的优先级更高。请移除或调整该安装的顺序，以默认使用 Desktop 命令；也可以通过完整路径运行 Desktop 命令。",
++      "detail": "Desktop 命令：/usr/local/bin/mio\n\n当前 mio 命令：/opt/homebrew/bin/mio\n\n另一个 mio 的优先级更高。请移除或调整该安装的顺序，以默认使用 Desktop 命令；也可以通过完整路径运行 Desktop 命令。",
+       "buttons": [
+         "关闭",
+         "修复",
+@@ -53,9 +53,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "管理 dsh 命令",
++      "title": "管理 mio 命令",
+       "message": "将 Desktop 命令添加到终端。",
+-      "detail": "Desktop 命令：/usr/local/bin/dsh\n\n无法确认 shell 中的命令。别名或另一个 dsh 安装可能具有更高优先级。",
++      "detail": "Desktop 命令：/usr/local/bin/mio\n\n无法确认 shell 中的命令。别名或另一个 mio 安装可能具有更高优先级。",
+       "buttons": [
+         "安装",
+         "取消"
+diff --git a/apps/desktop/tests/expected/command-management-win32-en-US.json b/apps/desktop/tests/expected/command-management-win32-en-US.json
+index 34ee59a94c..e96c40ebc0 100644
+--- a/apps/desktop/tests/expected/command-management-win32-en-US.json
++++ b/apps/desktop/tests/expected/command-management-win32-en-US.json
+@@ -2,9 +2,9 @@
+   "dialogs": [
+     {
+       "type": "info",
+-      "title": "Manage dsh Command",
++      "title": "Manage mio Command",
+       "message": "Add the Desktop command to your terminal.",
+-      "detail": "Desktop command: C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd",
++      "detail": "Desktop command: C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd",
+       "buttons": [
+         "Install",
+         "Cancel"
+@@ -14,9 +14,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "Manage dsh Command",
++      "title": "Manage mio Command",
+       "message": "The Desktop command is installed.",
+-      "detail": "Desktop command: C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd\n\nCurrent dsh command: C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd",
++      "detail": "Desktop command: C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd\n\nCurrent mio command: C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd",
+       "buttons": [
+         "Close",
+         "Repair",
+@@ -27,9 +27,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "Manage dsh Command",
++      "title": "Manage mio Command",
+       "message": "The Desktop command needs repair.",
+-      "detail": "Desktop command: C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd",
++      "detail": "Desktop command: C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd",
+       "buttons": [
+         "Close",
+         "Repair",
+@@ -40,9 +40,9 @@
+     },
+     {
+       "type": "warning",
+-      "title": "Manage dsh Command",
++      "title": "Manage mio Command",
+       "message": "The Desktop command is installed.",
+-      "detail": "Desktop command: C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd\n\nCurrent dsh command: C:\\Program Files\\nodejs\\dsh.cmd\n\nAnother dsh takes precedence. Remove or reorder that installation to use the Desktop command by default. You can also run the Desktop command by its full path.",
++      "detail": "Desktop command: C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd\n\nCurrent mio command: C:\\Program Files\\nodejs\\mio.cmd\n\nAnother mio takes precedence. Remove or reorder that installation to use the Desktop command by default. You can also run the Desktop command by its full path.",
+       "buttons": [
+         "Close",
+         "Repair",
+@@ -53,9 +53,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "Manage dsh Command",
++      "title": "Manage mio Command",
+       "message": "Add the Desktop command to your terminal.",
+-      "detail": "Desktop command: C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd\n\nYour shell command could not be verified. An alias or another dsh installation may take precedence.",
++      "detail": "Desktop command: C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd\n\nYour shell command could not be verified. An alias or another mio installation may take precedence.",
+       "buttons": [
+         "Install",
+         "Cancel"
+diff --git a/apps/desktop/tests/expected/command-management-win32-zh-CN.json b/apps/desktop/tests/expected/command-management-win32-zh-CN.json
+index c124453ad6..c76cb8ac8d 100644
+--- a/apps/desktop/tests/expected/command-management-win32-zh-CN.json
++++ b/apps/desktop/tests/expected/command-management-win32-zh-CN.json
+@@ -2,9 +2,9 @@
+   "dialogs": [
+     {
+       "type": "info",
+-      "title": "管理 dsh 命令",
++      "title": "管理 mio 命令",
+       "message": "将 Desktop 命令添加到终端。",
+-      "detail": "Desktop 命令：C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd",
++      "detail": "Desktop 命令：C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd",
+       "buttons": [
+         "安装",
+         "取消"
+@@ -14,9 +14,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "管理 dsh 命令",
++      "title": "管理 mio 命令",
+       "message": "Desktop 命令已安装。",
+-      "detail": "Desktop 命令：C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd\n\n当前 dsh 命令：C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd",
++      "detail": "Desktop 命令：C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd\n\n当前 mio 命令：C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd",
+       "buttons": [
+         "关闭",
+         "修复",
+@@ -27,9 +27,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "管理 dsh 命令",
++      "title": "管理 mio 命令",
+       "message": "Desktop 命令需要修复。",
+-      "detail": "Desktop 命令：C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd",
++      "detail": "Desktop 命令：C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd",
+       "buttons": [
+         "关闭",
+         "修复",
+@@ -40,9 +40,9 @@
+     },
+     {
+       "type": "warning",
+-      "title": "管理 dsh 命令",
++      "title": "管理 mio 命令",
+       "message": "Desktop 命令已安装。",
+-      "detail": "Desktop 命令：C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd\n\n当前 dsh 命令：C:\\Program Files\\nodejs\\dsh.cmd\n\n另一个 dsh 的优先级更高。请移除或调整该安装的顺序，以默认使用 Desktop 命令；也可以通过完整路径运行 Desktop 命令。",
++      "detail": "Desktop 命令：C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd\n\n当前 mio 命令：C:\\Program Files\\nodejs\\mio.cmd\n\n另一个 mio 的优先级更高。请移除或调整该安装的顺序，以默认使用 Desktop 命令；也可以通过完整路径运行 Desktop 命令。",
+       "buttons": [
+         "关闭",
+         "修复",
+@@ -53,9 +53,9 @@
+     },
+     {
+       "type": "info",
+-      "title": "管理 dsh 命令",
++      "title": "管理 mio 命令",
+       "message": "将 Desktop 命令添加到终端。",
+-      "detail": "Desktop 命令：C:\\Users\\user\\AppData\\Local\\Programs\\DeepSeek Harness\\resources\\runtime\\cli\\bin\\dsh.cmd\n\n无法确认 shell 中的命令。别名或另一个 dsh 安装可能具有更高优先级。",
++      "detail": "Desktop 命令：C:\\Users\\user\\AppData\\Local\\Programs\\Mio\\resources\\runtime\\cli\\bin\\mio.cmd\n\n无法确认 shell 中的命令。别名或另一个 mio 安装可能具有更高优先级。",
+       "buttons": [
+         "安装",
+         "取消"
+diff --git a/apps/desktop/tests/fixtures/command-path.ps1 b/apps/desktop/tests/fixtures/command-path.ps1
+index ef6f15930a..1807da180e 100644
+--- a/apps/desktop/tests/fixtures/command-path.ps1
++++ b/apps/desktop/tests/fixtures/command-path.ps1
+@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
+ [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
+ . $Worker
+ $identity = [Guid]::NewGuid().ToString('N')
+-$keyRoot = 'Software\DeepSeekHarness\CommandTests\' + $identity
++$keyRoot = 'Software\io.github.shin4.mio.desktop\CommandTests\' + $identity
+ $environmentKey = $keyRoot + '\Environment'
+ $ownerKey = $keyRoot + '\Owner'
+ $options = @{ EnvironmentKey=$environmentKey; OwnerKey=$ownerKey; MachinePath=''; MutexName=('Local\DshCommandTest-' + $identity) }
+@@ -24,9 +24,9 @@ try {
+     $npm = Join-Path $Root 'npm'
+     $system = Join-Path $Root 'system'
+     New-Item -ItemType Directory -Force $desktop, $other, $npm, $system | Out-Null
+-    [IO.File]::WriteAllText((Join-Path $desktop 'dsh.cmd'), 'fixture')
+-    [IO.File]::WriteAllText((Join-Path $other 'dsh.cmd'), 'fixture')
+-    [IO.File]::WriteAllText((Join-Path $npm 'dsh.cmd'), 'fixture')
++    [IO.File]::WriteAllText((Join-Path $desktop 'mio.cmd'), 'fixture')
++    [IO.File]::WriteAllText((Join-Path $other 'mio.cmd'), 'fixture')
++    [IO.File]::WriteAllText((Join-Path $npm 'mio.cmd'), 'fixture')
+     $key = [Microsoft.Win32.Registry]::CurrentUser.CreateSubKey($environmentKey)
+     try { $key.SetValue('Path', $npm, [Microsoft.Win32.RegistryValueKind]::ExpandString) }
+     finally { $key.Dispose() }
+@@ -34,7 +34,7 @@ try {
+     # .NET may expand a CI runner's short temporary-directory name.
+     $desktop = $before.directory
+     $other = (State $other).directory
+-    Require ($before.activeCommand -eq (Join-Path $npm 'dsh.cmd')) 'existing npm command was not detected'
++    Require ($before.activeCommand -eq (Join-Path $npm 'mio.cmd')) 'existing npm command was not detected'
+     [void](Apply 'install' $desktop)
+     Require ((UserPath) -eq ($desktop + ';' + $npm)) 'installation changed unrelated PATH entries'
+     $key = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($environmentKey, $true)
+@@ -56,9 +56,9 @@ try {
+     [void](Apply 'remove' $desktop)
+     Require ((UserPath) -eq $newer) 'old installation removed the newer command'
+     Require ((State $other).managed) 'old installation deleted newer ownership'
+-    [IO.File]::WriteAllText((Join-Path $system 'dsh.exe'), 'fixture')
++    [IO.File]::WriteAllText((Join-Path $system 'mio.exe'), 'fixture')
+     $options.MachinePath = $system
+-    Require ((State $other).activeCommand -eq (Join-Path $system 'dsh.exe')) 'machine PATH precedence was hidden'
++    Require ((State $other).activeCommand -eq (Join-Path $system 'mio.exe')) 'machine PATH precedence was hidden'
+     [void](Apply 'remove' $other)
+     $key = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($environmentKey, $true)
+     $manualPath = $npm + ';' + $desktop + ';' + $desktop
+@@ -77,15 +77,15 @@ try {
+     finally { $key.Dispose() }
+     [void](Apply 'remove' $desktop)
+     Require ((UserPath) -eq $manualPath) 'removal deleted a retained entry after the owned entry was removed manually'
+-    [IO.File]::Delete((Join-Path $npm 'dsh.cmd'))
+-    [IO.File]::WriteAllText((Join-Path $npm 'dsh.ps1'), 'fixture')
++    [IO.File]::Delete((Join-Path $npm 'mio.cmd'))
++    [IO.File]::WriteAllText((Join-Path $npm 'mio.ps1'), 'fixture')
+     $options.MachinePath = ''
+-    Require ((State $desktop).activeCommand -eq (Join-Path $npm 'dsh.ps1')) 'PowerShell launcher was not detected'
++    Require ((State $desktop).activeCommand -eq (Join-Path $npm 'mio.ps1')) 'PowerShell launcher was not detected'
+     $invalidPath = 'C:\invalid|entry;C:\<missing>;' + $npm
+     $key = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($environmentKey, $true)
+     try { $key.SetValue('Path', $invalidPath, [Microsoft.Win32.RegistryValueKind]::ExpandString) }
+     finally { $key.Dispose() }
+-    Require ((State $desktop).activeCommand -eq (Join-Path $npm 'dsh.ps1')) 'invalid PATH entries prevented command discovery'
++    Require ((State $desktop).activeCommand -eq (Join-Path $npm 'mio.ps1')) 'invalid PATH entries prevented command discovery'
+     [void](Apply 'install' $desktop)
+     function Add-Type { throw 'Environment notification is unavailable' }
+     try { Send-DshCommandEnvironmentChange } finally { Remove-Item Function:\Add-Type }
+diff --git a/apps/desktop/tsconfig.client.json b/apps/desktop/tsconfig.client.json
+index 3de33f06dd..2952c95814 100644
+--- a/apps/desktop/tsconfig.client.json
++++ b/apps/desktop/tsconfig.client.json
+@@ -7,7 +7,8 @@
+   "include": [
+     "src/client",
+     "src/welcome-api.ts",
+-    "src/locale.ts"
++    "src/locale.ts",
++    "src/mio-product.ts"
+   ],
+   "references": [
+     {
 diff --git a/packages/client/ui-agent-preset/src/client/section-store.ts b/packages/client/ui-agent-preset/src/client/section-store.ts
-index daaefa6..0ff192e 100644
+index daaefa6907..0ff192ef91 100644
 --- a/packages/client/ui-agent-preset/src/client/section-store.ts
 +++ b/packages/client/ui-agent-preset/src/client/section-store.ts
 @@ -3,7 +3,7 @@ import type { Context } from '@deepseek-ai/cordis'
@@ -1101,7 +1910,7 @@ index daaefa6..0ff192e 100644
    }
  
 diff --git a/packages/client/ui-agent-preset/src/client/settings-store.ts b/packages/client/ui-agent-preset/src/client/settings-store.ts
-index 7344c3f..d9f860c 100644
+index 7344c3fbab..d9f860cfb3 100644
 --- a/packages/client/ui-agent-preset/src/client/settings-store.ts
 +++ b/packages/client/ui-agent-preset/src/client/settings-store.ts
 @@ -51,6 +51,21 @@ export type RosterRead = { ok: true; value: AgentPresetRoster } | { ok: false; e
@@ -1136,7 +1945,7 @@ index 7344c3f..d9f860c 100644
    // Host composition, so callers receive the same empty roster as a mounted
    // service with no configured roots.
 diff --git a/packages/client/ui-conversation/src/client/locales.ts b/packages/client/ui-conversation/src/client/locales.ts
-index 88ae069..4a37570 100644
+index 78b26f7ab6..9117b1f115 100644
 --- a/packages/client/ui-conversation/src/client/locales.ts
 +++ b/packages/client/ui-conversation/src/client/locales.ts
 @@ -74,8 +74,9 @@ export const zh = {
@@ -1151,7 +1960,7 @@ index 88ae069..4a37570 100644
    'hero.chooseWorkspace': '选择工作区',
    'session.hierarchy': '会话层级',
    'todo.title': '任务',
-@@ -444,8 +445,9 @@ export const en = {
+@@ -450,8 +451,9 @@ export const en = {
    'settings.enter.description': 'What Enter and the Send button do while the agent is running; Cmd/Ctrl+Enter uses the other behavior',
    'settings.enter.queue': 'Queue',
    'settings.enter.steer': 'Steer',
@@ -1164,7 +1973,7 @@ index 88ae069..4a37570 100644
    'session.hierarchy': 'Session hierarchy',
    'todo.title': 'To-dos',
 diff --git a/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx b/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
-index 40df872..c451d54 100644
+index 40df87269b..c451d54684 100644
 --- a/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
 +++ b/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
 @@ -155,6 +155,8 @@ export function HeroShell({ t, renderSlot, children }: HeroShellProps) {
@@ -1177,7 +1986,7 @@ index 40df872..c451d54 100644
            {/* The composer remains mounted outside this component. */}
          </div>
 diff --git a/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css b/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
-index aac6a5c..f86c43b 100644
+index aac6a5cf61..f86c43bad5 100644
 --- a/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
 +++ b/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
 @@ -75,6 +75,17 @@
@@ -1199,7 +2008,7 @@ index aac6a5c..f86c43b 100644
     hover rules target the hitbox so a slot-occupant mark swims too. */
  .fishHitbox {
 diff --git a/packages/experimental/voice-input-bundle/cordis.patch.yml b/packages/experimental/voice-input-bundle/cordis.patch.yml
-index 255734d..82cb4a2 100644
+index 255734df80..82cb4a24b6 100644
 --- a/packages/experimental/voice-input-bundle/cordis.patch.yml
 +++ b/packages/experimental/voice-input-bundle/cordis.patch.yml
 @@ -1,13 +1,14 @@
@@ -1223,7 +2032,7 @@ index 255734d..82cb4a2 100644
      - id: ui-voice-input
        name: '@deepseek-ai/dsh-experimental-client-ui-voice-input'
 diff --git a/packages/experimental/voice-input-bundle/locale/en.json b/packages/experimental/voice-input-bundle/locale/en.json
-index 8d48bbe..197918e 100644
+index 8d48bbeec7..197918e7dd 100644
 --- a/packages/experimental/voice-input-bundle/locale/en.json
 +++ b/packages/experimental/voice-input-bundle/locale/en.json
 @@ -1,6 +1,6 @@
@@ -1235,19 +2044,19 @@ index 8d48bbe..197918e 100644
    }
  }
 diff --git a/packages/experimental/voice-input-bundle/locale/zh.json b/packages/experimental/voice-input-bundle/locale/zh.json
-index 43b2e83..9aa8c9a 100644
+index 3ad24e67b3..9aa8c9a026 100644
 --- a/packages/experimental/voice-input-bundle/locale/zh.json
 +++ b/packages/experimental/voice-input-bundle/locale/zh.json
 @@ -1,6 +1,6 @@
  {
    "meta": {
      "title": "语音输入",
--    "description": "在本机使用 SenseVoice 转写录音；首次使用需安装依赖"
+-    "description": "在本机使用 SenseVoice 转写录音，首次使用需安装依赖。"
 +    "description": "使用 MiMo ASR 和你的 MiMo 账号转写录音；音频会发送至 MiMo API"
    }
  }
 diff --git a/packages/experimental/voice-input-bundle/package.json b/packages/experimental/voice-input-bundle/package.json
-index 7c63262..3a39f46 100644
+index cc7ad08c3b..0dc38a0881 100644
 --- a/packages/experimental/voice-input-bundle/package.json
 +++ b/packages/experimental/voice-input-bundle/package.json
 @@ -1,6 +1,6 @@
@@ -1255,7 +2064,7 @@ index 7c63262..3a39f46 100644
    "name": "@deepseek-ai/dsh-experimental-voice-input-bundle",
 -  "description": "Experimental voice input with local SenseVoice; downloads its runtime on first use",
 +  "description": "Voice input transcribed by MiMo ASR",
-   "version": "0.1.7-rc.2",
+   "version": "0.2.0-rc.2",
    "icon": "./icon.svg",
    "publishConfig": {
 @@ -34,9 +34,9 @@
@@ -1271,20 +2080,30 @@ index 7c63262..3a39f46 100644
    "peerDependencies": {
      "@deepseek-ai/cordis": "workspace:~"
 diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
-index 36dc050..4376679 100644
+index 6c7ce04c19..2f03ec68dc 100644
 --- a/pnpm-lock.yaml
 +++ b/pnpm-lock.yaml
-@@ -726,6 +726,9 @@ importers:
+@@ -581,6 +581,9 @@ importers:
+       '@deepseek-ai/dsh-api-gateway':
+         specifier: workspace:*
+         version: link:../../packages/api/gateway
++      '@mio/desktop':
++        specifier: workspace:*
++        version: link:../../mio/desktop
+       electron-updater:
+         specifier: ^6.8.9
+         version: 6.8.9
+@@ -732,6 +735,9 @@ importers:
        '@deepseek-ai/libreoffice-kit':
          specifier: ^0.1.1
          version: 0.1.1
 +      '@mio/desktop':
 +        specifier: workspace:*
 +        version: link:../../mio/desktop
- 
-   apps/web:
-     devDependencies:
-@@ -931,6 +934,67 @@ importers:
+       koffi:
+         specifier: ^3.1.0
+         version: 3.1.1
+@@ -953,6 +959,69 @@ importers:
          specifier: ^1.49.0
          version: 1.61.1
  
@@ -1293,15 +2112,16 @@ index 36dc050..4376679 100644
 +      '@deepseek-ai/cordis':
 +        specifier: workspace:~
 +        version: link:../../vendor/cordis
++      '@deepseek-ai/schemastery':
++        specifier: link:../../vendor/schemastery
++        version: link:../../vendor/schemastery
++    devDependencies:
 +      '@deepseek-ai/dsh-credentials':
 +        specifier: workspace:*
 +        version: link:../../packages/credentials/credentials
 +      '@deepseek-ai/dsh-experimental-speech-to-text':
 +        specifier: workspace:*
 +        version: link:../../packages/experimental/speech-to-text
-+      '@deepseek-ai/schemastery':
-+        specifier: link:../../vendor/schemastery
-+        version: link:../../vendor/schemastery
 +
 +  mio/brand:
 +    dependencies:
@@ -1342,17 +2162,18 @@ index 36dc050..4376679 100644
 +      '@deepseek-ai/cordis':
 +        specifier: workspace:~
 +        version: link:../../vendor/cordis
-+      '@deepseek-ai/dsh-credentials':
-+        specifier: workspace:*
-+        version: link:../../packages/credentials/credentials
 +      '@deepseek-ai/schemastery':
 +        specifier: link:../../vendor/schemastery
 +        version: link:../../vendor/schemastery
++    devDependencies:
++      '@deepseek-ai/dsh-credentials':
++        specifier: workspace:*
++        version: link:../../packages/credentials/credentials
 +
    native/system:
      devDependencies:
        '@deepseek-ai/node-addon-system':
-@@ -7897,9 +7961,9 @@ importers:
+@@ -8080,9 +8149,9 @@ importers:
        '@deepseek-ai/dsh-experimental-speech-to-text':
          specifier: workspace:*
          version: link:../speech-to-text
@@ -1364,8 +2185,54 @@ index 36dc050..4376679 100644
      devDependencies:
        '@deepseek-ai/cordis':
          specifier: workspace:~
+@@ -9693,7 +9762,7 @@ importers:
+         version: link:../../../vendor/schemastery
+       '@earendil-works/pi-ai':
+         specifier: ^0.87.1
+-        version: 0.87.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(ws@8.21.0)(zod@4.4.3)
++        version: 0.87.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(supports-color@9.4.0)(ws@8.21.0)(zod@4.4.3)
+     devDependencies:
+       '@deepseek-ai/cordis':
+         specifier: workspace:~
+@@ -22668,15 +22737,15 @@ snapshots:
+     transitivePeerDependencies:
+       - '@algolia/client-search'
+ 
+-  '@earendil-works/pi-ai@0.87.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(ws@8.21.0)(zod@4.4.3)':
++  '@earendil-works/pi-ai@0.87.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(supports-color@9.4.0)(ws@8.21.0)(zod@4.4.3)':
+     dependencies:
+       '@anthropic-ai/sdk': 0.124.0(zod@4.4.3)
+       '@aws-sdk/client-bedrock-runtime': 3.1127.0
+       '@earendil-works/pi-telemetry': 0.87.1
+       '@google/genai': 2.21.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))
+       '@smithy/node-http-handler': 4.12.1
+-      http-proxy-agent: 9.1.0
+-      https-proxy-agent: 9.1.0
++      http-proxy-agent: 9.1.0(supports-color@9.4.0)
++      https-proxy-agent: 9.1.0(supports-color@9.4.0)
+       openai: 6.40.0(ws@8.21.0)(zod@4.4.3)
+       partial-json: 0.1.7
+       typebox: 1.3.27
+@@ -26859,7 +26928,7 @@ snapshots:
+     transitivePeerDependencies:
+       - supports-color
+ 
+-  http-proxy-agent@9.1.0:
++  http-proxy-agent@9.1.0(supports-color@9.4.0):
+     dependencies:
+       agent-base: 9.0.0
+       debug: 4.4.3(supports-color@9.4.0)
+@@ -26918,7 +26987,7 @@ snapshots:
+     transitivePeerDependencies:
+       - supports-color
+ 
+-  https-proxy-agent@9.1.0:
++  https-proxy-agent@9.1.0(supports-color@9.4.0):
+     dependencies:
+       agent-base: 9.0.0
+       debug: 4.4.3(supports-color@9.4.0)
 diff --git a/pnpm-workspace.yaml b/pnpm-workspace.yaml
-index 4782ad5..dcbf496 100644
+index b9cf05ab45..e56818a3f2 100644
 --- a/pnpm-workspace.yaml
 +++ b/pnpm-workspace.yaml
 @@ -1,4 +1,5 @@
@@ -1375,7 +2242,7 @@ index 4782ad5..dcbf496 100644
    - packages/*/*
    # The Landlock launcher is developed with its harness consumers but keeps
 diff --git a/scripts/client-build-environment.ts b/scripts/client-build-environment.ts
-index 57f12ef..45adeb8 100644
+index 57f12ef13b..45adeb8d87 100644
 --- a/scripts/client-build-environment.ts
 +++ b/scripts/client-build-environment.ts
 @@ -19,7 +19,7 @@ export const CLIENT_BUILD_PROFILE_SELECTOR = 'DSH_BUILD_CLIENT_PROFILE'

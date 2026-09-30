@@ -1,6 +1,6 @@
 # Mio on official dsh Desktop
 
-The active development desktop is the complete upstream **0.1.7-rc.2** workspace plus a
+The active development desktop is the complete upstream **0.2.0-rc.2** workspace plus a
 reviewed product overlay. It uses the official welcome/workspace layout. There is no legacy
 data migration. The first release targets macOS arm64/x64 and Windows x64.
 
@@ -26,6 +26,7 @@ After a build, run from this directory:
 
 ```sh
 node --test test/*.test.ts
+node ../script/desktop/test-upgrade.mjs
 ```
 
 Tests run the real pinned runtime. Historical V2.5 API cassettes verify request composition,
@@ -69,20 +70,34 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
   The DeepSeek Harness preview notice ships acknowledged (`welcomeNoticeVersion`, re-check against
   upstream on every dsh bump) and the browser DeepSeek API-key onboarding is off
   (`credentialOnboarding: false`); Desktop already suppressed both, this covers a browser on the Host.
-- Defaults: `mimo-v2.6-flash`, thinking enabled. Official Off/High labels mean disabled/enabled;
+- Defaults: `mimo-v2.6-flash`, thinking enabled. V2.6 Flash/Pro/UltraSpeed context is
+  1,048,576 tokens (1M); maximum output remains a separate 32,768-token application budget.
+  Saved V2.6 rows inheriting the former 256K default receive the new per-model context. Explicit
+  model limits and nonstandard saved provider limits are preserved. Official Off/High labels mean disabled/enabled;
   no graded `reasoning_effort` is sent. Model settings retain the official editing workflow.
   Any Settings write to `llm-pi-ai` (welcome's endpoint write, a Models page save) snapshots the
   whole provider table into the user layer; `saved-model-input.js` copies a bundle-declared `input`
   onto saved model rows that state none, so a profile saved on 0.4.3 still gets V2.6 image input.
 - The packaged home is `userData/dsh-desktop`, separate from the old `userData/dsh`.
+- The installed CLI is `mio`; its default home equals the packaged GUI home. An explicit
+  `MIO_HOME` overrides both (empty values fail; `~` expands to the user's home, and relative paths
+  resolve against the user's home regardless of the launch working directory).
+  GUI launch environments and terminal shell environments are independent: set the same explicit
+  value when using a custom home. No official `~/.dsh` data is imported.
+- Product analytics stays mounted with `enabled: false`, preserving the native welcome RPC.
+  This is separate from upstream's Session Log setting and does not disable all external traffic.
+- **Schedule requires action after upgrading:** open Plugins → Official → Automation tasks and
+  enable the shipped `@deepseek-ai/dsh-experimental-schedule-bundle`. Existing tasks stay on disk
+  but do not deliver until re-enabled. Preserve customized Schedule settings; confirm old tasks
+  reappear. The native `transcriptView: normal` value becomes `detailed`; new profiles use `standard`.
 - Icons reuse existing Mio assets. Windows installer bitmaps are generated during the build.
 - Updates come from the latest GitHub release (`product.json` `updateOrigin`, a flat
   `releases/latest/download` feed). `publish-release.mjs` uploads `nightly.yml` and one
   `nightly-mac.yml` merged from both macOS architectures; electron-updater picks the arm64 or x64
   ZIP by name. DeepSeek's COS feed and mandatory-update policy are never used. The unsigned Windows
   build updates too, verified by the feed's SHA-512 only.
-- Mio installers use `product.json` version `0.4.5`; the bundled dsh runtime remains pinned
-  to `0.1.7-rc.2`.
+- Mio installers use `product.json` version `0.5.0-rc.1` (unreleased candidate); the bundled dsh runtime remains pinned
+  to `0.2.0-rc.2`.
 - macOS signs with `com.apple.security.device.audio-input`; `verify-release.mjs` rejects a build
   without it (0.4.1 shipped without it and macOS silently denied the microphone).
 
@@ -93,6 +108,10 @@ credentials. The approved v0.4.x Windows distribution is explicitly unsigned and
 filename suffix. Never run the upstream `upload:*` commands for Mio.
 
 See [the current plan](../docs/mio-desktop-plan.md) for completion evidence and remaining gates.
+The runtime upgrade is specified in the [dsh 0.2.0-rc.2 upgrade spec](../docs/dsh-upgrade-0.2.0-rc.2-spec.md)
+and tracked in the [implementation evidence](../docs/dsh-upgrade-0.2.0-rc.2-evidence.md).
+Local implementation is complete; live API and packaged release qualification remain open.
+The production release is still 0.4.5.
 
 ## Opt-in live validation
 

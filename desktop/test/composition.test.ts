@@ -58,8 +58,8 @@ async function replayServer(cassette: string | string[]) {
 }
 
 /** The real patch layer with only its endpoint redirected at the replay server. */
-async function patchPointedAt(baseURL: string, dir: string, thinking: "high" | "off"): Promise<string> {
-  const original = await readFile(PATCH, "utf8")
+async function patchPointedAt(baseURL: string, dir: string, thinking: "high" | "off", source = PATCH): Promise<string> {
+  const original = await readFile(source, "utf8")
   const redirected = original
     .replace("reasoningEffort: high", `reasoningEffort: ${thinking}`)
     .replace(/baseURL: https:\/\/\S+/, `baseURL: ${baseURL}`)
@@ -71,13 +71,13 @@ async function patchPointedAt(baseURL: string, dir: string, thinking: "high" | "
 }
 
 /** Boot the headless profile on the composition and return what it printed. */
-function runHeadless(patch: string, home: string, prompt: string): Promise<{ code: number | null; out: string }> {
+function runHeadless(patch: string, home: string, prompt: string, bin = DSH_BIN, args: string[] = []): Promise<{ code: number | null; out: string }> {
   return new Promise((resolve) => {
     // `--expose-internals`: dsh reaches Node's internal ESM loader through it,
     // the same flag the desktop shell passes (packages/shell/README.md).
     const child = spawn(
       process.execPath,
-      ["--expose-internals", DSH_BIN, "--profile", "headless", "--patch", patch, prompt],
+      ["--expose-internals", bin, "--profile", "headless", "--patch", patch, ...args, prompt],
       {
         cwd: home,
         timeout: 120_000,
@@ -97,11 +97,11 @@ after(async () => {
 })
 
 /** Headless replay mounts the real brand and read-aloud host faces; the Web suite verifies bundle discovery. */
-async function installPlugins(home: string, profile: string) {
+async function installPlugins(home: string, profile: string, source = RUNTIME) {
   for (const name of ["brand", "tts", "media"]) {
     const target = path.join(home, "profiles", profile, "node_modules", "@mio", name)
     await mkdir(target, { recursive: true })
-    await cp(path.join(RUNTIME, name), target, { recursive: true })
+    await cp(path.join(source, name), target, { recursive: true })
   }
 }
 
@@ -176,4 +176,41 @@ void test("MiMo off explicitly disables thinking without an effort tier", { time
   assert.equal(result.code, 0, result.out)
   assert.deepEqual(result.requests[0]?.thinking, { type: "disabled" })
   assert.equal(result.requests[0]?.reasoning_effort, undefined)
+})
+
+
+void test("0.4.5 history resumes on 0.2 and a full backup restores the old runtime", {
+  timeout: 180_000,
+  skip: !process.env.MIO_BASELINE_ROOT && "Set MIO_BASELINE_ROOT to a built, reviewed 0.4.5 checkout",
+}, async () => {
+  const home = await mkdtemp(path.join(tmpdir(), "mio-upgrade-history-"))
+  const backup = await mkdtemp(path.join(tmpdir(), "mio-upgrade-backup-"))
+  homes.push(home, backup)
+  await installPlugins(home, "headless", path.join(process.env.MIO_BASELINE_ROOT!, "mio"))
+  const replay = await replayServer("reasoning-and-text")
+  try {
+    const patch = await patchPointedAt(replay.baseURL, home, "high", path.join(process.env.MIO_BASELINE_ROOT!, "mio/desktop/mio.patch.yml"))
+    const oldBin = path.join(process.env.MIO_BASELINE_ROOT!, "apps/cli/lib/bin.js")
+    const original = await runHeadless(patch, home, "Remember the upgrade marker UPGRADE-045.", oldBin, ["--json"])
+    assert.equal(original.code, 0, original.out)
+    const sessionId = original.out.match(/"type":"session","sessionId":"([^"]+)"/)?.[1]
+    assert.ok(sessionId, original.out)
+    await cp(home, backup, { recursive: true })
+    const resumed = await runHeadless(patch, home, "Continue the previous answer.", DSH_BIN, ["--json", "--session-id", sessionId])
+    assert.equal(resumed.code, 0, resumed.out)
+    assert.ok(replay.requests.at(-1)?.messages?.some(message => message.content?.includes("UPGRADE-045")))
+    assert.ok(replay.requests.at(-1)?.messages?.some(message => message.role === "assistant"))
+    const reopened = await runHeadless(patch, home, "Continue again.", DSH_BIN, ["--json", "--session-id", sessionId])
+    assert.equal(reopened.code, 0, reopened.out)
+    assert.ok(replay.requests.at(-1)?.messages?.some(message => message.content === "Continue the previous answer."))
+    // Rollback is a complete pre-upgrade restore, never the old runtime reading new writes.
+    await rm(home, { recursive: true })
+    await cp(backup, home, { recursive: true })
+    const restored = await runHeadless(patch, home, "Verify the restored history.", oldBin, ["--json", "--session-id", sessionId])
+    assert.equal(restored.code, 0, restored.out)
+    assert.ok(replay.requests.at(-1)?.messages?.some(message => message.content?.includes("UPGRADE-045")))
+    assert.ok(!replay.requests.at(-1)?.messages?.some(message => message.content === "Continue the previous answer."))
+  } finally {
+    await new Promise<void>(resolve => replay.server.close(() => resolve()))
+  }
 })

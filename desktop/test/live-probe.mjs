@@ -42,6 +42,7 @@ globalThis.fetch = async (input, init) => {
 }
 const home = await mkdtemp(join(tmpdir(), "mio-desktop-web-"))
 process.env.DSH_HOME = home
+process.env.DSH_CLIENT_VERSION = JSON.parse(await readFile(new URL("../product.json", import.meta.url), "utf8")).version
 delete process.env.MIO_API_KEY
 const directory = join(home, "profiles/desktop")
 await mkdir(directory, { recursive: true })

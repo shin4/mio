@@ -1,6 +1,6 @@
 {
   "name": "@mio/desktop",
-  "version": "0.1.7-rc.2",
+  "version": "0.2.0-rc.2",
   "private": true,
   "description": "Mio composition and brand over the official dsh Desktop",
   "license": "MIT",
@@ -8,7 +8,9 @@
   "files": [
     "mio.patch.yml",
     "hidden-presets.js",
-    "saved-model-input.js"
+    "saved-model-input.js",
+    "home.js",
+    "home.d.ts"
   ],
   "dsh": {
     "bundle": {

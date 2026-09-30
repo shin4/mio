@@ -257,6 +257,15 @@ async function verifyAsr(ctx, send, origin) {
 
 const home = await mkdtemp(join(tmpdir(), "mio-desktop-web-"))
 process.env.DSH_HOME = home
+process.env.DSH_CLIENT_VERSION = JSON.parse(await readFile(join(root, "desktop/product.json"), "utf8")).version
+const analyticsRequests = []
+const analyticsCollector = createServer((request, response) => {
+  analyticsRequests.push(request.url)
+  request.resume()
+  response.writeHead(200).end()
+})
+await new Promise((resolve) => analyticsCollector.listen(0, "127.0.0.1", resolve))
+process.env.DSH_PRODUCT_ANALYTICS_OTLP_URL = `http://127.0.0.1:${analyticsCollector.address().port}/logs`
 delete process.env.MIO_API_KEY
 const directory = join(home, "profiles/desktop")
 await mkdir(directory, { recursive: true })
@@ -289,6 +298,10 @@ for (const name of ["hidden-presets.js", "saved-model-input.js"]) {
 // A profile whose welcome ran on 0.4.3: its `llm-pi-ai` write stored the whole provider table,
 // models without `input`, in the user layer that applies after every bundle.
 const savedBeforeImage = process.argv.includes("--saved-before-image")
+const explicitInput = process.argv.includes("--explicit-input")
+const explicitContext = process.argv.includes("--explicit-context")
+const customProviderContext = process.argv.includes("--provider-context")
+const hiddenDefault = process.argv.includes("--hidden-default")
 if (savedBeforeImage) {
   await writeFile(
     join(directory, "cordis.patch.yml"),
@@ -302,11 +315,12 @@ if (savedBeforeImage) {
       "        api: openai-completions",
       "        baseURL: https://token-plan-cn.xiaomimimo.com/v1",
       "        compat: { thinkingFormat: deepseek, supportsReasoningEffort: false, maxTokensField: max_completion_tokens, requiresReasoningContentOnAssistantMessages: true }",
-      "        defaultContextWindow: 262144",
+      `        defaultContextWindow: ${customProviderContext ? 524288 : 262144}`,
       "        defaultMaxTokens: 32768",
       "        models:",
-      "          - { id: mimo-v2.6-flash, name: MiMo V2.6 Flash, reasoningEfforts: { off: none, high: high } }",
+      `          - { id: mimo-v2.6-flash, name: MiMo V2.6 Flash, reasoningEfforts: { off: none, high: high }${explicitInput ? ", input: [text]" : ""}${explicitContext ? ", contextWindow: 131072" : ""} }`,
       "          - { id: mimo-v2.6-pro, name: MiMo V2.6 Pro, reasoningEfforts: { off: none, high: high } }",
+      ...(hiddenDefault ? ["- id: agent-preset-registry", "  config:", "    default: standard", "    selectedDefault: minimal"] : []),
       "",
     ].join("\n"),
   )
@@ -346,14 +360,21 @@ try {
   const modalities = async (id) =>
     [...(await running.ctx.llm.resolveModelInfo("mimo", id)).inputModalities].sort((a, b) => a.localeCompare(b))
   const deadline = Date.now() + 20_000
-  const repaired = async () => (await modalities("mimo-v2.6-pro")).length === 2 || Date.now() > deadline
+  const repaired = async () => ((await modalities("mimo-v2.6-pro")).length === 2
+    && (!hiddenDefault || running.ctx.agentPresets.config.selectedDefault.get() === "standard"))
+    || Date.now() > deadline
   if (savedBeforeImage) while (!(await repaired())) await new Promise((resolve) => setTimeout(resolve, 100))
   for (const id of ["mimo-v2.6-flash", "mimo-v2.6-pro"]) {
-    assert.deepEqual(await modalities(id), ["image", "text"], `${id} input modalities`)
+    assert.equal((await running.ctx.llm.resolveModelInfo("mimo", id)).context.contextWindow,
+      explicitContext && id === "mimo-v2.6-flash" ? 131072 : customProviderContext ? 524288 : 1048576, `${id} context capacity`)
+    assert.deepEqual(await modalities(id), explicitInput && id === "mimo-v2.6-flash" ? ["text"] : ["image", "text"], `${id} input modalities`)
   }
   if (savedBeforeImage) {
     const saved = await readFile(join(directory, "cordis.patch.yml"), "utf8")
-    assert.equal(saved.match(/- image/g)?.length, 2, `saved models must declare image:\n${saved}`)
+    assert.equal(saved.match(/- image/g)?.length, explicitInput ? 1 : 2, `saved models must declare image:\n${saved}`)
+  }
+  if (hiddenDefault) {
+    assert.equal(running.ctx.agentPresets.config.selectedDefault.get(), "standard")
   }
   const models = await running.ctx.llm.listModels("mimo")
   assert.equal(
@@ -362,6 +383,7 @@ try {
   )
   if (enableUltraSpeed) {
     const optional = await running.ctx.llm.resolveModelInfo("mimo", "mimo-v2.6-pro-ultraspeed")
+    assert.equal(optional.context.contextWindow, 1048576)
     assert.deepEqual(
       optional.reasoning.efforts.map((effort) => effort.id),
       ["off", "high"],
@@ -387,6 +409,11 @@ try {
     running.ctx.connection.authenticatedUrl(`http://127.0.0.1:${running.ctx.webServer.port}`),
     send,
   )
+  assert.ok(running.ctx.get("productTelemetry"), "The native Desktop exporter must remain mounted")
+  assert.equal(await backend.analyticsEnabled(), false)
+  for (const eventName of ["desktop_app_launch", "desktop_upgrade_install_restart_click"]) {
+    await backend.report({ eventName, timestamp: Date.now(), attributes: {} })
+  }
   const state = await backend.read()
   assert.equal(state.writable, true)
   assert.equal(state.hasApiKey, false)
@@ -398,5 +425,7 @@ try {
   console.log("Mio web composition verified")
 } finally {
   await running.shutdown.shutdown(0)
+  await new Promise((resolve) => analyticsCollector.close(resolve))
+  assert.equal(analyticsRequests.length, 0, "Disabled analytics must not export, including shutdown drain")
   await rm(home, { recursive: true, force: true })
 }

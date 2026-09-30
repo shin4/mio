@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises"
 // Opt-in live probe: MiMo V2.6 image input through the official dsh attachment and pi-ai adapter path.
 // MIO_API_KEY (or MIMO_API_KEY) from the environment; MIO_REGION (cn/sgp/ams) for a `tp-` key.
 // Run from desktop/: node --expose-internals test/image-live-probe.mjs
@@ -84,6 +85,7 @@ globalThis.fetch = async (input, init) => {
 
 const home = await mkdtemp(join(tmpdir(), "mio-image-probe-"))
 process.env.DSH_HOME = home
+process.env.DSH_CLIENT_VERSION = JSON.parse(await readFile(new URL("../product.json", import.meta.url), "utf8")).version
 delete process.env.MIO_API_KEY
 delete process.env.MIMO_API_KEY
 const directory = join(home, "profiles/desktop")

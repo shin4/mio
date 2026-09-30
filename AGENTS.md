@@ -38,7 +38,7 @@ These outrank stylistic preferences.
 | `script/desktop` | Pinned upstream preparation and build wrappers | Node 24 / pnpm 11.7.0 |
 | `packages/{runtime,client-ui,shell}` | Legacy release implementation and regression checks | Node / Electron |
 
-The default `dev:desktop` uses official dsh **0.1.7-rc.2**. Source edits belong in reviewed
+The default `dev:desktop` uses official dsh **0.2.0-rc.2**. Source edits belong in reviewed
 `desktop/patches`, never only in generated `.desktop-build/upstream`. Keep runtime internals
 upstream-native. No data migration. Linux is outside the first release. Follow upstream's own
 build scripts for its generated workspace; the rules for Mio's Node source below still apply.

@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises"
 /** Opt-in live check of voice input and read-aloud against the real MiMo endpoint the welcome flow selects. */
 import assert from "node:assert/strict"
 import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises"
@@ -24,6 +25,7 @@ delete process.env.MIMO_API_KEY
 
 const home = await mkdtemp(join(tmpdir(), "mio-asr-live-"))
 process.env.DSH_HOME = home
+process.env.DSH_CLIENT_VERSION = JSON.parse(await readFile(new URL("../product.json", import.meta.url), "utf8")).version
 const directory = join(home, "profiles/desktop")
 await mkdir(join(directory, "node_modules/@mio"), { recursive: true })
 await writeFile(
