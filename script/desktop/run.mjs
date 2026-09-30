@@ -5,6 +5,7 @@ import { readFile, writeFile, readdir } from "node:fs/promises"
 import { join, relative } from "node:path"
 import { prepare, root, upstream } from "./prepare.mjs"
 import { renderResources } from "./resources.mjs"
+import { developmentEnvironment } from "./development-environment.mjs"
 
 const mode = process.argv[2] ?? "build"
 const target = process.argv[3]
@@ -16,17 +17,9 @@ if (mode === "package" && !["mac-arm64", "mac-x64", "win-x64"].includes(target))
 if (unsigned !== undefined && (unsigned !== "--unsigned" || target !== "win-x64")) {
   throw new Error("Only win-x64 supports --unsigned in the upstream release pipeline")
 }
-await prepare()
 const product = JSON.parse(await readFile(join(root, "desktop/product.json"), "utf8"))
-const environment = {
-  ...process.env,
-  DSH_CLIENT_TITLE: product.name,
-  DSH_HOME: process.env.MIO_HOME ?? join(root, ".desktop-build", "home"),
-  DSH_DESKTOP_USER_DATA_DIR: join(root, ".desktop-build", "electron-user-data"),
-  DSH_DESKTOP_OPEN_DEVTOOLS: process.env.DSH_DESKTOP_OPEN_DEVTOOLS ?? "0",
-  // No publication delay: dependency identities are controlled by the committed lockfile.
-  npm_config_minimum_release_age: "0",
-}
+const environment = developmentEnvironment(product)
+await prepare()
 
 async function pnpm(args) {
   await new Promise((resolve, reject) => {

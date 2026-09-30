@@ -17,7 +17,10 @@ node script/desktop/run.mjs start
 Equivalent Bun shortcuts: `bun run build:desktop`, `bun run start:desktop`,
 `bun run dev:desktop` (build then start). `bun run prepare:desktop` only prepares sources.
 The first start downloads and verifies upstream's bundled Node/Python/office runtime.
-Development data lives under `.desktop-build`; use `MIO_HOME` for an explicit runtime home.
+Development data defaults to `.desktop-build/home`. An explicit `MIO_HOME` uses the same
+rules as the packaged GUI and installed `mio` CLI: relative paths resolve from the user's home,
+`~` expands to that home, and empty or whitespace-only values fail before upstream preparation.
+For example, `MIO_HOME=./mio-data` uses `~/mio-data` regardless of the launch working directory.
 The old shell is available through `bun run dev:legacy`.
 
 ## Verify
