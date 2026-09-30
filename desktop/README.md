@@ -80,7 +80,8 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
   onto saved model rows that state none, so a profile saved on 0.4.3 still gets V2.6 image input.
 - The packaged home is `userData/dsh-desktop`, separate from the old `userData/dsh`.
 - The installed CLI is `mio`; its default home equals the packaged GUI home. An explicit
-  `MIO_HOME` overrides both (empty values fail; `~` and relative paths are normalized).
+  `MIO_HOME` overrides both (empty values fail; `~` expands to the user's home, and relative paths
+  resolve against the user's home regardless of the launch working directory).
   GUI launch environments and terminal shell environments are independent: set the same explicit
   value when using a custom home. No official `~/.dsh` data is imported.
 - Product analytics stays mounted with `enabled: false`, preserving the native welcome RPC.

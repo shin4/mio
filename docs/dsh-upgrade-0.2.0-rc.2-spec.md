@@ -238,6 +238,7 @@ GUI 继续以 Electron 的 userData 为依据；CLI 在 Electron Node 模式的�
 覆盖 macOS Application Support、Windows 重定向 APPDATA、空格/中文路径。
 共用产品路径规则，不改变上游 `dsh-home-paths` 的全局默认行为。
 `MIO_HOME` 的解析在读取任何 profile/凭据前完成，不把账户 Key、绝对用户路径写入可发布证据。
+相对 `MIO_HOME` 以用户主目录为基准，不能依赖 GUI 或 CLI 的启动工作目录。
 
 验收命令至少包括 `mio --version`、`mio plugin --profile desktop list` 和一次安装/移除测试插件。
 `--version` 允许显示委托运行时的 `0.2.0-rc.2`，不篡改依赖兼容性所用的 dsh 版本；

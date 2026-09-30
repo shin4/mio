@@ -7,7 +7,8 @@ export function resolveMioHome(product, env = process.env, userData) {
   if (env.MIO_HOME !== undefined) {
     if (!env.MIO_HOME.trim()) throw new Error("MIO_HOME must not be empty")
     const home = env.MIO_HOME.replace(/^~(?=$|[/\\])/, homedir())
-    return resolve(home)
+    // Finder and terminal launches have different working directories.
+    return resolve(homedir(), home)
   }
   if (userData !== undefined) return join(userData, product.dataDirectory)
   const appData = process.platform === "darwin"

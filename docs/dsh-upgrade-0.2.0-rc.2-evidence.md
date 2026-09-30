@@ -34,7 +34,7 @@ provider 上限。lint 0 errors / 43 warnings，`git diff --check` 通过。
 - 新 CLI 按产品配置生成 `mio` / `mio.cmd`；macOS receipt/backup 和 Windows registry/mutex
   使用 Mio 命名。保留上游所有权、指纹、确认、原文件备份和恢复算法。
 - GUI 与 CLI 复用 `desktop/bundle/home.js`：默认仍为 Mio userData 下 `dsh-desktop`；
-  显式 `MIO_HOME` 统一展开 `~`、规范化相对路径，空值拒绝。GUI 和 shell 各自的环境必须一致。
+  显式 `MIO_HOME` 统一展开 `~`、以用户主目录解析相对路径，空值拒绝。GUI 和 shell 各自的环境必须一致。
 - 修复开发版 Launch Services 冷启动：生成 launcher 持久化 primary runtime 路径，避免只从
   终端父进程继承时可用。shell 字面参数和含空格、引号、`$(...)` 路径有实际执行回归。
 - Windows PATH 测试改为验证生成后的 Mio PowerShell 脚本；发布资格 workflow 新增上游
