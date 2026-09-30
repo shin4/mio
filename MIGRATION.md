@@ -35,9 +35,10 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 
 ## Desktop development state
 
-**Upgrade implementation (2026-09-29):** the development branch now pins official dsh
-`0.2.0-rc.2` (`639ed015397290b3745d163aafe02ffee4aa3f84`) and Mio candidate `0.5.0-rc.1`.
-Production remains **0.4.5** on dsh `0.1.7-rc.2`; no release or update feed has changed.
+**Release source (2026-09-30):** the Desktop source pins official dsh
+`0.2.0-rc.2` (`639ed015397290b3745d163aafe02ffee4aa3f84`) and Mio release source `0.5.0`.
+Production follows the stable GitHub release selected as latest; publication changes the feed
+only after the exact source tree passes the three-platform installer qualification.
 The [upgrade spec](docs/dsh-upgrade-0.2.0-rc.2-spec.md) remains the acceptance contract;
 [implementation evidence and remaining gates](docs/dsh-upgrade-0.2.0-rc.2-evidence.md) distinguish
 local passes from live API, signed installation and cross-platform qualification still required.

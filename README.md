@@ -11,7 +11,7 @@ English | [简体中文](./README.zh-CN.md)
 [![Release](https://img.shields.io/github/v/release/shin4/mio?color=ff6900&label=release)](https://github.com/shin4/mio/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-ff6900.svg)](./LICENSE)
 ![Desktop: macOS · Windows](https://img.shields.io/badge/desktop-macOS%20%C2%B7%20Windows-121317.svg)
-![dsh Desktop 0.1.7-rc.2](https://img.shields.io/badge/dsh%20Desktop-0.1.7--rc.2-0E1B2E.svg)
+![dsh Desktop 0.2.0-rc.2](https://img.shields.io/badge/dsh%20Desktop-0.2.0--rc.2-0E1B2E.svg)
 
 <img src="docs/assets/welcome.png?v=0.4.0" alt="Mio 0.4.0 — Welcome screen with Connect MiMo" width="480" />
 
@@ -32,7 +32,16 @@ workspace, settings, tools and session model, unchanged — with Mio's identity 
 configuration layered on top. Mio ships no fork of the model adapter: MiMo is configured through
 dsh's own provider, and the product overlay is a reviewed patch set kept in [`desktop/`](desktop/README.md).
 
-## What's new in 0.4.5
+## What's new in 0.5.0
+
+- **Official dsh Desktop 0.2.0-rc.2** — the native workspace, settings and tool loop move to the newer pinned core. The bundled core is still a release candidate.
+- **1M context** — V2.6 Flash and Pro default to 1,048,576 tokens. Saved models inheriting the old 256K default are repaired; explicit custom limits stay intact.
+- **The `mio` command** — install it from the app's command settings, then use the bundled runtime from your terminal. GUI and CLI share the default data directory. Relative `MIO_HOME` values resolve from your user home, `~` expands, and empty values are rejected.
+- **Reliable startup repairs** — saved image capabilities and the hidden default preset are repaired after the native settings service is ready, including on Windows.
+- **Upgrade action for automation** — existing tasks remain on disk, but enable **Plugins → Official → Automation tasks** again before they can run. Old `normal` transcript display becomes `detailed`; new profiles use `standard`.
+- Product analytics is disabled by default; the upstream Session Log setting remains separate.
+
+### 0.4.5
 
 - **Fixed: images on V2.6 when you connected MiMo before 0.4.4** — the composer still refused
   images on MiMo V2.6 Flash and Pro, because the model list saved when you first connected MiMo
@@ -84,7 +93,7 @@ dsh's own provider, and the product overlay is a reviewed patch set kept in [`de
   extra key and no local model download.
 
 0.4.0 moved Mio onto the official dsh Desktop 0.1.7-rc.2, with MiMo V2.6 Flash as the default and
-native MiMo account setup. Full notes: [v0.4.5](https://github.com/shin4/mio/releases/tag/v0.4.5) ·
+native MiMo account setup. Full notes: [v0.5.0](https://github.com/shin4/mio/releases/tag/v0.5.0) · [v0.4.5](https://github.com/shin4/mio/releases/tag/v0.4.5) ·
 [v0.4.4](https://github.com/shin4/mio/releases/tag/v0.4.4) ·
 [v0.4.3](https://github.com/shin4/mio/releases/tag/v0.4.3) ·
 [v0.4.2](https://github.com/shin4/mio/releases/tag/v0.4.2) ·
@@ -97,18 +106,23 @@ Get the latest installers from [Releases](https://github.com/shin4/mio/releases/
 
 | Platform | File | Signing |
 | --- | --- | --- |
-| macOS · Apple Silicon | `mio-0.4.5-mac-arm64.dmg` (or `.zip`) | Developer ID signed + notarized |
-| macOS · Intel | `mio-0.4.5-mac-x64.dmg` (or `.zip`) | Developer ID signed + notarized |
-| Windows x64 | `mio-0.4.5-win-x64-unsigned.exe` | **Unsigned** — expect a SmartScreen / unknown-publisher prompt |
+| macOS · Apple Silicon | `mio-0.5.0-mac-arm64.dmg` (or `.zip`) | Developer ID signed + notarized |
+| macOS · Intel | `mio-0.5.0-mac-x64.dmg` (or `.zip`) | Developer ID signed + notarized |
+| Windows x64 | `mio-0.5.0-win-x64-unsigned.exe` | **Unsigned** — expect a SmartScreen / unknown-publisher prompt |
 
-Verify downloads against `SHA256SUMS.txt`; `mio-0.4.5-qualification.json` records the source
+Verify downloads against `SHA256SUMS.txt`; `mio-0.5.0-qualification.json` records the source
 commit, hashes and signing state of each installer. Linux will follow separately.
 
 ### Upgrading
 
+Before upgrading, exit both GUI and CLI and back up the complete userData and any custom home.
+Re-enable Automation tasks after upgrading and check the task list and next run times. To roll
+back, keep a copy of the new data, then restore the old installer and the complete pre-upgrade
+backup; do not open data written by 0.5.0 with an older runtime.
+
 - **From 0.4.2 on** — updates arrive automatically; Mio asks before downloading and before
   restarting. Windows updates are verified by SHA-512, as the installer is unsigned.
-- **From 0.4.0 or 0.4.1** — install 0.4.5 over it once by hand; sessions, settings and your MiMo
+- **From 0.4.0 or 0.4.1** — install 0.5.0 over it once by hand; sessions, settings and your MiMo
   key are kept. If you denied Mio the microphone before, turn it on in **System Settings → Privacy
   & Security → Microphone**. Voice input starts switched off in profiles created by 0.4.0: turn on
   **Plugins → Voice input** once.

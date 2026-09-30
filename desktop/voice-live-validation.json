@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-25T18:48:06.536Z",
+  "date": "2026-09-30T03:45:32.708Z",
   "keyKind": "token-plan-cn",
   "endpoint": "https://token-plan-cn.xiaomimimo.com/v1",
   "results": [
@@ -9,7 +9,7 @@
       "expected": "把这个函数改成异步的，并且等待网络请求返回。",
       "text": "把这个函数改成异步的，并且等待网络请求返回。",
       "audioSeconds": 4.32,
-      "inferenceSeconds": 0.6405724589999999
+      "inferenceSeconds": 0.5375751669999999
     },
     {
       "clip": "en",
@@ -17,14 +17,14 @@
       "expected": "Make this function asynchronous and wait for the network request.",
       "text": "Make this function asynchronous and wait for the network request.",
       "audioSeconds": 3.68,
-      "inferenceSeconds": 0.544679917
+      "inferenceSeconds": 0.48473754199999985
     }
   ],
   "tts": {
     "spoken": "把这个函数改成异步的，并且等待网络请求返回。",
-    "bytes": 199724,
+    "bytes": 207404,
     "sampleRate": 24000,
     "heardBack": "把这个函数改成异步的，并且等待网络请求返回。",
-    "seconds": 4.16
+    "seconds": 4.32
   }
 }

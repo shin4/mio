@@ -5,7 +5,7 @@
 // The samples directory is the one test/media-live-probe.mjs uses.
 import assert from "node:assert/strict"
 import { spawn } from "node:child_process"
-import { cp, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises"
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { root, upstream } from "../../script/desktop/prepare.mjs"
@@ -25,8 +25,14 @@ try {
     await cp(join(upstream, "mio", name), join(home, "profiles/headless/node_modules/@mio", name), { recursive: true })
   }
   const patch = join(home, "mio.live.patch.yml")
+  for (const name of ["hidden-presets.js", "saved-model-input.js"]) {
+    await cp(join(root, "desktop/bundle", name), join(home, name))
+  }
   const original = await readFile(join(root, "desktop/bundle/mio.patch.yml"), "utf8")
-  await writeFile(patch, `${original.replace(/baseURL: https:\/\/\S+/, `baseURL: ${baseURL}`)}\n- id: session-title-llm\n  disabled: true\n`)
+  await writeFile(
+    patch,
+    `${original.replace(/baseURL: https:\/\/\S+/, `baseURL: ${baseURL}`)}\n- id: session-title-llm\n  disabled: true\n`,
+  )
   const work = join(home, "work")
   await mkdir(work)
   for (const file of ["speech.mp3", "video.mp4"]) await cp(join(samples, file), join(work, file))
@@ -35,28 +41,48 @@ try {
     new Promise((resolve) => {
       const child = spawn(
         process.execPath,
-        ["--expose-internals", join(upstream, "apps/cli/lib/bin.js"), "--profile", "headless", "--patch", patch, prompt],
+        [
+          "--expose-internals",
+          join(upstream, "apps/cli/lib/bin.js"),
+          "--profile",
+          "headless",
+          "--patch",
+          patch,
+          "--json",
+          prompt,
+        ],
         { cwd: work, timeout: 300_000, env: { ...process.env, DSH_HOME: home, MIO_API_KEY: key } },
       )
       let out = ""
+      let errors = ""
       child.stdout.on("data", (chunk) => (out += chunk))
-      child.stderr.on("data", (chunk) => (out += chunk))
-      child.on("close", (code) => resolve({ code, out: redact(out) }))
+      child.stderr.on("data", (chunk) => (errors = (errors + chunk).slice(-8192)))
+      child.on("close", (code) => resolve({ code, out: redact(out), errors: redact(errors) }))
     })
 
-  let seen = 0
   for (const [id, prompt, expect] of [
     ["audio", "What is the secret code spoken in speech.mp3? Reply with the code only.", /42|forty[- ]two/i],
-    ["video", "video.mp4 shows two solid colors one after another. Which colors, in order? Reply as: first, second", /red[\s\S]*green/i],
+    [
+      "video",
+      "video.mp4 shows two solid colors one after another. Which colors, in order? Reply as: first, second",
+      /red[\s\S]*green/i,
+    ],
   ]) {
-    const { code, out } = await turn(prompt)
-    // Evidence from the durable session log, not the printed reasoning: a settled tool call by name.
-    const logs = (await readdir(home, { recursive: true })).filter((file) => /\.(jsonl|log|ndjson)$/.test(file) && file.includes("session"))
-    const text = (await Promise.all(logs.map((file) => readFile(join(home, file), "utf8").catch(() => "")))).join("\n")
-    const calls = (text.match(/"name":"mimo_media_read"/g) ?? []).length
-    const called = calls > seen
-    seen = calls
-    const result = { id, code, called, correct: expect.test(out), tail: out.slice(-600) }
+    const { code, out, errors } = await turn(prompt)
+    // Native --json projects committed Session events, including compressed v4 logs.
+    // Do not recursively scan profile node_modules and their linked dependency trees.
+    const events = out
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => JSON.parse(line))
+    const calls = events.filter((event) => event.type === "tool_call" && event.tool === "mimo_media_read")
+    const called = calls.some((call) =>
+      events.some(
+        (event) => event.type === "tool_result" && event.callId === call.callId && event.status === "completed",
+      ),
+    )
+    const text = events.findLast((event) => event.type === "final")?.text ?? ""
+    const result = { id, code, called, correct: expect.test(text), tail: text.slice(-600), errors }
     report.turns.push(result)
     console.log("TOOL_TURN", JSON.stringify(result))
   }

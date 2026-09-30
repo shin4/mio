@@ -7,6 +7,6 @@
   "credentialRef": "MIO_API_KEY",
   "updateOrigin": "https://github.com/shin4/mio/releases/latest/download",
   "enableUltraSpeed": false,
-  "version": "0.5.0-rc.1",
+  "version": "0.5.0",
   "cliCommand": "mio"
 }
