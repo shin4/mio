@@ -5,8 +5,8 @@
 - Baseline: dsh `0.2.0-rc.2`, `639ed015397290b3745d163aafe02ffee4aa3f84`.
 - Target: `dsh-v0.2.1-rc.2`, `687f282e8625c6b8d11ff58211a90524be2e4317` (prerelease).
 - Toolchain: Node 24.18.0, pnpm 11.28.5; target's original lockfile hash is in `desktop/upstream.lock.json`.
-- Product version remains 0.5.0; this is unpublished development source, not a new installer release.
-- Reviewed for a local commit only; no push, release, data import, legacy-package change or `archive/` edit.
+- Upgrade source was committed and pushed as `f4eea4e32`; basic CI and three-platform build CI passed.
+- Release preparation now targets Mio 0.5.1. Publication requires a new successful three-platform installer qualification of the exact release tree. No data import, legacy-package change or `archive/` edit.
 
 ## Native behavior and retained product integration
 
@@ -58,3 +58,11 @@ node ../script/desktop/test-upgrade.mjs
 ```
 
 Preserve the complete application data/home before upgrading. To roll back, restore the complete pre-upgrade backup with the previous binary; do not make the older runtime read newer appended session data.
+
+## Pre-release qualification follow-up
+
+[Qualification run 39620528314](https://github.com/shin4/mio/actions/runs/39620528314) tested upgrade commit `f4eea4e32` with the previous product version. macOS arm64 and Windows x64 passed packaging, packaged-runtime checks and regressions. macOS arm64 passed Developer ID signing, notarization, stapling and Gatekeeper; Windows was explicitly unsigned. macOS x64 passed build and packaged-runtime checks but failed Apple CloudKit ticket validation with `NSURLErrorDomain -1005` and stapler error 68 on both attempts. Its downstream qualification and regressions did not run. This run is **not** release-qualified and is not reused for 0.5.1.
+
+For 0.5.1, the publication workflow must verify all three fresh qualification artifacts against the release source tree, upstream SHA, package hashes and signing evidence before creating the release and update feeds. The published qualification JSON records the final run and per-platform results.
+
+0.5.1 preparation validation: all 9 official build gates passed; Desktop regression passed 28/28 with the previous-build baseline and no skips; lint reported 0 errors and 43 existing warnings. README and entry-page English/Chinese copy were updated. Browser checks confirmed language switching and no horizontal overflow at 390px; download links resolved the current published release and retain a latest-release fallback.
