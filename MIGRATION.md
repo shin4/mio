@@ -35,6 +35,13 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 
 ## Desktop development state
 
+**Development source (2026-10-21):** official dsh `0.2.1-rc.2`
+(`687f282e8625c6b8d11ff58211a90524be2e4317`), pnpm `11.28.5`.
+See [upgrade evidence](docs/dsh-upgrade-0.2.1-rc.2-evidence.md) for validation and remaining release gates.
+Schedule is built in; upstream removes the retired bundle selection while preserving tasks/settings.
+Desktop/Web prefers saved credentials; headless uses the launch environment. No legacy importer
+or runtime-internal fork is introduced. The following release record remains historical.
+
 **Release source (2026-09-30):** the Desktop source pins official dsh
 `0.2.0-rc.2` (`639ed015397290b3745d163aafe02ffee4aa3f84`) and Mio release source `0.5.0`.
 Production follows the stable GitHub release selected as latest; publication changes the feed

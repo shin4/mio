@@ -1,5 +1,5 @@
 diff --git a/apps/desktop-host/package.json b/apps/desktop-host/package.json
-index fe870e6308..f9efcaafd2 100644
+index e79792f5..fbc53003 100644
 --- a/apps/desktop-host/package.json
 +++ b/apps/desktop-host/package.json
 @@ -25,7 +25,8 @@
@@ -13,7 +13,7 @@ index fe870e6308..f9efcaafd2 100644
    "devDependencies": {
      "@deepseek-ai/cordis-plugin-loader": "workspace:~",
 diff --git a/apps/desktop-host/src/cli.ts b/apps/desktop-host/src/cli.ts
-index 97a23b88a2..44adaaa4c6 100644
+index 6c890f89..25f748ef 100644
 --- a/apps/desktop-host/src/cli.ts
 +++ b/apps/desktop-host/src/cli.ts
 @@ -1,3 +1,5 @@
@@ -30,21 +30,8 @@ index 97a23b88a2..44adaaa4c6 100644
    installOfficeEngineResolution(runtimeDir)
    await runCli({
      manageDesktopProfile: true,
-diff --git a/apps/desktop-host/src/index.ts b/apps/desktop-host/src/index.ts
-index 4a47a92ce8..dd8f57c54c 100644
---- a/apps/desktop-host/src/index.ts
-+++ b/apps/desktop-host/src/index.ts
-@@ -27,7 +27,7 @@ async function main(): Promise<void> {
-     profile: 'desktop',
-     resolvedProfile: { profile, installAnchor },
-     patchFiles: [],
--    args: ['--no-open', '--port', '19387'],
-+    args: ['--no-open', '--port', '0'],
-     ...(process.argv[5] === undefined ? {} : {
-       packageManager: {
-         command: process.execPath,
 diff --git a/apps/desktop/installer/extract-report.h b/apps/desktop/installer/extract-report.h
-index c885816c75..dfe8b450f8 100644
+index cdfbbad2..e4cac3e6 100644
 --- a/apps/desktop/installer/extract-report.h
 +++ b/apps/desktop/installer/extract-report.h
 @@ -114,7 +114,7 @@ inline std::wstring Headline(int code, const std::wstring& output, const std::ws
@@ -57,10 +44,10 @@ index c885816c75..dfe8b450f8 100644
      report += L"Result: " + DescribeResult(code) + L"\r\n";
      report += L"Archive: " + archive + L"\r\n";
 diff --git a/apps/desktop/installer/strings.nsh b/apps/desktop/installer/strings.nsh
-index 174ebfa28b..42ead8c8e7 100644
+index a1ac41b4..83cf01e0 100644
 --- a/apps/desktop/installer/strings.nsh
 +++ b/apps/desktop/installer/strings.nsh
-@@ -19,20 +19,20 @@ LangString INSTALLER_BROWSE ${LANG_ENGLISH} "Browse"
+@@ -19,16 +19,16 @@ LangString INSTALLER_BROWSE ${LANG_ENGLISH} "Browse"
  LangString INSTALLER_BROWSE ${LANG_SIMPCHINESE} "选择"
  LangString INSTALLER_LAUNCH ${LANG_ENGLISH} "Launch now"
  LangString INSTALLER_LAUNCH ${LANG_SIMPCHINESE} "立即启动"
@@ -78,6 +65,11 @@ index 174ebfa28b..42ead8c8e7 100644
 -LangString INSTALLER_RUNNING ${LANG_SIMPCHINESE} "DeepSeek Harness 正在运行，请先在系统托盘中退出应用后重试。"
 +LangString INSTALLER_RUNNING ${LANG_ENGLISH} "Mio is running. Quit it from the system tray and try again."
 +LangString INSTALLER_RUNNING ${LANG_SIMPCHINESE} "Mio 正在运行，请先在系统托盘中退出应用后重试。"
+ LangString INSTALLER_DIRECTORY_FAILED ${LANG_ENGLISH} "The installation directory could not be replaced."
+ LangString INSTALLER_DIRECTORY_FAILED ${LANG_SIMPCHINESE} "无法替换安装目录。"
+ LangString INSTALLER_DIRECTORY_HINT ${LANG_ENGLISH} "Check access to the installation directory and close programs using its files, then run the installer again. Copy the error details if the problem persists."
+@@ -37,8 +37,8 @@ LangString INSTALLER_DIRECTORY_RESTORE_HINT ${LANG_ENGLISH} "The previous instal
+ LangString INSTALLER_DIRECTORY_RESTORE_HINT ${LANG_SIMPCHINESE} "未能恢复原安装目录。请保留错误详情中列出的备份目录，联系支持人员后再安装。"
  LangString INSTALLER_PATH_INVALID ${LANG_ENGLISH} "Choose a full local folder path. Drive roots, system folders, links and special characters are not supported."
  LangString INSTALLER_PATH_INVALID ${LANG_SIMPCHINESE} "请选择本地磁盘上的完整文件夹路径，不能使用磁盘根目录、系统目录、链接目录或包含特殊字符的路径。"
 -LangString INSTALLER_PATH_OWNERSHIP ${LANG_ENGLISH} "Choose an empty folder or the registered DeepSeek Harness installation folder."
@@ -88,7 +80,7 @@ index 174ebfa28b..42ead8c8e7 100644
  LangString INSTALLER_PATH_WRITABLE ${LANG_SIMPCHINESE} "无法写入此位置。请选择当前用户可写入的文件夹；安装程序不会申请管理员权限。"
  LangString INSTALLER_DISK_SPACE ${LANG_ENGLISH} "There is not enough free disk space. Choose another location."
 diff --git a/apps/desktop/installer/uninstall.nsh b/apps/desktop/installer/uninstall.nsh
-index defdd15923..92e56a8822 100644
+index defdd159..92e56a88 100644
 --- a/apps/desktop/installer/uninstall.nsh
 +++ b/apps/desktop/installer/uninstall.nsh
 @@ -25,12 +25,5 @@ Function un.CleanData
@@ -106,12 +98,12 @@ index defdd15923..92e56a8822 100644
 +  ; Mio sets app.name explicitly and does not own the upstream package-name or updater cache directories.
  FunctionEnd
 diff --git a/apps/desktop/package.json b/apps/desktop/package.json
-index 3eaf57f56a..bdc8663fdc 100644
+index 1d44f92b..3288aaba 100644
 --- a/apps/desktop/package.json
 +++ b/apps/desktop/package.json
-@@ -45,7 +45,8 @@
+@@ -47,7 +47,8 @@
      "semver": "^7.8.5",
-     "ws": "^8.21.0",
+     "ws": "^8.21.3",
      "@deepseek-ai/dsh-api-gateway": "workspace:*",
 -    "@deepseek-ai/cordis": "workspace:~"
 +    "@deepseek-ai/cordis": "workspace:~",
@@ -120,7 +112,7 @@ index 3eaf57f56a..bdc8663fdc 100644
    "devDependencies": {
      "@deepseek-ai/dsh-app-boot": "workspace:*",
 diff --git a/apps/desktop/renderer/assets/welcome-brand.svg b/apps/desktop/renderer/assets/welcome-brand.svg
-index 67c917d0bc..a708103ea8 100644
+index 67c917d0..a708103e 100644
 --- a/apps/desktop/renderer/assets/welcome-brand.svg
 +++ b/apps/desktop/renderer/assets/welcome-brand.svg
 @@ -1,44 +1 @@
@@ -170,7 +162,7 @@ index 67c917d0bc..a708103ea8 100644
 -</svg>
 +<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 472 40" role="img" aria-label="Mio"><g transform="translate(188 -15) scale(.065)"><path fill="#FF6900" d="M150 430C324 376 464 430 512 548C560 430 700 376 874 430C800 520 700 570 598 588C586 640 590 700 612 758C576 788 448 788 412 758C434 700 438 640 426 588C324 570 224 520 150 430Z"/></g><text x="251" y="31" fill="#C85100" font-size="32" font-weight="600" font-family="system-ui,sans-serif">Mio</text></svg>
 diff --git a/apps/desktop/renderer/welcome.css b/apps/desktop/renderer/welcome.css
-index 3b4da2defb..fca69c4c85 100644
+index 3b4da2de..fca69c4c 100644
 --- a/apps/desktop/renderer/welcome.css
 +++ b/apps/desktop/renderer/welcome.css
 @@ -341,3 +341,13 @@ body {
@@ -188,32 +180,41 @@ index 3b4da2defb..fca69c4c85 100644
 +  body { --dsw-alias-brand-primary: #FF9A55; --dsw-alias-button-primary-hover: #FFB680; }
 +}
 diff --git a/apps/desktop/scripts/desktop-package-environment.mjs b/apps/desktop/scripts/desktop-package-environment.mjs
-index 3addf3ff65..557f7a659e 100644
+index 8116dea2..22b63a1c 100644
 --- a/apps/desktop/scripts/desktop-package-environment.mjs
 +++ b/apps/desktop/scripts/desktop-package-environment.mjs
 @@ -1,3 +1,4 @@
 +import { mioProduct } from './mio-product.mjs'
- /** Load platform-local release settings without changing the caller's process environment. */
+ /** Select local test defaults or platform release settings without changing the caller's environment. */
  
  import { accessSync, constants, readFileSync, statSync } from 'node:fs'
-@@ -5,9 +6,7 @@ import { dirname, join, resolve } from 'node:path'
+@@ -5,9 +6,7 @@ import { dirname, isAbsolute, join, resolve } from 'node:path'
  import { fileURLToPath } from 'node:url'
  import { parseEnv } from 'node:util'
  import { resolveDesktopAppId, resolveMacOSNotarizationEnvironment, resolveMacOSSigningEnvironment, resolveNpmRegistry } from './desktop-release-environment.mjs'
 -import { resolveDesktopAutoUpdateConfig } from './desktop-auto-update-environment.mjs'
  import { createWindowsTokenSigner } from './windows-sign.mjs'
 -import { resolveDesktopPolicyEnvironment } from './desktop-policy-environment.mjs'
+ import { validateMacOSSignatureCacheDirectory } from './macos-signature-cache-directory.mjs'
  import { resolveMacOSPackageSettings } from './macos-package-settings.mjs'
  import { resolveWindowsSignatureCacheDirectory } from './windows-signature-cache-directory.mjs'
- import { resolveWindowsPackageSettings } from './windows-package-settings.mjs'
-@@ -77,13 +76,12 @@ function requireReadableFile(environment, name) {
+@@ -28,7 +27,7 @@ const FILE_SETTINGS = ['DSH_DESKTOP_WINDOWS_CER_FILE', 'DSH_DESKTOP_WINDOWS_SIGN
+ export function localMacOSPackageEnvironment(environment = process.env) {
+   return {
+     ...Object.fromEntries(Object.entries(environment).filter(([name]) => !AMBIENT_RELEASE_SETTING.test(name))),
+-    DSH_DESKTOP_APP_ID: 'com.deepseek.harness',
++    DSH_DESKTOP_APP_ID: mioProduct.appId,
+     DSH_DESKTOP_UNSIGNED: '1',
+   }
+ }
+@@ -134,13 +133,12 @@ function requireReadableFile(environment, name) {
   * @returns {void}
   */
  export function validateDesktopPackageEnvironment(environment, target, options = {}) {
 -  resolveDesktopAppId(environment)
 +  if (resolveDesktopAppId(environment) !== mioProduct.appId) throw new Error('Desktop release app ID must match desktop/product.json')
    resolveNpmRegistry(environment)
--  resolveDesktopPolicyEnvironment(environment)
+-  if (target.platform !== 'darwin' || !options.unsigned) resolveDesktopPolicyEnvironment(environment)
 +  // Mio has no mandatory-update policy service and publishes its feed to GitHub Releases, not COS.
    if (target.platform === 'darwin') resolveMacOSPackageSettings(environment)
    else resolveWindowsPackageSettings(environment)
@@ -223,7 +224,7 @@ index 3addf3ff65..557f7a659e 100644
      if (!options.prepareOnly) createWindowsTokenSigner({
        certificateFile: environment.DSH_DESKTOP_WINDOWS_CER_FILE,
 diff --git a/apps/desktop/scripts/dev.ts b/apps/desktop/scripts/dev.ts
-index 1ae2f3e952..6318da7160 100644
+index 37515c20..86cea5d7 100644
 --- a/apps/desktop/scripts/dev.ts
 +++ b/apps/desktop/scripts/dev.ts
 @@ -78,7 +78,7 @@ async function launchElectron(): Promise<void> {
@@ -236,7 +237,7 @@ index 1ae2f3e952..6318da7160 100644
      return
    }
 diff --git a/apps/desktop/scripts/development-app.ts b/apps/desktop/scripts/development-app.ts
-index ff09b8b783..75d95de414 100644
+index ff09b8b7..75d95de4 100644
 --- a/apps/desktop/scripts/development-app.ts
 +++ b/apps/desktop/scripts/development-app.ts
 @@ -1,7 +1,7 @@
@@ -301,7 +302,7 @@ index ff09b8b783..75d95de414 100644
      DSH_DESKTOP_HOST_INSPECT_PORT: String(options.hostPort),
      DSH_DESKTOP_OPEN_DEVTOOLS: options.openDevtools,
 diff --git a/apps/desktop/scripts/electron-builder-config.mjs b/apps/desktop/scripts/electron-builder-config.mjs
-index 1fb787803c..be921513e4 100644
+index 4b9cd27a..93e2086d 100644
 --- a/apps/desktop/scripts/electron-builder-config.mjs
 +++ b/apps/desktop/scripts/electron-builder-config.mjs
 @@ -1,3 +1,4 @@
@@ -325,21 +326,28 @@ index 1fb787803c..be921513e4 100644
  import { resolveDesktopBuildCommit } from './desktop-build-commit.mjs'
  import { resolveDesktopBuildVersion } from './desktop-build-version.mjs'
 -import { resolveDesktopPolicyEnvironment } from './desktop-policy-environment.mjs'
- import { desktopTargetBuildPaths, resolveDesktopBuildTarget } from './desktop-build-paths.mjs'
+ import { desktopArtifactOutput, desktopTargetBuildPaths, resolveDesktopBuildTarget } from './desktop-build-paths.mjs'
  import { installWindowsDirectoryInstaller } from './windows-directory-installer.mjs'
  import { preserveWindowsRuntimeSignature, signWindowsCode } from './windows-runtime-signature.mjs'
-@@ -50,8 +48,8 @@ export function createElectronBuilderConfig(
+@@ -50,7 +48,6 @@ export function createElectronBuilderConfig(
    preparedRuntime = undefined,
    preparedRuntimeVersion = undefined,
  ) {
 -  const appId = resolveDesktopAppId(env)
--  const policy = resolveDesktopPolicyEnvironment(env)
-+  // Mio has no mandatory-update policy service; ordinary updates come from the GitHub Releases feed.
-+  const policy = undefined
    const targetPlatform = env.DSH_DESKTOP_TARGET_PLATFORM
    const resolvedPlatform = targetPlatform ?? hostPlatform
    const resolvedArch = env.DSH_DESKTOP_TARGET_ARCH ?? hostArch
-@@ -90,25 +88,29 @@ export function createElectronBuilderConfig(
+@@ -65,7 +62,8 @@ export function createElectronBuilderConfig(
+   if (skipNotarization && (unsigned || resolvedPlatform !== 'darwin')) throw new Error('Skipping notarization requires a signed macOS build')
+   const packagesMacOS = targetPlatform === 'darwin' || (targetPlatform === undefined && hostPlatform === 'darwin')
+   const packagesWindows = resolvedPlatform === 'win32'
+-  const policy = packagesMacOS && unsigned ? undefined : resolveDesktopPolicyEnvironment(env)
++  // Mio uses its GitHub update feed without DeepSeek's mandatory-update service.
++  const policy = undefined
+   if (resolvedPlatform === 'win32') installWindowsDirectoryInstaller()
+   const macOSSigning = packagesMacOS && !unsigned ? resolveMacOSSigningEnvironment(env) : undefined
+   if (packagesMacOS && !unsigned && !skipNotarization) resolveMacOSNotarizationEnvironment(env)
+@@ -95,27 +93,30 @@ export function createElectronBuilderConfig(
    if (windowsSigner !== undefined) {
      installWindowsNsisBootstrapSigner({ sign: windowsSigner })
    }
@@ -347,13 +355,14 @@ index 1fb787803c..be921513e4 100644
 +  // One flat feed for every target: Windows reads nightly.yml, and both macOS architectures share a
 +  // nightly-mac.yml merged at publication (electron-updater picks the arm64 or x64 ZIP by name).
 +  // The approved unsigned Windows build is included; its updates are integrity-checked by SHA-512 only.
-+  const update = mioProduct.updateOrigin === null ? undefined : { publicUrl: `${mioProduct.updateOrigin}/` }
++  const update = mioProduct.updateOrigin === null ? undefined : { publicUrl: `${mioProduct.updateOrigin}/`, channel: 'nightly' }
    if (preparedRuntime !== undefined) buildPaths.dsh = preparedRuntime
    // electron-builder merges extraMetadata into the packaged manifest, so a build version here reaches
    // the artifact names, the update feed, and the installed app.getVersion() the updater compares against.
 -  const productVersion = JSON.parse(readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8')).version
 +  const productVersion = mioProduct.version
    const buildVersion = resolveDesktopBuildVersion(env, productVersion)
+   if (update?.channel === 'latest' && buildVersion.includes('-')) throw new Error('desktop package: latest requires a stable version')
    const packaged = resolveDesktopBuildCommit(env)
    return {
 -    appId,
@@ -362,35 +371,38 @@ index 1fb787803c..be921513e4 100644
 +    protocols: [{ name: mioProduct.name, schemes: [mioProduct.protocol] }],
      extraMetadata: {
 -      dshDesktopAppId: appId,
+-      dshDesktopUpdateChannel: update?.channel ?? 'nightly',
+-      ...(policy === undefined ? {} : { dshMandatoryUpdatePolicy: policy }),
+-      ...buildVersion === productVersion ? {} : { version: buildVersion },
 +      name: 'mio-desktop',
 +      dshDesktopAppId: mioProduct.appId,
-       dshMandatoryUpdatePolicy: policy,
--      ...buildVersion === productVersion ? {} : { version: buildVersion },
++      dshDesktopUpdateChannel: 'nightly',
 +      version: buildVersion,
        ...packaged === undefined ? {} : { dshBuildCommit: packaged.commit, dshBuildDirty: packaged.dirty },
      },
 -    productName: 'DeepSeek Harness',
 +    productName: mioProduct.name,
      // Unsigned builds carry their own suffix so a shared file can never pass for a release artifact.
--    artifactName: `deepseek-harness-\${version}-\${os}-\${arch}${unsigned ? '-unsigned' : ''}.\${ext}`,
-+    artifactName: `mio-\${version}-\${os}-\${arch}${unsigned ? '-unsigned' : ''}.\${ext}`,
-     directories: { output: unsigned ? buildPaths.unsignedArtifacts : buildPaths.artifacts },
+-    artifactName: `deepseek-harness-\${version}-\${os}-\${arch}${output.suffix}.\${ext}`,
++    artifactName: `mio-\${version}-\${os}-\${arch}${output.suffix}.\${ext}`,
+     directories: { output: output.directory },
      asar: true,
      electronDist: buildPaths.electron,
-@@ -151,11 +153,10 @@ export function createElectronBuilderConfig(
+@@ -160,12 +161,11 @@ export function createElectronBuilderConfig(
        icon: fileURLToPath(new URL('../resources/icon-macos.png', import.meta.url)),
        category: 'public.app-category.developer-tools',
        // macOS matches the application locale against this bundle, not Electron Framework resources.
 -      extendInfo: { CFBundleLocalizations: ['en', 'zh_CN'] },
-       identity: macOSSigning?.signingIdentity,
-       forceCodeSigning: true,
+       // Ad-hoc signing keeps the modified Electron executable runnable without a Developer ID.
+       identity: unsigned ? '-' : macOSSigning?.signingIdentity,
+       forceCodeSigning: !unsigned,
        hardenedRuntime: true,
 -      extendInfo: { NSMicrophoneUsageDescription: 'DeepSeek Harness uses your microphone to transcribe speech into message drafts.' },
 +      extendInfo: { CFBundleLocalizations: ['en', 'zh_CN'], NSMicrophoneUsageDescription: 'Mio uses your microphone to transcribe speech into message drafts.' },
        entitlements: fileURLToPath(new URL('./macos-entitlements.plist', import.meta.url)),
        entitlementsInherit: fileURLToPath(new URL('./macos-entitlements.plist', import.meta.url)),
-       // ASAR-unpacked native runtime files are pre-signed; PAK resources are sealed by their enclosing bundle.
-@@ -191,7 +192,7 @@ export function createElectronBuilderConfig(
+       // Prepared runtime files retain their signatures; PAK resources are sealed by their enclosing bundle.
+@@ -202,7 +202,7 @@ export function createElectronBuilderConfig(
        // The bundled runtime declares whichever version prepared it: the product version for an ordinary
        // release, and a rewritten one for installed-update qualification.
        await verifyDesktopRuntime(buildPaths.dsh,
@@ -400,7 +412,7 @@ index 1fb787803c..be921513e4 100644
        if (packagesWindows && unsigned) await verifyWindowsAsarUnpack(buildPaths.dsh, resourcesDir, windowsCode)
      },
 diff --git a/apps/desktop/scripts/package-macos.ts b/apps/desktop/scripts/package-macos.ts
-index c1a2cb5c71..e9f8d12a39 100644
+index 4ba0fd12..6f6d4545 100644
 --- a/apps/desktop/scripts/package-macos.ts
 +++ b/apps/desktop/scripts/package-macos.ts
 @@ -1,5 +1,6 @@
@@ -459,16 +471,16 @@ index c1a2cb5c71..e9f8d12a39 100644
        [dmgOutput, `${base}.dmg`],
        [zipOutput, `${base}.zip`],
 -      [zipOutput, `${base}.zip.blockmap`],
--      [zipOutput, desktopUpdateMetadataFilename(version, 'darwin')],
+-      [zipOutput, desktopUpdateMetadataFilename(version, 'darwin', update.channel)],
 +      ...(update ? [
 +        [zipOutput, `${base}.zip.blockmap`],
-+        [zipOutput, desktopUpdateMetadataFilename(version, 'darwin')],
++        [zipOutput, desktopUpdateMetadataFilename(version, 'darwin', 'nightly')],
 +      ] as const : []),
      ] as const
      for (const [output, filename] of artifacts) {
        const file = join(output, filename)
 diff --git a/apps/desktop/scripts/package-target.ts b/apps/desktop/scripts/package-target.ts
-index 62f4fcbbb2..6784feac53 100644
+index be2f577e..bbc891eb 100644
 --- a/apps/desktop/scripts/package-target.ts
 +++ b/apps/desktop/scripts/package-target.ts
 @@ -1,3 +1,4 @@
@@ -482,9 +494,9 @@ index 62f4fcbbb2..6784feac53 100644
    desktopBuildRecordFilename,
 -  resolveDesktopAutoUpdateConfig,
  } from './desktop-auto-update-environment.mjs'
- import { desktopTargetBuildPaths } from './desktop-build-paths.mjs'
+ import { desktopArtifactOutput, desktopTargetBuildPaths } from './desktop-build-paths.mjs'
  import { packageMacOSArtifacts, type DesktopPrepackagedArtifact } from './package-macos.ts'
-@@ -143,17 +143,16 @@ function writeReleaseRecord(
+@@ -143,18 +143,17 @@ function writeReleaseRecord(
    if (desktopVersion !== dshVersion) {
      throw new Error(`desktop package: desktop version ${desktopVersion} does not match dsh version ${dshVersion}`)
    }
@@ -499,13 +511,15 @@ index 62f4fcbbb2..6784feac53 100644
      target: target.name,
      version: buildVersion,
 -    environment: update.environment,
+-    channel: update.channel,
 -    publicUrl: update.publicUrl,
 +    environment: 'mio',
++    channel: 'nightly',
 +    publicUrl: mioProduct.updateOrigin,
      // Upload reads this to tag the commit a production release was packaged from.
      ...packaged === undefined ? {} : { commit: packaged.commit, dirty: packaged.dirty },
    }, null, 2)}\n`)
-@@ -321,6 +320,8 @@ async function resolveRequestedBuildVersion(
+@@ -327,6 +326,8 @@ async function resolveRequestedBuildVersion(
    const requested = invocation.requestedBuildVersion
    if (requested === undefined) return productVersion
    if (requested !== AUTOMATIC_BUILD_VERSION) return validateDesktopBuildVersion(requested, productVersion)
@@ -513,26 +527,17 @@ index 62f4fcbbb2..6784feac53 100644
 +  if (environment.DSH_DESKTOP_AUTO_UPDATE_ENV === undefined) throw new Error('Mio has no automatic version discovery')
    const paths = desktopTargetBuildPaths(invocation.target.name)
    return suggestDesktopBuildVersion({
-     productVersion, target: invocation.target.name, environment,
-@@ -333,7 +334,7 @@ async function main(): Promise<void> {
-   const invocation = parseDesktopPackageInvocation(process.argv.slice(2))
-   const { target } = invocation
-   const environment = loadDesktopPackageEnvironment(target.platform)
+     productVersion, target: invocation.target.name,
+@@ -348,7 +349,7 @@ async function main(): Promise<void> {
+     : loadDesktopPackageEnvironment(target.platform, process.env, APP_ROOT, {
+       unsigned: invocation.unsigned, prepareOnly: invocation.prepareOnly,
+     })
 -  const productVersion = packageVersion(join(APP_ROOT, 'package.json'), 'desktop package')
 +  const productVersion = mioProduct.version
-   // Release settings come from the target dotenv file alone, so the version this run publishes is an
+   // Release settings come from the selected configuration files, so the version this run publishes is an
    // argument; the environment variable below only carries it to the child processes that build.
    const buildVersion = await resolveRequestedBuildVersion(invocation, productVersion, environment)
-@@ -447,7 +448,7 @@ export async function packageTarget(
-         { cwd: APP_ROOT, env: electronBuilderEnv, timeoutMs: 60_000 })
-     })
-   }
--  await execute(['run', 'build:official'], buildEnv, REPOSITORY_ROOT)
-+  await execute(['run', 'build', '--profile', 'official'], buildEnv, REPOSITORY_ROOT)
-   await execute(['run', 'release:pack', '--family', 'dsh', '--out', buildPaths.packedDsh, ...packArguments], buildEnv, REPOSITORY_ROOT)
-   await execute([
-     '--dir',
-@@ -456,6 +457,11 @@ export async function packageTarget(
+@@ -482,6 +483,11 @@ export async function packageTarget(
      '--pack-destination',
      buildPaths.packedDsh,
    ], buildEnv, REPOSITORY_ROOT)
@@ -544,7 +549,7 @@ index 62f4fcbbb2..6784feac53 100644
    await execute(['run', 'release:pack', '--family', 'vendor', '--out', buildPaths.packedVendor, ...packArguments], buildEnv, REPOSITORY_ROOT)
    rmSync(buildPaths.packedLandlock, { recursive: true, force: true })
    mkdirSync(buildPaths.packedLandlock, { recursive: true })
-@@ -482,14 +488,14 @@ export async function packageTarget(
+@@ -508,14 +514,14 @@ export async function packageTarget(
      await withMacOSNotarizationProxy(mac?.notarizationProxy, () => packageMacOSArtifacts({
        arch: target.arch,
        // electron-builder named these artifacts after the published version, so locating them uses the same identifier.
@@ -553,7 +558,7 @@ index 62f4fcbbb2..6784feac53 100644
        artifactsRoot: buildPaths.artifacts,
        environment: electronBuilderEnv,
      }, artifact => execute(desktopElectronBuilderArguments(target, false, artifact), electronBuilderEnv)), undefined, undefined, proxyEvent)
-   } else if (target.platform === 'darwin') {
+   } else if (target.platform === 'darwin' && !invocation.unsigned && !invocation.skipNotarization) {
      await execute([...desktopElectronBuilderArguments(target, true), '--config.mac.notarize=false'], electronBuilderEnv)
      await execute(['exec', 'tsx', 'scripts/smoke-packaged-runtime.ts'], targetEnv)
 -    const appPath = join(buildPaths.artifacts, target.arch === 'arm64' ? 'mac-arm64' : 'mac', 'DeepSeek Harness.app')
@@ -562,7 +567,7 @@ index 62f4fcbbb2..6784feac53 100644
        () => notarizeMacOS({ appPath, ...resolveMacOSNotarizationEnvironment(environment) }), undefined, undefined, proxyEvent)
    } else {
 diff --git a/apps/desktop/scripts/prepare-cli.ts b/apps/desktop/scripts/prepare-cli.ts
-index d2b9e14200..b4f1c5fe13 100644
+index d2b9e142..b4f1c5fe 100644
 --- a/apps/desktop/scripts/prepare-cli.ts
 +++ b/apps/desktop/scripts/prepare-cli.ts
 @@ -1,17 +1,26 @@
@@ -603,29 +608,29 @@ index d2b9e14200..b4f1c5fe13 100644
 +    .replaceAll('DeepSeekHarness', mioProduct.appId))
 +}
 diff --git a/apps/desktop/scripts/prepare-runtime.ts b/apps/desktop/scripts/prepare-runtime.ts
-index 1b88f091bc..363dc41391 100644
+index ba92fef0..bc088295 100644
 --- a/apps/desktop/scripts/prepare-runtime.ts
 +++ b/apps/desktop/scripts/prepare-runtime.ts
-@@ -10,7 +10,7 @@ import { downloadArtifact } from '@electron/get'
- import extractZip from 'extract-zip'
- import { resolveDesktopBuildTarget, resolveDesktopTargetBuildPaths } from './desktop-build-paths.mjs'
+@@ -11,7 +11,7 @@ import { readPrimaryRuntime } from '../../../packages/skill/tool-workspace-depen
+ import { desktopTargetPlatform, resolveDesktopBuildTarget, resolveDesktopTargetBuildPaths } from './desktop-build-paths.mjs'
+ import { packagingStep } from './packaging-step.mjs'
  import { preparePrimaryRuntime } from './prepare-primary-runtime.ts'
 -import { prepareDesktopCli } from './prepare-cli.ts'
 +import { prepareDesktopCli, prepareDesktopCommandPath } from './prepare-cli.ts'
  import { prepareCommandLink } from './prepare-command-link.ts'
  
  const BUILD_PATHS = resolveDesktopTargetBuildPaths()
-@@ -59,7 +59,7 @@ async function main(): Promise<void> {
-     async () => prepareDesktopCli(join(RUNTIME_ROOT, 'cli'), platform))
-   if (macosMinimumVersion !== undefined) prepareCommandLink(join(RUNTIME_ROOT, 'cli'), arch, macosMinimumVersion)
-   cpSync(join(import.meta.dirname, '..', 'lib', 'command-manager-entry.js'), join(RUNTIME_ROOT, 'cli', 'command-manager.js'))
--  cpSync(join(import.meta.dirname, 'command-path.ps1'), join(RUNTIME_ROOT, 'cli', 'command-path.ps1'))
-+  prepareDesktopCommandPath(join(RUNTIME_ROOT, 'cli'))
-   await packagingStep(process.env.DSH_DESKTOP_PACKAGING_RUN_DIR, 'prepare:primary-runtime',
-     () => preparePrimaryRuntime({ deferSmoke: values['defer-primary-runtime-smoke'] }))
+@@ -45,7 +45,7 @@ function prepareCli({ platform, arch }: DesktopTarget): void {
+     prepareCommandLink(cli, arch, minimumVersion)
+   }
+   cpSync(join(import.meta.dirname, '..', 'lib', 'command-manager-entry.js'), join(cli, 'command-manager.js'))
+-  cpSync(join(import.meta.dirname, 'command-path.ps1'), join(cli, 'command-path.ps1'))
++  prepareDesktopCommandPath(cli)
  }
+ 
+ async function main(): Promise<void> {
 diff --git a/apps/desktop/scripts/smoke-packaged-runtime.ts b/apps/desktop/scripts/smoke-packaged-runtime.ts
-index 106830b5ad..b30e6ed057 100644
+index 6c3c12c8..1bca3d1a 100644
 --- a/apps/desktop/scripts/smoke-packaged-runtime.ts
 +++ b/apps/desktop/scripts/smoke-packaged-runtime.ts
 @@ -1,5 +1,7 @@
@@ -634,11 +639,11 @@ index 106830b5ad..b30e6ed057 100644
 +import { cp, mkdtemp, realpath, rm } from 'node:fs/promises'
 +import { tmpdir } from 'node:os'
  import { parseArgs } from 'node:util'
- import { resolveDesktopBuildTarget, resolveDesktopTargetBuildPaths } from './desktop-build-paths.mjs'
+ import { desktopArtifactOutput, resolveDesktopBuildTarget, resolveDesktopTargetBuildPaths } from './desktop-build-paths.mjs'
  import { readDesktopRuntime, verifyDesktopRuntime } from '../src/runtime-tree.ts'
-@@ -14,10 +16,27 @@ const windows = target === 'win-x64'
- if (values.unsigned && !windows) throw new Error('desktop smoke: unsigned artifacts require Windows')
- const artifacts = values.unsigned ? paths.unsignedArtifacts : paths.artifacts
+@@ -13,10 +15,27 @@ const target = resolveDesktopBuildTarget()
+ const windows = target === 'win-x64'
+ const artifacts = desktopArtifactOutput(paths, { unsigned: values.unsigned, skipNotarization: values['skip-notarization'] }).directory
  const application = windows ? join(artifacts, 'win-unpacked')
 -  : join(artifacts, target === 'mac-arm64' ? 'mac-arm64' : 'mac', 'DeepSeek Harness.app', 'Contents')
 +  : join(artifacts, target === 'mac-arm64' ? 'mac-arm64' : 'mac', 'Mio.app', 'Contents')
@@ -668,18 +673,18 @@ index 106830b5ad..b30e6ed057 100644
 +  }
 +}
 diff --git a/apps/desktop/scripts/smoke-runtime.ts b/apps/desktop/scripts/smoke-runtime.ts
-index f15f10a928..8af75b8c65 100644
+index bbc2d3e7..32d0f053 100644
 --- a/apps/desktop/scripts/smoke-runtime.ts
 +++ b/apps/desktop/scripts/smoke-runtime.ts
 @@ -1,6 +1,6 @@
  /** Boot the materialized target runtime without access to a user's Harness profile. */
  
--import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+-import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
++import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
+ import { rm } from 'node:fs/promises'
  import { tmpdir } from 'node:os'
  import { join } from 'node:path'
- import { execFile } from 'node:child_process'
-@@ -23,7 +23,8 @@ import type { DesktopRuntimeDescriptor } from '../src/runtime-tree.ts'
+@@ -24,11 +24,12 @@ import type { DesktopRuntimeDescriptor } from '../src/runtime-tree.ts'
  export async function smokeDesktopRuntime(
    root: string, node: string, runtime: DesktopRuntimeDescriptor, environment: NodeJS.ProcessEnv, resourcesRuntime: string,
  ): Promise<void> {
@@ -687,32 +692,15 @@ index f15f10a928..8af75b8c65 100644
 +  // Canonicalize Windows TEMP aliases before creating the external plugin profile.
 +  const home = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-desktop-smoke-')))
    const profile = join(home, 'profiles', 'desktop')
-   const host = new DesktopHostProcess(node, root, profile, undefined, { ...environment, DSH_HOME: home },
-     undefined, join(resourcesRuntime, 'primary-runtime'),
-@@ -110,7 +111,20 @@ export function apply(ctx) {
-       throw new Error('desktop runtime: packaged frontend smoke failed')
-     }
-     const pluginResponse = await fetch(new URL('/desktop-smoke', ready.url), { headers: { cookie } })
--    if (await pluginResponse.text() !== 'plugin route ready') throw new Error('desktop runtime: plugin HTTP route failed')
-+    const pluginBody = await pluginResponse.text()
-+    if (pluginBody !== 'plugin route ready') {
-+      // Emit only fixed diagnostic categories, never arbitrary plugin stderr or credentials.
-+      const diagnostic = String(Reflect.get(host, 'stderr'))
-+      const flags = {
-+        testBundleSkipped: diagnostic.includes('skipping profile bundle "desktop-runtime-smoke-plugin"'),
-+        bundleMissing: diagnostic.includes('cannot resolve profile bundle'),
-+        moduleMissing: diagnostic.includes('Cannot find module') || diagnostic.includes('ERR_MODULE_NOT_FOUND'),
-+        fileMissing: diagnostic.includes('ENOENT'),
-+        incompatiblePeer: diagnostic.includes('is incompatible with dsh'),
-+        duplicateCordis: diagnostic.includes('external plugin loaded another Cordis instance'),
-+      }
-+      throw new Error(`desktop runtime: plugin HTTP route failed (${pluginResponse.status}); ${JSON.stringify(flags)}`)
-+    }
-     for (const { extension } of inputs) {
-       const converted = await fetch(new URL(`/desktop-smoke-office/${extension}`, ready.url), {
-         headers: { cookie }, signal: AbortSignal.timeout(120_000),
+   const hostEnvironment = {
+     ...Object.fromEntries(Object.entries(environment).filter(([name]) => !/^(?:npm|pnpm|corepack)_/iu.test(name))),
+-    DSH_HOME: home, HOME: home, USERPROFILE: home,
++    MIO_HOME: home, DSH_HOME: home, HOME: home, USERPROFILE: home,
+     XDG_CONFIG_HOME: home, XDG_CACHE_HOME: home, XDG_STATE_HOME: home,
+     APPDATA: home, LOCALAPPDATA: home,
+     npm_config_userconfig: join(home, 'npmrc'), npm_config_globalconfig: join(home, 'npmrc'),
 diff --git a/apps/desktop/src/client/WelcomePage.tsx b/apps/desktop/src/client/WelcomePage.tsx
-index b367061732..a19c076ad9 100644
+index b3670617..a19c076a 100644
 --- a/apps/desktop/src/client/WelcomePage.tsx
 +++ b/apps/desktop/src/client/WelcomePage.tsx
 @@ -27,6 +27,7 @@ export function Welcome({ api }: { api: WelcomeApi }) {
@@ -788,7 +776,7 @@ index b367061732..a19c076ad9 100644
        <div id="key-actions" className="actions" hidden={page !== 'key'}>
          <button id="save-key" className="primary" type="submit" form="key-form" disabled={busy || draft.trim() === ''}>{m.welcomeKeySave}</button>
 diff --git a/apps/desktop/src/command-installation.ts b/apps/desktop/src/command-installation.ts
-index 3e181ae984..8f602fab88 100644
+index 3e181ae9..8f602fab 100644
 --- a/apps/desktop/src/command-installation.ts
 +++ b/apps/desktop/src/command-installation.ts
 @@ -1,3 +1,4 @@
@@ -833,7 +821,7 @@ index 3e181ae984..8f602fab88 100644
      try {
        await symlink(options.launcher, pending)
 diff --git a/apps/desktop/src/command-management.ts b/apps/desktop/src/command-management.ts
-index 34c7848dfb..86f00a5901 100644
+index 34c7848d..86f00a59 100644
 --- a/apps/desktop/src/command-management.ts
 +++ b/apps/desktop/src/command-management.ts
 @@ -1,3 +1,4 @@
@@ -860,7 +848,7 @@ index 34c7848dfb..86f00a5901 100644
    const value = stdout.split('\0DSH_COMMAND\0')[1]?.split('\0')[0]?.trim()
    if (value === undefined) return { selectionUnknown: true }
 diff --git a/apps/desktop/src/command-manager-entry.ts b/apps/desktop/src/command-manager-entry.ts
-index edfd61c217..62b4eaaee4 100644
+index edfd61c2..62b4eaae 100644
 --- a/apps/desktop/src/command-manager-entry.ts
 +++ b/apps/desktop/src/command-manager-entry.ts
 @@ -1,3 +1,4 @@
@@ -878,7 +866,7 @@ index edfd61c217..62b4eaaee4 100644
      const state = operation === 'inspect' ? await inspectFileCommand(options)
        : operation === 'install' ? await installFileCommand(options, fingerprint) : await removeFileCommand(options, fingerprint)
 diff --git a/apps/desktop/src/locale.ts b/apps/desktop/src/locale.ts
-index 5d9d4607c7..f9bf9c5568 100644
+index 5d9d4607..f9bf9c55 100644
 --- a/apps/desktop/src/locale.ts
 +++ b/apps/desktop/src/locale.ts
 @@ -1,13 +1,14 @@
@@ -1125,7 +1113,7 @@ index 5d9d4607c7..f9bf9c5568 100644
    updateDetail: '下载完成后，可安装并重启应用。',
    installAndRestart: '安装并重启',
 diff --git a/apps/desktop/src/main.ts b/apps/desktop/src/main.ts
-index b4b8153b7f..7d98d3b349 100644
+index 2afdfd71..6bd3ae0c 100644
 --- a/apps/desktop/src/main.ts
 +++ b/apps/desktop/src/main.ts
 @@ -1,4 +1,6 @@
@@ -1135,7 +1123,7 @@ index b4b8153b7f..7d98d3b349 100644
  import { WINDOWS_TITLEBAR_HEIGHT } from './windows-layout.ts'
  /** Electron shell: desktop project ownership, custom protocol, windows, and lifecycle. */
  
-@@ -80,6 +82,8 @@ const rendererConsole = new RendererConsoleTail()
+@@ -82,6 +84,8 @@ const rendererConsole = new RendererConsoleTail()
  
  // Platform-conventional logs directory (macOS ~/Library/Logs/<name>, otherwise under userData);
  // set before ready so the first fatal report already resolves under it.
@@ -1144,7 +1132,7 @@ index b4b8153b7f..7d98d3b349 100644
  app.setAppLogsPath()
  
  function currentDesktopLocale(): ReturnType<typeof resolveDesktopLocale> {
-@@ -925,7 +929,7 @@ async function main(): Promise<void> {
+@@ -932,7 +936,7 @@ async function main(): Promise<void> {
    const applicationIconPath = development ? join(app.getAppPath(), 'resources', 'icon-windows.png')
      : join(process.resourcesPath, 'icon.png')
    app.setAboutPanelOptions({
@@ -1153,7 +1141,7 @@ index b4b8153b7f..7d98d3b349 100644
      applicationVersion: app.getVersion(),
      // The release has no separate build number; omit Electron's bundle version.
      version: '',
-@@ -1165,9 +1169,9 @@ async function main(): Promise<void> {
+@@ -1172,9 +1176,9 @@ async function main(): Promise<void> {
            }
            await clipboard.writeText(platformLoginUrl(state.attempt.authorizeUrl))
          },
@@ -1165,7 +1153,7 @@ index b4b8153b7f..7d98d3b349 100644
            if (!saved.ok) return saved
            await enterWorkspace()
            return { ok: true }
-@@ -1225,10 +1229,10 @@ async function main(): Promise<void> {
+@@ -1232,10 +1236,10 @@ async function main(): Promise<void> {
      window.focus()
    }
  
@@ -1179,7 +1167,7 @@ index b4b8153b7f..7d98d3b349 100644
  
    app.on('activate', (_event, hasVisibleWindows) => {
 diff --git a/apps/desktop/src/preload-welcome.ts b/apps/desktop/src/preload-welcome.ts
-index 6748367e81..f8f4d4ca32 100644
+index 6748367e..f8f4d4ca 100644
 --- a/apps/desktop/src/preload-welcome.ts
 +++ b/apps/desktop/src/preload-welcome.ts
 @@ -23,7 +23,7 @@ const api: WelcomeApi = {
@@ -1192,7 +1180,7 @@ index 6748367e81..f8f4d4ca32 100644
  }
  contextBridge.exposeInMainWorld('dshWelcome', api)
 diff --git a/apps/desktop/src/project-manager.ts b/apps/desktop/src/project-manager.ts
-index 270d87d6b2..80979e6d21 100644
+index 270d87d6..80979e6d 100644
 --- a/apps/desktop/src/project-manager.ts
 +++ b/apps/desktop/src/project-manager.ts
 @@ -29,7 +29,7 @@ import {
@@ -1205,7 +1193,7 @@ index 270d87d6b2..80979e6d21 100644
  function writeJson(path: string, value: unknown): void {
    writeFileSync(path, `${JSON.stringify(value, undefined, 2)}\n`, { mode: 0o600 })
 diff --git a/apps/desktop/src/update-coordinator.ts b/apps/desktop/src/update-coordinator.ts
-index 8d6eb808e7..89c4f1484f 100644
+index 3b83cea0..411e4dce 100644
 --- a/apps/desktop/src/update-coordinator.ts
 +++ b/apps/desktop/src/update-coordinator.ts
 @@ -1,3 +1,4 @@
@@ -1213,7 +1201,7 @@ index 8d6eb808e7..89c4f1484f 100644
  /** User-authorized downloads and separate installation of one version-bound Desktop release. */
  
  import { existsSync } from 'node:fs'
-@@ -51,7 +52,7 @@ export class DesktopUpdateCoordinator {
+@@ -52,7 +53,7 @@ export class DesktopUpdateCoordinator {
      private readonly publish: (state: DesktopUpdateState) => DesktopUpdateState,
      private readonly beforeRestart: () => Promise<boolean>,
      private readonly updater: AppUpdater = autoUpdater,
@@ -1221,9 +1209,9 @@ index 8d6eb808e7..89c4f1484f 100644
 +    private readonly enabled: () => boolean = () => mioProduct.updateOrigin !== null && app.isPackaged && existsSync(join(process.resourcesPath, 'app-update.yml')),
      private readonly currentVersion: () => string = () => app.getVersion(),
      private readonly downloadResult?: (success: boolean, reason?: string) => void,
-   ) {
+     private readonly channel: 'nightly' | 'latest' = 'nightly',
 diff --git a/apps/desktop/src/welcome-api.ts b/apps/desktop/src/welcome-api.ts
-index c693f385d6..3d6fd6a860 100644
+index c693f385..3d6fd6a8 100644
 --- a/apps/desktop/src/welcome-api.ts
 +++ b/apps/desktop/src/welcome-api.ts
 @@ -45,7 +45,7 @@ export interface WelcomeOperations {
@@ -1236,7 +1224,7 @@ index c693f385d6..3d6fd6a860 100644
     * Enter the workspace without writing an onboarding-completion setting.
     * @returns completion after the workspace opens.
 diff --git a/apps/desktop/src/welcome-backend.ts b/apps/desktop/src/welcome-backend.ts
-index 54ab46d85e..3eb641eb86 100644
+index 54ab46d8..3eb641eb 100644
 --- a/apps/desktop/src/welcome-backend.ts
 +++ b/apps/desktop/src/welcome-backend.ts
 @@ -1,4 +1,5 @@
@@ -1304,7 +1292,7 @@ index 54ab46d85e..3eb641eb86 100644
          return { ok: true }
        } catch {
 diff --git a/apps/desktop/src/welcome-window.ts b/apps/desktop/src/welcome-window.ts
-index 61fda9e36a..fa29807060 100644
+index 61fda9e3..fa298070 100644
 --- a/apps/desktop/src/welcome-window.ts
 +++ b/apps/desktop/src/welcome-window.ts
 @@ -93,10 +93,11 @@ export async function openWelcomeWindow(locale: DesktopLocale, operations: Welco
@@ -1322,7 +1310,7 @@ index 61fda9e36a..fa29807060 100644
    ipcMain.handle(WELCOME_IPC.skip, async (event) => {
      assertSender(event)
 diff --git a/apps/desktop/tests/cli-launcher.spec.ts b/apps/desktop/tests/cli-launcher.spec.ts
-index 67e38da256..731aa57fb9 100644
+index 67e38da2..731aa57f 100644
 --- a/apps/desktop/tests/cli-launcher.spec.ts
 +++ b/apps/desktop/tests/cli-launcher.spec.ts
 @@ -9,7 +9,7 @@ import { expect, it, onTestFinished } from 'vitest'
@@ -1362,7 +1350,7 @@ index 67e38da256..731aa57fb9 100644
    symlinkSync(link, command)
    const args = ['quote"inside', 'trailing\\', '%PATH%', '$HOME', '`literal`', '']
 diff --git a/apps/desktop/tests/command-installation.spec.ts b/apps/desktop/tests/command-installation.spec.ts
-index e81cff7027..aa2605f3c8 100644
+index e81cff70..aa2605f3 100644
 --- a/apps/desktop/tests/command-installation.spec.ts
 +++ b/apps/desktop/tests/command-installation.spec.ts
 @@ -25,7 +25,7 @@ vi.mock('node:fs/promises', async (importOriginal) => {
@@ -1446,7 +1434,7 @@ index e81cff7027..aa2605f3c8 100644
      await expect(inspectFileCommand(f.options)).rejects.toMatchObject({ code: 'EOWNERSHIP' })
      await unlink(receipt)
 diff --git a/apps/desktop/tests/command-management.spec.ts b/apps/desktop/tests/command-management.spec.ts
-index bef9121d23..8d55346502 100644
+index bef9121d..8d553465 100644
 --- a/apps/desktop/tests/command-management.spec.ts
 +++ b/apps/desktop/tests/command-management.spec.ts
 @@ -5,16 +5,16 @@ import { en, zh } from '../src/locale.ts'
@@ -1481,7 +1469,7 @@ index bef9121d23..8d55346502 100644
      { managed: false, available: false, destination },
      { managed: true, available: true, destination, activeCommand: destination },
 diff --git a/apps/desktop/tests/command-manager-flow.spec.ts b/apps/desktop/tests/command-manager-flow.spec.ts
-index 0624ccf196..5fad7926fd 100644
+index 0624ccf1..5fad7926 100644
 --- a/apps/desktop/tests/command-manager-flow.spec.ts
 +++ b/apps/desktop/tests/command-manager-flow.spec.ts
 @@ -39,7 +39,7 @@ async function fixture(options: {
@@ -1507,7 +1495,7 @@ index 0624ccf196..5fad7926fd 100644
    if (process.platform === 'darwin') {
      const shell = join(root, 'lookup-shell')
 diff --git a/apps/desktop/tests/command-path.spec.ts b/apps/desktop/tests/command-path.spec.ts
-index 0b6612fdd0..dafae061d0 100644
+index 0b6612fd..dafae061 100644
 --- a/apps/desktop/tests/command-path.spec.ts
 +++ b/apps/desktop/tests/command-path.spec.ts
 @@ -6,16 +6,18 @@ import { tmpdir } from 'node:os'
@@ -1531,7 +1519,7 @@ index 0b6612fdd0..dafae061d0 100644
      expect(result.stdout).toContain('WINDOWS_COMMAND_PATH_OK')
    } finally {
 diff --git a/apps/desktop/tests/development-app.spec.ts b/apps/desktop/tests/development-app.spec.ts
-index 2f718b7bc5..7bcfaf2b2d 100644
+index 2f718b7b..7bcfaf2b 100644
 --- a/apps/desktop/tests/development-app.spec.ts
 +++ b/apps/desktop/tests/development-app.spec.ts
 @@ -12,12 +12,12 @@ it.skipIf(process.platform === 'win32')('passes literal workspace paths and cold
@@ -1551,7 +1539,7 @@ index 2f718b7bc5..7bcfaf2b2d 100644
      '--remote-debugging-port=9222', `--user-data-dir=${join(root, 'browser data')}`, root, '--test-launch-argument'])
  })
 diff --git a/apps/desktop/tests/expected/command-management-darwin-en-US.json b/apps/desktop/tests/expected/command-management-darwin-en-US.json
-index 02f12214f5..299d461580 100644
+index 02f12214..299d4615 100644
 --- a/apps/desktop/tests/expected/command-management-darwin-en-US.json
 +++ b/apps/desktop/tests/expected/command-management-darwin-en-US.json
 @@ -2,9 +2,9 @@
@@ -1615,7 +1603,7 @@ index 02f12214f5..299d461580 100644
          "Install",
          "Cancel"
 diff --git a/apps/desktop/tests/expected/command-management-darwin-zh-CN.json b/apps/desktop/tests/expected/command-management-darwin-zh-CN.json
-index 9b22c7213a..8412bf15dd 100644
+index 9b22c721..8412bf15 100644
 --- a/apps/desktop/tests/expected/command-management-darwin-zh-CN.json
 +++ b/apps/desktop/tests/expected/command-management-darwin-zh-CN.json
 @@ -2,9 +2,9 @@
@@ -1679,7 +1667,7 @@ index 9b22c7213a..8412bf15dd 100644
          "安装",
          "取消"
 diff --git a/apps/desktop/tests/expected/command-management-win32-en-US.json b/apps/desktop/tests/expected/command-management-win32-en-US.json
-index 34ee59a94c..e96c40ebc0 100644
+index 34ee59a9..e96c40eb 100644
 --- a/apps/desktop/tests/expected/command-management-win32-en-US.json
 +++ b/apps/desktop/tests/expected/command-management-win32-en-US.json
 @@ -2,9 +2,9 @@
@@ -1743,7 +1731,7 @@ index 34ee59a94c..e96c40ebc0 100644
          "Install",
          "Cancel"
 diff --git a/apps/desktop/tests/expected/command-management-win32-zh-CN.json b/apps/desktop/tests/expected/command-management-win32-zh-CN.json
-index c124453ad6..c76cb8ac8d 100644
+index c124453a..c76cb8ac 100644
 --- a/apps/desktop/tests/expected/command-management-win32-zh-CN.json
 +++ b/apps/desktop/tests/expected/command-management-win32-zh-CN.json
 @@ -2,9 +2,9 @@
@@ -1807,7 +1795,7 @@ index c124453ad6..c76cb8ac8d 100644
          "安装",
          "取消"
 diff --git a/apps/desktop/tests/fixtures/command-path.ps1 b/apps/desktop/tests/fixtures/command-path.ps1
-index ef6f15930a..1807da180e 100644
+index ef6f1593..1807da18 100644
 --- a/apps/desktop/tests/fixtures/command-path.ps1
 +++ b/apps/desktop/tests/fixtures/command-path.ps1
 @@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
@@ -1874,7 +1862,7 @@ index ef6f15930a..1807da180e 100644
      function Add-Type { throw 'Environment notification is unavailable' }
      try { Send-DshCommandEnvironmentChange } finally { Remove-Item Function:\Add-Type }
 diff --git a/apps/desktop/tsconfig.client.json b/apps/desktop/tsconfig.client.json
-index 3de33f06dd..2952c95814 100644
+index 3de33f06..2952c958 100644
 --- a/apps/desktop/tsconfig.client.json
 +++ b/apps/desktop/tsconfig.client.json
 @@ -7,7 +7,8 @@
@@ -1888,19 +1876,19 @@ index 3de33f06dd..2952c95814 100644
    "references": [
      {
 diff --git a/packages/client/ui-agent-preset/src/client/section-store.ts b/packages/client/ui-agent-preset/src/client/section-store.ts
-index daaefa6907..0ff192ef91 100644
+index 317543da..c524ae1a 100644
 --- a/packages/client/ui-agent-preset/src/client/section-store.ts
 +++ b/packages/client/ui-agent-preset/src/client/section-store.ts
 @@ -3,7 +3,7 @@ import type { Context } from '@deepseek-ai/cordis'
  import type {} from '@deepseek-ai/dsh-api-remotes/client'
  import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-store'
  import type { AgentPresetRow } from '@deepseek-ai/dsh-agent-preset-registry/types'
--import { writeDefaultPreset } from './settings-store.ts'
-+import { offeredRoster, writeDefaultPreset } from './settings-store.ts'
+-import { AGENT_PRESET_SETTINGS_NS, requiresCodingTools, writeDefaultPreset } from './settings-store.ts'
++import { AGENT_PRESET_SETTINGS_NS, requiresCodingTools, offeredRoster, writeDefaultPreset } from './settings-store.ts'
  
  /** The read-only composition viewer over one preset. */
  export interface PresetView {
-@@ -46,7 +46,7 @@ export class AgentPresetSectionController {
+@@ -47,7 +47,7 @@ export class AgentPresetSectionController {
      try {
        const result = await this.ctx.remote.agentPresets.list()
        if (!result.ok) throw new Error(result.error.message)
@@ -1910,10 +1898,10 @@ index daaefa6907..0ff192ef91 100644
    }
  
 diff --git a/packages/client/ui-agent-preset/src/client/settings-store.ts b/packages/client/ui-agent-preset/src/client/settings-store.ts
-index 7344c3fbab..d9f860cfb3 100644
+index 6eb1ff6f..91ca9f91 100644
 --- a/packages/client/ui-agent-preset/src/client/settings-store.ts
 +++ b/packages/client/ui-agent-preset/src/client/settings-store.ts
-@@ -51,6 +51,21 @@ export type RosterRead = { ok: true; value: AgentPresetRoster } | { ok: false; e
+@@ -62,6 +62,21 @@ export type RosterRead = { ok: true; value: AgentPresetRoster } | { ok: false; e
  
  const EMPTY_ROSTER: AgentPresetRoster = { presets: [] }
  
@@ -1935,7 +1923,7 @@ index 7344c3fbab..d9f860cfb3 100644
  /**
   * Read the roster, turning a refusal into the message every surface shows.
   * @param ctx - the browser plugin context carrying the Remote namespaces.
-@@ -58,7 +73,7 @@ const EMPTY_ROSTER: AgentPresetRoster = { presets: [] }
+@@ -69,7 +84,7 @@ const EMPTY_ROSTER: AgentPresetRoster = { presets: [] }
   */
  export async function readRoster(ctx: ClientContext): Promise<RosterRead> {
    const result = await ctx.remote.agentPresets.list()
@@ -1945,7 +1933,7 @@ index 7344c3fbab..d9f860cfb3 100644
    // Host composition, so callers receive the same empty roster as a mounted
    // service with no configured roots.
 diff --git a/packages/client/ui-conversation/src/client/locales.ts b/packages/client/ui-conversation/src/client/locales.ts
-index 78b26f7ab6..9117b1f115 100644
+index f1f70807..6edb18af 100644
 --- a/packages/client/ui-conversation/src/client/locales.ts
 +++ b/packages/client/ui-conversation/src/client/locales.ts
 @@ -74,8 +74,9 @@ export const zh = {
@@ -1960,7 +1948,7 @@ index 78b26f7ab6..9117b1f115 100644
    'hero.chooseWorkspace': '选择工作区',
    'session.hierarchy': '会话层级',
    'todo.title': '任务',
-@@ -450,8 +451,9 @@ export const en = {
+@@ -454,8 +455,9 @@ export const en = {
    'settings.enter.description': 'What Enter and the Send button do while the agent is running; Cmd/Ctrl+Enter uses the other behavior',
    'settings.enter.queue': 'Queue',
    'settings.enter.steer': 'Steer',
@@ -1973,7 +1961,7 @@ index 78b26f7ab6..9117b1f115 100644
    'session.hierarchy': 'Session hierarchy',
    'todo.title': 'To-dos',
 diff --git a/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx b/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
-index 40df87269b..c451d54684 100644
+index 40df8726..c451d546 100644
 --- a/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
 +++ b/packages/client/ui-conversation/src/client/skeleton/EmptyHero.tsx
 @@ -155,6 +155,8 @@ export function HeroShell({ t, renderSlot, children }: HeroShellProps) {
@@ -1986,7 +1974,7 @@ index 40df87269b..c451d54684 100644
            {/* The composer remains mounted outside this component. */}
          </div>
 diff --git a/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css b/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
-index aac6a5cf61..f86c43bad5 100644
+index aac6a5cf..f86c43ba 100644
 --- a/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
 +++ b/packages/client/ui-conversation/src/client/skeleton/HeroShell.module.css
 @@ -75,6 +75,17 @@
@@ -2008,7 +1996,7 @@ index aac6a5cf61..f86c43bad5 100644
     hover rules target the hitbox so a slot-occupant mark swims too. */
  .fishHitbox {
 diff --git a/packages/experimental/voice-input-bundle/cordis.patch.yml b/packages/experimental/voice-input-bundle/cordis.patch.yml
-index 255734df80..82cb4a24b6 100644
+index 255734df..82cb4a24 100644
 --- a/packages/experimental/voice-input-bundle/cordis.patch.yml
 +++ b/packages/experimental/voice-input-bundle/cordis.patch.yml
 @@ -1,13 +1,14 @@
@@ -2032,7 +2020,7 @@ index 255734df80..82cb4a24b6 100644
      - id: ui-voice-input
        name: '@deepseek-ai/dsh-experimental-client-ui-voice-input'
 diff --git a/packages/experimental/voice-input-bundle/locale/en.json b/packages/experimental/voice-input-bundle/locale/en.json
-index 8d48bbeec7..197918e7dd 100644
+index 8d48bbee..197918e7 100644
 --- a/packages/experimental/voice-input-bundle/locale/en.json
 +++ b/packages/experimental/voice-input-bundle/locale/en.json
 @@ -1,6 +1,6 @@
@@ -2044,7 +2032,7 @@ index 8d48bbeec7..197918e7dd 100644
    }
  }
 diff --git a/packages/experimental/voice-input-bundle/locale/zh.json b/packages/experimental/voice-input-bundle/locale/zh.json
-index 3ad24e67b3..9aa8c9a026 100644
+index 3ad24e67..9aa8c9a0 100644
 --- a/packages/experimental/voice-input-bundle/locale/zh.json
 +++ b/packages/experimental/voice-input-bundle/locale/zh.json
 @@ -1,6 +1,6 @@
@@ -2056,7 +2044,7 @@ index 3ad24e67b3..9aa8c9a026 100644
    }
  }
 diff --git a/packages/experimental/voice-input-bundle/package.json b/packages/experimental/voice-input-bundle/package.json
-index cc7ad08c3b..0dc38a0881 100644
+index 64d41834..ae80f2d5 100644
 --- a/packages/experimental/voice-input-bundle/package.json
 +++ b/packages/experimental/voice-input-bundle/package.json
 @@ -1,6 +1,6 @@
@@ -2064,7 +2052,7 @@ index cc7ad08c3b..0dc38a0881 100644
    "name": "@deepseek-ai/dsh-experimental-voice-input-bundle",
 -  "description": "Experimental voice input with local SenseVoice; downloads its runtime on first use",
 +  "description": "Voice input transcribed by MiMo ASR",
-   "version": "0.2.0-rc.2",
+   "version": "0.2.1-rc.2",
    "icon": "./icon.svg",
    "publishConfig": {
 @@ -34,9 +34,9 @@
@@ -2080,10 +2068,10 @@ index cc7ad08c3b..0dc38a0881 100644
    "peerDependencies": {
      "@deepseek-ai/cordis": "workspace:~"
 diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
-index 6c7ce04c19..2f03ec68dc 100644
+index 5f38bae3..264e5c3f 100644
 --- a/pnpm-lock.yaml
 +++ b/pnpm-lock.yaml
-@@ -581,6 +581,9 @@ importers:
+@@ -669,6 +669,9 @@ importers:
        '@deepseek-ai/dsh-api-gateway':
          specifier: workspace:*
          version: link:../../packages/api/gateway
@@ -2092,20 +2080,20 @@ index 6c7ce04c19..2f03ec68dc 100644
 +        version: link:../../mio/desktop
        electron-updater:
          specifier: ^6.8.9
-         version: 6.8.9
-@@ -732,6 +735,9 @@ importers:
+         version: 6.8.9(supports-color@9.4.0)
+@@ -814,6 +817,9 @@ importers:
        '@deepseek-ai/libreoffice-kit':
-         specifier: ^0.1.1
-         version: 0.1.1
+         specifier: ^0.1.5
+         version: 0.1.5
 +      '@mio/desktop':
 +        specifier: workspace:*
 +        version: link:../../mio/desktop
        koffi:
-         specifier: ^3.1.0
+         specifier: 3.1.1
          version: 3.1.1
-@@ -953,6 +959,69 @@ importers:
-         specifier: ^1.49.0
-         version: 1.61.1
+@@ -1117,6 +1123,78 @@ importers:
+         specifier: ^4.4.3
+         version: 4.4.3
  
 +  mio/asr:
 +    dependencies:
@@ -2122,6 +2110,9 @@ index 6c7ce04c19..2f03ec68dc 100644
 +      '@deepseek-ai/dsh-experimental-speech-to-text':
 +        specifier: workspace:*
 +        version: link:../../packages/experimental/speech-to-text
++      '@deepseek-ai/dsh-launch-environment':
++        specifier: workspace:*
++        version: link:../../packages/util/launch-environment
 +
 +  mio/brand:
 +    dependencies:
@@ -2153,6 +2144,9 @@ index 6c7ce04c19..2f03ec68dc 100644
 +      '@deepseek-ai/dsh-credentials':
 +        specifier: workspace:*
 +        version: link:../../packages/credentials/credentials
++      '@deepseek-ai/dsh-launch-environment':
++        specifier: workspace:*
++        version: link:../../packages/util/launch-environment
 +      '@deepseek-ai/dsh-tools':
 +        specifier: workspace:*
 +        version: link:../../packages/core/tools
@@ -2169,11 +2163,14 @@ index 6c7ce04c19..2f03ec68dc 100644
 +      '@deepseek-ai/dsh-credentials':
 +        specifier: workspace:*
 +        version: link:../../packages/credentials/credentials
++      '@deepseek-ai/dsh-launch-environment':
++        specifier: workspace:*
++        version: link:../../packages/util/launch-environment
 +
    native/system:
      devDependencies:
        '@deepseek-ai/node-addon-system':
-@@ -8080,9 +8149,9 @@ importers:
+@@ -9520,9 +9598,9 @@ importers:
        '@deepseek-ai/dsh-experimental-speech-to-text':
          specifier: workspace:*
          version: link:../speech-to-text
@@ -2185,54 +2182,21 @@ index 6c7ce04c19..2f03ec68dc 100644
      devDependencies:
        '@deepseek-ai/cordis':
          specifier: workspace:~
-@@ -9693,7 +9762,7 @@ importers:
-         version: link:../../../vendor/schemastery
-       '@earendil-works/pi-ai':
-         specifier: ^0.87.1
--        version: 0.87.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(ws@8.21.0)(zod@4.4.3)
-+        version: 0.87.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(supports-color@9.4.0)(ws@8.21.0)(zod@4.4.3)
-     devDependencies:
-       '@deepseek-ai/cordis':
-         specifier: workspace:~
-@@ -22668,15 +22737,15 @@ snapshots:
-     transitivePeerDependencies:
-       - '@algolia/client-search'
+@@ -17786,10 +17864,12 @@ packages:
  
--  '@earendil-works/pi-ai@0.87.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(ws@8.21.0)(zod@4.4.3)':
-+  '@earendil-works/pi-ai@0.87.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(supports-color@9.4.0)(ws@8.21.0)(zod@4.4.3)':
-     dependencies:
-       '@anthropic-ai/sdk': 0.124.0(zod@4.4.3)
-       '@aws-sdk/client-bedrock-runtime': 3.1127.0
-       '@earendil-works/pi-telemetry': 0.87.1
-       '@google/genai': 2.21.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))
-       '@smithy/node-http-handler': 4.12.1
--      http-proxy-agent: 9.1.0
--      https-proxy-agent: 9.1.0
-+      http-proxy-agent: 9.1.0(supports-color@9.4.0)
-+      https-proxy-agent: 9.1.0(supports-color@9.4.0)
-       openai: 6.40.0(ws@8.21.0)(zod@4.4.3)
-       partial-json: 0.1.7
-       typebox: 1.3.27
-@@ -26859,7 +26928,7 @@ snapshots:
-     transitivePeerDependencies:
-       - supports-color
+   '@modelcontextprotocol/server-everything@2026.8.31':
+     resolution: {integrity: sha512-5U3OZh8Xq0Li4nA26l6uNvV9/1suMDuWSn+NjLZIhzinhMY6N3A4DCrxVecBGPf2PsNFKTEv5krxGPRwzxc7jQ==}
++    deprecated: 'Date-based versions are no longer published. This package has resumed semantic versioning at 1.0.0: install the latest version.'
+     hasBin: true
  
--  http-proxy-agent@9.1.0:
-+  http-proxy-agent@9.1.0(supports-color@9.4.0):
-     dependencies:
-       agent-base: 9.0.0
-       debug: 4.4.3(supports-color@9.4.0)
-@@ -26918,7 +26987,7 @@ snapshots:
-     transitivePeerDependencies:
-       - supports-color
+   '@modelcontextprotocol/server-filesystem@2026.8.31':
+     resolution: {integrity: sha512-kKaFkyAh6oipvc9+EAbJ552JafnMnOq5nzmzWkp1jJdBhTAAGpmIpWihUG1+rfNhmEFM98gUZDdCHCDD4v6a7Q==}
++    deprecated: 'Date-based versions are no longer published. This package has resumed semantic versioning at 1.0.0: install the latest version.'
+     hasBin: true
  
--  https-proxy-agent@9.1.0:
-+  https-proxy-agent@9.1.0(supports-color@9.4.0):
-     dependencies:
-       agent-base: 9.0.0
-       debug: 4.4.3(supports-color@9.4.0)
+   '@modelcontextprotocol/server@2.2.0':
 diff --git a/pnpm-workspace.yaml b/pnpm-workspace.yaml
-index b9cf05ab45..e56818a3f2 100644
+index 29065016..0ab61d71 100644
 --- a/pnpm-workspace.yaml
 +++ b/pnpm-workspace.yaml
 @@ -1,4 +1,5 @@
@@ -2242,7 +2206,7 @@ index b9cf05ab45..e56818a3f2 100644
    - packages/*/*
    # The Landlock launcher is developed with its harness consumers but keeps
 diff --git a/scripts/client-build-environment.ts b/scripts/client-build-environment.ts
-index 57f12ef13b..45adeb8d87 100644
+index 6c616cff..33e63539 100644
 --- a/scripts/client-build-environment.ts
 +++ b/scripts/client-build-environment.ts
 @@ -19,7 +19,7 @@ export const CLIENT_BUILD_PROFILE_SELECTOR = 'DSH_BUILD_CLIENT_PROFILE'

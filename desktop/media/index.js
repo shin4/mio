@@ -7,11 +7,12 @@
  */
 import { extname } from "node:path"
 import z from "@deepseek-ai/schemastery"
+import { launchEnvironmentOf } from "@deepseek-ai/dsh-launch-environment"
 import { credentialRef } from "@deepseek-ai/dsh-credentials"
 import { defineTool } from "@deepseek-ai/dsh-tools"
 
 export const name = "mio-media"
-export const inject = ["tools", "fs", "settings", "credentials"]
+export const inject = ["tools", "fs", "settings"]
 
 /** Formats MiMo documents for audio and video understanding (2026-09-22), keyed by extension. */
 export const FORMATS = {
@@ -153,7 +154,8 @@ export function apply(ctx, config) {
             throw new Error("fps and media_resolution apply to video only")
           }
           if (args.fps !== undefined && !(args.fps >= 0.1 && args.fps <= 10)) throw new Error("fps must be between 0.1 and 10")
-          const key = (await ctx.credentials.resolve(apiKey))?.value
+          const credentials = ctx.get("credentials")
+          const key = credentials ? (await credentials.resolve(apiKey))?.value : launchEnvironmentOf(ctx).get(apiKey)?.value
           if (!key) throw new Error(`MiMo is not connected: ${config.apiKeyRef} is not configured`)
           const cwd = exec.agent?.session.header.cwd
           const target = await ctx.fs.resolve(args.file_path, { ...(cwd === undefined ? {} : { cwd }), signal: exec.signal })

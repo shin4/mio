@@ -13,6 +13,8 @@ English | [简体中文](./README.zh-CN.md)
 ![Desktop: macOS · Windows](https://img.shields.io/badge/desktop-macOS%20%C2%B7%20Windows-121317.svg)
 ![dsh Desktop 0.2.0-rc.2](https://img.shields.io/badge/dsh%20Desktop-0.2.0--rc.2-0E1B2E.svg)
 
+Development source now pins dsh **0.2.1-rc.2**; the 0.5.0 release notes below describe the published baseline. See [upgrade validation](docs/dsh-upgrade-0.2.1-rc.2-evidence.md).
+
 <img src="docs/assets/welcome.png?v=0.4.0" alt="Mio 0.4.0 — Welcome screen with Connect MiMo" width="480" />
 
 <img src="docs/assets/workspace.png?v=0.4.0" alt="Mio 0.4.0 — Workspace with MiMo V2.6 Flash selected" width="960" />
@@ -163,7 +165,7 @@ Nothing is transcribed or synthesized on your machine.
 
 ## Build from source
 
-Requires **Node 24**, **pnpm 11.7.0** and upstream's native toolchain (Xcode command line tools on
+Requires **Node 24**, **pnpm 11.28.5** and upstream's native toolchain (Xcode command line tools on
 macOS). From the repository root:
 
 ```bash

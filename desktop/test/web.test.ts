@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url"
 import { test } from "node:test"
 
 const variants = [
+  { name: "saved credentials override the launch environment", flags: ["--credential-precedence"] },
   { name: "custom provider context limit is preserved", flags: ["--saved-before-image", "--provider-context"] },
   { name: "explicit input and hidden default preserved safely", flags: ["--saved-before-image", "--explicit-input", "--explicit-context", "--hidden-default"] },
   { name: "startup repairs wait for the native settings transaction queue", flags: ["--saved-before-image", "--hidden-default", "--delayed-hmr"] },

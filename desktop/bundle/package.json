@@ -1,6 +1,6 @@
 {
   "name": "@mio/desktop",
-  "version": "0.2.0-rc.2",
+  "version": "0.2.1-rc.2",
   "private": true,
   "description": "Mio composition and brand over the official dsh Desktop",
   "license": "MIT",

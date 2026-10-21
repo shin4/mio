@@ -267,6 +267,7 @@ const analyticsCollector = createServer((request, response) => {
 await new Promise((resolve) => analyticsCollector.listen(0, "127.0.0.1", resolve))
 process.env.DSH_PRODUCT_ANALYTICS_OTLP_URL = `http://127.0.0.1:${analyticsCollector.address().port}/logs`
 delete process.env.MIO_API_KEY
+if (process.argv.includes("--credential-precedence")) process.env.MIO_API_KEY = "tp-stale-environment"
 const directory = join(home, "profiles/desktop")
 await mkdir(directory, { recursive: true })
 await writeFile(
@@ -389,11 +390,6 @@ try {
   if (hiddenDefault) {
     assert.equal(running.ctx.agentPresets.config.selectedDefault.get(), "standard")
   }
-  const models = await running.ctx.llm.listModels("mimo")
-  assert.equal(
-    models.some((model) => model.id === "mimo-v2.6-pro-ultraspeed"),
-    enableUltraSpeed,
-  )
   if (enableUltraSpeed) {
     const optional = await running.ctx.llm.resolveModelInfo("mimo", "mimo-v2.6-pro-ultraspeed")
     assert.equal(optional.context.contextWindow, 1048576)
@@ -429,10 +425,18 @@ try {
   }
   const state = await backend.read()
   assert.equal(state.writable, true)
-  assert.equal(state.hasApiKey, false)
+  assert.equal(state.hasApiKey, process.argv.includes("--credential-precedence"))
+  if (!state.hasApiKey) assert.deepEqual(await running.ctx.llm.listModels("mimo"), [])
   assert.deepEqual(await backend.save("not-a-key", "invalid-region"), { ok: false })
   assert.deepEqual(await backend.save("contains whitespace"), { ok: false })
   await verifyAsr(running.ctx, send, `http://127.0.0.1:${running.ctx.webServer.port}`)
+  const models = await running.ctx.llm.listModels("mimo")
+  assert.equal(
+    models.some((model) => model.id === "mimo-v2.6-pro-ultraspeed"),
+    enableUltraSpeed,
+  )
+  assert.ok(models.some((model) => model.id === "mimo-v2.6-flash"))
+  assert.ok(models.some((model) => model.id === "mimo-v2.6-pro"))
   await verifyTts(running.ctx, send, `http://127.0.0.1:${running.ctx.webServer.port}`)
   await verifyMedia(running.ctx, home)
   console.log("Mio web composition verified")

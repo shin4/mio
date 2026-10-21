@@ -1,10 +1,11 @@
 /** MiMo ASR registered as a cloud recognizer beside the official dsh voice input. */
 import z from "@deepseek-ai/schemastery"
+import { launchEnvironmentOf } from "@deepseek-ai/dsh-launch-environment"
 import { credentialRef } from "@deepseek-ai/dsh-credentials"
 import { validateWave } from "@deepseek-ai/dsh-experimental-speech-to-text/wave"
 
 export const name = "mio-asr"
-export const inject = ["speechToText", "credentials", "settings", "connection"]
+export const inject = ["speechToText", "settings", "connection"]
 
 /**
  * MiMo `asr_options.language` values offered to voice input. `en` is withheld: on 2026-09-26 the
@@ -69,7 +70,8 @@ export function apply(ctx, config) {
       async transcribe(input, signal) {
         const audioSeconds = validateWave(input.audio, config.maxDurationSeconds)
         if (!LANGUAGES.includes(input.language)) throw new Error(`MiMo ASR: unsupported language ${input.language}`)
-        const key = (await ctx.credentials.resolve(apiKey))?.value
+        const credentials = ctx.get("credentials")
+        const key = credentials ? (await credentials.resolve(apiKey))?.value : launchEnvironmentOf(ctx).get(apiKey)?.value
         if (!key) throw new Error(`MiMo ASR: ${config.apiKeyRef} is not configured`)
         const started = performance.now()
         const response = await fetch(`${endpointOf(ctx, config.route)}/chat/completions`, {

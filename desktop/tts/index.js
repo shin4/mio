@@ -1,9 +1,10 @@
 /** MiMo TTS behind an authenticated Host route; the browser half reads assistant replies aloud. */
 import z from "@deepseek-ai/schemastery"
+import { launchEnvironmentOf } from "@deepseek-ai/dsh-launch-environment"
 import { credentialRef } from "@deepseek-ai/dsh-credentials"
 
 export const name = "mio-tts"
-export const inject = ["connection", "credentials", "settings"]
+export const inject = ["connection", "settings"]
 
 /** Preset voices of mimo-v2.5-tts. */
 export const VOICES = ["mimo_default", "冰糖", "茉莉", "苏打", "白桦", "Mia", "Chloe", "Milo", "Dean"]
@@ -158,7 +159,8 @@ export function apply(ctx, config) {
       const part = body.part ?? 0
       if (!Number.isInteger(part) || part < 0 || part >= all.length) return failure(400, "no such part")
       const text = all[part]
-      const key = (await ctx.credentials.resolve(apiKey))?.value
+      const credentials = ctx.get("credentials")
+      const key = credentials ? (await credentials.resolve(apiKey))?.value : launchEnvironmentOf(ctx).get(apiKey)?.value
       if (!key) return failure(409, `${config.apiKeyRef} is not configured`)
       const response = await fetch(`${endpointOf(ctx, config.route)}/chat/completions`, {
         method: "POST",

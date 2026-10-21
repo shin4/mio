@@ -13,7 +13,7 @@ void test("Mio release identity is independent of the pinned runtime and needs n
   const product = JSON.parse(await readFile(new URL("../product.json", import.meta.url), "utf8"))
   const lock = JSON.parse(await readFile(new URL("../upstream.lock.json", import.meta.url), "utf8"))
   assert.equal(product.version, "0.5.0")
-  assert.equal(lock.version, "0.2.0-rc.2")
+  assert.equal(lock.version, "0.2.1-rc.2")
   const environment = {
     DSH_DESKTOP_APP_ID: product.appId,
     DSH_DESKTOP_UNSIGNED: "1",

@@ -1,6 +1,6 @@
 {
   "name": "@mio/asr",
-  "version": "0.2.0-rc.2",
+  "version": "0.2.1-rc.2",
   "private": true,
   "description": "MiMo ASR as a cloud provider for the official dsh voice input",
   "license": "MIT",
@@ -21,7 +21,8 @@
   "peerDependencies": {
     "@deepseek-ai/cordis": "workspace:~",
     "@deepseek-ai/dsh-credentials": "workspace:*",
-    "@deepseek-ai/dsh-experimental-speech-to-text": "workspace:*"
+    "@deepseek-ai/dsh-experimental-speech-to-text": "workspace:*",
+    "@deepseek-ai/dsh-launch-environment": "workspace:*"
   },
   "dsh": {
     "client": {
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@deepseek-ai/dsh-credentials": "workspace:*",
-    "@deepseek-ai/dsh-experimental-speech-to-text": "workspace:*"
+    "@deepseek-ai/dsh-experimental-speech-to-text": "workspace:*",
+    "@deepseek-ai/dsh-launch-environment": "workspace:*"
   }
 }

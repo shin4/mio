@@ -1,6 +1,6 @@
 # Reviewed upstream overlay
 
-Base: `dsh-v0.1.7-rc.2`, `477b4f420553e8a52c2fbccc464d7561b239c443`.
+Base: `dsh-v0.2.1-rc.2`, `687f282e8625c6b8d11ff58211a90524be2e4317`.
 
 `0001-mio-desktop.patch` covers:
 
@@ -16,14 +16,18 @@ Base: `dsh-v0.1.7-rc.2`, `477b4f420553e8a52c2fbccc464d7561b239c443`.
   `DSH_CLIENT_VERSION`, so Settings → General shows Mio's version rather than the runtime's.
 - Native MiMo credential setup using upstream discovery, settings and credentials RPCs.
 - The product bundle in Desktop startup/recovery and the host's shipped dependency closure.
-- Ephemeral loopback port, so another dsh instance does not collide with Mio.
-- Official packaging integration, Mio artifact names, disabled updater, and installer text.
+- Official packaging integration, Mio artifact names, GitHub Releases updater, and installer text.
 - Workspace package declarations and the matching pnpm lockfile delta.
 - Voice input: the official voice-input bundle recomposed around `@mio/asr` (MiMo ASR, no
   local SenseVoice), shipped enabled in new Desktop profiles, and packed with the product.
   macOS signs the app with `com.apple.security.device.audio-input`; without it the hardened
   runtime blocks the microphone and the system never prompts.
 - Packing `@mio/tts` and `@mio/media` with the product (their composition lives in `desktop/bundle`).
+
+Upstream now supplies loopback/random ports and the `build:official` packaging entry; their old
+overlay hunks are removed. Runtime preparation follows the new upstream stage order.
+The installed-CLI smoke supplies `MIO_HOME` as well as `DSH_HOME` so both product and upstream
+commands share the isolated test profile.
 
 No agent, session format, permissions or provider adapter internals are changed.
 Generated product constants, plugin packages and icons are copied by `prepare.mjs`;

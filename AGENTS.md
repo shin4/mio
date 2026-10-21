@@ -35,10 +35,10 @@ These outrank stylistic preferences.
 |---|---|---|
 | `desktop/bundle` (`@mio/desktop`) | Official Desktop product composition | Node ≥22.19 |
 | `desktop/brand` (`@mio/brand`) | Cordis brand slots and theme tokens | Official client |
-| `script/desktop` | Pinned upstream preparation and build wrappers | Node 24 / pnpm 11.7.0 |
+| `script/desktop` | Pinned upstream preparation and build wrappers | Node 24 / pnpm 11.28.5 |
 | `packages/{runtime,client-ui,shell}` | Legacy release implementation and regression checks | Node / Electron |
 
-The default `dev:desktop` uses official dsh **0.2.0-rc.2**. Source edits belong in reviewed
+The default `dev:desktop` uses official dsh **0.2.1-rc.2**. Source edits belong in reviewed
 `desktop/patches`, never only in generated `.desktop-build/upstream`. Keep runtime internals
 upstream-native. No data migration. Linux is outside the first release. Follow upstream's own
 build scripts for its generated workspace; the rules for Mio's Node source below still apply.

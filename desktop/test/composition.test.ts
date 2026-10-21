@@ -179,9 +179,9 @@ void test("MiMo off explicitly disables thinking without an effort tier", { time
 })
 
 
-void test("0.4.5 history resumes on 0.2 and a full backup restores the old runtime", {
+void test("previous Desktop history resumes on 0.2.1 and a full backup restores the old runtime", {
   timeout: 180_000,
-  skip: !process.env.MIO_BASELINE_ROOT && "Set MIO_BASELINE_ROOT to a built, reviewed 0.4.5 checkout",
+  skip: !process.env.MIO_BASELINE_ROOT && "Set MIO_BASELINE_ROOT to a built, reviewed previous checkout",
 }, async () => {
   const home = await mkdtemp(path.join(tmpdir(), "mio-upgrade-history-"))
   const backup = await mkdtemp(path.join(tmpdir(), "mio-upgrade-backup-"))
@@ -196,6 +196,7 @@ void test("0.4.5 history resumes on 0.2 and a full backup restores the old runti
     const sessionId = original.out.match(/"type":"session","sessionId":"([^"]+)"/)?.[1]
     assert.ok(sessionId, original.out)
     await cp(home, backup, { recursive: true })
+    await installPlugins(home, "headless")
     const resumed = await runHeadless(patch, home, "Continue the previous answer.", DSH_BIN, ["--json", "--session-id", sessionId])
     assert.equal(resumed.code, 0, resumed.out)
     assert.ok(replay.requests.at(-1)?.messages?.some(message => message.content?.includes("UPGRADE-045")))
@@ -212,5 +213,60 @@ void test("0.4.5 history resumes on 0.2 and a full backup restores the old runti
     assert.ok(!replay.requests.at(-1)?.messages?.some(message => message.content === "Continue the previous answer."))
   } finally {
     await new Promise<void>(resolve => replay.server.close(() => resolve()))
+  }
+})
+
+void test("headless media uses the launch key without mounting the saved credential store", { timeout: 180_000 }, async () => {
+  const home = await mkdtemp(path.join(tmpdir(), "mio-headless-media-"))
+  homes.push(home)
+  await installPlugins(home, "headless")
+  await writeFile(path.join(home, ".credentials.yaml"), 'refs:\n  MIO_API_KEY: tp-stale-saved-key\n')
+  const audio = path.join(home, "sample.wav")
+  await writeFile(audio, Buffer.from("RIFF-test-audio"))
+  const recording: Cassette = JSON.parse(await readFile(path.join(FIXTURES, "tool-call.json"), "utf8"))
+  // Keep captured SSE framing, replacing only the requested tool and its arguments for this composition test.
+  let suppliedArguments = false
+  const toolReply = recording.interactions[0].response.body.split("\n").map((line) => {
+    if (!line.startsWith("data: {")) return line
+    const chunk = JSON.parse(line.slice(6))
+    for (const call of chunk.choices?.[0]?.delta?.tool_calls ?? []) {
+      if (call.function?.name) call.function.name = "mimo_media_read"
+      if (call.function?.arguments !== undefined) {
+        call.function.arguments = suppliedArguments ? "" : JSON.stringify({ file_path: audio, question: "Transcribe it." })
+        suppliedArguments = true
+      }
+    }
+    return `data: ${JSON.stringify(chunk)}`
+  }).join("\n")
+  const continuation: Cassette = JSON.parse(await readFile(path.join(FIXTURES, "reasoning-and-text.json"), "utf8"))
+  const requests: { authorization?: string; body: { stream?: boolean; messages?: { role: string; content?: string }[] } }[] = []
+  let streaming = 0
+  const server = createServer((request, response) => {
+    let body = ""
+    request.on("data", (chunk) => (body += chunk))
+    request.on("end", () => {
+      const parsed = JSON.parse(body)
+      requests.push({ authorization: request.headers.authorization, body: parsed })
+      if (!parsed.stream) {
+        response.writeHead(200, { "content-type": "application/json" })
+        response.end(JSON.stringify({ choices: [{ message: { content: "HEADLESS_MEDIA_OK" } }] }))
+        return
+      }
+      response.writeHead(200, { "content-type": "text/event-stream" })
+      response.end(streaming++ === 0 ? toolReply : continuation.interactions[0].response.body)
+    })
+  })
+  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve))
+  try {
+    const address = server.address()
+    assert.ok(address && typeof address === "object")
+    const patch = await patchPointedAt(`http://127.0.0.1:${address.port}/v1`, home, "high")
+    const result = await runHeadless(patch, home, "Use mimo_media_read to transcribe sample.wav.")
+    assert.equal(result.code, 0, result.out)
+    assert.equal(requests.filter((request) => !request.body.stream).length, 1, result.out)
+    assert.ok(requests.every((request) => request.authorization === "Bearer replay-server-ignores-this"))
+    assert.ok(requests.at(-1)?.body.messages?.some((message) => message.role === "tool" && message.content?.includes("HEADLESS_MEDIA_OK")))
+  } finally {
+    await new Promise<void>((resolve) => server.close(() => resolve()))
   }
 })

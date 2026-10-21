@@ -1,12 +1,12 @@
 # Mio on official dsh Desktop
 
-The active development desktop is the complete upstream **0.2.0-rc.2** workspace plus a
+The active development desktop is the complete upstream **0.2.1-rc.2** workspace plus a
 reviewed product overlay. It uses the official welcome/workspace layout. There is no legacy
 data migration. The first release targets macOS arm64/x64 and Windows x64.
 
 ## Run
 
-Install Node 24, pnpm **11.7.0**, and the native toolchain required by upstream (Xcode command
+Install Node 24, pnpm **11.28.5**, and the native toolchain required by upstream (Xcode command
 line tools on macOS; upstream Windows native prerequisites on Windows). From this repository:
 
 ```sh
@@ -89,10 +89,12 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
   value when using a custom home. No official `~/.dsh` data is imported.
 - Product analytics stays mounted with `enabled: false`, preserving the native welcome RPC.
   This is separate from upstream's Session Log setting and does not disable all external traffic.
-- **Schedule requires action after upgrading:** open Plugins → Official → Automation tasks and
-  enable the shipped `@deepseek-ai/dsh-experimental-schedule-bundle`. Existing tasks stay on disk
-  but do not deliver until re-enabled. Preserve customized Schedule settings; confirm old tasks
-  reappear. The native `transcriptView: normal` value becomes `detailed`; new profiles use `standard`.
+- Schedule is built into Web/Desktop. Upstream removes retired experimental Schedule bundle
+  selections and retains tasks and user settings; no plugin re-enabling is required. Confirm the
+  task list and next delivery after upgrading. Explicitly disabled user rows remain disabled.
+- Credential precedence follows upstream: Desktop/Web prefers saved keys; headless uses the
+  launch environment (including its layered `.env` files), without reading the saved key store.
+  MiMo ASR/TTS/media use the same rule as the official adapter.
 - Icons reuse existing Mio assets. Windows installer bitmaps are generated during the build.
 - Updates come from the latest GitHub release (`product.json` `updateOrigin`, a flat
   `releases/latest/download` feed). `publish-release.mjs` uploads `nightly.yml` and one
@@ -100,7 +102,7 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
   ZIP by name. DeepSeek's COS feed and mandatory-update policy are never used. The unsigned Windows
   build updates too, verified by the feed's SHA-512 only.
 - Mio installers use `product.json` version `0.5.0`; the bundled dsh runtime remains pinned
-  to `0.2.0-rc.2`.
+  to `0.2.1-rc.2`.
 - macOS signs with `com.apple.security.device.audio-input`; `verify-release.mjs` rejects a build
   without it (0.4.1 shipped without it and macOS silently denied the microphone).
 
@@ -111,8 +113,8 @@ credentials. The approved v0.4.x Windows distribution is explicitly unsigned and
 filename suffix. Never run the upstream `upload:*` commands for Mio.
 
 See [the current plan](../docs/mio-desktop-plan.md) for completion evidence and remaining gates.
-The runtime upgrade is specified in the [dsh 0.2.0-rc.2 upgrade spec](../docs/dsh-upgrade-0.2.0-rc.2-spec.md)
-and tracked in the [implementation evidence](../docs/dsh-upgrade-0.2.0-rc.2-evidence.md).
+The current source upgrade is tracked in [dsh 0.2.1-rc.2 evidence](../docs/dsh-upgrade-0.2.1-rc.2-evidence.md).
+The previous 0.2.0 upgrade records describe the published 0.5.0 baseline.
 The 0.5.0 source is prepared for release. Publication requires a successful three-platform
 qualification of this exact source tree; the release includes its qualification report.
 

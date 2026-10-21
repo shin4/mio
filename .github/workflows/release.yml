@@ -30,7 +30,7 @@ jobs:
           node-version: 24
       - uses: pnpm/action-setup@v4
         with:
-          version: 11.7.0
+          version: 11.28.5
           package_json_file: desktop/toolchain.json
       - name: Prepare pinned official sources
         run: node script/desktop/prepare.mjs

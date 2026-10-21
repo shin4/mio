@@ -13,6 +13,8 @@
 ![Desktop: macOS · Windows](https://img.shields.io/badge/desktop-macOS%20%C2%B7%20Windows-121317.svg)
 ![dsh Desktop 0.2.0-rc.2](https://img.shields.io/badge/dsh%20Desktop-0.2.0--rc.2-0E1B2E.svg)
 
+当前开发源码固定 dsh **0.2.1-rc.2**；以下 0.5.0 发布说明描述已发布基线。参见[升级验证记录](docs/dsh-upgrade-0.2.1-rc.2-evidence.md)。
+
 <img src="docs/assets/welcome.zh-CN.png?v=0.4.0" alt="Mio 0.4.0 欢迎界面：连接 MiMo" width="480" />
 
 <img src="docs/assets/workspace.zh-CN.png?v=0.4.0" alt="Mio 0.4.0 工作区，默认选中 MiMo V2.6 Flash" width="960" />
@@ -128,7 +130,7 @@ Linux 版本后续单独提供。
 
 ## 从源码构建
 
-需要 **Node 24**、**pnpm 11.7.0** 以及上游要求的原生工具链（macOS 上为 Xcode 命令行工具）。在仓库根目录执行：
+需要 **Node 24**、**pnpm 11.28.5** 以及上游要求的原生工具链（macOS 上为 Xcode 命令行工具）。在仓库根目录执行：
 
 ```bash
 bun install

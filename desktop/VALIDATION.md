@@ -1,3 +1,9 @@
+# Development upgrade — 2026-10-21
+
+Current source pins dsh `0.2.1-rc.2`. See [upgrade evidence](../docs/dsh-upgrade-0.2.1-rc.2-evidence.md) for current checks and remaining release gates. The records below describe earlier release qualification and are not evidence for this source tree.
+
+---
+
 # Mio 0.5.0 release validation — 2026-09-30
 
 Source: Mio `0.5.0`, pinned dsh `0.2.0-rc.2` / `639ed015397290b3745d163aafe02ffee4aa3f84`.
