@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="google-site-verification" content="jK-S_EKnJgxyRDZggSEp1oYDZD_F3EGe5E1bvRXcyF0" />
 <title>Mio — A native desktop coding agent for MiMo</title>
-<meta name="description" content="Mio is a free, open-source AI coding desktop app for developers. It uses MiMo models to help you understand code, implement features and fix bugs on macOS and Windows." />
+<meta name="description" content="Mio is a free, open-source AI coding app for developers on macOS and Windows. Use MiMo models to understand code, build features and fix bugs." />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%23FF6900'/%3E%3Cpath transform='translate(20.5 -11.7) scale(0.46)' fill='%23FFFFFF' d='M 150 430 C 324 376, 464 430, 512 548 C 560 430, 700 376, 874 430 C 800 520, 700 570, 598 588 C 586 640, 590 700, 612 758 C 576 788, 448 788, 412 758 C 434 700, 438 640, 426 588 C 324 570, 224 520, 150 430 Z'/%3E%3C/svg%3E" />
 <link rel="canonical" href="https://shin4.github.io/mio/" />
 <meta name="author" content="Mio maintainers" />
 <meta name="theme-color" content="#03070D" />
 <meta property="og:title" content="Mio — A native desktop coding agent for MiMo" />
-<meta property="og:description" content="Mio is a free, open-source AI coding desktop app for developers. It uses MiMo models to help you understand code, implement features and fix bugs on macOS and Windows." />
+<meta property="og:description" content="Mio is a free, open-source AI coding app for developers on macOS and Windows. Use MiMo models to understand code, build features and fix bugs." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://shin4.github.io/mio/" />
 <meta property="og:site_name" content="Mio" />
@@ -20,7 +20,7 @@
 <meta property="og:locale:alternate" content="zh_CN" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Mio — A native desktop coding agent for MiMo" />
-<meta name="twitter:description" content="Mio is a free, open-source AI coding desktop app for developers. It uses MiMo models to help you understand code, implement features and fix bugs on macOS and Windows." />
+<meta name="twitter:description" content="Mio is a free, open-source AI coding app for developers on macOS and Windows. Use MiMo models to understand code, build features and fix bugs." />
 <meta name="twitter:image" content="https://shin4.github.io/mio/assets/icon.png" />
 <script type="application/ld+json">
 {
@@ -560,12 +560,12 @@ html[data-motion="off"]{scroll-behavior:auto}
           <div class="screen" id="screen" role="img" aria-label="Mio 0.4.0: connect MiMo, enter a key, start coding" data-i18n-aria="film.aria">
             <div class="scene" data-s="0">
               <div class="win small"><div class="win-bar"><i></i><i></i><i></i></div>
-                <div class="shot"><img data-shot="welcome" src="./assets/film/welcome.en.png" alt="" width="600" height="700" loading="lazy" /></div>
+                <div class="shot"><img data-shot="welcome" src="./assets/film/welcome.en.png" alt="Mio welcome screen with the option to connect a MiMo account" width="600" height="700" loading="lazy" /></div>
               </div>
             </div>
             <div class="scene" data-s="1">
               <div class="win small"><div class="win-bar"><i></i><i></i><i></i></div>
-                <div class="shot"><img data-shot="key" src="./assets/film/key.en.png" alt="" width="600" height="700" loading="lazy" />
+                <div class="shot"><img data-shot="key" src="./assets/film/key.en.png" alt="MiMo connection settings for entering an API key and selecting a region" width="600" height="700" loading="lazy" />
                   <div class="ov" style="left:14.5%;top:46.2%;width:71%;height:5.2%"><span class="dots" id="keyDots"></span></div>
                   <div class="ring" id="ringRegion" style="left:67.5%;top:54.2%;width:19.5%;height:5.2%"></div>
                 </div>
@@ -573,7 +573,7 @@ html[data-motion="off"]{scroll-behavior:auto}
             </div>
             <div class="scene" data-s="2">
               <div class="win big" id="mainWin"><div class="win-bar"><i></i><i></i><i></i></div>
-                <div class="shot"><img data-shot="workspace" src="./assets/film/workspace.en.png" alt="" width="1280" height="820" loading="lazy" />
+                <div class="shot"><img data-shot="workspace" src="./assets/film/workspace.en.png" alt="Mio coding workspace with a prompt to add dark mode to the settings page" width="1280" height="820" loading="lazy" />
                   <div class="ov" id="promptCover" style="left:33.8%;top:51%;width:40%;height:3.4%"><span class="typed" id="typed"></span></div>
                 </div>
               </div>
@@ -784,7 +784,7 @@ html[data-motion="off"]{scroll-behavior:auto}
   const I18N = {
     en: {
       'meta.title':'Mio — A native desktop coding agent for MiMo',
-      'meta.desc':'Mio is a free, open-source AI coding desktop app for developers. It uses MiMo models to help you understand code, implement features and fix bugs on macOS and Windows.',
+      'meta.desc':'Mio is a free, open-source AI coding app for developers on macOS and Windows. Use MiMo models to understand code, build features and fix bugs.',
       'nav.new':'What\'s new','nav.film':'Film','nav.models':'Models','nav.heart':'The heart','nav.download':'Download','nav.faq':'FAQ',
       'hud.temp':'Temp','hud.pressure':'Pressure','hud.light':'Light',
       'hero.chip':'New dsh core · built-in automation',
@@ -802,6 +802,9 @@ html[data-motion="off"]{scroll-behavior:auto}
       'film.tag':'Below here, the only light is living light','film.title':'Connected to MiMo in 15 seconds.','film.echo':'15 秒，连上 MiMo。',
       'film.lead':'Connect your account on the welcome screen, paste a key, pick a region, and start coding.',
       'film.aria':'Mio 0.4.0: connect MiMo, enter a key, start coding',
+      'film.alt.welcome':'Mio welcome screen with the option to connect a MiMo account',
+      'film.alt.key':'MiMo connection settings for entering an API key and selecting a region',
+      'film.alt.workspace':'Mio coding workspace with a prompt to add dark mode to the settings page',
       'film.c1':'Connect MiMo','film.c2':'Key and region','film.c3':'Start coding',
       'film.cap':'A walkthrough composed from real Mio 0.4.0 screens.','film.prompt':'Add dark mode to the settings page, keep the orange accent',
       'film.play':'Play','film.pause':'Pause',
@@ -870,6 +873,9 @@ html[data-motion="off"]{scroll-behavior:auto}
       'film.tag':'从这里开始，光来自生物自己','film.title':'15 秒，连上 MiMo。','film.echo':'Connected to MiMo in 15 seconds.',
       'film.lead':'欢迎页连接账号，粘贴 Key、选择地域，然后直接开始写代码。',
       'film.aria':'Mio 0.4.0 流程：连接 MiMo、填写 Key、进入工作区',
+      'film.alt.welcome':'Mio 欢迎页，可连接 MiMo 账号',
+      'film.alt.key':'MiMo 连接设置，填写 API Key 并选择地域',
+      'film.alt.workspace':'Mio 编程工作区，输入为设置页添加深色模式的任务',
       'film.c1':'连接 MiMo','film.c2':'Key 与地域','film.c3':'开始编码',
       'film.cap':'由 Mio 0.4.0 实机截图合成的流程演示。','film.prompt':'给设置页加深色模式，保留现有的橙色强调色',
       'film.play':'播放','film.pause':'暂停',
@@ -1137,7 +1143,7 @@ html[data-motion="off"]{scroll-behavior:auto}
     document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
     /* Film: the Chinese build runs light, the English capture is dark mode. */
     const suffix = lang === 'zh' ? 'zh' : 'en';
-    document.querySelectorAll('img[data-shot]').forEach(img => { img.src = './assets/film/' + img.dataset.shot + '.' + suffix + '.png'; });
+    document.querySelectorAll('img[data-shot]').forEach(img => { img.src = './assets/film/' + img.dataset.shot + '.' + suffix + '.png'; img.alt = d['film.alt.' + img.dataset.shot]; });
     const main = $('mainWin'), dark = lang !== 'zh';
     main.classList.toggle('dark-win', dark);
     main.style.setProperty('--cover', dark ? '#2B2B2F' : '#fff');
