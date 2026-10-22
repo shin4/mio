@@ -1,23 +1,26 @@
 # Mio
 
-> Mio is a free, open-source native desktop coding agent for the MiMo model family, for macOS and Windows. Since 0.4.0 it is the official DeepSeek Harness (dsh) Desktop with Mio's identity and a MiMo-first configuration.
-> Mio 是一款面向 MiMo 模型家族的免费开源原生桌面代码智能体，支持 macOS 与 Windows；自 0.4.0 起基于官方 DeepSeek Harness Desktop，叠加 Mio 品牌与 MiMo 优先的配置。
+> Mio is a free, open-source AI coding desktop app for developers. It uses MiMo models to help you understand code, implement features and fix bugs on macOS and Windows.
+> Mio 是面向开发者的免费开源 AI 编程桌面应用，通过 MiMo 模型帮助你理解代码、实现功能和修复问题，支持 macOS 与 Windows。
 
 Key facts:
+- Audience and tasks: developers working on their own code projects; understand code, implement features, and investigate and fix bugs. Review generated changes before using them.
 - Category: native desktop coding agent (AI pair programmer) for the MiMo model family.
-- Current release: 0.4.5 (2026-09-27), built on the official dsh Desktop 0.1.7-rc.2 — upstream's workspace, settings, tools and sessions, plus a reviewed Mio overlay. No fork of the model adapter: MiMo is configured through dsh's own provider.
+- Current release: 0.5.1 (2026-10-22), built on the official dsh Desktop 0.2.1-rc.2 — upstream's workspace, settings, tools and sessions, plus a reviewed Mio overlay. No fork of the model adapter: MiMo is configured through dsh's own provider.
 - Models: MiMo V2.6 Flash (default for new sessions, thinking on) and MiMo V2.6 Pro. Thinking is Off/High, mapped to MiMo's thinking switch. UltraSpeed is an opt-in build flag.
 - Setup: paste a MiMo API key on the welcome screen. `sk-` keys are pay-as-you-go; `tp-` keys are token plans with a CN, SGP or AMS region.
 - Platforms: macOS Apple Silicon and Intel (Developer ID signed and notarized) and Windows x64 (unsigned). Linux will follow separately; no terminal/TUI version is planned.
-- Upgrading: from 0.4.2 Mio updates itself from GitHub Releases, asking before download and restart; install the current release by hand once over 0.4.0/0.4.1, keeping data; 0.4 started with a fresh data directory, so 0.3.x sessions, settings and keys are not migrated.
+- Automation: scheduling is built into Desktop as of 0.5.1; explicitly disabled settings stay disabled.
+- Upgrading: back up the complete data directory before upgrading from 0.4.x; rollback requires the old installer and the pre-upgrade backup. From 0.4.2 Mio updates itself from GitHub Releases, asking before download and restart; install the current release by hand once over 0.4.0/0.4.1, keeping data; 0.4 started with a fresh data directory, so 0.3.x sessions, settings and keys are not migrated.
 - Voice (since 0.4.1): speak a request into an editable draft with MiMo ASR (mimo-v2.5-asr), and read replies aloud with MiMo TTS (mimo-v2.5-tts) in one of nine preset voices chosen under Settings → General. Both use the connected MiMo account; recordings and reply text go to the MiMo API.
 - Images, audio and video (since 0.4.4): MiMo V2.6 Flash and Pro accept images in the composer; attached audio (MP3/WAV/FLAC/M4A/OGG) and video (MP4/MOV/AVI/WMV), up to 50 MB Base64 each, are understood by MiMo through the mimo_media_read agent tool. PDF is not supported because MiMo's API takes no documents.
 - Cost: the app is free and MIT-licensed; you pay only for MiMo API usage via platform.xiaomimimo.com.
 - Independent, community-maintained project. Not an official Xiaomi product and not affiliated with Xiaomi Inc.; not a DeepSeek product.
 
 ## Docs
-- [README (English)](https://github.com/shin4/mio/blob/main/README.md): Overview, what is new in 0.4.5, downloads, setup, voice, build from source, and FAQ.
-- [README (简体中文)](https://github.com/shin4/mio/blob/main/README.zh-CN.md): 中文版概览、0.4.5 新变化、下载、接入、语音、源码构建与常见问题。
+- [FAQ (English / 简体中文)](https://shin4.github.io/mio/faq.html): What Mio is, who it is for, problems it helps solve, models, platforms, cost and setup.
+- [README (English)](https://github.com/shin4/mio/blob/main/README.md): Overview, what is new in 0.5.1, downloads, setup, voice, build from source, and FAQ.
+- [README (简体中文)](https://github.com/shin4/mio/blob/main/README.zh-CN.md): 中文版概览、0.5.1 新变化、下载、接入、语音、源码构建与常见问题。
 - [Landing page](https://shin4.github.io/mio/): Product overview, features, FAQ, and download.
 
 ## Download
