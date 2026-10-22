@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mio FAQ — Frequently asked questions / 常见问题</title>
+<meta name="description" content="What Mio is, who it is for, what it helps with, supported models, platforms, pricing and setup. Mio 的用途、适用人群、模型、平台、费用与接入说明。" />
+<link rel="canonical" href="https://shin4.github.io/mio/faq.html" />
+<meta name="theme-color" content="#03070D" />
+<link rel="icon" href="./assets/icon.png" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;900&family=Noto+Sans+SC:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "url": "https://shin4.github.io/mio/faq.html",
+  "inLanguage": [
+    "en",
+    "zh-CN"
+  ],
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is Mio?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mio is a free, MIT-licensed native desktop coding agent for the MiMo model family, for macOS and Windows. Since 0.4.0 it is the official DeepSeek Harness Desktop — upstream's workspace, tools and settings — with Mio's identity and MiMo defaults layered on top."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Who is Mio for?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mio is for developers who want to use MiMo models in a desktop workspace to work on their own code projects."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What problems does Mio help solve?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mio helps you understand an existing codebase, implement features and investigate and fix bugs through natural-language requests. Review generated changes before using them."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is it built on DeepSeek Harness?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The hard parts of a desktop agent — the tool loop, session persistence, model routing, the workspace UI — already exist in dsh, and they are open source. Mio composes them instead of forking them: a pinned upstream source, a reviewed overlay, and MiMo configured through dsh's own provider. Upstream improvements arrive by moving a version pin."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Mio a DeepSeek product?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. DeepSeek Harness is DeepSeek's open-source agent harness (MIT). Mio is an independent project built on it and is not a DeepSeek product."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which MiMo models does it support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "MiMo V2.6 Flash, the default for new sessions, and MiMo V2.6 Pro. Thinking switches on or off per session; Off and High map to MiMo's thinking switch, with no graded effort levels. UltraSpeed is an opt-in build flag for accounts that support it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I talk to Mio, and can it read replies aloud?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, since 0.4.1. The mic in the composer transcribes your request with MiMo ASR into an editable draft, and the speaker button under each reply reads it with MiMo TTS in one of nine voices. Both use your MiMo account; recordings and reply text are sent to the MiMo API."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which platforms does Mio run on?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "macOS on Apple Silicon and Intel, Developer ID signed and notarized, and Windows x64, unsigned. Linux will follow separately. There is no terminal (TUI) version planned."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will my sessions and settings carry over?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "From 0.4.x, the data directory is retained. Exit GUI and CLI and back it up before upgrading; automation is now built in, and explicitly disabled settings stay disabled. Old normal transcript display becomes detailed. To roll back, restore the old installer and the complete pre-upgrade backup. Data from 0.3.x is not imported."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Mio an official Xiaomi product?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Mio is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does it cost, and how do I get started?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The app is free and MIT-licensed; you pay only for MiMo API usage. Download the installer, then paste a MiMo API key from platform.xiaomimimo.com on the welcome screen: sk- keys are pay-as-you-go, tp- keys are token plans and ask for a region. You can skip that step and add the key later from the Models page."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "什么是 Mio？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mio 是面向 MiMo 模型家族的免费开源（MIT）原生桌面代码智能体，支持 macOS 与 Windows。自 0.4.0 起，它就是官方 DeepSeek Harness Desktop——沿用上游的工作区、工具与设置——再叠加 Mio 的品牌与 MiMo 默认配置。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mio 适合谁？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mio 适合希望在桌面工作区中使用 MiMo 模型处理自己代码项目的开发者。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mio 能解决什么问题？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mio 帮助你通过自然语言理解现有代码、实现功能、定位和修复问题。使用生成的改动前，请先审阅。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么建立在 DeepSeek Harness 之上？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "桌面智能体最难的那几块——工具循环、会话持久化、模型路由、工作区界面——dsh 都已做好，而且是开源的。Mio 选择组合而不是 fork：锁定版本的上游源码、一层审阅过的补丁，以及通过 dsh 自带 provider 完成的 MiMo 配置。上游的改进，挪一下版本锁就继承过来。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mio 是 DeepSeek 的产品吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不是。DeepSeek Harness 是 DeepSeek 开源的智能体运行时（MIT），Mio 是基于它构建的独立项目，并非 DeepSeek 的产品。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "支持哪些 MiMo 模型？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "MiMo V2.6 Flash（新会话默认）与 MiMo V2.6 Pro。推理可按会话开关；Off 与 High 对应 MiMo 的 thinking 开关，没有分级强度。UltraSpeed 是面向支持该模型账号的可选构建开关。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "可以用语音和 Mio 交流吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "可以，自 0.4.1 起。输入框里的麦克风会用 MiMo ASR 把你的话转成可编辑的草稿；每条回复下的朗读按钮会用 MiMo TTS 以 9 种音色之一读出来。两者都使用你的 MiMo 账号，录音与回复文本会发送到 MiMo API。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mio 能在哪些平台运行？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "macOS（Apple Silicon 与 Intel，已 Developer ID 签名并公证）与 Windows x64（未签名）。Linux 后续单独提供。不计划提供终端界面（TUI）。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "升级后会话和设置会保留吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "从 0.4.x 升级会保留数据目录。升级前退出 GUI 与 CLI 并备份；自动化已内建。旧 normal 会话展示变为 detailed。回退时恢复旧安装包与完整升级前备份。0.3.x 数据不导入。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mio 是小米官方产品吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不是。Mio 是一个独立的、由社区维护的项目，与小米公司（Xiaomi Inc.）无附属、赞助或背书关系，仅作为第三方客户端连接 MiMo 模型平台。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "费用如何？如何开始使用？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "应用本身免费、采用 MIT 许可，你只为 MiMo 的 API 用量付费。下载安装包后，在欢迎页粘贴来自 platform.xiaomimimo.com 的 API Key：sk- 为按量付费，tp- 为订阅套餐并需选择地域。这一步也可以跳过，之后在模型页里补填。"
+      }
+    }
+  ]
+}
+</script>
+<style>
+:root{color-scheme:dark;--abyss:#03070D;--ink:#EAF1F8;--mute:#93A9C2;--whale:#FF6900;--line:rgba(147,169,194,.16)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--abyss);color:var(--ink);font:400 16px/1.7 "Noto Sans SC","PingFang SC",system-ui,sans-serif}main,nav,footer{max-width:960px;margin:auto;padding:24px clamp(20px,5vw,56px)}nav{display:flex;gap:24px;flex-wrap:wrap;border-bottom:1px solid var(--line)}a{color:var(--mute);text-underline-offset:5px}a:hover{color:var(--ink)}.brand{color:var(--whale);font-weight:700;text-decoration:none}h1{font:400 clamp(42px,7vw,72px)/1.15 "Instrument Serif","Noto Serif SC",serif;margin:32px 0}h2{font:600 30px/1.4 "Noto Serif SC",serif;margin:48px 0 20px}h3{font-size:18px;font-weight:500;margin:0 0 12px}article{padding:24px 0;border-top:1px solid var(--line)}p{color:var(--mute);margin:0 0 20px}article p{margin:0}section{scroll-margin-top:24px}footer{border-top:1px solid var(--line);font-size:14px}:focus-visible{outline:2px solid var(--whale);outline-offset:4px}::selection{background:var(--whale);color:white}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head><body>
+<nav aria-label="Page navigation"><a class="brand" href="./">Mio</a><a href="#en">English</a><a href="#zh">简体中文</a><a href="./#download">Download / 下载</a></nav>
+<main><h1>Frequently asked questions<br><span lang="zh-CN">常见问题</span></h1>
+<section id="en" lang="en"><h2>English</h2>
+<article><h3>What is Mio?</h3><p>Mio is a free, MIT-licensed native desktop coding agent for the MiMo model family, for macOS and Windows. Since 0.4.0 it is the official DeepSeek Harness Desktop — upstream&#x27;s workspace, tools and settings — with Mio&#x27;s identity and MiMo defaults layered on top.</p></article>
+<article><h3>Who is Mio for?</h3><p>Mio is for developers who want to use MiMo models in a desktop workspace to work on their own code projects.</p></article>
+<article><h3>What problems does Mio help solve?</h3><p>Mio helps you understand an existing codebase, implement features and investigate and fix bugs through natural-language requests. Review generated changes before using them.</p></article>
+<article><h3>Why is it built on DeepSeek Harness?</h3><p>The hard parts of a desktop agent — the tool loop, session persistence, model routing, the workspace UI — already exist in dsh, and they are open source. Mio composes them instead of forking them: a pinned upstream source, a reviewed overlay, and MiMo configured through dsh&#x27;s own provider. Upstream improvements arrive by moving a version pin.</p></article>
+<article><h3>Is Mio a DeepSeek product?</h3><p>No. DeepSeek Harness is DeepSeek&#x27;s open-source agent harness (MIT). Mio is an independent project built on it and is not a DeepSeek product.</p></article>
+<article><h3>Which MiMo models does it support?</h3><p>MiMo V2.6 Flash, the default for new sessions, and MiMo V2.6 Pro. Thinking switches on or off per session; Off and High map to MiMo&#x27;s thinking switch, with no graded effort levels. UltraSpeed is an opt-in build flag for accounts that support it.</p></article>
+<article><h3>Can I talk to Mio, and can it read replies aloud?</h3><p>Yes, since 0.4.1. The mic in the composer transcribes your request with MiMo ASR into an editable draft, and the speaker button under each reply reads it with MiMo TTS in one of nine voices. Both use your MiMo account; recordings and reply text are sent to the MiMo API.</p></article>
+<article><h3>Which platforms does Mio run on?</h3><p>macOS on Apple Silicon and Intel, Developer ID signed and notarized, and Windows x64, unsigned. Linux will follow separately. There is no terminal (TUI) version planned.</p></article>
+<article><h3>Will my sessions and settings carry over?</h3><p>From 0.4.x, the data directory is retained. Exit GUI and CLI and back it up before upgrading; automation is now built in, and explicitly disabled settings stay disabled. Old normal transcript display becomes detailed. To roll back, restore the old installer and the complete pre-upgrade backup. Data from 0.3.x is not imported.</p></article>
+<article><h3>Is Mio an official Xiaomi product?</h3><p>No. Mio is an independent, community-maintained project. It is not affiliated with, sponsored by, or endorsed by Xiaomi Inc., and it connects to the MiMo model platform purely as a third-party client.</p></article>
+<article><h3>How much does it cost, and how do I get started?</h3><p>The app is free and MIT-licensed; you pay only for MiMo API usage. Download the installer, then paste a MiMo API key from platform.xiaomimimo.com on the welcome screen: sk- keys are pay-as-you-go, tp- keys are token plans and ask for a region. You can skip that step and add the key later from the Models page.</p></article>
+</section>
+<section id="zh" lang="zh-CN"><h2>简体中文</h2>
+<article><h3>什么是 Mio？</h3><p>Mio 是面向 MiMo 模型家族的免费开源（MIT）原生桌面代码智能体，支持 macOS 与 Windows。自 0.4.0 起，它就是官方 DeepSeek Harness Desktop——沿用上游的工作区、工具与设置——再叠加 Mio 的品牌与 MiMo 默认配置。</p></article>
+<article><h3>Mio 适合谁？</h3><p>Mio 适合希望在桌面工作区中使用 MiMo 模型处理自己代码项目的开发者。</p></article>
+<article><h3>Mio 能解决什么问题？</h3><p>Mio 帮助你通过自然语言理解现有代码、实现功能、定位和修复问题。使用生成的改动前，请先审阅。</p></article>
+<article><h3>为什么建立在 DeepSeek Harness 之上？</h3><p>桌面智能体最难的那几块——工具循环、会话持久化、模型路由、工作区界面——dsh 都已做好，而且是开源的。Mio 选择组合而不是 fork：锁定版本的上游源码、一层审阅过的补丁，以及通过 dsh 自带 provider 完成的 MiMo 配置。上游的改进，挪一下版本锁就继承过来。</p></article>
+<article><h3>Mio 是 DeepSeek 的产品吗？</h3><p>不是。DeepSeek Harness 是 DeepSeek 开源的智能体运行时（MIT），Mio 是基于它构建的独立项目，并非 DeepSeek 的产品。</p></article>
+<article><h3>支持哪些 MiMo 模型？</h3><p>MiMo V2.6 Flash（新会话默认）与 MiMo V2.6 Pro。推理可按会话开关；Off 与 High 对应 MiMo 的 thinking 开关，没有分级强度。UltraSpeed 是面向支持该模型账号的可选构建开关。</p></article>
+<article><h3>可以用语音和 Mio 交流吗？</h3><p>可以，自 0.4.1 起。输入框里的麦克风会用 MiMo ASR 把你的话转成可编辑的草稿；每条回复下的朗读按钮会用 MiMo TTS 以 9 种音色之一读出来。两者都使用你的 MiMo 账号，录音与回复文本会发送到 MiMo API。</p></article>
+<article><h3>Mio 能在哪些平台运行？</h3><p>macOS（Apple Silicon 与 Intel，已 Developer ID 签名并公证）与 Windows x64（未签名）。Linux 后续单独提供。不计划提供终端界面（TUI）。</p></article>
+<article><h3>升级后会话和设置会保留吗？</h3><p>从 0.4.x 升级会保留数据目录。升级前退出 GUI 与 CLI 并备份；自动化已内建。旧 normal 会话展示变为 detailed。回退时恢复旧安装包与完整升级前备份。0.3.x 数据不导入。</p></article>
+<article><h3>Mio 是小米官方产品吗？</h3><p>不是。Mio 是一个独立的、由社区维护的项目，与小米公司（Xiaomi Inc.）无附属、赞助或背书关系，仅作为第三方客户端连接 MiMo 模型平台。</p></article>
+<article><h3>费用如何？如何开始使用？</h3><p>应用本身免费、采用 MIT 许可，你只为 MiMo 的 API 用量付费。下载安装包后，在欢迎页粘贴来自 platform.xiaomimimo.com 的 API Key：sk- 为按量付费，tp- 为订阅套餐并需选择地域。这一步也可以跳过，之后在模型页里补填。</p></article>
+</section>
+</main>
+<footer><a href="./">Mio home / 首页</a> · <a href="./llms.txt">llms.txt</a> · <a href="https://github.com/shin4/mio">GitHub</a></footer>
+</body></html>

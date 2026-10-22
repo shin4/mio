@@ -1,4 +1,6 @@
 # Mio — https://shin4.github.io/mio/
+# GitHub project Pages serves this at /mio/robots.txt. Crawlers use the host-root
+# https://shin4.github.io/robots.txt instead; this file does not override that policy.
 # AI assistants and search engines are welcome to crawl, index, and cite this site.
 
 User-agent: *
