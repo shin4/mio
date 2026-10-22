@@ -109,14 +109,15 @@ ships a fork of the model adapter. Shared framework peers resolve to the upstrea
 Packaging delegates to upstream: `bun run package:desktop mac-arm64`, `mac-x64`, or `win-x64`.
 Only Windows supports `--unsigned`. Prepare the upstream platform-local `.env.macos` or
 `.env.windows`; its app ID must equal `product.json`. macOS requires signing/notarization
-credentials. The approved v0.4.x Windows distribution is explicitly unsigned and uses the `-unsigned`
+credentials. The approved Windows distribution is explicitly unsigned and uses the `-unsigned`
 filename suffix. Never run the upstream `upload:*` commands for Mio.
 
 See [the current plan](../docs/mio-desktop-plan.md) for completion evidence and remaining gates.
 The current source upgrade is tracked in [dsh 0.2.1-rc.2 evidence](../docs/dsh-upgrade-0.2.1-rc.2-evidence.md).
 The previous 0.2.0 upgrade records describe the published 0.5.0 baseline.
-The 0.5.1 source is prepared for release. Publication requires a successful three-platform
-qualification of this exact source tree; the release includes its qualification report.
+[Mio v0.5.1](https://github.com/shin4/mio/releases/tag/v0.5.1) was published on 2026-10-22
+from `da6a1c35907193b19bea5a9aec387abc1e85ff13`, after all three platforms passed qualification.
+The release includes its qualification report; later documentation commits do not change that release source.
 
 ## Opt-in live validation
 

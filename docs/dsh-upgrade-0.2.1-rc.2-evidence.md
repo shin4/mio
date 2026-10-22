@@ -6,7 +6,7 @@
 - Target: `dsh-v0.2.1-rc.2`, `687f282e8625c6b8d11ff58211a90524be2e4317` (prerelease).
 - Toolchain: Node 24.18.0, pnpm 11.28.5; target's original lockfile hash is in `desktop/upstream.lock.json`.
 - Upgrade source was committed and pushed as `f4eea4e32`; basic CI and three-platform build CI passed.
-- Release preparation now targets Mio 0.5.1. Publication requires a new successful three-platform installer qualification of the exact release tree. No data import, legacy-package change or `archive/` edit.
+- Mio v0.5.1 was published on 2026-10-22 from `da6a1c35907193b19bea5a9aec387abc1e85ff13`, after successful three-platform qualification of that exact source tree. No data import, legacy-package change or `archive/` edit.
 
 ## Native behavior and retained product integration
 
@@ -38,7 +38,7 @@ Local macOS arm64 evidence is under ignored `.desktop-build/upgrade-021-*.log`.
 - Live API regression: explicitly authorized by the user, using the locally saved MiMo key without recording it. Flash/Pro text (`off`) and reasoning (`high`) passed; Flash tool call and continuation passed. Flash/Pro both identified the red/blue test image correctly. Chinese and English ASR and Chinese TTS-to-ASR roundtrip passed. Real headless audio/video turns invoked `mimo_media_read` and returned `42 blue apples` and `Red, green`. All four live probe processes exited 0. Headless logs report inactive UI-only TTS/hidden-preset entries because `connection`/`agentPresets` are absent; the media plugin and tool turns activated and completed successfully.
 - Final wrapper build after the packaging smoke adjustment: all 9 gates passed and build-record artifact hashes refreshed.
 
-Sanitized live reports are `.desktop-build/{live,image-live,voice-live,media-tool-live}-validation.json`; logs use the `upgrade-021-` prefix. Historical V2.5 cassettes establish parser/request compatibility; the live checks above establish current Flash/Pro and media availability for this account. Three-platform signing, notarization, installed update qualification and production publication remain release gates; local macOS results do not qualify Windows or Intel macOS.
+Sanitized live reports are `.desktop-build/{live,image-live,voice-live,media-tool-live}-validation.json`; logs use the `upgrade-021-` prefix. Historical V2.5 cassettes establish parser/request compatibility; the live checks above establish current Flash/Pro and media availability for this account. These local results did not substitute for cross-platform qualification. The completed three-platform release checks are recorded below; production updater/rollback drills and a full manual UI matrix are not claimed.
 
 ## Reproduce
 
@@ -73,4 +73,24 @@ The 0.5.1 preparation run [39629853071](https://github.com/shin4/mio/actions/run
 
 The release workflow now blocks outbound UDP 443 only on the ephemeral Intel runner before packaging. All official signing, notarization, stapling, Gatekeeper, runtime and regression checks remain required. No dsh source or product overlay changes are made. Failed jobs export only parsed packaging event journals, redacted again using CI signing credentials and runtime-token patterns; raw streams and signing inputs are excluded. The exporter regression verifies nested/escaped credentials, token removal, preserved failure details and malformed-input rejection. Publication selects only the three qualified installer artifacts, excluding diagnostic artifacts retained by failed attempts; successful-run, exact-source, signing and hash checks remain unchanged.
 
-Local validation: Desktop 29/29 with the previous-build baseline; lint has 0 errors and 43 pre-existing warnings. Workflow YAML and failure/upload conditions were checked. Remote TCP fallback and release qualification must pass on the new commit before publication.
+Local validation: Desktop 29/29 with the previous-build baseline; lint has 0 errors and 43 pre-existing warnings. Workflow YAML and failure/upload conditions were checked. Remote TCP fallback and release qualification subsequently passed on `da6a1c359`; see the completed release record below.
+
+## Completed qualification and publication — 2026-10-22
+
+- Release source and tag `v0.5.1`: `da6a1c35907193b19bea5a9aec387abc1e85ff13`. Later documentation commits do not change the qualified binaries or move the release tag.
+- [Three-platform qualification 39697333462](https://github.com/shin4/mio/actions/runs/39697333462): all three jobs succeeded on the first attempt after the Intel TCP fallback. All retained build, packaged-runtime, identity, signature and regression gates passed.
+- [Publication 39700694968](https://github.com/shin4/mio/actions/runs/39700694968): succeeded after verifying exact source/upstream commits, signing evidence, installer SHA-256, update SHA-512 and uploaded assets.
+- [Mio v0.5.1](https://github.com/shin4/mio/releases/tag/v0.5.1) was published at **2026-10-22 08:38:19 Asia/Taipei** (00:38:19 UTC), is neither draft nor prerelease, and was verified as GitHub latest. The bundled dsh `0.2.1-rc.2` remains an upstream release candidate.
+- The same commit passed [basic CI](https://github.com/shin4/mio/actions/runs/39697333284), [three-platform build CI](https://github.com/shin4/mio/actions/runs/39697333036), and [Pages deployment](https://github.com/shin4/mio/actions/runs/39697332953).
+
+| Target | Installer/signing qualification | Desktop regression | Upstream regression |
+| --- | --- | --- | --- |
+| macOS arm64 | DMG/ZIP; Developer ID signed, notarized, stapled, Gatekeeper accepted | 26 passed, 3 baseline-dependent skips | 1064 passed, 1 platform skip |
+| macOS x64 | DMG/ZIP; Developer ID signed, notarized, stapled, Gatekeeper accepted; Intel TCP fallback executed | 26 passed, 3 baseline-dependent skips | 1064 passed, 1 platform skip |
+| Windows x64 | Explicitly unsigned EXE; actual installation and installed-runtime checks passed | 26 passed, 3 baseline-dependent skips | 1043 passed, 22 platform skips |
+
+The three Desktop skips are previous-build session/backup rollback and the enabled/disabled Schedule upgrade tests. They passed locally with the preserved previous-build baseline in the 29/29 run; CI skips are not counted as passes. All platforms passed the packaged runtime checks, offline CLI plugin installation/removal and Office-to-PDF checks. The new diagnostics-export regression passed in each platform's Desktop suite. No failure occurred in this qualification run, so the failure-only artifact upload branch was not exercised remotely.
+
+The release has **9 assets**: two macOS DMGs, two macOS ZIPs, one Windows unsigned EXE, `SHA256SUMS.txt`, `mio-0.5.1-qualification.json`, `nightly-mac.yml`, and `nightly.yml`. The [published qualification report](https://github.com/shin4/mio/releases/download/v0.5.1/mio-0.5.1-qualification.json) records all three platforms as passed on the release commit. Both update feeds declare `0.5.1`; the published checksum list matches the report's five installer hashes. Windows remains unsigned by explicit policy, with SHA-512 update integrity checks.
+
+Post-publication documentation review checked the English/Chinese README version, upstream pin, platform filenames and signing descriptions against the release asset list. The entry page uses the same product/core versions and release date, with GitHub asset discovery and latest-release fallback links. Historical failed runs above are retained as diagnosis evidence, not release qualification.

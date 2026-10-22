@@ -32,6 +32,8 @@ Mio 是一款面向 **MiMo 模型家族**的免费开源原生桌面代码智能
 
 ## 0.5.1 新变化
 
+已于 2026-10-22 发布，三平台安装包资格验证均通过。详见[验证记录](docs/dsh-upgrade-0.2.1-rc.2-evidence.md#completed-qualification-and-publication--2026-10-22)。
+
 - **官方 dsh Desktop 0.2.1-rc.2** — 升级固定上游版本，删除已由上游覆盖的本地补丁；内置内核仍为 RC。
 - **内建自动化** — Schedule 随 Desktop 提供，已有任务与设置保留，无需重新启用可选 bundle；显式禁用的设置继续保持禁用。
 - **原生凭据规则** — Desktop 优先使用保存的 Key；无界面终端运行使用启动环境，不读取 Desktop 保存的 Key。MiMo 媒体工具采用相同规则。

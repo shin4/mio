@@ -37,12 +37,16 @@ compatibility-breaking changes. Expect churn; keep the pin exact and bump delibe
 
 **Development source (2026-10-21):** official dsh `0.2.1-rc.2`
 (`687f282e8625c6b8d11ff58211a90524be2e4317`), pnpm `11.28.5`.
-See [upgrade evidence](docs/dsh-upgrade-0.2.1-rc.2-evidence.md) for validation and remaining release gates.
+See [upgrade evidence](docs/dsh-upgrade-0.2.1-rc.2-evidence.md) for validation and completed release qualification.
 Schedule is built in; upstream removes the retired bundle selection while preserving tasks/settings.
 Desktop/Web prefers saved credentials; headless uses the launch environment. No legacy importer
-or runtime-internal fork is introduced. The following release record remains historical.
+or runtime-internal fork is introduced.
 
-**Release source (2026-09-30):** the Desktop source pins official dsh
+**Current release (2026-10-22):** [Mio v0.5.1](https://github.com/shin4/mio/releases/tag/v0.5.1)
+was published from `da6a1c35907193b19bea5a9aec387abc1e85ff13` after all three platform
+qualification jobs passed. Both update feeds now declare 0.5.1. The following 0.5.0 record is historical.
+
+**Previous release source (2026-09-30):** the Desktop source pins official dsh
 `0.2.0-rc.2` (`639ed015397290b3745d163aafe02ffee4aa3f84`) and Mio release source `0.5.0`.
 Production follows the stable GitHub release selected as latest; publication changes the feed
 only after the exact source tree passes the three-platform installer qualification.

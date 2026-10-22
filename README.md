@@ -34,6 +34,8 @@ dsh's own provider, and the product overlay is a reviewed patch set kept in [`de
 
 ## What's new in 0.5.1
 
+Published on 2026-10-22 after all three platforms passed installer qualification. See [validation results](docs/dsh-upgrade-0.2.1-rc.2-evidence.md#completed-qualification-and-publication--2026-10-22).
+
 - **Official dsh Desktop 0.2.1-rc.2** — a pinned upstream upgrade with redundant local patches removed. The bundled core remains a release candidate.
 - **Built-in automation** — Schedule now ships with Desktop. Existing tasks and settings are retained without re-enabling an optional bundle; explicitly disabled settings stay disabled.
 - **Native credential handling** — Desktop prefers saved keys. Headless terminal runs use the launch environment without reading the Desktop key store; MiMo media tools follow the same rule.
