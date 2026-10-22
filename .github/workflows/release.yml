@@ -42,6 +42,14 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.apple && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
           APPLE_TEAM_ID: ${{ matrix.apple && secrets.APPLE_TEAM_ID || '' }}
         run: node script/desktop/release-environment.mjs
+      # actions/runner-images#14924: Intel HTTP/3 drops Apple ticket requests.
+      # Keep notarization/stapling unchanged; TCP HTTPS remains available.
+      - name: Route Intel Apple requests over TCP
+        if: matrix.target == 'mac-x64'
+        shell: bash
+        run: |
+          echo 'block return out quick proto udp from any to any port 443' | sudo pfctl -f -
+          sudo pfctl -E
       - name: Build, package and qualify bundled runtime
         run: node script/desktop/run.mjs package ${{ matrix.target }} ${{ !matrix.apple && '--unsigned' || '' }}
       - name: Verify application identity, signatures and artifacts
@@ -62,6 +70,25 @@ jobs:
       - name: Diagnose actual Windows installation after packaged smoke failure
         if: failure() && !matrix.apple
         run: node script/desktop/verify-release.mjs win-x64
+      - name: Collect redacted packaging failure journals
+        if: failure()
+        env:
+          CSC_LINK: ${{ matrix.apple && secrets.CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ matrix.apple && secrets.CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ matrix.apple && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.apple && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ matrix.apple && secrets.APPLE_TEAM_ID || '' }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node script/desktop/collect-packaging-diagnostics.mjs
+      - name: Upload redacted packaging failure journals
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostics-${{ matrix.target }}-${{ github.run_attempt }}
+          path: .desktop-build/diagnostics
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 7
       - name: Remove signing inputs
         if: always()
         shell: bash

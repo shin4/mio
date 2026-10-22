@@ -32,7 +32,8 @@ const lock = JSON.parse(await readFile("desktop/upstream.lock.json", "utf8"))
 const tag = `v${product.version}`
 const targets = ["mac-arm64", "mac-x64", "win-x64"]
 const artifacts = api(`actions/runs/${runId}/artifacts?per_page=100`)
-assert.equal(artifacts.total_count, 3)
+// Failed attempts may retain diagnostic journals; they are never release inputs.
+assert.equal(artifacts.artifacts.filter((item) => item.name.startsWith("mio-")).length, 3)
 for (const target of targets) {
   const artifact = artifacts.artifacts.find((item) => item.name === `mio-${target}`)
   assert.ok(artifact && !artifact.expired, `Missing qualified ${target} artifacts`)
@@ -41,7 +42,9 @@ const directory = ".desktop-build/publication"
 await mkdir(directory, { recursive: true })
 // This is a fresh checkout; never mix artifacts from an earlier publication attempt.
 assert.equal((await readdir(directory)).length, 0)
-gh("run", "download", runId, "--dir", directory)
+for (const target of targets) {
+  gh("run", "download", runId, "--name", `mio-${target}`, "--dir", join(directory, `mio-${target}`))
+}
 const checksums = []
 const evidence = []
 const uploads = []
